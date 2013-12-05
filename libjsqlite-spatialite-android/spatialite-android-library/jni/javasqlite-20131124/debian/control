@@ -1,0 +1,30 @@
+Source: javasqlite
+Section: devel
+Priority: extra
+Maintainer: Christian Werner <chw@ch-werner.de>
+Build-Depends: debhelper (>= 5), autotools-dev, sun-java5-jdk | sun-java6-jdk | openjdk-6-jdk, libsqlite0-dev (>= 2.4.12) | libsqlite3-dev
+Standards-Version: 3.7.2
+
+Package: javasqlite
+Architecture: any
+Depends: ${shlibs:Depends}, sun-java5-jre(>= 1.5) | sun-java6-jre(>= 1.6) | openjdk-6-jre
+Conflicts: javasqlite-see, javasqlite-seedemo
+Description: SQLite Java Wrapper/JDBC Driver
+ SQLite Java Wrapper/JDBC Driver
+ Installs everything in /usr/lib and /usr/share/java.
+
+Package: javasqlite-see
+Architecture: any
+Depends: ${shlibs:Depends}, sun-java5-jre(>= 1.5) | sun-java6-jre(>= 1.6) | openjdk-6-jre
+Conflicts: javasqlite, javasqlite-seedemo
+Description: SQLite Java Wrapper/JDBC Driver
+ SQLite Java Wrapper/JDBC Driver
+ Installs everything in /usr/lib and /usr/share/java.
+
+Package: javasqlite-seedemo
+Architecture: any
+Depends: ${shlibs:Depends}, sun-java5-jre(>= 1.5) | sun-java6-jre(>= 1.6) | openjdk-6-jre
+Conflicts: javasqlite, javasqlite-see
+Description: SQLite Java Wrapper/JDBC Driver
+ SQLite Java Wrapper/JDBC Driver
+ Installs everything in /usr/lib and /usr/share/java.

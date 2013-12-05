@@ -1,0 +1,7 @@
+multipointfromtext1
+:memory: #use in-memory database
+SELECT AsWkt(MPointFromText("MULTIPOINT(-71 42, -70 41, -70 42, -70 42, -71 42)"))
+1 # rows (not including the header row)
+1 # columns
+AsWkt(MPointFromText("MULTIPOINT(-71 42, -70 41, -70 42, -70 42, -71 42)"))
+MULTIPOINT(-71 42,-70 41,-70 42,-70 42,-71 42)

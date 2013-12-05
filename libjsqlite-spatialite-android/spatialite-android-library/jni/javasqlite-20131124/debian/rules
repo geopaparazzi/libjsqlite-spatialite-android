@@ -1,0 +1,125 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+
+# These are used for cross-compiling and for saving the configure script
+# from having to guess our platform (since we know it already)
+#DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+#DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+
+CFLAGS = -Wall -g
+
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+else
+	CFLAGS += -O2
+endif
+
+ifneq (,$(findstring see,$(DEB_BUILD_OPTIONS)))
+	SQLITE3_SEE_FLAGS =
+	export SQLITE3_SEE_FLAGS
+	SEECONF = --without-sqlite --with-sqlite3=$(PWD)/see
+	DESTSUB=-see
+	PACKOPT=-pjavasqlite-see
+endif
+
+ifneq (,$(findstring demo,$(DEB_BUILD_OPTIONS)))
+	SQLITE3_SEE_FLAGS += -DDEMO_ONLY=1
+	export SQLITE3_SEE_FLAGS
+	DESTSUB=-seedemo
+	PACKOPT=-pjavasqlite-seedemo
+endif
+
+ifndef PACKOPT
+	# default to standard package
+	PACKOPT=-pjavasqlite
+endif
+
+config.status: configure
+	dh_testdir
+ifneq "$(wildcard /usr/share/misc/config.sub)" ""
+	cp -f /usr/share/misc/config.sub config.sub
+endif
+ifneq "$(wildcard /usr/share/misc/config.guess)" ""
+	cp -f /usr/share/misc/config.guess config.guess
+endif
+
+ifneq (,$(findstring see,$(DEB_BUILD_OPTIONS)))
+	cat see/sqlite3.c see/see.c >see/see-sqlite3.c
+endif
+	./configure --prefix=/usr $(SEECONF)
+
+build: build-stamp
+
+build-stamp:  config.status
+	dh_testdir
+	$(MAKE)
+	touch $@
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp 
+	-$(MAKE) distclean
+	rm -f config.sub config.guess
+	dh_clean 
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k 
+	dh_installdirs
+	$(MAKE) DESTDIR=$(CURDIR)/debian/javasqlite$(DESTSUB) install
+	for i in java-1.5.0-sun java-6-sun java-6-openjdk ; do \
+	  D=$(CURDIR)/debian/javasqlite$(DESTSUB)/usr/lib/jvm/$$i/jre/lib/ext ;\
+	  if ! test -d $$D ; then \
+	    install -m755 -d $$D ;\
+	    install -m666 sqlite.jar $$D ;\
+	  fi ;\
+	done
+
+# Build architecture-independent files here.
+binary-indep: build install
+# We have nothing to do by default.
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir $(PACKOPT)
+	dh_testroot $(PACKOPT)
+	dh_installchangelogs $(PACKOPT)
+#	dh_installdocs $(PACKOPT)
+#	dh_installexamples $(PACKOPT)
+#	dh_install $(PACKOPT)
+#	dh_installmenu $(PACKOPT)
+#	dh_installdebconf $(PACKOPT)
+#	dh_installlogrotate $(PACKOPT)
+#	dh_installemacsen $(PACKOPT)
+#	dh_installpam $(PACKOPT)
+#	dh_installmime $(PACKOPT)
+#	dh_python $(PACKOPT)
+#	dh_installinit $(PACKOPT)
+#	dh_installcron $(PACKOPT)
+#	dh_installinfo $(PACKOPT)
+	dh_installman $(PACKOPT)
+	dh_link $(PACKOPT)
+	dh_strip $(PACKOPT)
+	dh_compress $(PACKOPT)
+	dh_fixperms $(PACKOPT)
+#	dh_perl $(PACKOPT)
+#	dh_makeshlibs $(PACKOPT)
+	dh_installdeb $(PACKOPT)
+	dh_shlibdeps $(PACKOPT)
+	dh_gencontrol  $(PACKOPT)
+	dh_md5sums $(PACKOPT)
+	dh_builddeb $(PACKOPT)
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install 

@@ -1,0 +1,21 @@
+javasqlite for Debian
+---------------------
+
+The Debianization of this package was initially contributed
+by Pedro A. Aranda Gutiérre.
+
+To rebuild from the original tarball use the following commands:
+
+  Normal package with SQLite2 and SQLite3
+  $ fakeroot dpkg-buildpackage -uc -us
+
+  Package with SQLite3 SEE (SQLite Encryption Extension)
+  the -Isee omits the SEE subdirectory
+  $ DEB_BUILD_OPTIONS=see fakeroot dpkg-buildpackage -uc -us -Isee
+
+  Demo package with SQLite3 SEE (SQLite Encryption Extension)
+  $ DEB_BUILD_OPTIONS=seedemo fakeroot dpkg-buildpackage -uc -us -Isee
+
+Optionally add the word "noopt" to DEB_BUILD_OPTIONS
+in order to compile without optimization.
+

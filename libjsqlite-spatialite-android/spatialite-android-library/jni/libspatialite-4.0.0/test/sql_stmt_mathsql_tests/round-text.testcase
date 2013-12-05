@@ -1,0 +1,7 @@
+round(text)
+:memory:
+SELECT round("text"); # the SQL to run
+1 # rows
+1 # column
+round("text") # this is the header row
+(NULL) # this is really the result

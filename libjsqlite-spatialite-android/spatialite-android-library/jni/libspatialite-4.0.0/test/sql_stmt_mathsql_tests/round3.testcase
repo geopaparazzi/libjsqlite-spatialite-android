@@ -1,0 +1,7 @@
+round(3)
+:memory:
+SELECT round(3); # the SQL to run
+1 # rows
+1 # column
+round(3) # this is the header row
+3.0 # this is really the result
