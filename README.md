@@ -39,8 +39,11 @@ Configuration used presently [2013-12-04]:
    * `armeabi  armeabi-v7a x86`
 * version shown in geopaparazzi:
    * <pre>[javasqlite[20120209],spatialite[4.1.1],proj4[Rel. 4.8.0, 6 March 2012],geos[3.4.2-CAPI-1.8.2 r3921],
-   spatialite_properties[HasIconv[1],HasMathSql[1],HasGeoCallbacks[0],HasProj[1],HasGeos[1],HasGeosAdvanced[1],HasGeosTrunk[0],HasLwGeom[0],HasLibXML2[0],HasEpsg[1],HasFreeXL[0]]]
+   spatialite_properties[HasIconv[1],HasMathSql[1],HasGeoCallbacks[0],HasProj[1],
+   HasGeos[1],HasGeosAdvanced[1],HasGeosTrunk[0],HasLwGeom[0],
+   HasLibXML2[0],HasEpsg[1],HasFreeXL[0]]]
    </pre>
+
 ---
 Compiling and expected results:
 * assuming the platform tools are in your path:
@@ -124,7 +127,8 @@ Known portions of the project that do not work:
 * Android_4.0.0.mk  (Spatialite 4.0.0)
     * has not been tested yet, since this version is being skipped
        * recieves
-          * `libspatialite-4.0.0/src/spatialite/spatialite.c:22549: error: undefined reference to 'virtualtext_extension_init'`
+          * <pre>libspatialite-4.0.0/src/spatialite/spatialite.c:22549:
+                    error: undefined reference to 'virtualtext_extension_init'</pre>
 
 ---
 Notes: when the use of `ndk-build clean` fails:
