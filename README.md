@@ -18,7 +18,7 @@ Directory structure:
 
 ---
 Configuration used presently [2013-12-04]:
-* Android_4.1.1.mk [of which `Android.mk` is a copy]
+* Android_4.1.1.mk  (Spatialite 4.1.1) [of which `Android.mk` is a copy]
    * iconv-1.13.1.mk
       * using directory `libiconv-1.13.1`
    * sqlite-3080100.mk
@@ -51,9 +51,15 @@ export PATH=$PATH/home/mj10777/gnu_source/adt-bundle-linux/sdk/platform-tools:/h
    NDK_DIR=/home/mj10777/gnu_source/adt-bundle-linux/android-ndk-r8e ndk-build
    </pre>
 
-* should bring out the following results when it ends:
+* should bring out the following results :
 <pre>
+ndk-build -B
+Compile thumb  : jsqlite <= sqlite_jni.c
+Compile thumb  : sqlite <= sqlite3.c
+StaticLibrary  : libsqlite.a
+Compile thumb  : spatialite <= dxf_load_distinct.c
 ...
+bla, bla,bla,bla ....
 ...
 StaticLibrary  : libgeos.a
 SharedLibrary  : libjsqlite.so
@@ -87,16 +93,15 @@ Adding new project sources:
                    * inside the new directory `proj-4.9.0`
                 * `./configure` often creates files needed by the project to compile properly
                     * if you recieve a `No such file or directory`, this can be the cause
-                * the project settings are sone in the `something.mk`file
+                * the project settings are done in the `something.mk`file
                      * and **not** with `./configure`, so no further parameters are needed
          * make a copy of `proj4-4.8.0.mk` as `proj4-4.9.0.mk`
             * check which files have been remove or added
                * adapt as needed, including specfic settings normaly done with `./configure`
 
 ---
-
 Known portions of the project that do not work:
-* Android_3.0.1.mk
+* Android_3.0.1.mk (Spatialite 3.0.1)
    * based on 'spatialite-for-android-3.0.1.zip'
       * I could not get this to compile
          * it would be nice to get this working, since geopaparazzi uses this at the moment
@@ -110,8 +115,11 @@ Known portions of the project that do not work:
       * the final result is only about 10% of the expected size
          * it is not being used
 
----
+* Android_4.0.0.mk  (Spatialite 4.0.0)
+   * has not been tested yet, since this version is being skipped
+      * it should work in the same way as Android_4.1.1.mk
 
+---
 Notes: when the use of `ndk-build clean` fails:
 * This is a bug in ndk **r8e**.
    * How to fix it:
@@ -123,6 +131,21 @@ $(cleantarget): PRIVATE_CLEAN_FILES := ($(my)OBJS)
 $(cleantarget): PRIVATE_CLEAN_FILES := **$**($(my)OBJS)
 </pre>
          * after that it should work correctly
+<pre>
+Clean: geos [armeabi]
+Clean: gnustl_shared [armeabi]
+Clean: gnustl_static [armeabi]
+Clean: iconv [armeabi]
+Clean: jsqlite [armeabi]
+Clean: proj [armeabi]
+Clean: spatialite [armeabi]
+Clean: sqlite [armeabi]
+Clean: geos [armeabi-v7a]
+...
+Clean: proj [x86]
+Clean: spatialite [x86]
+Clean: sqlite [x86]
+</pre>
 * it is important to use `ndk-build clean` before making major configuration changes
    * avoids something in the project getting `confused` ...
 
