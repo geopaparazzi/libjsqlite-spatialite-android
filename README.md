@@ -54,25 +54,27 @@ export PATH=$PATH/home/mj10777/gnu_source/adt-bundle-linux/sdk/platform-tools:/h
 * should bring out the following results :
 <pre>
 ndk-build -B
-Compile thumb  : jsqlite <= sqlite_jni.c
-Compile thumb  : sqlite <= sqlite3.c
+Compile thumb  : jsqlite &lt;= sqlite_jni.c
+Compile thumb  : sqlite &lt;= sqlite3.c
 StaticLibrary  : libsqlite.a
-Compile thumb  : spatialite <= dxf_load_distinct.c
+Compile thumb  : spatialite &lt;= dxf_load_distinct.c
 ...
 bla, bla,bla,bla ....
 ...
+Compile++ x86    : geos &lt;= Profiler.cpp
 StaticLibrary  : libgeos.a
 SharedLibrary  : libjsqlite.so
-Install        : libjsqlite.so => libs/x86/libjsqlite.so
+Install        : libjsqlite.so =&gt; libs/x86/libjsqlite.so
 </pre>
    * `libs` should have 3 directories : **armeabi** **armeabi-v7a** **x86**
       * each with one `libjsqlite.so` of about 5.7 MB in size
          * these **directories** should copied to:
             * `geopaparazzi/geopaparazzispatialitelibrary/libs`
    * `obj/local` should have 3 directories : **armeabi** **armeabi-v7a** **x86**
-      * each with one `libjsqlite.so` and 5 `.a`files and one `objs` directory with many sub-directories
+      * each with one `libjsqlite.so` and 5 `.a`files
          * `libgeos.a  libiconv.a  libproj.a  libspatialite.a  libsqlite.a`
-            * othewise not needed
+      * and one `objs` directory with many sub-directories
+            * all of which are no longer not needed [and ignored by git]
 
 ---
 Note:
