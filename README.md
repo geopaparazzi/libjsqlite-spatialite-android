@@ -51,19 +51,22 @@ export PATH=$PATH/home/mj10777/gnu_source/adt-bundle-linux/sdk/platform-tools:/h
    NDK_DIR=/home/mj10777/gnu_source/adt-bundle-linux/android-ndk-r8e ndk-build
    </pre>
 
-* should bring out the correct results:
+* should bring out the following results when it ends:
 <pre>
+...
+...
 StaticLibrary  : libgeos.a
 SharedLibrary  : libjsqlite.so
 Install        : libjsqlite.so => libs/x86/libjsqlite.so
 </pre>
    * `libs` should have 3 directories : **armeabi** **armeabi-v7a** **x86**
-      * each with one `libjsqlite.so` of about 5.7 MB size
+      * each with one `libjsqlite.so` of about 5.7 MB in size
          * these **directories** should copied to:
             * `geopaparazzi/geopaparazzispatialitelibrary/libs`
    * `obj/local` should have 3 directories : **armeabi** **armeabi-v7a** **x86**
       * each with one `libjsqlite.so` and 5 `.a`files and one `objs` directory with many sub-directories
          * `libgeos.a  libiconv.a  libproj.a  libspatialite.a  libsqlite.a`
+            * othewise not needed
 
 ---
 Note:
@@ -78,7 +81,7 @@ Adding new project sources:
 * original archiv should be stored in `archive`
    * sample: a new version of proj4 will soon come out
       * possibly called `proj-4.9.0.tar.gz` --> store in `archive`
-         * unpack archive into `libjsqlite-spatialite-android/spatialite-android-library/jni`
+         * unpack archiv into `libjsqlite-spatialite-android/spatialite-android-library/jni`
              * run:
                 * `./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi`
                    * inside the new directory `proj-4.9.0`
@@ -87,7 +90,7 @@ Adding new project sources:
                    * the files setting for the project are set in the `something.mk`file and **not** with `./configure`
          * make a copy of `proj4-4.8.0.mk` as `proj4-4.9.0.mk`
             * check which files have been remove or added
-               * adapt as needed, including specfic setting normaly done with `./configure`
+               * adapt as needed, including specfic settings normaly done with `./configure`
 
 ---
 
@@ -95,6 +98,7 @@ Known portions of the project that do not work:
 * Android_3.0.1.mk
    * based on 'spatialite-for-android-3.0.1.zip'
       * I could not get this to compile
+         * it would be niche to get this working, since geopaparazzi uses this at the moment
 * iconv-1.14.mk
    * using directory `libiconv-1.14`
          * recieves:
@@ -110,7 +114,7 @@ Known portions of the project that do not work:
 Notes: when the use of `ndk-build clean` fails:
 * This is a bug in ndk **r8e**.
    * How to fix it:
-      * Edit the file $(ndk_dir)build/core/build-binary.mk.
+      * Edit the file $(ndk_dir)build/core/build-binary.mk
       * Change the line
       <pre>
 $(cleantarget): PRIVATE_CLEAN_FILES := ($(my)OBJS)
@@ -120,6 +124,7 @@ $(cleantarget): PRIVATE_CLEAN_FILES := **$**($(my)OBJS)
          * after that it should work correctly
 * it is important to use `ndk-build clean` before making major configuration changes
    * avoids something in the project getting `confused` ...
+
 ---
 
 2013-12-05
