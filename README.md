@@ -4,7 +4,6 @@ libjsqlite-spatialite-android
 Project to create the libjsqlite.so used in geopaparazzi
 
 ---
-
 Directory structure:
 * **archive**
    * original archives used in project
@@ -15,12 +14,11 @@ Directory structure:
          * `Minor hacks ... This won't be the one you're looking to clone... `
       * http://code.google.com/p/spatialite-android/
          * `Spatialite for Android`
-            * which noted the link for needed corrections of PROJ.4 4.8.0 bug
+            * which noted the link for needed corrections of a PROJ.4 4.8.0 bug running on android
 
- ---
-
+---
 Configuration used presently [2013-12-04]:
-* Android_4.1.1.mk
+* Android_4.1.1.mk [of which `Android.mk` is a copy]
    * iconv-1.13.1.mk
       * using directory `libiconv-1.13.1`
    * sqlite-3080100.mk
@@ -40,20 +38,20 @@ Configuration used presently [2013-12-04]:
    * `armeabi  armeabi-v7a x86`
 
 ---
-Compiling:
+Compiling and expected results:
 * assuming the platform tools are in your path:
    * my settings in `.bashrc`are:
       * <pre>
 export ANDROID_HOME=~/000_links/gnu_source/adt-bundle-linux/sdk
 export PATH=$PATH/home/mj10777/gnu_source/adt-bundle-linux/sdk/platform-tools:/home/mj10777/gnu_source/adt-bundle-linux/sdk/tools:/home/mj10777/gnu_source/adt-bundle-linux/android-ndk-r8e
 </pre>
-   * `ndk-build` in the `libjsqlite-spatialite-android/spatialite-android-library/jni` directory
+* `ndk-build` in the `libjsqlite-spatialite-android/spatialite-android-library/jni` directory
    * otherwise use a construction such as:
    <pre>
    NDK_DIR=/home/mj10777/gnu_source/adt-bundle-linux/android-ndk-r8e ndk-build
    </pre>
 
-  * should bring out the correct results:
+* should bring out the correct results:
 <pre>
 StaticLibrary  : libgeos.a
 SharedLibrary  : libjsqlite.so
@@ -68,11 +66,10 @@ Install        : libjsqlite.so => libs/x86/libjsqlite.so
          * `libgeos.a  libiconv.a  libproj.a  libspatialite.a  libsqlite.a`
 
 ---
-
 Note:
 * after `ndk-build clean`
    * `libs` will still have 3 directrories : **armeabi** **armeabi-v7a** **x86**
-      * each should beempty
+      * each should be empty
    * `obj/local` will still have 3 directories : **armeabi** **armeabi-v7a** **x86**
       * each with one `libjsqlite.so` and 5 `.a`files but no `objs` directory
 
@@ -85,12 +82,14 @@ Adding new project sources:
              * run:
                 * `./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi`
                    * inside the new directory `proj-4.9.0`
+                   * `./configure` often creates files needed by the project to compile properly
+                       * if you recieve a `No such file or directory`, this can be the cause
+                   * the files setting for the project are set in the `something.mk`file and **not** with `./configure`
          * make a copy of `proj4-4.8.0.mk` as `proj4-4.9.0.mk`
             * check which files have been remove or added
-               * adapt as needed
+               * adapt as needed, including specfic setting normaly done with `./configure`
 
 ---
-
 
 Known portions of the project that do not work:
 * Android_3.0.1.mk
@@ -108,7 +107,7 @@ Known portions of the project that do not work:
 
 ---
 
-Notes: when the use of `ndk-build clean` : fails
+Notes: when the use of `ndk-build clean` fails:
 * This is a bug in ndk **r8e**.
    * How to fix it:
       * Edit the file $(ndk_dir)build/core/build-binary.mk.
@@ -118,7 +117,9 @@ $(cleantarget): PRIVATE_CLEAN_FILES := ($(my)OBJS)
 **to**
 $(cleantarget): PRIVATE_CLEAN_FILES := **$**($(my)OBJS)
 </pre>
-
+         * after that it should work correctly
+* it is important to use `ndk-build clean` before making major configuration changes
+   * avoids something in the project getting `confused` ...
 ---
 
 2013-12-05
