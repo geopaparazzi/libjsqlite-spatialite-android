@@ -24,12 +24,12 @@ LOCAL_CFLAGS	:= \
 	-DHAVE_SQLITE3_STMT_STATUS=1 \
 	-DHAVE_SQLITE3_LOAD_EXTENSION=1 \
 	-DCANT_PASS_VALIST_AS_CHARPTR=1
-		# spatialite 4.1.1 needs zlib with advanced geos
+
 LOCAL_LDLIBS	:= -fuse-ld=gold -llog -lz
 LOCAL_C_INCLUDES := \
 	$(SQLITE_PATH)/ \
 	$(JSQLITE_PATH)/native/
 LOCAL_SRC_FILES := \
 	$(JSQLITE_PATH)/native/sqlite_jni.c
-LOCAL_STATIC_LIBRARIES := sqlite spatialite  iconv proj geos
+LOCAL_STATIC_LIBRARIES := sqlite spatialite iconv proj geos
 include $(BUILD_SHARED_LIBRARY)

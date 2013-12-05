@@ -22,6 +22,7 @@ Configuration used presently [2013-12-04]:
 * Android_4.1.1.mk  (Spatialite 4.1.1) [of which `Android.mk` is a copy]
    * iconv-1.13.1.mk
       * using directory `libiconv-1.13.1`
+         * For Spatialite with VirtualShapes,VirtualXL support: iconv is needed
    * sqlite-3080100.mk
       * using directory `sqlite-amalgamation-3080100`
    * proj4-4.8.0.mk
@@ -33,12 +34,15 @@ Configuration used presently [2013-12-04]:
       * using directory `geos-3.4.2`
    * spatialite-4.1.1.mk
       * using directory `libspatialite-4.1.1`
+         * with VirtualShapes,VirtualXL support: iconv is needed
+         * with GeosAdvanced: zlib is needed (LOCAL_LDLIBS parameter)
    * jsqlite-20120209.mk
       * using directory `javasqlite-20120209`
 * Application.mk
    * `armeabi  armeabi-v7a x86`
 * version shown in geopaparazzi:
-   * <pre>[javasqlite[20120209],spatialite[4.1.1],proj4[Rel. 4.8.0, 6 March 2012],geos[3.4.2-CAPI-1.8.2 r3921],
+   * <pre>[javasqlite[20120209],spatialite[4.1.1],proj4[Rel. 4.8.0, 6 March 2012],
+   geos[3.4.2-CAPI-1.8.2 r3921],
    spatialite_properties[HasIconv[1],HasMathSql[1],HasGeoCallbacks[0],HasProj[1],
    HasGeos[1],HasGeosAdvanced[1],HasGeosTrunk[0],HasLwGeom[0],
    HasLibXML2[0],HasEpsg[1],HasFreeXL[0]]]
@@ -112,14 +116,16 @@ Adding new project sources:
 Known portions of the project that do not work:
 * Android_3.0.1.mk (Spatialite 3.0.1)
    * based on 'spatialite-for-android-3.0.1.zip'
-      * I could not get this to compile
+      * I could not get this to compile [geos: geom/CoordinateArraySequenceFactory.cpp]
          * it would be nice to get this working, since geopaparazzi uses this at the moment
 * iconv-1.14.mk
    * using directory `libiconv-1.14`
       * recieves:
-         * `libiconv-1.14/libcharset/lib/localcharset.c:51:24: fatal error: langinfo.h: No such file or directory`
+         * <pre>libiconv-1.14/libcharset/lib/localcharset.c:51:24: fatal error:
+                   langinfo.h: No such file or directory</pre>
             * it is not being used
 * jsqlite-20131124.mk
+    * from `http://www.ch-werner.de/javasqlite/`
     * using directory `javasqlite-20131124`
        * the final result is only about 10% of the expected size
           * it is not being used
