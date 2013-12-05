@@ -71,7 +71,7 @@ Install        : libjsqlite.so => libs/x86/libjsqlite.so
 ---
 Note:
 * after `ndk-build clean`
-   * `libs` will still have 3 directrories : **armeabi** **armeabi-v7a** **x86**
+   * `libs` will still have 3 directories : **armeabi** **armeabi-v7a** **x86**
       * each should be empty
    * `obj/local` will still have 3 directories : **armeabi** **armeabi-v7a** **x86**
       * each with one `libjsqlite.so` and 5 `.a`files but no `objs` directory
@@ -85,10 +85,10 @@ Adding new project sources:
              * run:
                 * `./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi`
                    * inside the new directory `proj-4.9.0`
-                   * `./configure` often creates files needed by the project to compile properly
-                       * if you recieve a `No such file or directory`, this can be the cause
-                   * the project settings are sone in the `something.mk`file
-                      * and **not** with `./configure`, so no further parameters are needed
+                * `./configure` often creates files needed by the project to compile properly
+                    * if you recieve a `No such file or directory`, this can be the cause
+                * the project settings are sone in the `something.mk`file
+                     * and **not** with `./configure`, so no further parameters are needed
          * make a copy of `proj4-4.8.0.mk` as `proj4-4.9.0.mk`
             * check which files have been remove or added
                * adapt as needed, including specfic settings normaly done with `./configure`
