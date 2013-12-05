@@ -131,7 +131,7 @@ Notes: when the use of `ndk-build clean` fails:
       <pre>
 $(cleantarget): PRIVATE_CLEAN_FILES := ($(my)OBJS)
 **to**
-$(cleantarget): PRIVATE_CLEAN_FILES :=  ****$****($(my)OBJS)
+$(cleantarget): PRIVATE_CLEAN_FILES :=  ***$****($(my)OBJS)
 </pre>
          * after that it should work correctly
 <pre>
