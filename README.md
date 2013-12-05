@@ -87,7 +87,8 @@ Adding new project sources:
                    * inside the new directory `proj-4.9.0`
                    * `./configure` often creates files needed by the project to compile properly
                        * if you recieve a `No such file or directory`, this can be the cause
-                   * the files setting for the project are set in the `something.mk`file and **not** with `./configure`
+                   * the project settings are sone in the `something.mk`file
+                      * and **not** with `./configure`, so no further parameters are needed
          * make a copy of `proj4-4.8.0.mk` as `proj4-4.9.0.mk`
             * check which files have been remove or added
                * adapt as needed, including specfic settings normaly done with `./configure`
@@ -98,7 +99,7 @@ Known portions of the project that do not work:
 * Android_3.0.1.mk
    * based on 'spatialite-for-android-3.0.1.zip'
       * I could not get this to compile
-         * it would be niche to get this working, since geopaparazzi uses this at the moment
+         * it would be nice to get this working, since geopaparazzi uses this at the moment
 * iconv-1.14.mk
    * using directory `libiconv-1.14`
          * recieves:
