@@ -32,6 +32,8 @@ LOCAL_C_INCLUDES := \
 	$(SQLITE_PATH) \
 	$(SPATIALITE_PATH) \
 	$(SPATIALITE_PATH)/src/headers \
+ $(ICONV_PATH)/include \
+ $(ICONV_PATH)/libcharset/include \
 	$(GEOS_PATH)/include \
 	$(GEOS_PATH)/capi \
 	$(PROJ4_PATH)/src
