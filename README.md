@@ -12,6 +12,7 @@ Directory structure:
    * based on the original copy create by Brad Hards
       * http://code.google.com/r/bradh-spatialiteandroid
          * `Minor hacks ... This won't be the one you're looking to clone... `
+   * which came form:
       * http://code.google.com/p/spatialite-android/
          * `Spatialite for Android`
             * which noted the link for needed corrections of a PROJ.4 4.8.0 bug running on android
@@ -130,7 +131,7 @@ Notes: when the use of `ndk-build clean` fails:
       <pre>
 $(cleantarget): PRIVATE_CLEAN_FILES := ($(my)OBJS)
 **to**
-$(cleantarget): PRIVATE_CLEAN_FILES := **<span style="color:red;">$</span>**($(my)OBJS)
+$(cleantarget): PRIVATE_CLEAN_FILES := <span style="color:red;">$</span>($(my)OBJS)
 </pre>
          * after that it should work correctly
 <pre>
