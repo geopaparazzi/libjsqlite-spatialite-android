@@ -109,17 +109,17 @@ Known portions of the project that do not work:
          * it would be nice to get this working, since geopaparazzi uses this at the moment
 * iconv-1.14.mk
    * using directory `libiconv-1.14`
-         * recieves:
-            * `libiconv-1.14/libcharset/lib/localcharset.c:51:24: fatal error: langinfo.h: No such file or directory`
-               * it is not being used
+      * recieves:
+         * `libiconv-1.14/libcharset/lib/localcharset.c:51:24: fatal error: langinfo.h: No such file or directory`
+            * it is not being used
 * jsqlite-20131124.mk
-   * using directory `javasqlite-20131124`
-      * the final result is only about 10% of the expected size
-         * it is not being used
+    * using directory `javasqlite-20131124`
+       * the final result is only about 10% of the expected size
+          * it is not being used
 
 * Android_4.0.0.mk  (Spatialite 4.0.0)
-   * has not been tested yet, since this version is being skipped
-      * it should work in the same way as Android_4.1.1.mk
+    * has not been tested yet, since this version is being skipped
+       * it should work in the same way as Android_4.1.1.mk
 
 ---
 Notes: when the use of `ndk-build clean` fails:
@@ -130,7 +130,7 @@ Notes: when the use of `ndk-build clean` fails:
       <pre>
 $(cleantarget): PRIVATE_CLEAN_FILES := ($(my)OBJS)
 **to**
-$(cleantarget): PRIVATE_CLEAN_FILES := **$**($(my)OBJS)
+$(cleantarget): PRIVATE_CLEAN_FILES := **<span style="color:red;">$</span>**($(my)OBJS)
 </pre>
          * after that it should work correctly
 <pre>
