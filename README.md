@@ -118,6 +118,8 @@ Known portions of the project that do not work:
    * based on 'spatialite-for-android-3.0.1.zip'
       * I could not get this to compile [geos: geom/CoordinateArraySequenceFactory.cpp]
          * it would be nice to get this working, since geopaparazzi uses this at the moment
+            * version shown in geopaparazzi:
+               * <pre>javasqlite[20120209],spatialite[3.0.1],proj4[Rel. 4.7.1, 23 September 2009],geos[3.2.2-CAPI-1.6.2],exception[? not a spatialite database, or spatialite < 4 ?]]</pre>
 * iconv-1.14.mk
    * using directory `libiconv-1.14`
       * recieves:
