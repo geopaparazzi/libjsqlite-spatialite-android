@@ -16,10 +16,11 @@ common_sqlite_flags := \
         -DSQLITE_DEFAULT_FILE_FORMAT=4
 
 LOCAL_CFLAGS    := $(common_sqlite_flags)
-        
-LOCAL_LDLIBS    := -llog 
-LOCAL_C_INCLUDES := 
+
+# LOCAL_LDLIBS is always ignored for static libraries
+# LOCAL_LDLIBS    := -llog
+LOCAL_C_INCLUDES :=
 LOCAL_SRC_FILES := $(SQLITE_PATH)/sqlite3.c
-LOCAL_STATIC_LIBRARIES := 
+LOCAL_STATIC_LIBRARIES :=
 
 include $(BUILD_STATIC_LIBRARY)

@@ -14,7 +14,7 @@
 #define GEOS_ADVANCED 1
 
 /* Should be defined in order to enable GEOS_TRUNK experimental support. */
-/* #undef GEOS_TRUNK */
+#define GEOS_TRUNK 1
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1

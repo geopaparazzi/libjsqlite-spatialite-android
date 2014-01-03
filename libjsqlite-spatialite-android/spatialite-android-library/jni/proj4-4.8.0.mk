@@ -3,7 +3,8 @@ include $(CLEAR_VARS)
 # find $(PROJ4_PATH)/ -name "*.c" | grep -Ev "tests|doc" | sort | awk '{ print "\t"$1" \\" }'
 LOCAL_MODULE    := proj
 LOCAL_C_INCLUDES := $(PROJ4_PATH)/src
-LOCAL_LDLIBS := -lm
+# LOCAL_LDLIBS is always ignored for static libraries
+# LOCAL_LDLIBS := -lm
 LOCAL_SRC_FILES := \
 	$(PROJ4_PATH)/src/aasincos.c \
 	$(PROJ4_PATH)/src/adjlon.c \

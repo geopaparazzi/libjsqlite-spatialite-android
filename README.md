@@ -49,6 +49,29 @@ Configuration used presently [2013-12-04]:
    </pre>
 
 ---
+`.configure`commands:
+* as a general rule, most projects can be configured with:
+   * `./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi`
+* with `spatialite`this rule does ***NOT*** apply.  [spatialite-users: 2014-01-02]
+   * you must adapt the `configure` depending on the GEOS-related settings
+      * `GEOS &lt; 3.3.0`
+         * `./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi`
+            * please note: these versions are nowadays completely obsolete and always impliy: `--disable-geosadvanced=yes`
+      * `GEOS 3.3.x`
+         * `./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi --enable-geosadvanced=yes`
+            * but always implies: `--disable-geostrunk=yes`
+      * `GEOS &gt; 3.4.x`
+         * `./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi --enable-geosadvanced=yes --enable-geostrunk=yes`
+            * (e.g. suppprting the Delaunay Triangulation)
+
+* version shown in geopaparazzi:
+   * <pre>[javasqlite[20120209],spatialite[4.1.1],proj4[Rel. 4.8.0, 6 March 2012],
+   geos[3.4.2-CAPI-1.8.2 r3921],
+   spatialite_properties[HasIconv[1],HasMathSql[1],HasGeoCallbacks[0],HasProj[1],
+   HasGeos[1],HasGeosAdvanced[1],HasGeosTrunk[1],HasLwGeom[0],
+   HasLibXML2[0],HasEpsg[1],HasFreeXL[0]]]
+   </pre>
+---
 Compiling and expected results:
 * assuming the platform tools are in your path:
    * my settings in `.bashrc`are:

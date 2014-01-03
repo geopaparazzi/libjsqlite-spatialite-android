@@ -27,7 +27,8 @@ LOCAL_CFLAGS    := \
 		$(common_sqlite_flags) \
 	$(spatialite_flags)
 
-LOCAL_LDLIBS    := -llog -lz
+# LOCAL_LDLIBS is always ignored for static libraries
+# LOCAL_LDLIBS    := -llog -lz
 # For Spatialite with VirtualShapes,VirtualXL support iconv is needed
 LOCAL_C_INCLUDES := \
 	$(SQLITE_PATH) \

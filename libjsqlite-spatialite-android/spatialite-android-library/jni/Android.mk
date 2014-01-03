@@ -3,11 +3,11 @@ JSQLITE_PATH := javasqlite-20120209
 SPATIALITE_PATH := libspatialite-4.1.1
 GEOS_PATH := geos-3.4.2
 PROJ4_PATH := proj-4.8.0
-SQLITE_PATH := sqlite-amalgamation-3080100
+SQLITE_PATH := sqlite-amalgamation-3071602
 ICONV_PATH := libiconv-1.13.1
 
 include $(LOCAL_PATH)/iconv-1.13.1.mk
-include $(LOCAL_PATH)/sqlite-3080100.mk
+include $(LOCAL_PATH)/sqlite-3071602.mk
 include $(LOCAL_PATH)/proj4-4.8.0.mk
 include $(LOCAL_PATH)/geos-3.4.2.mk
 include $(LOCAL_PATH)/spatialite-4.1.1.mk
