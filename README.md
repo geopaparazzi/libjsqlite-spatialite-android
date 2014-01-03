@@ -71,6 +71,7 @@ Configuration used presently [2013-12-04]:
    HasGeos[1],HasGeosAdvanced[1],HasGeosTrunk[1],HasLwGeom[0],
    HasLibXML2[0],HasEpsg[1],HasFreeXL[0]]]
    </pre>
+
 ---
 Compiling and expected results:
 * assuming the platform tools are in your path:
