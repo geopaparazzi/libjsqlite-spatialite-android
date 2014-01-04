@@ -6,6 +6,8 @@ wget http://download.osgeo.org/geos/geos-3.2.2.tar.bz2
 
 wget http://www.sqlite.org/2013/sqlite-autoconf-3080100.tar.gz
 wget http://www.sqlite.org/2013/sqlite-amalgamation-3080200.zip
+http://www.sqlite.org/2013/sqlite-autoconf-3080200.tar.gz
+wget http://www.sqlite.org/2013/sqlite-autoconf-3071700.tar.gz
 
 http://www.ch-werner.de/javasqlite/
 wget http://www.ch-werner.de/javasqlite/javasqlite-20131124.tar.gz

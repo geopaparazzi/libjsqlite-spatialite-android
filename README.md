@@ -18,13 +18,13 @@ Directory structure:
             * which noted the link for needed corrections of a PROJ.4 4.8.0 bug running on android
 
 ---
-Configuration used presently [2013-12-04]:
+Configuration used presently [2014-01-04]:
 * Android_4.1.1.mk  (Spatialite 4.1.1) [of which `Android.mk` is a copy]
    * iconv-1.13.1.mk
       * using directory `libiconv-1.13.1`
          * For Spatialite with VirtualShapes,VirtualXL support: iconv is needed
-   * sqlite-3080100.mk
-      * using directory `sqlite-amalgamation-3080100`
+   * sqlite-3071700.mk [with support for 'PRAGMA application_id']
+      * using directory `sqlite-amalgamation-3071700`
    * proj4-4.8.0.mk
       * using directory `proj-4.8.0`
          * `pj_init.c`has been adapted to address a known problem in android:
@@ -52,16 +52,20 @@ Configuration used presently [2013-12-04]:
 `.configure`commands:
 * as a general rule, most projects can be configured with:
    * `./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi`
+* with `sqlite`this rule does ***NOT*** apply.  
+   * amalgamation: there is no `.configure` file
 * with `spatialite`this rule does ***NOT*** apply.  [spatialite-users: 2014-01-02]
-   * you must adapt the `configure` depending on the GEOS-related settings
+   * you must adapt the `.configure` depending on the GEOS-related settings
       * `GEOS &lt; 3.3.0`
          * `./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi`
             * please note: these versions are nowadays completely obsolete and always impliy: `--disable-geosadvanced=yes`
       * `GEOS 3.3.x`
-         * `./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi --enable-geosadvanced=yes`
+         * <pre>./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi 
+            --enable-geosadvanced=yes</pre>
             * but always implies: `--disable-geostrunk=yes`
       * `GEOS &gt; 3.4.x`
-         * `./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi --enable-geosadvanced=yes --enable-geostrunk=yes`
+         * <pre>./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi 
+           --enable-geosadvanced=yes --enable-geostrunk=yes</pre>
             * (e.g. suppprting the Delaunay Triangulation)
 
 * version shown in geopaparazzi:
