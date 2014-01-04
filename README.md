@@ -52,19 +52,19 @@ Configuration used presently [2014-01-04]:
 `.configure`commands:
 * as a general rule, most projects can be configured with:
    * `./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi`
-* with `sqlite`this rule does ***NOT*** apply.  
-   * amalgamation: there is no `.configure` file
+* with `sqlite`this rule does ***NOT*** apply.
+   * amalgamation: there is no `./configure` file
 * with `spatialite`this rule does ***NOT*** apply.  [spatialite-users: 2014-01-02]
-   * you must adapt the `.configure` depending on the GEOS-related settings
+   * you must adapt the `./configure` depending on the GEOS-related settings
       * `GEOS &lt; 3.3.0`
          * `./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi`
             * please note: these versions are nowadays completely obsolete and always impliy: `--disable-geosadvanced=yes`
       * `GEOS 3.3.x`
-         * <pre>./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi 
+         * <pre>./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
             --enable-geosadvanced=yes</pre>
             * but always implies: `--disable-geostrunk=yes`
       * `GEOS &gt; 3.4.x`
-         * <pre>./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi 
+         * <pre>./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
            --enable-geosadvanced=yes --enable-geostrunk=yes</pre>
             * (e.g. suppprting the Delaunay Triangulation)
 
