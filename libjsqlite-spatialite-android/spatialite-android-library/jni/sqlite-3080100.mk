@@ -13,6 +13,7 @@ common_sqlite_flags := \
         -DSQLITE_TEMP_STORE=3 \
         -DSQLITE_ENABLE_FTS3 \
         -DSQLITE_ENABLE_FTS3_BACKWARDS \
+        -DSQLITE_ENABLE_RTREE=1 \
         -DSQLITE_DEFAULT_FILE_FORMAT=4
 
 LOCAL_CFLAGS    := $(common_sqlite_flags)

@@ -2,6 +2,10 @@ libjsqlite-spatialite-android
 =============================
 
 Project to create the libjsqlite.so used in geopaparazzi
+* `android-ndk-r9c` was used to compile this project properly
+   * `LOCAL_LDLIBS is always ignored for static libraries`
+* for propers SpatialIndex support, the rtree module must be activated in the sqlite.mk files
+   * `-DSQLITE_ENABLE_RTREE=1` in the common_sqlite_flags
 
 ---
 Directory structure:
@@ -25,6 +29,8 @@ Configuration used presently [2014-01-04]:
          * For Spatialite with VirtualShapes,VirtualXL support: iconv is needed
    * sqlite-3071700.mk [with support for 'PRAGMA application_id']
       * using directory `sqlite-amalgamation-3071700`
+      * for propers SpatialIndex support, the rtree module must be activated
+         * `-DSQLITE_ENABLE_RTREE=1` in the common_sqlite_flags
    * proj4-4.8.0.mk
       * using directory `proj-4.8.0`
          * `pj_init.c`has been adapted to address a known problem in android:
@@ -81,13 +87,18 @@ Compiling and expected results:
 * assuming the platform tools are in your path:
    * my settings in `.bashrc`are:
       * <pre>
-export ANDROID_HOME=~/000_links/gnu_source/adt-bundle-linux/sdk
-export PATH=$PATH/home/mj10777/gnu_source/adt-bundle-linux/sdk/platform-tools:/home/mj10777/gnu_source/adt-bundle-linux/sdk/tools:/home/mj10777/gnu_source/adt-bundle-linux/android-ndk-r8e
+export ANDROID_BASE=~/000_links/gnu_source/adt-bundle-linux
+export ANDROID_HOME=$ANDROID_BASE/sdk
+export PATH=$PATH$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools
+export PATH=$PATH:$ANDROID_BASE/android-ndk-r9c
+export JAVA_HOME=/usr/lib/jvm/default-java
+export ANT_HOME=$ANDROID_BASE/apache-ant
+export PATH=$PATH:$ANT_HOME/bin
 </pre>
 * `ndk-build` in the `libjsqlite-spatialite-android/spatialite-android-library/jni` directory
    * otherwise use a construction such as:
    <pre>
-   NDK_DIR=/home/mj10777/gnu_source/adt-bundle-linux/android-ndk-r8e ndk-build
+   NDK_DIR=/home/mj10777/gnu_source/adt-bundle-linux/android-ndk-r9c ndk-build
    </pre>
 
 * should bring out the following results :
@@ -168,7 +179,7 @@ Known portions of the project that do not work:
 
 ---
 Notes: when the use of `ndk-build clean` fails:
-* This is a bug in ndk **r8e**.
+* This is a bug in ndk **r8e**. Works correctly in `r9c`
    * How to fix it:
       * Edit the file $(ndk_dir)build/core/build-binary.mk
       * Change the line
@@ -198,7 +209,7 @@ Clean: sqlite [x86]
 
 ---
 
-2013-12-05
+2014-01-04
 
 ---
 
