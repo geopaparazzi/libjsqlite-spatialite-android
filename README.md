@@ -63,7 +63,7 @@ Configuration used presently [2014-01-04]:
    </pre>
 
 ---
-`.configure`commands:
+`./configure`commands:
 * as a general rule, most projects can be configured with:
    * `./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi`
 * with `sqlite`this rule does ***NOT*** apply.
@@ -82,6 +82,8 @@ Configuration used presently [2014-01-04]:
          * <pre>./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
            --enable-geosadvanced=yes --enable-geostrunk=yes</pre>
             * (e.g. suppprting the Delaunay Triangulation)
+   * for Android, it may be better to set this in the `spatialite-*.mk` 
+      * at the moment I am glad that it works at all
 
 * version shown in geopaparazzi:
    * <pre>[javasqlite[20120209],spatialite[4.1.1],proj4[Rel. 4.8.0, 6 March 2012],
@@ -118,7 +120,7 @@ Compile thumb  : sqlite &lt;= sqlite3.c
 StaticLibrary  : libsqlite.a
 Compile thumb  : spatialite &lt;= dxf_load_distinct.c
 ...
-bla, bla,bla,bla ....
+bla,bla,bla,bla ....
 ...
 Compile++ x86    : geos &lt;= Profiler.cpp
 StaticLibrary  : libgeos.a
@@ -141,7 +143,7 @@ Note:
 * after `ndk-build clean`
    * `libs` will still have 3 directories : **armeabi** **armeabi-v7a** **x86**
       * each should be empty
-   * `obj/local` will still have 3 directories : **armeabi** **armeabi-v7a** **x86**
+   * `obj/local` will still have 3 directories : **armeabi**, **armeabi-v7a** and **x86**
       * each with one `libjsqlite.so` and 5 `.a` files but no `objs` directory
 
 ---
