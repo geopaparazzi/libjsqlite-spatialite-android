@@ -4,8 +4,12 @@ libjsqlite-spatialite-android
 Project to create the libjsqlite.so used in geopaparazzi
 * `android-ndk-r9c` was used to compile this project properly
    * `LOCAL_LDLIBS is always ignored for static libraries`
-* for propers SpatialIndex support, the rtree module must be activated in the sqlite.mk files
+* for proper SpatialIndex support, the rtree module must be activated in the sqlite.mk files
    * `-DSQLITE_ENABLE_RTREE=1` in the common_sqlite_flags
+* in the `archive` directory there is a 
+   * `20140105.libjsqlite.4.1.1.tar.bz2` 
+      * with the compiled versions of `libjsqlite.so` for
+         * `armeabi`, `armeabi-v7a` and `x86`
 
 ---
 Directory structure:
@@ -29,7 +33,7 @@ Configuration used presently [2014-01-04]:
          * For Spatialite with VirtualShapes,VirtualXL support: iconv is needed
    * sqlite-3071700.mk [with support for 'PRAGMA application_id']
       * using directory `sqlite-amalgamation-3071700`
-      * for propers SpatialIndex support, the rtree module must be activated
+      * for propers SpatialIndex support, the `rtree` module must be activated
          * `-DSQLITE_ENABLE_RTREE=1` in the common_sqlite_flags
    * proj4-4.8.0.mk
       * using directory `proj-4.8.0`
@@ -42,11 +46,15 @@ Configuration used presently [2014-01-04]:
       * using directory `libspatialite-4.1.1`
          * with VirtualShapes,VirtualXL support: iconv is needed
          * with GeosAdvanced: zlib is needed (LOCAL_LDLIBS parameter)
+            * with `android-ndk-r9c` this is no longer possible
+               * everything compiled with out error, without adding `zlib`
+                  * spatialite shows `HasGeosAdvanced[1]`
+                  * if problems arise, this will be the cause
    * jsqlite-20120209.mk
       * using directory `javasqlite-20120209`
 * Application.mk
    * `armeabi  armeabi-v7a x86`
-* version shown in geopaparazzi:
+* version shown in geopaparazzi [`2014-01-05`]:
    * <pre>[javasqlite[20120209],spatialite[4.1.1],proj4[Rel. 4.8.0, 6 March 2012],
    geos[3.4.2-CAPI-1.8.2 r3921],
    spatialite_properties[HasIconv[1],HasMathSql[1],HasGeoCallbacks[0],HasProj[1],
@@ -60,6 +68,7 @@ Configuration used presently [2014-01-04]:
    * `./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi`
 * with `sqlite`this rule does ***NOT*** apply.
    * amalgamation: there is no `./configure` file
+   * needed settings must be done in the `sqlite-*.mk` files
 * with `spatialite`this rule does ***NOT*** apply.  [spatialite-users: 2014-01-02]
    * you must adapt the `./configure` depending on the GEOS-related settings
       * `GEOS &lt; 3.3.0`
@@ -120,6 +129,7 @@ Install        : libjsqlite.so =&gt; libs/x86/libjsqlite.so
       * each with one `libjsqlite.so` of about 5.7 MB in size
          * these **directories** should copied to:
             * `geopaparazzi/geopaparazzispatialitelibrary/libs`
+      * a archived copy of these libs can be found in `archive/20140105.libjsqlite.4.1.1.tar.bz2`
    * `obj/local` should have 3 directories : **armeabi** **armeabi-v7a** **x86**
       * each with one `libjsqlite.so` and 5 `.a`files
          * `libgeos.a  libiconv.a  libproj.a  libspatialite.a  libsqlite.a`
@@ -132,7 +142,7 @@ Note:
    * `libs` will still have 3 directories : **armeabi** **armeabi-v7a** **x86**
       * each should be empty
    * `obj/local` will still have 3 directories : **armeabi** **armeabi-v7a** **x86**
-      * each with one `libjsqlite.so` and 5 `.a`files but no `objs` directory
+      * each with one `libjsqlite.so` and 5 `.a` files but no `objs` directory
 
 ---
 Adding new project sources:
@@ -209,7 +219,7 @@ Clean: sqlite [x86]
 
 ---
 
-2014-01-04
+2014-01-05
 
 ---
 
