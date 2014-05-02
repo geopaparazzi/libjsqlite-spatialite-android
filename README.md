@@ -82,7 +82,7 @@ Configuration used presently [2014-01-04]:
          * <pre>./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
            --enable-geosadvanced=yes --enable-geostrunk=yes</pre>
             * (e.g. suppprting the Delaunay Triangulation)
-   * for Android, it may be better to set this in the `spatialite-*.mk` 
+   * for Android, it may be better to set this in the `spatialite-*.mk` files
       * at the moment I am glad that it works at all
 
 * version shown in geopaparazzi:

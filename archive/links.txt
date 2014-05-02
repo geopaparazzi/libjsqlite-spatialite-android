@@ -8,7 +8,11 @@ wget http://www.sqlite.org/2013/sqlite-autoconf-3080100.tar.gz
 wget http://www.sqlite.org/2013/sqlite-amalgamation-3080200.zip
 http://www.sqlite.org/2013/sqlite-autoconf-3080200.tar.gz
 wget http://www.sqlite.org/2013/sqlite-autoconf-3071700.tar.gz
-
+wget http://www.sqlite.org/2013/sqlite-amalgamation-3071700.zip
 http://www.ch-werner.de/javasqlite/
 wget http://www.ch-werner.de/javasqlite/javasqlite-20131124.tar.gz
 wget http://www.ch-werner.de/javasqlite/javasqlite-20120209.tar.gz
+
+wget http://www.gaia-gis.it/gaia-sins/libspatialite-sources/libspatialite-4.1.1.tar.gz
+
+
