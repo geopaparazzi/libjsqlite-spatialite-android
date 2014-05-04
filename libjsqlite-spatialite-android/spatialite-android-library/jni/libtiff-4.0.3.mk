@@ -3,14 +3,13 @@ include $(CLEAR_VARS)
 LOCAL_MODULE    := libtiff
 
 # based on sample found here: [https://bitbucket.org/gongminmin/klayge/src/ca44276467e2/External/7z/build/android/LZMA/jni/Android.mk]
-geotiff_flags := \
-        -DHAVE_LIBPROJ=1 \
-        -DHAVE_TIFF=0
 
 LOCAL_CFLAGS    := \
 	$(tiff_flags)
 
 LOCAL_C_INCLUDES := \
+ $(LZMA_PATH)/api \
+ $(JPEG_PATH) \
  $(TIFF_PATH)
 LOCAL_SRC_FILES := \
 	$(TIFF_PATH)/mkg3states.c \
@@ -54,4 +53,5 @@ LOCAL_SRC_FILES := \
 	$(TIFF_PATH)/tif_win32.c \
 	$(TIFF_PATH)/tif_write.c \
 	$(TIFF_PATH)/tif_zip.c 
+LOCAL_STATIC_LIBRARIES := libjpeg
 include $(BUILD_STATIC_LIBRARY)

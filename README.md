@@ -12,6 +12,13 @@ Project to create the libjsqlite.so used in geopaparazzi
          * `armeabi`, `armeabi-v7a` and `x86`
 
 ---
+
+* most of this information will be found in the Wiki pages
+
+[The Wiki Home Page as a starting point](https://github.com/geopaparazzi/libjsqlite-spatialite-android/wiki)
+
+
+---
 Directory structure:
 * **archive**
    * original archives used in project

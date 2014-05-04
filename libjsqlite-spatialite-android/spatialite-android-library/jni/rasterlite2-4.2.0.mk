@@ -33,10 +33,11 @@ LOCAL_C_INCLUDES := \
 	$(SQLITE_PATH) \
 	$(GEOTIFF_PATH)/libxtiff \
  $(GEOTIFF_PATH) \
+ $(TIFF_PATH) \
 	$(RASTERLITE2_PATH) \
 	$(RASTERLITE2_PATH)/headers \
 	$(SPATIALITE_PATH)/src/headers \
- $(LZMA_PATH)
+ $(LZMA_PATH)/api
 LOCAL_SRC_FILES := \
 	$(RASTERLITE2_PATH)/src/rasterlite2.c \
 	$(RASTERLITE2_PATH)/src/rl2ascii.c \
