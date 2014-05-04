@@ -54,7 +54,6 @@ LOCAL_SRC_FILES := \
 	$(JPEG_PATH)/jmemmgr.c \
 	$(JPEG_PATH)/jcarith.c \
 	$(JPEG_PATH)/jdarith.c \
-	$(JPEG_PATH)/jquant2.c \
 	$(JPEG_PATH)/jaricom.c 
 include $(BUILD_STATIC_LIBRARY)
 

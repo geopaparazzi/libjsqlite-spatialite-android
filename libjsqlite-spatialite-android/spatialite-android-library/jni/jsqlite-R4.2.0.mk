@@ -33,5 +33,5 @@ LOCAL_C_INCLUDES := \
 	$(JSQLITE_PATH)/native/
 LOCAL_SRC_FILES := \
 	$(JSQLITE_PATH)/native/sqlite_jni.c
-LOCAL_STATIC_LIBRARIES := sqlite spatialite iconv proj geos lzma libgeotiff
+LOCAL_STATIC_LIBRARIES := sqlite spatialite iconv proj geos rasterlite2
 include $(BUILD_SHARED_LIBRARY)

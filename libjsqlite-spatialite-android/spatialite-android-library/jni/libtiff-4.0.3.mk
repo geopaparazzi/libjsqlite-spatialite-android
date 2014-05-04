@@ -50,7 +50,6 @@ LOCAL_SRC_FILES := \
 	$(TIFF_PATH)/tif_unix.c \
 	$(TIFF_PATH)/tif_version.c \
 	$(TIFF_PATH)/tif_warning.c \
-	$(TIFF_PATH)/tif_win32.c \
 	$(TIFF_PATH)/tif_write.c \
 	$(TIFF_PATH)/tif_zip.c 
 LOCAL_STATIC_LIBRARIES := libjpeg

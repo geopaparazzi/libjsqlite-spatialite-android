@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE refentry PUBLIC
+   "-//OASIS//DTD DocBook XML V4.1.2//EN"
+   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" []>
+<refentry id='gif2raw.1'>
+<refentryinfo><date>2 May 2012</date></refentryinfo>
+<refmeta>
+<refentrytitle>gif2raw</refentrytitle>
+<manvolnum>1</manvolnum>
+<refmiscinfo class="source">GIFLIB</refmiscinfo>
+<refmiscinfo class="manual">GIFLIB Documentation</refmiscinfo>
+</refmeta>
+<refnamediv id='name'>
+<refname>gif2raw</refname>
+<refpurpose>convert raw pixel data to a GIF</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv id='synopsis'>
+
+<cmdsynopsis>
+  <command>gif2raw</command>
+      <arg choice='opt'>-v</arg>
+      <arg choice='plain'>-s 
+      		<replaceable>width</replaceable>
+      		<replaceable>height</replaceable></arg>
+      <arg choice='opt'>-t</arg>
+      <arg choice='opt'>-p <replaceable>color-map</replaceable></arg>
+      <arg choice='opt'>-h</arg>
+      <arg choice='opt'><replaceable>raw-file</replaceable></arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+
+<para>A program to dump raw pixels from GIFS or convert raw image data
+into GIF files.  Only one image can be handled.  The default conversion
+is GIF-to-raw; the -s option inverts this.</para>
+
+<para>A raw image file is assumed to hold one pixel color in one byte,
+and therefore the size of a raw file on input must be Width times
+Height as specified by the -s option below.</para>
+
+<para>If no input file is given, gif2raw will try to read a GIF or raw
+data data from stdin.  The generated GIF or raw data is dumped to
+stdout.</para>
+
+</refsect1>
+<refsect1><title>Options</title>
+
+<variablelist>
+<varlistentry>
+<term>-v</term>
+<listitem>
+<para>Verbose mode (show progress).
+Enables printout of running scan lines.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>-s width height</term>
+<listitem>
+<para>Enables raw-to-GIF conversion. The dimensions of the image
+<emphasis>must</emphasis> be specified in the command line.  The raw
+image file size must be exactly width times weight bytes (each byte is
+one pixel color).</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>-t</term>
+<listitem>
+<para>Textify. In GIF-to-raw mode, add 32 to the raw value of each pixel
+emitted and emit \n at the end of each raster line. This maps raw pixel values
+to printable ASCII chacters, but unhappy results will follow if any pixel
+has a value greater than 95.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>-p ColorMapFile</term>
+<listitem>
+<para>Valid in raw-to-GIF mode only, Color map to load for given RAW
+image.  This file has 4 integers in line (ColorIndex Red Green Blue),
+and the ColorIndex is in order starting from 1. See gifclrmap, which
+can also use/create these bitmap files. If no color map is specified,
+uses the EGA 16 color palette as default color map.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>-h</term>
+<listitem>
+<para>Print one line of command line help, similar to Usage above.</para>
+</listitem>
+</varlistentry>
+</variablelist>
+
+</refsect1>
+<refsect1><title>Author</title>
+
+<para>Gershon Elber.</para>
+
+</refsect1>
+</refentry>

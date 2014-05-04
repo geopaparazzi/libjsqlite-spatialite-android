@@ -25,9 +25,13 @@ spatialite_flags := \
         -DSQLITE_ENABLE_RTREE=1 \
         -DSQLITE_OMIT_BUILTIN_TEST=1
 
+rasterlite2_flags := \
+	-O
+
 LOCAL_CFLAGS    := \
 	$(common_sqlite_flags) \
-	$(spatialite_flags)
+	$(spatialite_flags) \
+	$(rasterlite2_flags)
 
 LOCAL_C_INCLUDES := \
 	$(SQLITE_PATH) \
@@ -57,5 +61,5 @@ LOCAL_SRC_FILES := \
 	$(RASTERLITE2_PATH)/src/rl2webp.c \
 	$(RASTERLITE2_PATH)/src/rl2version.c \
 	$(RASTERLITE2_PATH)/src/rl2wms.c
-LOCAL_STATIC_LIBRARIES := lzma libgeotiff
+LOCAL_STATIC_LIBRARIES := lzma libgeotiff giflib
 include $(BUILD_STATIC_LIBRARY)
