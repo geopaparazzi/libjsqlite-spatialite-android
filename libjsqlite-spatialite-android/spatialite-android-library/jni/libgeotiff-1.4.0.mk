@@ -1,15 +1,17 @@
 include $(CLEAR_VARS)
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
-LOCAL_MODULE    := geotiff
+LOCAL_MODULE    := libgeotiff
 
 # based on sample found here: [https://bitbucket.org/gongminmin/klayge/src/ca44276467e2/External/7z/build/android/LZMA/jni/Android.mk]
-lzma_flags := \
-        -D_7ZIP_ST 
+geotiff_flags := \
+        -DHAVE_LIBPROJ=1 \
+        -DHAVE_TIFF=0
 
 LOCAL_CFLAGS    := \
-	$(lzma_flags)
+	$(geotiff_flags)
 
 LOCAL_C_INCLUDES := \
+	$(PROJ4_PATH)/src \
 	$(GEOTIFF_PATH)/libxtiff \
  $(GEOTIFF_PATH)
 LOCAL_SRC_FILES := \

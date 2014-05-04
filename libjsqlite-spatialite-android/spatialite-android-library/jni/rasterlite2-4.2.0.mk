@@ -31,7 +31,7 @@ LOCAL_CFLAGS    := \
 
 LOCAL_C_INCLUDES := \
 	$(SQLITE_PATH) \
-	$(GEOTIFF_PATH)/libxt iff \
+	$(GEOTIFF_PATH)/libxtiff \
  $(GEOTIFF_PATH) \
 	$(RASTERLITE2_PATH) \
 	$(RASTERLITE2_PATH)/headers \
@@ -56,5 +56,5 @@ LOCAL_SRC_FILES := \
 	$(RASTERLITE2_PATH)/src/rl2webp.c \
 	$(RASTERLITE2_PATH)/src/rl2version.c \
 	$(RASTERLITE2_PATH)/src/rl2wms.c
-LOCAL_STATIC_LIBRARIES := lzma geotiff
+LOCAL_STATIC_LIBRARIES := lzma libgeotiff
 include $(BUILD_STATIC_LIBRARY)
