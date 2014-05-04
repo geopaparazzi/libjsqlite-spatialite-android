@@ -1,0 +1,7 @@
+RL2_LoadRaster - DOUBLE coverage
+:memory: #use in-memory database
+SELECT RL2_LoadRaster(1.5, 'somepath.tif');
+1 # rows (not including the header row)
+1 # columns
+RL2_LoadRaster(1.5, 'somepath.tif')
+-1

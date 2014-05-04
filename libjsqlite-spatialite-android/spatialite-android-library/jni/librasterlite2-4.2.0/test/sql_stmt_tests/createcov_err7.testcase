@@ -1,0 +1,7 @@
+RL2_CreateCoverage - NULL tile width
+:memory: #use in-memory database
+SELECT RL2_CreateCoverage('invalid', 'UINT8', 'GRAYSCALE', 1, 'NONE', 100, NULL, 512, 3003, 1.0, 1.0, NULL);
+1 # rows (not including the header row)
+1 # columns
+RL2_CreateCoverage('invalid', 'UINT8', 'GRAYSCALE', 1, 'NONE', 100, NULL, 512, 3003, 1.0, 1.0, NULL)
+-1

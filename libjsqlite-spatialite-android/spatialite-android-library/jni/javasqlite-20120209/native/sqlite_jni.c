@@ -39,6 +39,13 @@
 #define MAX_PARAMS 32
 #endif
 
+#ifndef HAVE_SPATIALITE41
+ #define HAVE_SPATIALITE41 = 0
+#endif
+#ifndef HAVE_RASTERLITE2
+ #define HAVE_RASTERLITE2 = 0
+#endif
+
 /* free memory proc */
 
 typedef void (freemem)(void *);
@@ -1234,6 +1241,16 @@ Java_jsqlite_Database__1open4(JNIEnv *env, jobject obj, jstring file, jint mode,
 	    sscanf(sqlite3_libversion(), "%d.%d.%d", &maj, &min, &lev);
 #if HAVE_SQLITE3_LOAD_EXTENSION
 	    sqlite3_enable_load_extension((sqlite3 *) h->sqlite, 1);
+#if HAVE_SPATIALITE41 == 1
+ /* Since 4.1.1: spatialite_init(1) is now DEPRECATED because is not reentrant (not thread safe) */
+ /* Initializes a SpatiaLite connection. */
+    void *cache = spatialite_alloc_connection();
+    spatialite_init_ex((sqlite3 *)h->sqlite,cache,0);
+#if HAVE_RASTERLITE2 == 1
+    /* Initializes the (Rasterlite2) library */
+    rl2_init((sqlite3 *)h->sqlite,0);
+#endif
+#endif
 #endif
 	} else {
 	    sscanf(sqlite_libversion(), "%d.%d.%d", &maj, &min, &lev);
@@ -5001,7 +5018,10 @@ Java_jsqlite_Backup_internal_1init(JNIEnv *env, jclass cls)
 JNIEXPORT void JNICALL
 Java_jsqlite_Database_internal_1init(JNIEnv *env, jclass cls)
 {
-spatialite_init(1);
+#if HAVE_SPATIALITE41 == 0
+ /* Since 4.1.1: This function is now DEPRECATED because is not reentrant (not thread safe) */
+ spatialite_init(1);
+#endif
 #if defined(DONT_USE_JNI_ONLOAD) || !defined(JNI_VERSION_1_2)
     while (C_java_lang_String == 0) {
 	jclass jls = (*env)->FindClass(env, "java/lang/String");

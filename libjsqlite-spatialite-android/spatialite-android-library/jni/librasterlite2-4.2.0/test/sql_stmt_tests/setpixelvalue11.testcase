@@ -1,0 +1,7 @@
+SetPixelValue - mismatching Double value
+:memory: #use in-memory database
+SELECT RL2_SetPixelValue(RL2_CreatePixel('UINT8', 'GRAYSCALE', 1), 0, 1.5);
+1 # rows (not including the header row)
+1 # columns
+RL2_SetPixelValue(RL2_CreatePixel('UINT8', 'GRAYSCALE', 1), 0, 1.5)
+(NULL)

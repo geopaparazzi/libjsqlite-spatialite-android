@@ -1,0 +1,7 @@
+RL2_CreateCoverage - UINT8 PALETTE LZMA
+:memory: #use in-memory database
+SELECT RL2_CreateCoverage('uint8_palette_lzma', 'UINT8', 'PALETTE', 1, 'LZMA', 10, 512, 512, 3003, 1.0, 1.0, NULL);
+1 # rows (not including the header row)
+1 # columns
+RL2_CreateCoverage('uint8_palette_lzma', 'UINT8', 'PALETTE', 1, 'LZMA', 10, 512, 512, 3003, 1.0, 1.0, NULL)
+0

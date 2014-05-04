@@ -1,0 +1,7 @@
+RL2_LoadRaster - NULL pyramidize
+:memory: #use in-memory database
+SELECT RL2_LoadRaster('alplha', 'somepath.tif', 0, 3003, NULL);
+1 # rows (not including the header row)
+1 # columns
+RL2_LoadRaster('alplha', 'somepath.tif', 0, 3003, NULL)
+-1
