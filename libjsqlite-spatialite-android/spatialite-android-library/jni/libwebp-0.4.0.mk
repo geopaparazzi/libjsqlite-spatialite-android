@@ -5,7 +5,7 @@ LOCAL_MODULE    := libwebp
 # make and listed *.o \ files in libpng-1.6.10 ; make clean
 
 LOCAL_CFLAGS    := \
-	$(png_flags)
+	$(webp_flags)
 
 LOCAL_C_INCLUDES := \
  $(WEBP_PATH)

@@ -9,6 +9,7 @@ GIF_PATH := giflib-5.0.6/lib
 CAIRO_PATH := cairo-1.12.14/src
 PNG_PATH := libpng-1.6.10
 WEBP_PATH := libwebp-0.4.0/src
+CURL_PATH := curl-7.36.0/src
 LZMA_PATH := xz-5.0.5/src/liblzma
 GEOS_PATH := geos-3.4.2
 PROJ4_PATH := proj-4.8.0
@@ -30,4 +31,5 @@ include $(LOCAL_PATH)/libtiff-4.0.3.mk
 include $(LOCAL_PATH)/libgeotiff-1.4.0.mk
 include $(LOCAL_PATH)/libwebp-0.4.0.mk
 include $(LOCAL_PATH)/libxml2-2.9.1.mk
+include $(LOCAL_PATH)/libcurl-7.36.0.mk
 include $(LOCAL_PATH)/lzma-xz-5.0.5.mk

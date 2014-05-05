@@ -14,6 +14,7 @@ CAIRO_PATH := cairo-1.12.14/src
 PNG_PATH := libpng-1.6.10
 WEBP_PATH := libwebp-0.4.0/src
 XML2_PATH := libxml2-2.9.1
+CURL_PATH := curl-7.36.0
 LZMA_PATH := xz-5.0.5/src/liblzma
 
 include $(LOCAL_PATH)/jsqlite-R4.2.0.mk
@@ -31,5 +32,6 @@ include $(LOCAL_PATH)/libtiff-4.0.3.mk
 include $(LOCAL_PATH)/libgeotiff-1.4.0.mk
 include $(LOCAL_PATH)/libwebp-0.4.0.mk
 include $(LOCAL_PATH)/libxml2-2.9.1.mk
+include $(LOCAL_PATH)/libcurl-7.36.0.mk
 include $(LOCAL_PATH)/lzma-xz-5.0.5.mk
 

@@ -26,7 +26,8 @@ spatialite_flags := \
         -DSQLITE_OMIT_BUILTIN_TEST=1
 
 rasterlite2_flags := \
-	-O
+ -DTARGET_CPU=\"$(ANDROID_ABI)\" \
+	-O 
 
 LOCAL_CFLAGS    := \
 	$(common_sqlite_flags) \
@@ -46,6 +47,8 @@ LOCAL_C_INCLUDES := \
  $(ICONV_PATH)/include \
  $(ICONV_PATH)/libcharset/include \
  $(XML2_PATH)/include \
+ $(CURL_PATH) \
+ $(CURL_PATH)/include \
 	$(RASTERLITE2_PATH) \
 	$(RASTERLITE2_PATH)/headers \
 	$(SPATIALITE_PATH)/src/headers \
@@ -69,5 +72,5 @@ LOCAL_SRC_FILES := \
 	$(RASTERLITE2_PATH)/src/rl2webp.c \
 	$(RASTERLITE2_PATH)/src/rl2version.c \
 	$(RASTERLITE2_PATH)/src/rl2wms.c
-LOCAL_STATIC_LIBRARIES := lzma libgeotiff giflib libcairo libpng libxml2
+LOCAL_STATIC_LIBRARIES := lzma libgeotiff giflib libcairo libpng libxml2 libwebp libcurl
 include $(BUILD_STATIC_LIBRARY)
