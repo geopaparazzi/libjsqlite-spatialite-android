@@ -40,6 +40,12 @@ LOCAL_C_INCLUDES := \
  $(TIFF_PATH) \
  $(JPEG_PATH) \
  $(GIF_PATH) \
+ $(PNG_PATH) \
+ $(WEBP_PATH) \
+ $(CAIRO_PATH) \
+ $(ICONV_PATH)/include \
+ $(ICONV_PATH)/libcharset/include \
+ $(XML2_PATH)/include \
 	$(RASTERLITE2_PATH) \
 	$(RASTERLITE2_PATH)/headers \
 	$(SPATIALITE_PATH)/src/headers \
@@ -63,5 +69,5 @@ LOCAL_SRC_FILES := \
 	$(RASTERLITE2_PATH)/src/rl2webp.c \
 	$(RASTERLITE2_PATH)/src/rl2version.c \
 	$(RASTERLITE2_PATH)/src/rl2wms.c
-LOCAL_STATIC_LIBRARIES := lzma libgeotiff giflib
+LOCAL_STATIC_LIBRARIES := lzma libgeotiff giflib libcairo libpng libxml2
 include $(BUILD_STATIC_LIBRARY)

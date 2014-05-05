@@ -1,0 +1,50 @@
+libwebpdsp_la-upsampling.lo: upsampling.c dsp.h ../webp/types.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stddef.h \
+ /usr/include/inttypes.h /usr/include/features.h \
+ /usr/include/x86_64-linux-gnu/bits/predefs.h \
+ /usr/include/x86_64-linux-gnu/sys/cdefs.h \
+ /usr/include/x86_64-linux-gnu/bits/wordsize.h \
+ /usr/include/x86_64-linux-gnu/gnu/stubs.h \
+ /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdint.h /usr/include/stdint.h \
+ /usr/include/x86_64-linux-gnu/bits/wchar.h yuv.h dsp.h \
+ ../dec/decode_vp8.h ../dec/../webp/decode.h ../dec/../webp/./types.h \
+ /usr/include/assert.h
+
+dsp.h:
+
+../webp/types.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stddef.h:
+
+/usr/include/inttypes.h:
+
+/usr/include/features.h:
+
+/usr/include/x86_64-linux-gnu/bits/predefs.h:
+
+/usr/include/x86_64-linux-gnu/sys/cdefs.h:
+
+/usr/include/x86_64-linux-gnu/bits/wordsize.h:
+
+/usr/include/x86_64-linux-gnu/gnu/stubs.h:
+
+/usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdint.h:
+
+/usr/include/stdint.h:
+
+/usr/include/x86_64-linux-gnu/bits/wchar.h:
+
+yuv.h:
+
+dsp.h:
+
+../dec/decode_vp8.h:
+
+../dec/../webp/decode.h:
+
+../dec/../webp/./types.h:
+
+/usr/include/assert.h:
