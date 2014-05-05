@@ -38,6 +38,8 @@ LOCAL_C_INCLUDES := \
 	$(GEOTIFF_PATH)/libxtiff \
  $(GEOTIFF_PATH) \
  $(TIFF_PATH) \
+ $(JPEG_PATH) \
+ $(GIF_PATH) \
 	$(RASTERLITE2_PATH) \
 	$(RASTERLITE2_PATH)/headers \
 	$(SPATIALITE_PATH)/src/headers \
