@@ -2,6 +2,11 @@ include $(CLEAR_VARS)
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
 LOCAL_MODULE    := liblzma
 
+lzma_flags := \
+	-DHAVE_CONFIG_H \
+ -E \
+	-std=gnu99
+
 LOCAL_CFLAGS    := \
 	$(lzma_flags)
 

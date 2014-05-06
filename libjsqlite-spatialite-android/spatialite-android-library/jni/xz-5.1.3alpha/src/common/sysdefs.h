@@ -16,6 +16,11 @@
 #ifndef LZMA_SYSDEFS_H
 #define LZMA_SYSDEFS_H
 
+/* definition to expand macro then apply to pragma message */
+#define VALUE_TO_STRING(x) #x
+#define VALUE(x) VALUE_TO_STRING(x)
+#define VAR_NAME_VALUE(var) #var "="  VALUE(var)
+
 //////////////
 // Includes //
 //////////////
@@ -53,9 +58,11 @@
 // Full Autoconf test could be more correct, but this should work well enough.
 // Note that this duplicates some code from lzma.h, but this is better since
 // we can work without inttypes.h thanks to Autoconf tests.
+#pragma message(VAR_NAME_VALUE(UINT32_C))
+#pragma message(VAR_NAME_VALUE(UINT_MAX))
 #ifndef UINT32_C
 #	if UINT_MAX != 4294967295U
-#		error UINT32_C is not defined and unsigned int is not 32-bit.
+#		error UINT32_C is not defined and unsigned int is not 32-bit [UINT_MAX].
 #	endif
 #	define UINT32_C(n) n ## U
 #endif
@@ -155,16 +162,24 @@ typedef unsigned char _Bool;
 // they exists, since that shouldn't do any harm, but may improve portability.
 #ifdef HAVE_STRING_H
 #	include <string.h>
+#line 159 "string.h  being read\n"
+#	else
+#line 161 "string.h NOT being read\n"
 #endif
 
 #ifdef HAVE_STRINGS_H
 #	include <strings.h>
+#line 166 "strings.h  being read\n"
+#	else
+#line 168"strings.h NOT being read\n"
 #endif
 
 #ifdef HAVE_MEMORY_H
 #	include <memory.h>
+#line 173 "memory.h  being read\n"
+#	else
+#line 175 "memory.h NOT being read\n"
 #endif
-
 
 ////////////
 // Macros //

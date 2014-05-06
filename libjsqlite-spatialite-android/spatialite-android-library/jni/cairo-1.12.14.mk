@@ -8,6 +8,7 @@ LOCAL_CFLAGS    := \
 	$(cairo_flags)
 
 LOCAL_C_INCLUDES := \
+ $(PIXMAN_PATH) \
  $(CAIRO_PATH)
 LOCAL_SRC_FILES := \
 	$(CAIRO_PATH)/cairo-analysis-surface.c \
@@ -149,6 +150,7 @@ LOCAL_SRC_FILES := \
 	$(CAIRO_PATH)/cairo-xlib-surface-shm.c \
 	$(CAIRO_PATH)/cairo-xlib-visual.c \
 	$(CAIRO_PATH)/cairo-xlib-xcb-surface.c 
+LOCAL_STATIC_LIBRARIES := libpixman
 include $(BUILD_STATIC_LIBRARY)
 
 

@@ -26,7 +26,7 @@ spatialite_flags := \
         -DSQLITE_OMIT_BUILTIN_TEST=1
 
 LOCAL_CFLAGS    := \
-		$(common_sqlite_flags) \
+	$(common_sqlite_flags) \
 	$(spatialite_flags)
 
 # LOCAL_LDLIBS is always ignored for static libraries

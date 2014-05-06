@@ -11,6 +11,7 @@ TIFF_PATH := tiff-4.0.3/libtiff
 JPEG_PATH := jpeg-8d
 GIF_PATH := giflib-5.0.6/lib
 CAIRO_PATH := cairo-1.12.14/src
+PIXMAN_PATH := pixman-0.9.6/pixman
 PNG_PATH := libpng-1.6.10
 WEBP_PATH := libwebp-0.4.0/src
 XML2_PATH := libxml2-2.9.1
@@ -27,6 +28,7 @@ include $(LOCAL_PATH)/rasterlite2-4.2.0.mk
 include $(LOCAL_PATH)/libjpeg-8d.mk
 include $(LOCAL_PATH)/giflib-5.0.6.mk
 include $(LOCAL_PATH)/cairo-1.12.14.mk
+include $(LOCAL_PATH)/pixman-0.9.6.mk
 include $(LOCAL_PATH)/libpng-1.6.10.mk
 include $(LOCAL_PATH)/libtiff-4.0.3.mk
 include $(LOCAL_PATH)/libgeotiff-1.4.0.mk
