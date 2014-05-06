@@ -76,14 +76,14 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = x86_64-pc-linux-gnu
-host_triplet = arm-linux-eabi
+build_triplet = x86_64-unknown-linux-gnu
+host_triplet = arm-unknown-linux-androideabi
 #am__append_1 = xzdec_w32res.rc
 #am__append_2 = $(top_builddir)/lib/libgnu.a
 #am__append_3 = lzmadec_w32res.rc
 bin_PROGRAMS = $(am__EXEEXT_1) $(am__EXEEXT_2)
-am__append_4 = xzdec
-am__append_5 = lzmadec
+#am__append_4 = xzdec
+#am__append_5 = lzmadec
 subdir = src/xzdec
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/build-aux/depcomp $(dist_man_MANS)
@@ -110,8 +110,8 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__EXEEXT_1 = xzdec$(EXEEXT)
-am__EXEEXT_2 = lzmadec$(EXEEXT)
+#am__EXEEXT_1 = xzdec$(EXEEXT)
+#am__EXEEXT_2 = lzmadec$(EXEEXT)
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(man1dir)"
 PROGRAMS = $(bin_PROGRAMS)
 am__lzmadec_SOURCES_DIST = xzdec.c \
@@ -342,22 +342,22 @@ am__tar = $${TAR-tar} chof - "$$tardir"
 am__untar = $${TAR-tar} xf -
 ax_pthread_config = 
 bindir = ${exec_prefix}/bin
-build = x86_64-pc-linux-gnu
-build_alias = x86_64-pc-linux-gnu
+build = x86_64-unknown-linux-gnu
+build_alias = 
 build_cpu = x86_64
 build_os = linux-gnu
-build_vendor = pc
+build_vendor = unknown
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = arm-linux-eabi
-host_alias = arm-linux-eabi
+host = arm-unknown-linux-androideabi
+host_alias = arm-linux-androideabi
 host_cpu = arm
-host_os = eabi
-host_vendor = linux
+host_os = linux-androideabi
+host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
@@ -377,7 +377,7 @@ sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
 srcdir = .
 sysconfdir = ${prefix}/etc
-target_alias = 
+target_alias = arm-linux-androideabi
 top_build_prefix = ../../
 top_builddir = ../..
 top_srcdir = ../..
@@ -397,7 +397,7 @@ lzmadec_SOURCES = xzdec.c $(top_srcdir)/src/common/tuklib_progname.c \
 lzmadec_CPPFLAGS = $(xzdec_CPPFLAGS) -DLZMADEC
 lzmadec_LDFLAGS = $(xzdec_LDFLAGS)
 lzmadec_LDADD = $(xzdec_LDADD)
-dist_man_MANS = xzdec.1
+#dist_man_MANS = xzdec.1
 all: all-am
 
 .SUFFIXES:
@@ -776,8 +776,8 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-#install-data-hook:
-#uninstall-hook:
+install-data-hook:
+uninstall-hook:
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
@@ -878,17 +878,17 @@ uninstall-man: uninstall-man1
 		$(xzdec_CPPFLAGS) $(CPPFLAGS) $(RCFLAGS) -i $< -o $@
 
 # FIXME: If xzdec is disabled, this will create a dangling symlink.
-install-data-hook:
-	cd $(DESTDIR)$(mandir)/man1 && \
-	target=`echo xzdec | sed '$(transform)'` && \
-	link=`echo lzmadec | sed '$(transform)'` && \
-	rm -f $$link.1 && \
-	$(LN_S) $$target.1 $$link.1
+#install-data-hook:
+#	cd $(DESTDIR)$(mandir)/man1 && \
+#	target=`echo xzdec | sed '$(transform)'` && \
+#	link=`echo lzmadec | sed '$(transform)'` && \
+#	rm -f $$link.1 && \
+#	$(LN_S) $$target.1 $$link.1
 
-uninstall-hook:
-	cd $(DESTDIR)$(mandir)/man1 && \
-	link=`echo lzmadec | sed '$(transform)'` && \
-	rm -f $$link.1
+#uninstall-hook:
+#	cd $(DESTDIR)$(mandir)/man1 && \
+#	link=`echo lzmadec | sed '$(transform)'` && \
+#	rm -f $$link.1
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

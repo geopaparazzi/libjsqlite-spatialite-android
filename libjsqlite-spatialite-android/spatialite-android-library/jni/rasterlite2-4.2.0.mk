@@ -52,7 +52,7 @@ LOCAL_C_INCLUDES := \
 	$(RASTERLITE2_PATH) \
 	$(RASTERLITE2_PATH)/headers \
 	$(SPATIALITE_PATH)/src/headers \
- $(LZMA_PATH)/api
+ $(LZMA_PATH)/src/liblzma/api 
 LOCAL_SRC_FILES := \
 	$(RASTERLITE2_PATH)/src/rasterlite2.c \
 	$(RASTERLITE2_PATH)/src/rl2ascii.c \
@@ -72,5 +72,5 @@ LOCAL_SRC_FILES := \
 	$(RASTERLITE2_PATH)/src/rl2webp.c \
 	$(RASTERLITE2_PATH)/src/rl2version.c \
 	$(RASTERLITE2_PATH)/src/rl2wms.c
-LOCAL_STATIC_LIBRARIES := lzma libgeotiff giflib libcairo libpng libxml2 libwebp libcurl
+LOCAL_STATIC_LIBRARIES := liblzma libgeotiff giflib libcairo libpng libxml2 libwebp libcurl
 include $(BUILD_STATIC_LIBRARY)

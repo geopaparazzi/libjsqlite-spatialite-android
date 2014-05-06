@@ -27,6 +27,10 @@ extern "C" {
 #define GIF87_STAMP "GIF87a"        /* First chars in file - GIF stamp.  */
 #define GIF89_STAMP "GIF89a"        /* First chars in file - GIF stamp.  */
 
+# define S_IREAD        S_IRUSR
+# define S_IWRITE       S_IWUSR
+# define S_IEXEC        S_IXUSR
+
 typedef unsigned char GifPixelType;
 typedef unsigned char *GifRowType;
 typedef unsigned char GifByteType;

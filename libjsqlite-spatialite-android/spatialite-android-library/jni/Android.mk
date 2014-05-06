@@ -15,7 +15,7 @@ PNG_PATH := libpng-1.6.10
 WEBP_PATH := libwebp-0.4.0/src
 XML2_PATH := libxml2-2.9.1
 CURL_PATH := curl-7.36.0
-LZMA_PATH := xz-5.0.5/src/liblzma
+LZMA_PATH := xz-5.1.3alpha
 
 include $(LOCAL_PATH)/jsqlite-R4.2.0.mk
 include $(LOCAL_PATH)/iconv-1.13.1.mk
@@ -33,5 +33,5 @@ include $(LOCAL_PATH)/libgeotiff-1.4.0.mk
 include $(LOCAL_PATH)/libwebp-0.4.0.mk
 include $(LOCAL_PATH)/libxml2-2.9.1.mk
 include $(LOCAL_PATH)/libcurl-7.36.0.mk
-include $(LOCAL_PATH)/lzma-xz-5.0.5.mk
+include $(LOCAL_PATH)/lzma-xz-5.1.3a.mk
 
