@@ -315,7 +315,7 @@ _cairo_dtostr (char *buffer, size_t size, double d, cairo_bool_t limited_precisi
 	d = 0.0;
 
     locale_data = localeconv ();
-    decimal_point = locale_data->decimal_point;
+    decimal_point = '.'; // locale_data->decimal_point;
     decimal_point_len = strlen (decimal_point);
 
     assert (decimal_point_len != 0);

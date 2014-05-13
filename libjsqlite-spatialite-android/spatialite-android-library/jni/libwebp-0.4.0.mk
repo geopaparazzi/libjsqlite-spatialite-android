@@ -4,34 +4,65 @@ LOCAL_MODULE    := libwebp
 
 # make and listed *.o \ files in libpng-1.6.10 ; make clean
 
+webp_flags := \
+ -DHAVE_CONFIG_H=1
+
 LOCAL_CFLAGS    := \
 	$(webp_flags)
 
 LOCAL_C_INCLUDES := \
  $(WEBP_PATH)
 LOCAL_SRC_FILES := \
-	$(WEBP_PATH)/pngerror.c \
-	$(WEBP_PATH)/pngget.c \
-	$(WEBP_PATH)/pngmem.c \
-	$(WEBP_PATH)/png.c \
-	$(WEBP_PATH)/pngpread.c \
-	$(WEBP_PATH)/pngread.c \
-	$(WEBP_PATH)/pngrio.c \
-	$(WEBP_PATH)/pngrtran.c \
-	$(WEBP_PATH)/pngrutil.c \
-	$(WEBP_PATH)/pngset.c \
-	$(WEBP_PATH)/pngtest.c \
-	$(WEBP_PATH)/pngtrans.c \
-	$(WEBP_PATH)/pngwio.c \
-	$(WEBP_PATH)/pngwrite.c \
-	$(WEBP_PATH)/pngwtran.c \
-	$(WEBP_PATH)/pngwutil.c \
-	$(WEBP_PATH)/arm/arm_init.c \
-	$(WEBP_PATH)/arm/filter_neon.S \
-	$(WEBP_PATH)/arm/filter_neon_intrinsics.c
+	$(WEBP_PATH)/src/dec/alpha.c \
+	$(WEBP_PATH)/src/dec/buffer.c \
+	$(WEBP_PATH)/src/dec/frame.c \
+	$(WEBP_PATH)/src/dec/idec.c \
+	$(WEBP_PATH)/src/dec/io.c \
+	$(WEBP_PATH)/src/dec/layer.c \
+	$(WEBP_PATH)/src/dec/quant.c \
+	$(WEBP_PATH)/src/dec/tree.c \
+	$(WEBP_PATH)/src/dec/vp8.c \
+	$(WEBP_PATH)/src/dec/vp8l.c \
+	$(WEBP_PATH)/src/dec/webp.c \
+	$(WEBP_PATH)/src/dsp/cpu.c \
+	$(WEBP_PATH)/src/dsp/dec.c \
+	$(WEBP_PATH)/src/dsp/dec_sse2.c \
+	$(WEBP_PATH)/src/dsp/enc.c \
+	$(WEBP_PATH)/src/dsp/enc_sse2.c \
+	$(WEBP_PATH)/src/dsp/lossless.c \
+	$(WEBP_PATH)/src/dsp/upsampling.c \
+	$(WEBP_PATH)/src/dsp/upsampling_sse2.c \
+	$(WEBP_PATH)/src/dsp/yuv.c \
+	$(WEBP_PATH)/src/enc/alpha.c \
+	$(WEBP_PATH)/src/enc/analysis.c \
+	$(WEBP_PATH)/src/enc/backward_references.c \
+	$(WEBP_PATH)/src/enc/config.c \
+	$(WEBP_PATH)/src/enc/cost.c \
+	$(WEBP_PATH)/src/enc/filter.c \
+	$(WEBP_PATH)/src/enc/frame.c \
+	$(WEBP_PATH)/src/enc/histogram.c \
+	$(WEBP_PATH)/src/enc/iterator.c \
+	$(WEBP_PATH)/src/enc/layer.c \
+	$(WEBP_PATH)/src/enc/picture.c \
+	$(WEBP_PATH)/src/enc/quant.c \
+	$(WEBP_PATH)/src/enc/syntax.c \
+	$(WEBP_PATH)/src/enc/token.c \
+	$(WEBP_PATH)/src/enc/tree.c \
+	$(WEBP_PATH)/src/enc/vp8l.c \
+	$(WEBP_PATH)/src/enc/webpenc.c \
+	$(WEBP_PATH)/src/utils/bit_reader.c \
+	$(WEBP_PATH)/src/utils/bit_writer.c \
+	$(WEBP_PATH)/src/utils/color_cache.c \
+	$(WEBP_PATH)/src/utils/filters.c \
+	$(WEBP_PATH)/src/utils/huffman.c \
+	$(WEBP_PATH)/src/utils/huffman_encode.c \
+	$(WEBP_PATH)/src/utils/quant_levels.c \
+	$(WEBP_PATH)/src/utils/rescaler.c \
+	$(WEBP_PATH)/src/utils/thread.c \
+	$(WEBP_PATH)/src/utils/utils.cc
 include $(BUILD_STATIC_LIBRARY)
 
-
+ 
 
 
 

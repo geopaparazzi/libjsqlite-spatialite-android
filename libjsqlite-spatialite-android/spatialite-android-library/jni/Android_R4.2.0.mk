@@ -7,9 +7,9 @@ TIFF_PATH := tiff-4.0.3/libtiff
 JPEG_PATH := jpeg-8d
 GIF_PATH := giflib-5.0.6/lib
 CAIRO_PATH := cairo-1.12.14/src
-PIXMAN_PATH := pixman-0.9.6/pixman
+PIXMAN_PATH := pixman-0.32.4/pixman
 PNG_PATH := libpng-1.6.10
-WEBP_PATH := libwebp-0.4.0/src
+WEBP_PATH := libwebp-0.4.0
 CURL_PATH := curl-7.36.0/src
 LZMA_PATH := xz-5.1.3alpha
 GEOS_PATH := geos-3.4.2
@@ -19,7 +19,7 @@ ICONV_PATH := libiconv-1.13.1
 
 include $(LOCAL_PATH)/jsqlite-R4.2.0.mk
 include $(LOCAL_PATH)/iconv-1.13.1.mk
-include $(LOCAL_PATH)/sqlite-3080100.mk
+include $(LOCAL_PATH)/sqlite-3080403.mk
 include $(LOCAL_PATH)/proj4-4.8.0.mk
 include $(LOCAL_PATH)/geos-3.4.2.mk
 include $(LOCAL_PATH)/spatialite-4.2.0.mk
@@ -27,7 +27,7 @@ include $(LOCAL_PATH)/rasterlite2-4.2.0.mk
 include $(LOCAL_PATH)/libjpeg-8d.mk
 include $(LOCAL_PATH)/giflib-5.0.6.mk
 include $(LOCAL_PATH)/cairo-1.12.14.mk
-include $(LOCAL_PATH)/pixman-0.9.6.mk
+include $(LOCAL_PATH)/pixman-0.32.4.mk
 include $(LOCAL_PATH)/libpng-1.6.10.mk
 include $(LOCAL_PATH)/libtiff-4.0.3.mk
 include $(LOCAL_PATH)/libgeotiff-1.4.0.mk

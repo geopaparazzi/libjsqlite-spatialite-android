@@ -136,7 +136,7 @@ typedef unsigned long trio_flags_t;
 # include <unistd.h>
 # include <signal.h>
 # include <locale.h>
-# define USE_LOCALE
+ /* mj10777: # define USE_LOCALE */
 #endif /* TRIO_PLATFORM_UNIX */
 #if defined(TRIO_PLATFORM_VMS)
 # include <unistd.h>

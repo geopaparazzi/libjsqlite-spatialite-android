@@ -4,12 +4,20 @@ LOCAL_MODULE    := libxml2
 
 # taken from make file am__libxml2_la_SOURCES_DIST
 
+xml2_flags := \
+ -DHAVE_CONFIG_H=1 \
+ -D HAVE_ERRNO_H=0 \
+	-DLIBXML_THREAD_ENABLED=1
+
+
 LOCAL_CFLAGS    := \
 	$(xml2_flags)
 
 LOCAL_C_INCLUDES := \
  $(ICONV_PATH)/include \
  $(ICONV_PATH)/libcharset/include \
+ $(LZMA_PATH)/src/liblzma/api \
+ $(XML2_PATH)/include \
  $(XML2_PATH)
 LOCAL_SRC_FILES := \
 	$(XML2_PATH)/buf.c \
