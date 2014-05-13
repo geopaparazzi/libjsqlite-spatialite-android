@@ -26,6 +26,7 @@ LOCAL_SRC_FILES := \
 	$(WEBP_PATH)/src/dec/webp.c \
 	$(WEBP_PATH)/src/dsp/cpu.c \
 	$(WEBP_PATH)/src/dsp/dec.c \
+	$(WEBP_PATH)/src/dsp/dec_neon.c \
 	$(WEBP_PATH)/src/dsp/dec_sse2.c \
 	$(WEBP_PATH)/src/dsp/enc.c \
 	$(WEBP_PATH)/src/dsp/enc_sse2.c \
@@ -57,10 +58,13 @@ LOCAL_SRC_FILES := \
 	$(WEBP_PATH)/src/utils/huffman.c \
 	$(WEBP_PATH)/src/utils/huffman_encode.c \
 	$(WEBP_PATH)/src/utils/quant_levels.c \
+	$(WEBP_PATH)/src/utils/random.c \
 	$(WEBP_PATH)/src/utils/rescaler.c \
 	$(WEBP_PATH)/src/utils/thread.c \
-	$(WEBP_PATH)/src/utils/utils.cc
+	$(WEBP_PATH)/src/utils/utils.c
 include $(BUILD_STATIC_LIBRARY)
+
+
 
  
 

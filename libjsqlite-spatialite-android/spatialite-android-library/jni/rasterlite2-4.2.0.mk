@@ -42,13 +42,14 @@ LOCAL_C_INCLUDES := \
  $(JPEG_PATH) \
  $(GIF_PATH) \
  $(PNG_PATH) \
- $(WEBP_PATH) \
+ $(WEBP_PATH)/src \
  $(CAIRO_PATH) \
  $(ICONV_PATH)/include \
  $(ICONV_PATH)/libcharset/include \
  $(XML2_PATH)/include \
  $(CURL_PATH) \
  $(CURL_PATH)/include \
+ $(CURL_PATH)/lib \
 	$(RASTERLITE2_PATH) \
 	$(RASTERLITE2_PATH)/headers \
 	$(SPATIALITE_PATH)/src/headers \
