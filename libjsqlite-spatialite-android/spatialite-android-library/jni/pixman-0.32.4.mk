@@ -4,44 +4,47 @@ LOCAL_MODULE    := libpixman
 
 # make and listed *.0 \ \ files in src ; make clean
 
+pixman_flags := \
+ -DHAVE_CONFIG_H=1
+
 LOCAL_CFLAGS    := \
 	$(pixman_flags)
 
 LOCAL_C_INCLUDES := \
+ $(PIXMAN_PATH)/pixman \
  $(PIXMAN_PATH)
 LOCAL_SRC_FILES := \
-	$(PIXMAN_PATH)/pixman.c			\
-	$(PIXMAN_PATH)/pixman-access.c			\
-	$(PIXMAN_PATH)/pixman-access-accessors.c	\
-	$(PIXMAN_PATH)/pixman-bits-image.c		\
-	$(PIXMAN_PATH)/pixman-combine32.c		\
-	$(PIXMAN_PATH)/pixman-combine-float.c		\
-	$(PIXMAN_PATH)/pixman-conical-gradient.c	\
-	$(PIXMAN_PATH)/pixman-filter.c			\
-	$(PIXMAN_PATH)/pixman-x86.c			\
-	$(PIXMAN_PATH)/pixman-mips.c			\
-	$(PIXMAN_PATH)/pixman-arm.c			\
-	$(PIXMAN_PATH)/pixman-ppc.c			\
-	$(PIXMAN_PATH)/pixman-edge.c			\
-	$(PIXMAN_PATH)/pixman-edge-accessors.c		\
-	$(PIXMAN_PATH)/pixman-fast-path.c		\
-	$(PIXMAN_PATH)/pixman-glyph.c			\
-	$(PIXMAN_PATH)/pixman-general.c		\
-	$(PIXMAN_PATH)/pixman-gradient-walker.c	\
-	$(PIXMAN_PATH)/pixman-image.c			\
-	$(PIXMAN_PATH)/pixman-implementation.c		\
-	$(PIXMAN_PATH)/pixman-linear-gradient.c	\
-	$(PIXMAN_PATH)/pixman-matrix.c			\
-	$(PIXMAN_PATH)/pixman-noop.c			\
-	$(PIXMAN_PATH)/pixman-radial-gradient.c	\
-	$(PIXMAN_PATH)/pixman-region16.c		\
-	$(PIXMAN_PATH)/pixman-region32.c		\
-	$(PIXMAN_PATH)/pixman-solid-fill.c		\
-	$(PIXMAN_PATH)/pixman-timer.c			\
-	$(PIXMAN_PATH)/pixman-trap.c			\
-	$(PIXMAN_PATH)/pixman-utils.c	
+	$(PIXMAN_PATH)/pixman/pixman.c			\
+	$(PIXMAN_PATH)/pixman/pixman-access.c			\
+	$(PIXMAN_PATH)/pixman/pixman-access-accessors.c	\
+	$(PIXMAN_PATH)/pixman/pixman-bits-image.c		\
+	$(PIXMAN_PATH)/pixman/pixman-combine32.c		\
+	$(PIXMAN_PATH)/pixman/pixman-combine-float.c		\
+	$(PIXMAN_PATH)/pixman/pixman-conical-gradient.c	\
+	$(PIXMAN_PATH)/pixman/pixman-filter.c			\
+	$(PIXMAN_PATH)/pixman/pixman-x86.c			\
+	$(PIXMAN_PATH)/pixman/pixman-mips.c			\
+	$(PIXMAN_PATH)/pixman/pixman-arm.c			\
+	$(PIXMAN_PATH)/pixman/pixman-ppc.c			\
+	$(PIXMAN_PATH)/pixman/pixman-edge.c			\
+	$(PIXMAN_PATH)/pixman/pixman-edge-accessors.c		\
+	$(PIXMAN_PATH)/pixman/pixman-fast-path.c		\
+	$(PIXMAN_PATH)/pixman/pixman-glyph.c			\
+	$(PIXMAN_PATH)/pixman/pixman-general.c		\
+	$(PIXMAN_PATH)/pixman/pixman-gradient-walker.c	\
+	$(PIXMAN_PATH)/pixman/pixman-image.c			\
+	$(PIXMAN_PATH)/pixman/pixman-implementation.c		\
+	$(PIXMAN_PATH)/pixman/pixman-linear-gradient.c	\
+	$(PIXMAN_PATH)/pixman/pixman-matrix.c			\
+	$(PIXMAN_PATH)/pixman/pixman-noop.c			\
+	$(PIXMAN_PATH)/pixman/pixman-radial-gradient.c	\
+	$(PIXMAN_PATH)/pixman/pixman-region16.c		\
+	$(PIXMAN_PATH)/pixman/pixman-region32.c		\
+	$(PIXMAN_PATH)/pixman/pixman-solid-fill.c		\
+	$(PIXMAN_PATH)/pixman/pixman-timer.c			\
+	$(PIXMAN_PATH)/pixman/pixman-trap.c			\
+	$(PIXMAN_PATH)/pixman/pixman-utils.c	
 include $(BUILD_STATIC_LIBRARY)
-
 	
 
 

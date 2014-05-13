@@ -1,21 +1,22 @@
 LOCAL_PATH := $(call my-dir)
 JSQLITE_PATH := javasqlite-20120209
 SPATIALITE_PATH := libspatialite-4.2.0
+GEOS_PATH := geos-3.4.2
+PROJ4_PATH := proj-4.8.0
+SQLITE_PATH := sqlite-amalgamation-3080403
+ICONV_PATH := libiconv-1.13.1
 RASTERLITE2_PATH := librasterlite2-4.2.0
 GEOTIFF_PATH := libgeotiff-1.4.0
 TIFF_PATH := tiff-4.0.3/libtiff
 JPEG_PATH := jpeg-8d
 GIF_PATH := giflib-5.0.6/lib
 CAIRO_PATH := cairo-1.12.14/src
-PIXMAN_PATH := pixman-0.32.4/pixman
+PIXMAN_PATH := pixman-0.32.4
 PNG_PATH := libpng-1.6.10
 WEBP_PATH := libwebp-0.4.0
-CURL_PATH := curl-7.36.0/src
+XML2_PATH := libxml2-2.9.1
+CURL_PATH := curl-7.36.0
 LZMA_PATH := xz-5.1.3alpha
-GEOS_PATH := geos-3.4.2
-PROJ4_PATH := proj-4.8.0
-SQLITE_PATH := sqlite-amalgamation-3080100
-ICONV_PATH := libiconv-1.13.1
 
 include $(LOCAL_PATH)/jsqlite-R4.2.0.mk
 include $(LOCAL_PATH)/iconv-1.13.1.mk

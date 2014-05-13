@@ -5,6 +5,8 @@ LOCAL_MODULE    := libcairo
 # make and listed *.o files in src ; make clean
 # https://github.com/anoek/android-cairo/blob/master/jni/cairo.mk
 
+# LOCAL_STATIC_LIBRARIES := libpixman
+
 cairo_flags := \
  -DCAIRO_NO_MUTEX=1 \
  -DHAVE_STDINT_H \
@@ -14,7 +16,7 @@ LOCAL_CFLAGS    := \
 	$(cairo_flags)
 
 LOCAL_C_INCLUDES := \
- $(PIXMAN_PATH) \
+ $(PIXMAN_PATH)/pixman \
  $(CAIRO_PATH)
 LOCAL_SRC_FILES := \
 	$(CAIRO_PATH)/cairo-analysis-surface.c \
@@ -121,7 +123,6 @@ LOCAL_SRC_FILES := \
 	$(CAIRO_PATH)/cairo-user-font.c \
 	$(CAIRO_PATH)/cairo-version.c \
 	$(CAIRO_PATH)/cairo-wideint.c
-LOCAL_STATIC_LIBRARIES := libpixman
 include $(BUILD_STATIC_LIBRARY)
 
 

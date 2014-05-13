@@ -8,7 +8,7 @@ LOCAL_CFLAGS    := \
 	$(tiff_flags)
 
 LOCAL_C_INCLUDES := \
- $(LZMA_PATH)/api \
+ $(LZMA_PATH)/src/liblzma/api \
  $(JPEG_PATH) \
  $(TIFF_PATH)
 LOCAL_SRC_FILES := \
