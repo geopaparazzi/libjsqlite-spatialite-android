@@ -36,3 +36,4 @@ include $(LOCAL_PATH)/libwebp-0.4.0.mk
 include $(LOCAL_PATH)/libxml2-2.9.1.mk
 include $(LOCAL_PATH)/libcurl-7.36.0.mk
 include $(LOCAL_PATH)/lzma-xz-5.1.3a.mk
+$(call import-module,android/cpufeatures)

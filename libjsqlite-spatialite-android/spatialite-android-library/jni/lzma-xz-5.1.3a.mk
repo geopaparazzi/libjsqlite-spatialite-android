@@ -1,10 +1,14 @@
 include $(CLEAR_VARS)
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
+# ./configure --host=arm-linux-androideabi --target=arm-linux-androideabi --enable-static --with-pic --disable-xz --disable-xzdec --disable-lzmainfo --disable-scripts --disable-lzmadec --disable-shared
+
 LOCAL_MODULE    := liblzma
+
+# -E -g / -g -O2
 
 lzma_flags := \
 	-DHAVE_CONFIG_H \
- -E \
+ -g -O2 \
 	-std=gnu99
 
 LOCAL_CFLAGS    := \
@@ -24,14 +28,10 @@ LOCAL_C_INCLUDES := \
 LOCAL_SRC_FILES := \
 	$(LZMA_PATH)/src/common/tuklib_physmem.c \
 	$(LZMA_PATH)/src/liblzma/check/check.c \
-	$(LZMA_PATH)/src/liblzma/check/crc32_small.c \
-	$(LZMA_PATH)/src/liblzma/check/crc32_table.c \
-	$(LZMA_PATH)/src/liblzma/check/crc32_x86.S	\
 	$(LZMA_PATH)/src/liblzma/check/crc32_fast.c \
-	$(LZMA_PATH)/src/liblzma/check/crc64_small.c \
-	$(LZMA_PATH)/src/liblzma/check/crc64_table.c \
-	$(LZMA_PATH)/src/liblzma/check/crc64_x86.S	\
+	$(LZMA_PATH)/src/liblzma/check/crc32_table.c \
 	$(LZMA_PATH)/src/liblzma/check/crc64_fast.c \
+	$(LZMA_PATH)/src/liblzma/check/crc64_table.c \
 	$(LZMA_PATH)/src/liblzma/check/sha256.c \
 	$(LZMA_PATH)/src/liblzma/common/alone_decoder.c \
 	$(LZMA_PATH)/src/liblzma/common/alone_encoder.c \
@@ -94,9 +94,8 @@ LOCAL_SRC_FILES := \
 	$(LZMA_PATH)/src/liblzma/simple/powerpc.c \
 	$(LZMA_PATH)/src/liblzma/simple/simple_coder.c \
 	$(LZMA_PATH)/src/liblzma/simple/simple_decoder.c \
+	$(LZMA_PATH)/src/liblzma/simple/simple_encoder.c \
 	$(LZMA_PATH)/src/liblzma/simple/sparc.c \
 	$(LZMA_PATH)/src/liblzma/simple/x86.c 
 include $(BUILD_STATIC_LIBRARY)
-
-
 

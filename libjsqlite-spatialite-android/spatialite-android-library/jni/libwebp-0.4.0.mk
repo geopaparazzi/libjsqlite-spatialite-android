@@ -2,13 +2,18 @@ include $(CLEAR_VARS)
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
 LOCAL_MODULE    := libwebp
 
-# make and listed *.o \ files in libpng-1.6.10 ; make clean
-
 webp_flags := \
- -DHAVE_CONFIG_H=1
+ -DHAVE_CONFIG_H=1 
 
-LOCAL_CFLAGS    := \
-	$(webp_flags)
+ifeq ($(TARGET_ARCH),x86)
+ LOCAL_CFLAGS   := $(webp_flags)
+else 
+ ifeq ($(TARGET_ARCH),mips)
+  LOCAL_CFLAGS   := $(webp_flags)
+ else
+  LOCAL_CFLAGS   := -mfpu=neon $(webp_flags)
+ endif
+endif
 
 LOCAL_C_INCLUDES := \
  $(WEBP_PATH)
@@ -62,7 +67,9 @@ LOCAL_SRC_FILES := \
 	$(WEBP_PATH)/src/utils/rescaler.c \
 	$(WEBP_PATH)/src/utils/thread.c \
 	$(WEBP_PATH)/src/utils/utils.c
+LOCAL_STATIC_LIBRARIES := cpufeatures
 include $(BUILD_STATIC_LIBRARY)
+
 
 
 
