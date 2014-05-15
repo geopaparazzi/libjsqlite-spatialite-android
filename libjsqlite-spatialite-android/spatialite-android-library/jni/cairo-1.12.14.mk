@@ -130,7 +130,7 @@ LOCAL_SRC_FILES := \
 	$(CAIRO_PATH)/cairo-user-font.c \
 	$(CAIRO_PATH)/cairo-version.c \
 	$(CAIRO_PATH)/cairo-wideint.c
-LOCAL_STATIC_LIBRARIES := libpixman
+LOCAL_STATIC_LIBRARIES := libpixman libfreetype
 include $(BUILD_STATIC_LIBRARY)
 
 
