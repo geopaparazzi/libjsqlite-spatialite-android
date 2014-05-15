@@ -2,7 +2,8 @@ include $(CLEAR_VARS)
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
 LOCAL_MODULE    := libjpeg
 
-# based on sample found here: [https://bitbucket.org/gongminmin/klayge/src/ca44276467e2/External/7z/build/android/LZMA/jni/Android.mk]
+jpeg_flags := \
+ -DHAVE_CONFIG_H=1 
 
 LOCAL_CFLAGS    := \
 	$(jpeg_flags)
@@ -10,8 +11,10 @@ LOCAL_CFLAGS    := \
 LOCAL_C_INCLUDES := \
  $(JPEG_PATH)
 LOCAL_SRC_FILES := \
+	$(JPEG_PATH)/jaricom.c \
 	$(JPEG_PATH)/jcapimin.c \
 	$(JPEG_PATH)/jcapistd.c \
+	$(JPEG_PATH)/jcarith.c \
 	$(JPEG_PATH)/jccoefct.c \
 	$(JPEG_PATH)/jccolor.c \
 	$(JPEG_PATH)/jcdctmgr.c \
@@ -27,6 +30,7 @@ LOCAL_SRC_FILES := \
 	$(JPEG_PATH)/jctrans.c \
 	$(JPEG_PATH)/jdapimin.c \
 	$(JPEG_PATH)/jdapistd.c \
+	$(JPEG_PATH)/jdarith.c \
 	$(JPEG_PATH)/jdatadst.c \
 	$(JPEG_PATH)/jdatasrc.c \
 	$(JPEG_PATH)/jdcoefct.c \
@@ -52,9 +56,8 @@ LOCAL_SRC_FILES := \
 	$(JPEG_PATH)/jquant2.c \
 	$(JPEG_PATH)/jutils.c \
 	$(JPEG_PATH)/jmemmgr.c \
-	$(JPEG_PATH)/jcarith.c \
-	$(JPEG_PATH)/jdarith.c \
-	$(JPEG_PATH)/jaricom.c 
+	$(JPEG_PATH)/jmemnobs.c
 include $(BUILD_STATIC_LIBRARY)
+
 
 

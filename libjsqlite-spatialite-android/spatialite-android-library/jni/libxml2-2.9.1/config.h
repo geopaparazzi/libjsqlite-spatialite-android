@@ -32,7 +32,7 @@
 /* #undef HAVE_DL_H */
 
 /* Define to 1 if you have the <errno.h> header file. */
-#define HAVE_ERRNO_H 1
+/*#define HAVE_ERRNO_H 1*/
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #define HAVE_FCNTL_H 1
@@ -154,7 +154,7 @@
 #define HAVE_RAND 1
 
 /* Define to 1 if you have the `rand_r' function. */
-#define HAVE_RAND_R 1
+/* #define HAVE_RAND_R 1 */
 
 /* Define to 1 if you have the <resolv.h> header file. */
 #define HAVE_RESOLV_H 1

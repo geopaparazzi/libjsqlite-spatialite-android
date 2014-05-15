@@ -1,6 +1,6 @@
 include $(CLEAR_VARS)
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
-LOCAL_MODULE    := giflib
+LOCAL_MODULE    := libgif
 
 # based on sample found here: [https://bitbucket.org/gongminmin/klayge/src/ca44276467e2/External/7z/build/android/LZMA/jni/Android.mk]
 

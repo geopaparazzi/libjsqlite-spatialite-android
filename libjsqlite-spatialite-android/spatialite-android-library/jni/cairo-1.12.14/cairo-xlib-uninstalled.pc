@@ -1,7 +1,0 @@
-Name: cairo-xlib
-Description: Xlib surface backend for cairo graphics library
-Version: 1.12.14
-
-Requires: cairo x11 xext
-Libs:  
-Cflags: -I${pc_top_builddir}/${pcfiledir}/./src 

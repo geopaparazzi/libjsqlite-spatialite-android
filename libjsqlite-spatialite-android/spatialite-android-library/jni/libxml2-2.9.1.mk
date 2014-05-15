@@ -6,7 +6,8 @@ LOCAL_MODULE    := libxml2
 
 xml2_flags := \
  -DHAVE_CONFIG_H=1 \
- -D HAVE_ERRNO_H=0 \
+ -DHAVE_ERRNO_H=0 \
+ -DHAVE_RAND=0 \
 	-DLIBXML_THREAD_ENABLED=1
 
 

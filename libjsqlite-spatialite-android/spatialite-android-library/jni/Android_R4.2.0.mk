@@ -18,13 +18,11 @@ XML2_PATH := libxml2-2.9.1
 CURL_PATH := curl-7.36.0
 LZMA_PATH := xz-5.1.3alpha
 
-include $(LOCAL_PATH)/jsqlite-R4.2.0.mk
 include $(LOCAL_PATH)/iconv-1.13.1.mk
 include $(LOCAL_PATH)/sqlite-3080403.mk
 include $(LOCAL_PATH)/proj4-4.8.0.mk
 include $(LOCAL_PATH)/geos-3.4.2.mk
 include $(LOCAL_PATH)/spatialite-4.2.0.mk
-include $(LOCAL_PATH)/rasterlite2-4.2.0.mk
 include $(LOCAL_PATH)/libjpeg-8d.mk
 include $(LOCAL_PATH)/giflib-5.0.6.mk
 include $(LOCAL_PATH)/cairo-1.12.14.mk
@@ -36,4 +34,6 @@ include $(LOCAL_PATH)/libwebp-0.4.0.mk
 include $(LOCAL_PATH)/libxml2-2.9.1.mk
 include $(LOCAL_PATH)/libcurl-7.36.0.mk
 include $(LOCAL_PATH)/lzma-xz-5.1.3a.mk
+include $(LOCAL_PATH)/rasterlite2-4.2.0.mk
+include $(LOCAL_PATH)/jsqlite-R4.2.0.mk
 $(call import-module,android/cpufeatures)

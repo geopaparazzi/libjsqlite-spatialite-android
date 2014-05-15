@@ -3,20 +3,26 @@ include $(CLEAR_VARS)
 LOCAL_MODULE    := libcairo
 
 # make and listed *.o files in src ; make clean
-# https://github.com/anoek/android-cairo/blob/master/jni/cairo.mk
-
-# LOCAL_STATIC_LIBRARIES := libpixman
 
 cairo_flags := \
  -DCAIRO_NO_MUTEX=1 \
  -DHAVE_STDINT_H \
- -DHAVE_UINT64_T 
+ -DHAVE_UINT64_T  \
+ -O2 \
+ -std=c99 \
+ -Wno-missing-field-initializers \
+ -Wno-attributes \
+ -DPACKAGE_VERSION="android-cairo" \
+ -fPIC
 
 LOCAL_CFLAGS    := \
 	$(cairo_flags)
 
 LOCAL_C_INCLUDES := \
  $(PIXMAN_PATH)/pixman \
+ $(FREETYPE_PATH)/builds \
+ $(FREETYPE_PATH)/include \
+ $(PNG_PATH) \
  $(CAIRO_PATH)
 LOCAL_SRC_FILES := \
 	$(CAIRO_PATH)/cairo-analysis-surface.c \
@@ -54,6 +60,7 @@ LOCAL_SRC_FILES := \
 	$(CAIRO_PATH)/cairo-font-face-twin.c \
 	$(CAIRO_PATH)/cairo-font-face-twin-data.c \
 	$(CAIRO_PATH)/cairo-font-options.c \
+	$(CAIRO_PATH)/cairo-ft-font.c \
 	$(CAIRO_PATH)/cairo-freed-pool.c \
 	$(CAIRO_PATH)/cairo-freelist.c \
 	$(CAIRO_PATH)/cairo-gstate.c \
@@ -123,6 +130,7 @@ LOCAL_SRC_FILES := \
 	$(CAIRO_PATH)/cairo-user-font.c \
 	$(CAIRO_PATH)/cairo-version.c \
 	$(CAIRO_PATH)/cairo-wideint.c
+LOCAL_STATIC_LIBRARIES := libpixman
 include $(BUILD_STATIC_LIBRARY)
 
 

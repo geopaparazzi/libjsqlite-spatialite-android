@@ -8,7 +8,15 @@ LOCAL_CFLAGS    := \
 	$(tiff_flags)
 
 LOCAL_C_INCLUDES := \
+	$(LZMA_PATH)/src/common \
  $(LZMA_PATH)/src/liblzma/api \
+ $(LZMA_PATH)/src/liblzma/check \
+ $(LZMA_PATH)/src/liblzma/common \
+ $(LZMA_PATH)/src/liblzma/delta \
+ $(LZMA_PATH)/src/liblzma/lz \
+ $(LZMA_PATH)/src/liblzma/lzma \
+ $(LZMA_PATH)/src/liblzma/rangecoder \
+ $(LZMA_PATH)/src/liblzma/simple \
  $(JPEG_PATH) \
  $(TIFF_PATH)
 LOCAL_SRC_FILES := \
@@ -52,5 +60,5 @@ LOCAL_SRC_FILES := \
 	$(TIFF_PATH)/tif_warning.c \
 	$(TIFF_PATH)/tif_write.c \
 	$(TIFF_PATH)/tif_zip.c 
-LOCAL_STATIC_LIBRARIES := libjpeg
+LOCAL_STATIC_LIBRARIES := liblzma libjpeg 
 include $(BUILD_STATIC_LIBRARY)

@@ -244,7 +244,7 @@ static const pixman_fast_path_t arm_simd_fast_paths[] =
 
     { PIXMAN_OP_NONE },
 };
-
+#pragma message(VAR_NAME_VALUE(USE_ARM_SIMD))
 pixman_implementation_t *
 _pixman_implementation_create_arm_simd (pixman_implementation_t *fallback)
 {

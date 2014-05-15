@@ -39,7 +39,7 @@ LOCAL_SRC_FILES := \
 	$(GEOTIFF_PATH)/csv/prime_meridian.c \
 	$(GEOTIFF_PATH)/csv/projop_wparm.c  \
 	$(GEOTIFF_PATH)/csv/unit_of_measure.c 
-LOCAL_STATIC_LIBRARIES := libtiff proj
+LOCAL_STATIC_LIBRARIES := liblzma libtiff proj
 include $(BUILD_STATIC_LIBRARY)
 
 

@@ -33,6 +33,11 @@
 
 #include "pixman-compiler.h"
 
+/* definition to expand macro then apply to pragma message */
+#define VALUE_TO_STRING(x) #x
+#define VALUE(x) VALUE_TO_STRING(x)
+#define VAR_NAME_VALUE(var) #var "="  VALUE(var)
+// print out values
 /*
  * Images
  */

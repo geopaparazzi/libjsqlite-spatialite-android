@@ -75,12 +75,12 @@ detect_cpu_features (void)
 #else
 
 #define _PIXMAN_X86_64							\
-    (defined(__amd64__) || defined(__x86_64__) || defined(_M_AMD64))
+    (defined(__amd64__) || defined(__x86_64__) || defined(__ANDROID__))
 
 static pixman_bool_t
 have_cpuid (void)
 {
-#if _PIXMAN_X86_64 || defined (_MSC_VER)
+#if _PIXMAN_X86_64 || defined (_MSC_VER)  || defined (_MSC_VER)
 
     return TRUE;
 
@@ -115,7 +115,7 @@ pixman_cpuid (uint32_t feature,
 {
 #if defined (__GNUC__)
 
-#if _PIXMAN_X86_64
+#if _PIXMAN_X86_64 
     __asm__ volatile (
         "cpuid"				"\n\t"
 	: "=a" (*a), "=b" (*b), "=c" (*c), "=d" (*d)
