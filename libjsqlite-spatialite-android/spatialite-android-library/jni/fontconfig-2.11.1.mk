@@ -21,6 +21,7 @@ LOCAL_C_INCLUDES := \
  $(FREETYPE_PATH)/include \
  $(EXPAT_PATH)/lib 
 LOCAL_SRC_FILES := \
+	$(FONTCONFIG_PATH)/src/fcarch.c \
 	$(FONTCONFIG_PATH)/src/fcatomic.c \
 	$(FONTCONFIG_PATH)/src/fcblanks.c \
 	$(FONTCONFIG_PATH)/src/fccache.c \
@@ -32,6 +33,7 @@ LOCAL_SRC_FILES := \
 	$(FONTCONFIG_PATH)/src/fcformat.c \
 	$(FONTCONFIG_PATH)/src/fcfreetype.c \
 	$(FONTCONFIG_PATH)/src/fcfs.c \
+	$(FONTCONFIG_PATH)/src/fchash.c \
 	$(FONTCONFIG_PATH)/src/fcinit.c \
 	$(FONTCONFIG_PATH)/src/fclang.c \
 	$(FONTCONFIG_PATH)/src/fclist.c \
@@ -46,9 +48,8 @@ LOCAL_SRC_FILES := \
 	$(FONTCONFIG_PATH)/src/fcobjs.c \
 	$(FONTCONFIG_PATH)/src/fcstat.c \
 	$(FONTCONFIG_PATH)/src/ftglue.c
-LOCAL_STATIC_LIBRARIES := libexpat
+LOCAL_STATIC_LIBRARIES := libfreetype libexpat
 include $(BUILD_STATIC_LIBRARY)
-
 
 
 

@@ -305,8 +305,8 @@ decode_real (unsigned char *p, double *real)
     char *buf = buffer;
     char *buf_end = buffer + sizeof (buffer);
 
-    locale_data = localeconv ();
-    decimal_point = locale_data->decimal_point;
+    // locale_data = localeconv ();
+    decimal_point = '.'; // locale_data->decimal_point;
     decimal_point_len = strlen (decimal_point);
 
     assert (decimal_point_len != 0);

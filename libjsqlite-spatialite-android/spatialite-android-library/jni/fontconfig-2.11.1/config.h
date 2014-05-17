@@ -105,7 +105,7 @@
 #define HAVE_MKDTEMP 1
 
 /* Define to 1 if you have the `mkostemp' function. */
-#define HAVE_MKOSTEMP 1
+#define HAVE_MKOSTEMP 0
 
 /* Define to 1 if you have the `mkstemp' function. */
 #define HAVE_MKSTEMP 1
@@ -129,7 +129,7 @@
 #define HAVE_RAND 1
 
 /* Define to 1 if you have the `random' function. */
-#define HAVE_RANDOM 1
+#define HAVE_RANDOM 0
 
 /* Define to 1 if you have the `random_r' function. */
 /* #define HAVE_RANDOM_R 0 */
@@ -290,7 +290,7 @@
 /* #undef SIZEOF_VOIDP */
 
 /* The size of `void *', as computed by sizeof. */
-#define SIZEOF_VOID_P 8
+#define SIZEOF_VOID_P 4
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1

@@ -16,6 +16,11 @@ else
 endif
 
 LOCAL_C_INCLUDES := \
+ $(WEBP_PATH)/src/webp \
+ $(WEBP_PATH)/src/dec \
+ $(WEBP_PATH)/src/dsp \
+ $(WEBP_PATH)/src/enc \
+ $(WEBP_PATH)/src/utils \
  $(WEBP_PATH)
 LOCAL_SRC_FILES := \
 	$(WEBP_PATH)/src/dec/alpha.c \
@@ -64,6 +69,7 @@ LOCAL_SRC_FILES := \
 	$(WEBP_PATH)/src/utils/huffman.c \
 	$(WEBP_PATH)/src/utils/huffman_encode.c \
 	$(WEBP_PATH)/src/utils/quant_levels.c \
+	$(WEBP_PATH)/src/utils/quant_levels_dec.c \
 	$(WEBP_PATH)/src/utils/random.c \
 	$(WEBP_PATH)/src/utils/rescaler.c \
 	$(WEBP_PATH)/src/utils/thread.c \
