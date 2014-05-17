@@ -6,10 +6,9 @@ LOCAL_MODULE    := libxml2
 
 xml2_flags := \
  -DHAVE_CONFIG_H=1 \
- -DHAVE_ERRNO_H=0 \
+ -DHAVE_ERRNO_H=1 \
  -DHAVE_RAND=0 \
 	-DLIBXML_THREAD_ENABLED=1
-
 
 LOCAL_CFLAGS    := \
 	$(xml2_flags)
@@ -68,7 +67,7 @@ LOCAL_SRC_FILES := \
 	$(XML2_PATH)/xpath.c \
 	$(XML2_PATH)/xpointer.c \
 	$(XML2_PATH)/xzlib.c
-LOCAL_STATIC_LIBRARIES := iconv
+LOCAL_STATIC_LIBRARIES := iconv liblzma 
 include $(BUILD_STATIC_LIBRARY)
 
 

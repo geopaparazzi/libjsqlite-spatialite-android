@@ -1317,11 +1317,14 @@ FcStrtod (char *s, char **end)
     struct lconv    *locale_data;
     char	    *dot;
     double	    v;
+	v = strtod (s, end);
+    return v;
 
     /*
      * Have to swap the decimal point to match the current locale
      * if that locale doesn't use 0x2e
      */
+/*
     if ((dot = strchr (s, 0x2e)) &&
 	(locale_data = localeconv ()) &&
 	(locale_data->decimal_point[0] != 0x2e ||
@@ -1340,11 +1343,11 @@ FcStrtod (char *s, char **end)
 	else
 	{
 	    char	*buf_end;
-	    /* mantissa */
+	    // mantissa 
 	    strncpy (buf, s, dot - s);
-	    /* decimal point */
+	    // decimal point 
 	    strcpy (buf + (dot - s), locale_data->decimal_point);
-	    /* rest of number */
+	    // rest of number 
 	    strcpy (buf + (dot - s) + dlen, dot + 1);
 	    buf_end = 0;
 	    v = strtod (buf, &buf_end);
@@ -1360,6 +1363,7 @@ FcStrtod (char *s, char **end)
     else
 	v = strtod (s, end);
     return v;
+*/
 }
 
 static void

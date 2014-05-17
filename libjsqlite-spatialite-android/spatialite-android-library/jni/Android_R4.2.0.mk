@@ -13,6 +13,7 @@ GIF_PATH := giflib-5.0.6/lib
 CAIRO_PATH := cairo-1.12.14/src
 FREETYPE_PATH := freetype-2.5.3
 FONTCONFIG_PATH := fontconfig-2.11.1
+EXPAT_PATH := expat-2.1.0
 PIXMAN_PATH := pixman-0.32.4
 PNG_PATH := libpng-1.6.10
 WEBP_PATH := libwebp-0.4.0
@@ -34,6 +35,7 @@ include $(LOCAL_PATH)/libwebp-0.4.0.mk
 include $(LOCAL_PATH)/pixman-0.32.4.mk
 include $(LOCAL_PATH)/freetype-2.5.3.mk
 include $(LOCAL_PATH)/fontconfig-2.11.1.mk
+include $(LOCAL_PATH)/expat-2.1.0.mk
 include $(LOCAL_PATH)/cairo-1.12.14.mk
 include $(LOCAL_PATH)/libgeotiff-1.4.0.mk
 include $(LOCAL_PATH)/libxml2-2.9.1.mk

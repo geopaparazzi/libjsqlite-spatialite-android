@@ -45,6 +45,7 @@
 #ifndef HAVE_RASTERLITE2
  #define HAVE_RASTERLITE2 = 0
 #endif
+#include <spatialite_private.h>
 
 /* definition to expand macro then apply to pragma message */
 #define VALUE_TO_STRING(x) #x
@@ -1263,8 +1264,6 @@ Java_jsqlite_Database__1open4(JNIEnv *env, jobject obj, jstring file, jint mode,
 #endif
 #endif
 #endif
-#if HAVE_SQLITE3_LOAD_EXTENSION
-/* one way or another, sqlite3_enable_load_extension has been called */
 #if HAVE_SPATIALITE41 == 1
  /* Since 4.1.1: spatialite_init(1) is now DEPRECATED because is not reentrant (not thread safe) */
  /* Initializes a SpatiaLite connection. */
@@ -1275,7 +1274,6 @@ Java_jsqlite_Database__1open4(JNIEnv *env, jobject obj, jstring file, jint mode,
     /* Initializes the (Rasterlite2) library */
     rl2_init((sqlite3 *)h->sqlite,0);
 #pragma message(VAR_NAME_VALUE(HAVE_RASTERLITE2))
-#endif
 #endif
 #endif
 	h->ver = ((maj & 0xFF) << 16) | ((min & 0xFF) << 8) | (lev & 0xFF);
@@ -5103,7 +5101,11 @@ Java_jsqlite_Database_spatialite_1create(JNIEnv *env, jobject obj)
 	  sqlite3_free (err_msg);
 	  return;
       }
-    spatial_ref_sys_init (db, 1);
+#if HAVE_SPATIALITE41 == 1
+    spatial_ref_sys_init2 (db, GAIA_EPSG_ANY, 0);
+#else
+    spatial_ref_sys_init (db, 0);
+#endif
 }
 
 #if !defined(DONT_USE_JNI_ONLOAD) && defined(JNI_VERSION_1_2)

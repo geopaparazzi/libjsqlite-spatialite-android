@@ -73,5 +73,5 @@ LOCAL_SRC_FILES := \
 	$(RASTERLITE2_PATH)/src/rl2webp.c \
 	$(RASTERLITE2_PATH)/src/rl2version.c \
 	$(RASTERLITE2_PATH)/src/rl2wms.c
-LOCAL_STATIC_LIBRARIES := libpng libwebp liblzma spatialite libcairo libcurl libxml2 libgeotiff libtiff libgif libjpeg    
+LOCAL_STATIC_LIBRARIES := libpng libwebp libxml2 spatialite libcairo libcurl libgeotiff libtiff libgif libjpeg    
 include $(BUILD_STATIC_LIBRARY)

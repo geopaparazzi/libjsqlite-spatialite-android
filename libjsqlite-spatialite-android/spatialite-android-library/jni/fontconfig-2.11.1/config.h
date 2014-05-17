@@ -132,7 +132,7 @@
 #define HAVE_RANDOM 1
 
 /* Define to 1 if you have the `random_r' function. */
-#define HAVE_RANDOM_R 1
+/* #define HAVE_RANDOM_R 0 */
 
 /* Define to 1 if you have the `rand_r' function. */
 #define HAVE_RAND_R 1
@@ -216,7 +216,7 @@
 #define HAVE_SYS_STATFS_H 1
 
 /* Define to 1 if you have the <sys/statvfs.h> header file. */
-#define HAVE_SYS_STATVFS_H 1
+/* #define HAVE_SYS_STATVFS_H 0 */
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #define HAVE_SYS_STAT_H 1

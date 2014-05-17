@@ -30,6 +30,7 @@ LOCAL_CFLAGS	:= \
 LOCAL_LDLIBS	:= -fuse-ld=gold -llog -lz 
 LOCAL_C_INCLUDES := \
 	$(SQLITE_PATH)/ \
+	$(SPATIALITE_PATH)/src/headers \
 	$(JSQLITE_PATH)/native/
 LOCAL_SRC_FILES := \
 	$(JSQLITE_PATH)/native/sqlite_jni.c

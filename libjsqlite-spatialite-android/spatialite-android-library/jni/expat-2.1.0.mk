@@ -11,7 +11,8 @@ LOCAL_CFLAGS    := \
 	$(expat_flags)
 
 LOCAL_C_INCLUDES := \
- $(EXPAT_PATH)/lib 
+ $(EXPAT_PATH)/lib \
+ $(EXPAT_PATH)
 LOCAL_SRC_FILES := \
 	$(EXPAT_PATH)/lib/xmlparse.c \ \
 	$(EXPAT_PATH)/lib/xmlrole.c \

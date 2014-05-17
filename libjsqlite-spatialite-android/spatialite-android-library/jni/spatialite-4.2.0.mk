@@ -31,6 +31,7 @@ LOCAL_CFLAGS    := \
 
 # LOCAL_LDLIBS is always ignored for static libraries
 # LOCAL_LDLIBS    := -llog -lz
+# LOADABLE_EXTENSION must NOT be defined
 # For Spatialite with VirtualShapes,VirtualXL support iconv is needed
 LOCAL_C_INCLUDES := \
 	$(SQLITE_PATH) \
@@ -40,7 +41,9 @@ LOCAL_C_INCLUDES := \
  $(ICONV_PATH)/libcharset/include \
 	$(GEOS_PATH)/include \
 	$(GEOS_PATH)/capi \
-	$(PROJ4_PATH)/src
+	$(PROJ4_PATH)/src \
+ $(LZMA_PATH)/src/liblzma/api \
+ $(XML2_PATH)/include 
 LOCAL_SRC_FILES := \
 	$(SPATIALITE_PATH)/src/connection_cache/alloc_cache.c \
 	$(SPATIALITE_PATH)/src/connection_cache/generator/code_generator.c \
@@ -154,5 +157,5 @@ LOCAL_SRC_FILES := \
 	$(SPATIALITE_PATH)/src/versioninfo/version.c \
 	$(SPATIALITE_PATH)/src/virtualtext/virtualtext.c \
 	$(SPATIALITE_PATH)/src/wfs/wfs_in.c
-LOCAL_STATIC_LIBRARIES := iconv proj geos
+LOCAL_STATIC_LIBRARIES := iconv proj geos libxml2
 include $(BUILD_STATIC_LIBRARY)
