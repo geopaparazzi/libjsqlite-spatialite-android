@@ -61,7 +61,7 @@ the terms of any one of the MPL, the GPL or the LGPL.
 
 #include <spatialite/gaiageo.h>
 
-#ifdef GEOS_TRUNK		/* GEOS experimental features */
+#ifdef GEOS_ADVANCED		/* GEOS advanced features */
 
 struct voronoj_triangle
 {
@@ -1917,4 +1917,4 @@ concave_hull_build_r (const void *p_cache, void *p_first, int dimension_model,
 				      allow_holes);
 }
 
-#endif /* end GEOS experimental features */
+#endif /* end GEOS advanced features */

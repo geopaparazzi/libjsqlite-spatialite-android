@@ -50,8 +50,8 @@ at the end of this step several "epsg_inlined_*.c" files will be generated
 STEP #4: final setup
 --------
 - copy the generated file into the parent dir:
-  rm ../epsg_inlined_*.c
-  cp epsg_inlined.c ..
+  rm ../epsg_inlined*.c
+  cp epsg_inlined*.c ..
 - be sure to update as required the repository (ADD/DEL)
 - be sure to update as required Makefile.am
 - and finally commit into the repository

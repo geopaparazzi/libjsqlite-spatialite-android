@@ -8,6 +8,7 @@ cairo_flags := \
  -DCAIRO_NO_MUTEX=1 \
  -DHAVE_STDINT_H \
  -DHAVE_UINT64_T  \
+ -DCAIRO_HAS_FC_FONT \
  -O2 \
  -std=c99 \
  -Wno-missing-field-initializers \
@@ -22,6 +23,7 @@ LOCAL_C_INCLUDES := \
  $(PIXMAN_PATH)/pixman \
  $(FREETYPE_PATH)/builds \
  $(FREETYPE_PATH)/include \
+ $(FONTCONFIG_PATH) \
  $(PNG_PATH) \
  $(CAIRO_PATH)
 LOCAL_SRC_FILES := \
@@ -130,7 +132,7 @@ LOCAL_SRC_FILES := \
 	$(CAIRO_PATH)/cairo-user-font.c \
 	$(CAIRO_PATH)/cairo-version.c \
 	$(CAIRO_PATH)/cairo-wideint.c
-LOCAL_STATIC_LIBRARIES := libpixman libfreetype
+LOCAL_STATIC_LIBRARIES := libpixman libfreetype libfontconfig
 include $(BUILD_STATIC_LIBRARY)
 
 

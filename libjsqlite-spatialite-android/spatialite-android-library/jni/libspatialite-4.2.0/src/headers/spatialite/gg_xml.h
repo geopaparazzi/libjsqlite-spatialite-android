@@ -302,7 +302,7 @@ extern "C"
  gaiaIsSldSeVectorStyleXmlBlob, gaiaIsSldSeRasterXmlBlob,
  gaiaIsSvgXmlBlob
  */
-    GAIAGEO_DECLARE int gaiaIsSldSeRasterStyleXmlBlob (const unsigned char
+    GAIAGEO_DECLARE int gaiaIsSldStyleXmlBlob (const unsigned char
 						       *blob, int size);
 
 /**

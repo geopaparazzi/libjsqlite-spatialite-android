@@ -22,7 +22,7 @@
 #include "tool_setup.h"
 
 #ifdef HAVE_FSETXATTR
-#  include <linux/xattr.h> /* header from libc, not from libattr */
+#  include <sys/xattr.h> /* header from libc, not from libattr */
 #  define USE_XATTR
 #elif defined(__FreeBSD_version) && (__FreeBSD_version > 500000)
 #  include <sys/types.h>

@@ -798,7 +798,6 @@ enable_epsg
 enable_geos
 with_geosconfig
 enable_geosadvanced
-enable_geostrunk
 enable_lwgeom
 enable_libxml2
 enable_geopackage
@@ -1463,10 +1462,8 @@ Optional Features:
   --enable-epsg           enables full EPSG dataset support [default=yes]
   --enable-geos           enables GEOS inclusion [default=yes]
   --enable-geosadvanced   enables GEOS advanced features [default=yes]
-  --enable-geostrunk      enables GEOS-trunk experimental features
-                          [default=no]
   --enable-lwgeom         enables LWGEOM support [default=no]
-  --enable-libxml2        enables libxml2 inclusion [default=no]
+  --enable-libxml2        enables libxml2 inclusion [default=yes]
   --enable-geopackage     enables experimental GeoPackage raster function
                           support [default=no]
   --enable-gcov           turn on code coverage analysis tools
@@ -17194,7 +17191,7 @@ else
 fi
 
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/headers/Makefile src/gaiaaux/Makefile src/gaiaexif/Makefile src/gaiageo/Makefile src/gaiageo/flex/Makefile src/gaiageo/lemon/Makefile src/gaiageo/lemon/lemon_src/Makefile src/geopackage/Makefile src/spatialite/Makefile src/shapefiles/Makefile src/dxf/Makefile src/md5/Makefile src/srsinit/Makefile src/srsinit/epsg_update/Makefile src/connection_cache/Makefile src/connection_cache/generator/Makefile src/virtualtext/Makefile src/wfs/Makefile test/Makefile test/sql_stmt_tests/Makefile test/sql_stmt_geos_tests/Makefile test/sql_stmt_geosadvanced_tests/Makefile test/sql_stmt_geostrunk_tests/Makefile test/sql_stmt_proj_tests/Makefile test/sql_stmt_mathsql_tests/Makefile test/sql_stmt_lwgeom_tests/Makefile test/sql_stmt_libxml2_tests/Makefile test/sql_stmt_security_tests/Makefile test/sql_stmt_xmlsec_tests/Makefile examples/Makefile Doxyfile spatialite.pc"
+ac_config_files="$ac_config_files Makefile src/Makefile src/headers/Makefile src/gaiaaux/Makefile src/gaiaexif/Makefile src/gaiageo/Makefile src/gaiageo/flex/Makefile src/gaiageo/lemon/Makefile src/gaiageo/lemon/lemon_src/Makefile src/geopackage/Makefile src/spatialite/Makefile src/shapefiles/Makefile src/dxf/Makefile src/md5/Makefile src/srsinit/Makefile src/srsinit/epsg_update/Makefile src/connection_cache/Makefile src/connection_cache/generator/Makefile src/virtualtext/Makefile src/wfs/Makefile test/Makefile test/sql_stmt_tests/Makefile test/sql_stmt_geos_tests/Makefile test/sql_stmt_geosadvanced_tests/Makefile test/sql_stmt_proj_tests/Makefile test/sql_stmt_mathsql_tests/Makefile test/sql_stmt_lwgeom_tests/Makefile test/sql_stmt_libxml2_tests/Makefile test/sql_stmt_security_tests/Makefile test/sql_stmt_xmlsec_tests/Makefile examples/Makefile Doxyfile spatialite.pc"
 
 
 # exporting the TARGET_CPU string
@@ -17906,79 +17903,7 @@ done
   # Ensure we can link against libgeos_c
   LIBS_SAVE="$LIBS"
   LIBS="$GEOS_LDFLAGS"
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing GEOSTopologyPreserveSimplify" >&5
-$as_echo_n "checking for library containing GEOSTopologyPreserveSimplify... " >&6; }
-if ${ac_cv_search_GEOSTopologyPreserveSimplify+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_func_search_save_LIBS=$LIBS
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char GEOSTopologyPreserveSimplify ();
-int
-main ()
-{
-return GEOSTopologyPreserveSimplify ();
-  ;
-  return 0;
-}
-_ACEOF
-for ac_lib in '' geos_c; do
-  if test -z "$ac_lib"; then
-    ac_res="none required"
-  else
-    ac_res=-l$ac_lib
-    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
-  fi
-  if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_search_GEOSTopologyPreserveSimplify=$ac_res
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext
-  if ${ac_cv_search_GEOSTopologyPreserveSimplify+:} false; then :
-  break
-fi
-done
-if ${ac_cv_search_GEOSTopologyPreserveSimplify+:} false; then :
-
-else
-  ac_cv_search_GEOSTopologyPreserveSimplify=no
-fi
-rm conftest.$ac_ext
-LIBS=$ac_func_search_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_GEOSTopologyPreserveSimplify" >&5
-$as_echo "$ac_cv_search_GEOSTopologyPreserveSimplify" >&6; }
-ac_res=$ac_cv_search_GEOSTopologyPreserveSimplify
-if test "$ac_res" != no; then :
-  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-
-else
-  as_fn_error $? "could not find libgeos_c - you may need to specify the directory of a geos-config file using --with-geosconfig" "$LINENO" 5
-fi
-
-  LIBS="$LIBS_SAVE"
-  LIBS=$LIBS$GEOS_LDFLAGS' -lgeos_c'
-
-  #-----------------------------------------------------------------------
-  #   --enable-geosadvanced
-  #
-  # Check whether --enable-geosadvanced was given.
-if test "${enable_geosadvanced+set}" = set; then :
-  enableval=$enable_geosadvanced;
-else
-  enable_geosadvanced=yes
-fi
-
-  if test x"$enable_geosadvanced" != "xno"; then
-	  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing GEOSCoveredBy" >&5
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing GEOSCoveredBy" >&5
 $as_echo_n "checking for library containing GEOSCoveredBy... " >&6; }
 if ${ac_cv_search_GEOSCoveredBy+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -18033,24 +17958,23 @@ if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
 else
-  as_fn_error $? "obsolete 'libgeos_c' (< v.3.3.0). please retry specifying: --disable-geosadvanced." "$LINENO" 5
+  as_fn_error $? "could not find libgeos_c (or obsolete 'libgeos_c' < v.3.3.0 found) - you may need to specify the directory of a geos-config file using --with-geosconfig" "$LINENO" 5
 fi
 
-	  $as_echo "#define GEOS_ADVANCED 1" >>confdefs.h
-
-  fi
+  LIBS="$LIBS_SAVE"
+  LIBS=$LIBS $GEOS_LDFLAGS -lgeos_c
 
   #-----------------------------------------------------------------------
-  #   --enable-geostrunk
+  #   --enable-geosadvanced
   #
-  # Check whether --enable-geostrunk was given.
-if test "${enable_geostrunk+set}" = set; then :
-  enableval=$enable_geostrunk;
+  # Check whether --enable-geosadvanced was given.
+if test "${enable_geosadvanced+set}" = set; then :
+  enableval=$enable_geosadvanced;
 else
-  enable_geostrunk=no
+  enable_geosadvanced=yes
 fi
 
-  if test x"$enable_geostrunk" != "xno"; then
+  if test x"$enable_geosadvanced" != "xno"; then
 	  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing GEOSDelaunayTriangulation" >&5
 $as_echo_n "checking for library containing GEOSDelaunayTriangulation... " >&6; }
 if ${ac_cv_search_GEOSDelaunayTriangulation+:} false; then :
@@ -18109,10 +18033,9 @@ else
   as_fn_error $? "'libgeos_c' (>= v.3.4.0) is required but it doesn't seem to be installed on this system." "$LINENO" 5
 fi
 
-	  $as_echo "#define GEOS_TRUNK 1" >>confdefs.h
+	  $as_echo "#define GEOS_ADVANCED 1" >>confdefs.h
 
   fi
-
 
   #-----------------------------------------------------------------------
   #   --enable-lwgeom
@@ -18229,7 +18152,7 @@ fi
 if test "${enable_libxml2+set}" = set; then :
   enableval=$enable_libxml2;
 else
-  enable_libxml2=no
+  enable_libxml2=yes
 fi
 
 if test x"$enable_libxml2" != "xno"; then
@@ -19679,7 +19602,6 @@ do
     "test/sql_stmt_tests/Makefile") CONFIG_FILES="$CONFIG_FILES test/sql_stmt_tests/Makefile" ;;
     "test/sql_stmt_geos_tests/Makefile") CONFIG_FILES="$CONFIG_FILES test/sql_stmt_geos_tests/Makefile" ;;
     "test/sql_stmt_geosadvanced_tests/Makefile") CONFIG_FILES="$CONFIG_FILES test/sql_stmt_geosadvanced_tests/Makefile" ;;
-    "test/sql_stmt_geostrunk_tests/Makefile") CONFIG_FILES="$CONFIG_FILES test/sql_stmt_geostrunk_tests/Makefile" ;;
     "test/sql_stmt_proj_tests/Makefile") CONFIG_FILES="$CONFIG_FILES test/sql_stmt_proj_tests/Makefile" ;;
     "test/sql_stmt_mathsql_tests/Makefile") CONFIG_FILES="$CONFIG_FILES test/sql_stmt_mathsql_tests/Makefile" ;;
     "test/sql_stmt_lwgeom_tests/Makefile") CONFIG_FILES="$CONFIG_FILES test/sql_stmt_lwgeom_tests/Makefile" ;;

@@ -17,7 +17,7 @@ old_library='libcurl.a'
 inherited_linker_flags=''
 
 # Libraries that this one depends upon.
-dependency_libs=' -lidn -lrtmp -lssl -lcrypto -lldap -lz -lrt'
+dependency_libs=' -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/lib -lc -ldl -llog -lgcc -lm'
 
 # Names of additional weak libraries provided by this library
 weak_library_names=''

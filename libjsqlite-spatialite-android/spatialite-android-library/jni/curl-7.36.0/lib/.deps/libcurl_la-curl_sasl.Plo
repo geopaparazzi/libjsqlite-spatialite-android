@@ -1,101 +1,96 @@
 libcurl_la-curl_sasl.lo: curl_sasl.c curl_setup.h curl_config.h \
- ../include/curl/curlbuild.h /usr/include/x86_64-linux-gnu/sys/types.h \
- /usr/include/features.h /usr/include/x86_64-linux-gnu/bits/predefs.h \
- /usr/include/x86_64-linux-gnu/sys/cdefs.h \
- /usr/include/x86_64-linux-gnu/bits/wordsize.h \
- /usr/include/x86_64-linux-gnu/gnu/stubs.h \
- /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
- /usr/include/x86_64-linux-gnu/bits/types.h \
- /usr/include/x86_64-linux-gnu/bits/typesizes.h /usr/include/time.h \
- /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stddef.h /usr/include/endian.h \
- /usr/include/x86_64-linux-gnu/bits/endian.h \
- /usr/include/x86_64-linux-gnu/bits/byteswap.h \
- /usr/include/x86_64-linux-gnu/sys/select.h \
- /usr/include/x86_64-linux-gnu/bits/select.h \
- /usr/include/x86_64-linux-gnu/bits/sigset.h \
- /usr/include/x86_64-linux-gnu/bits/time.h \
- /usr/include/x86_64-linux-gnu/bits/select2.h \
- /usr/include/x86_64-linux-gnu/sys/sysmacros.h \
- /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h \
- /usr/include/x86_64-linux-gnu/sys/socket.h \
- /usr/include/x86_64-linux-gnu/sys/uio.h \
- /usr/include/x86_64-linux-gnu/bits/uio.h \
- /usr/include/x86_64-linux-gnu/bits/socket.h \
- /usr/include/x86_64-linux-gnu/bits/sockaddr.h \
- /usr/include/x86_64-linux-gnu/asm/socket.h \
- /usr/include/asm-generic/socket.h \
- /usr/include/x86_64-linux-gnu/asm/sockios.h \
- /usr/include/asm-generic/sockios.h \
- /usr/include/x86_64-linux-gnu/bits/socket2.h ../include/curl/curlrules.h \
- /usr/include/stdio.h /usr/include/libio.h /usr/include/_G_config.h \
- /usr/include/wchar.h /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdarg.h \
- /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
- /usr/include/x86_64-linux-gnu/bits/sys_errlist.h \
- /usr/include/x86_64-linux-gnu/bits/stdio.h \
- /usr/include/x86_64-linux-gnu/bits/stdio2.h /usr/include/assert.h \
- curl_setup_once.h /usr/include/stdlib.h \
- /usr/include/x86_64-linux-gnu/bits/waitflags.h \
- /usr/include/x86_64-linux-gnu/bits/waitstatus.h /usr/include/alloca.h \
- /usr/include/x86_64-linux-gnu/bits/stdlib.h /usr/include/string.h \
- /usr/include/xlocale.h /usr/include/x86_64-linux-gnu/bits/string.h \
- /usr/include/x86_64-linux-gnu/bits/string2.h \
- /usr/include/x86_64-linux-gnu/bits/string3.h /usr/include/ctype.h \
- /usr/include/errno.h /usr/include/x86_64-linux-gnu/bits/errno.h \
- /usr/include/linux/errno.h /usr/include/x86_64-linux-gnu/asm/errno.h \
- /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
- /usr/include/x86_64-linux-gnu/sys/stat.h \
- /usr/include/x86_64-linux-gnu/bits/stat.h \
- /usr/include/x86_64-linux-gnu/sys/time.h \
- /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdbool.h \
- /usr/include/unistd.h /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
- /usr/include/x86_64-linux-gnu/bits/environments.h \
- /usr/include/x86_64-linux-gnu/bits/confname.h /usr/include/getopt.h \
- /usr/include/x86_64-linux-gnu/bits/unistd.h ../include/curl/curl.h \
- ../include/curl/curlver.h ../include/curl/curlbuild.h \
+ ../include/curl/curlbuild.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/types.h \
+ /home/mj10777/gnu_source/adt-bundle-linux/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.6/include/stddef.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/stdint.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/_types.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/machine/_types.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/_wchar_limits.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/android/api-level.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/cdefs.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/cdefs_elf.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/posix_types.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/stddef.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/compiler.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm/posix_types.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm/types.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/types.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/machine/kernel.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/sysmacros.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/inttypes.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/socket.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/socket.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm/socket.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm/sockios.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/sockios.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/uio.h \
  ../include/curl/curlrules.h \
- /usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed/limits.h \
- /usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed/syslimits.h \
- /usr/include/limits.h /usr/include/x86_64-linux-gnu/bits/posix1_lim.h \
- /usr/include/x86_64-linux-gnu/bits/local_lim.h \
- /usr/include/linux/limits.h \
- /usr/include/x86_64-linux-gnu/bits/posix2_lim.h ../include/curl/easy.h \
- ../include/curl/multi.h ../include/curl/curl.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/stdio.h \
+ /home/mj10777/gnu_source/adt-bundle-linux/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.6/include/stdarg.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/assert.h \
+ curl_setup_once.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/stdlib.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/string.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/malloc.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/alloca.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/strings.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/memory.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/ctype.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/errno.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/errno.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm/errno.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm-generic/errno.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm-generic/errno-base.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/stat.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/time.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/time.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/stat.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/endian.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/endian.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/machine/endian.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/time.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm/siginfo.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm-generic/siginfo.h \
+ /home/mj10777/gnu_source/adt-bundle-linux/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.6/include/stdbool.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/unistd.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/select.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/signal.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/limits.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/limits.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/limits.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/machine/internal_types.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/machine/limits.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/syslimits.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm/page.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm/signal.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm-generic/signal.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm/sigcontext.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/sysconf.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/capability.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/pathconf.h \
+ ../include/curl/curl.h ../include/curl/curlver.h \
+ ../include/curl/curlbuild.h ../include/curl/curlrules.h \
+ ../include/curl/easy.h ../include/curl/multi.h ../include/curl/curl.h \
  ../include/curl/typecheck-gcc.h urldata.h cookie.h formdata.h \
- /usr/include/openssl/rsa.h /usr/include/openssl/asn1.h \
- /usr/include/openssl/e_os2.h /usr/include/openssl/opensslconf.h \
- /usr/include/openssl/bio.h /usr/include/openssl/crypto.h \
- /usr/include/openssl/stack.h /usr/include/openssl/safestack.h \
- /usr/include/openssl/opensslv.h /usr/include/openssl/ossl_typ.h \
- /usr/include/openssl/symhacks.h /usr/include/openssl/bn.h \
- /usr/include/openssl/x509.h /usr/include/openssl/buffer.h \
- /usr/include/openssl/evp.h /usr/include/openssl/objects.h \
- /usr/include/openssl/obj_mac.h /usr/include/openssl/ec.h \
- /usr/include/openssl/ecdsa.h /usr/include/openssl/ecdh.h \
- /usr/include/openssl/dsa.h /usr/include/openssl/dh.h \
- /usr/include/openssl/sha.h /usr/include/openssl/x509_vfy.h \
- /usr/include/openssl/lhash.h /usr/include/openssl/pkcs7.h \
- /usr/include/openssl/pem.h /usr/include/openssl/pem2.h \
- /usr/include/openssl/ssl.h /usr/include/openssl/comp.h \
- /usr/include/openssl/hmac.h /usr/include/openssl/kssl.h \
- /usr/include/openssl/ssl2.h /usr/include/openssl/ssl3.h \
- /usr/include/openssl/tls1.h /usr/include/openssl/dtls1.h \
- /usr/include/openssl/pqueue.h /usr/include/openssl/ssl23.h \
- /usr/include/openssl/srtp.h /usr/include/openssl/err.h \
- /usr/include/openssl/engine.h /usr/include/openssl/rand.h \
- /usr/include/openssl/ui.h /usr/include/openssl/pkcs12.h \
- /usr/include/netinet/in.h \
- /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdint.h /usr/include/stdint.h \
- /usr/include/x86_64-linux-gnu/bits/wchar.h \
- /usr/include/x86_64-linux-gnu/bits/in.h timeval.h /usr/include/zlib.h \
- /usr/include/zconf.h http_chunks.h hostip.h hash.h llist.h \
- curl_addrinfo.h /usr/include/netdb.h /usr/include/rpc/netdb.h \
- /usr/include/x86_64-linux-gnu/bits/netdb.h /usr/include/arpa/inet.h \
- asyn.h /usr/include/setjmp.h /usr/include/x86_64-linux-gnu/bits/setjmp.h \
- /usr/include/x86_64-linux-gnu/bits/setjmp2.h splay.h imap.h pingpong.h \
- pop3.h smtp.h ftp.h file.h ssh.h http.h rtsp.h wildcard.h multihandle.h \
- curl_base64.h curl_md5.h curl_hmac.h vtls/vtls.h ../lib/curl_setup.h \
- curl_ntlm_msgs.h curl_sasl.h warnless.h curl_memory.h \
- ../include/curl/mprintf.h memdebug.h
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/netinet/in.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/in.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm/byteorder.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/byteorder/little_endian.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/byteorder/swab.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/byteorder/generic.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/in6.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/ipv6.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/netinet/in6.h \
+ timeval.h http_chunks.h hostip.h hash.h llist.h curl_addrinfo.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/netdb.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/arpa/inet.h \
+ asyn.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/setjmp.h \
+ /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/machine/setjmp.h \
+ splay.h imap.h pingpong.h pop3.h smtp.h ftp.h file.h ssh.h http.h rtsp.h \
+ wildcard.h multihandle.h curl_base64.h curl_md5.h curl_hmac.h \
+ vtls/vtls.h ../lib/curl_setup.h curl_ntlm_msgs.h curl_sasl.h warnless.h \
+ curl_memory.h ../include/curl/mprintf.h memdebug.h
 
 curl_setup.h:
 
@@ -103,145 +98,141 @@ curl_config.h:
 
 ../include/curl/curlbuild.h:
 
-/usr/include/x86_64-linux-gnu/sys/types.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/types.h:
 
-/usr/include/features.h:
+/home/mj10777/gnu_source/adt-bundle-linux/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.6/include/stddef.h:
 
-/usr/include/x86_64-linux-gnu/bits/predefs.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/stdint.h:
 
-/usr/include/x86_64-linux-gnu/sys/cdefs.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/_types.h:
 
-/usr/include/x86_64-linux-gnu/bits/wordsize.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/machine/_types.h:
 
-/usr/include/x86_64-linux-gnu/gnu/stubs.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/_wchar_limits.h:
 
-/usr/include/x86_64-linux-gnu/gnu/stubs-64.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/android/api-level.h:
 
-/usr/include/x86_64-linux-gnu/bits/types.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/cdefs.h:
 
-/usr/include/x86_64-linux-gnu/bits/typesizes.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/cdefs_elf.h:
 
-/usr/include/time.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/posix_types.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stddef.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/stddef.h:
 
-/usr/include/endian.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/compiler.h:
 
-/usr/include/x86_64-linux-gnu/bits/endian.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm/posix_types.h:
 
-/usr/include/x86_64-linux-gnu/bits/byteswap.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm/types.h:
 
-/usr/include/x86_64-linux-gnu/sys/select.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/types.h:
 
-/usr/include/x86_64-linux-gnu/bits/select.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/machine/kernel.h:
 
-/usr/include/x86_64-linux-gnu/bits/sigset.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/sysmacros.h:
 
-/usr/include/x86_64-linux-gnu/bits/time.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/inttypes.h:
 
-/usr/include/x86_64-linux-gnu/bits/select2.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/socket.h:
 
-/usr/include/x86_64-linux-gnu/sys/sysmacros.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/socket.h:
 
-/usr/include/x86_64-linux-gnu/bits/pthreadtypes.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm/socket.h:
 
-/usr/include/x86_64-linux-gnu/sys/socket.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm/sockios.h:
 
-/usr/include/x86_64-linux-gnu/sys/uio.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/sockios.h:
 
-/usr/include/x86_64-linux-gnu/bits/uio.h:
-
-/usr/include/x86_64-linux-gnu/bits/socket.h:
-
-/usr/include/x86_64-linux-gnu/bits/sockaddr.h:
-
-/usr/include/x86_64-linux-gnu/asm/socket.h:
-
-/usr/include/asm-generic/socket.h:
-
-/usr/include/x86_64-linux-gnu/asm/sockios.h:
-
-/usr/include/asm-generic/sockios.h:
-
-/usr/include/x86_64-linux-gnu/bits/socket2.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/uio.h:
 
 ../include/curl/curlrules.h:
 
-/usr/include/stdio.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/stdio.h:
 
-/usr/include/libio.h:
+/home/mj10777/gnu_source/adt-bundle-linux/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.6/include/stdarg.h:
 
-/usr/include/_G_config.h:
-
-/usr/include/wchar.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdarg.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdio_lim.h:
-
-/usr/include/x86_64-linux-gnu/bits/sys_errlist.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdio.h:
-
-/usr/include/x86_64-linux-gnu/bits/stdio2.h:
-
-/usr/include/assert.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/assert.h:
 
 curl_setup_once.h:
 
-/usr/include/stdlib.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/stdlib.h:
 
-/usr/include/x86_64-linux-gnu/bits/waitflags.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/string.h:
 
-/usr/include/x86_64-linux-gnu/bits/waitstatus.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/malloc.h:
 
-/usr/include/alloca.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/alloca.h:
 
-/usr/include/x86_64-linux-gnu/bits/stdlib.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/strings.h:
 
-/usr/include/string.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/memory.h:
 
-/usr/include/xlocale.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/ctype.h:
 
-/usr/include/x86_64-linux-gnu/bits/string.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/errno.h:
 
-/usr/include/x86_64-linux-gnu/bits/string2.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/errno.h:
 
-/usr/include/x86_64-linux-gnu/bits/string3.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm/errno.h:
 
-/usr/include/ctype.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm-generic/errno.h:
 
-/usr/include/errno.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm-generic/errno-base.h:
 
-/usr/include/x86_64-linux-gnu/bits/errno.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/stat.h:
 
-/usr/include/linux/errno.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/time.h:
 
-/usr/include/x86_64-linux-gnu/asm/errno.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/time.h:
 
-/usr/include/asm-generic/errno.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/stat.h:
 
-/usr/include/asm-generic/errno-base.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/endian.h:
 
-/usr/include/x86_64-linux-gnu/sys/stat.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/endian.h:
 
-/usr/include/x86_64-linux-gnu/bits/stat.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/machine/endian.h:
 
-/usr/include/x86_64-linux-gnu/sys/time.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/time.h:
 
-/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdbool.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm/siginfo.h:
 
-/usr/include/unistd.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm-generic/siginfo.h:
 
-/usr/include/x86_64-linux-gnu/bits/posix_opt.h:
+/home/mj10777/gnu_source/adt-bundle-linux/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.6/include/stdbool.h:
 
-/usr/include/x86_64-linux-gnu/bits/environments.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/unistd.h:
 
-/usr/include/x86_64-linux-gnu/bits/confname.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/select.h:
 
-/usr/include/getopt.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/signal.h:
 
-/usr/include/x86_64-linux-gnu/bits/unistd.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/limits.h:
+
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/limits.h:
+
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/limits.h:
+
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/machine/internal_types.h:
+
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/machine/limits.h:
+
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/syslimits.h:
+
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm/page.h:
+
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm/signal.h:
+
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm-generic/signal.h:
+
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm/sigcontext.h:
+
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/sys/sysconf.h:
+
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/capability.h:
+
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/pathconf.h:
 
 ../include/curl/curl.h:
 
@@ -250,20 +241,6 @@ curl_setup_once.h:
 ../include/curl/curlbuild.h:
 
 ../include/curl/curlrules.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed/limits.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/4.8/include-fixed/syslimits.h:
-
-/usr/include/limits.h:
-
-/usr/include/x86_64-linux-gnu/bits/posix1_lim.h:
-
-/usr/include/x86_64-linux-gnu/bits/local_lim.h:
-
-/usr/include/linux/limits.h:
-
-/usr/include/x86_64-linux-gnu/bits/posix2_lim.h:
 
 ../include/curl/easy.h:
 
@@ -279,109 +256,25 @@ cookie.h:
 
 formdata.h:
 
-/usr/include/openssl/rsa.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/netinet/in.h:
 
-/usr/include/openssl/asn1.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/in.h:
 
-/usr/include/openssl/e_os2.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/asm/byteorder.h:
 
-/usr/include/openssl/opensslconf.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/byteorder/little_endian.h:
 
-/usr/include/openssl/bio.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/byteorder/swab.h:
 
-/usr/include/openssl/crypto.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/byteorder/generic.h:
 
-/usr/include/openssl/stack.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/in6.h:
 
-/usr/include/openssl/safestack.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/linux/ipv6.h:
 
-/usr/include/openssl/opensslv.h:
-
-/usr/include/openssl/ossl_typ.h:
-
-/usr/include/openssl/symhacks.h:
-
-/usr/include/openssl/bn.h:
-
-/usr/include/openssl/x509.h:
-
-/usr/include/openssl/buffer.h:
-
-/usr/include/openssl/evp.h:
-
-/usr/include/openssl/objects.h:
-
-/usr/include/openssl/obj_mac.h:
-
-/usr/include/openssl/ec.h:
-
-/usr/include/openssl/ecdsa.h:
-
-/usr/include/openssl/ecdh.h:
-
-/usr/include/openssl/dsa.h:
-
-/usr/include/openssl/dh.h:
-
-/usr/include/openssl/sha.h:
-
-/usr/include/openssl/x509_vfy.h:
-
-/usr/include/openssl/lhash.h:
-
-/usr/include/openssl/pkcs7.h:
-
-/usr/include/openssl/pem.h:
-
-/usr/include/openssl/pem2.h:
-
-/usr/include/openssl/ssl.h:
-
-/usr/include/openssl/comp.h:
-
-/usr/include/openssl/hmac.h:
-
-/usr/include/openssl/kssl.h:
-
-/usr/include/openssl/ssl2.h:
-
-/usr/include/openssl/ssl3.h:
-
-/usr/include/openssl/tls1.h:
-
-/usr/include/openssl/dtls1.h:
-
-/usr/include/openssl/pqueue.h:
-
-/usr/include/openssl/ssl23.h:
-
-/usr/include/openssl/srtp.h:
-
-/usr/include/openssl/err.h:
-
-/usr/include/openssl/engine.h:
-
-/usr/include/openssl/rand.h:
-
-/usr/include/openssl/ui.h:
-
-/usr/include/openssl/pkcs12.h:
-
-/usr/include/netinet/in.h:
-
-/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdint.h:
-
-/usr/include/stdint.h:
-
-/usr/include/x86_64-linux-gnu/bits/wchar.h:
-
-/usr/include/x86_64-linux-gnu/bits/in.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/netinet/in6.h:
 
 timeval.h:
-
-/usr/include/zlib.h:
-
-/usr/include/zconf.h:
 
 http_chunks.h:
 
@@ -393,21 +286,15 @@ llist.h:
 
 curl_addrinfo.h:
 
-/usr/include/netdb.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/netdb.h:
 
-/usr/include/rpc/netdb.h:
-
-/usr/include/x86_64-linux-gnu/bits/netdb.h:
-
-/usr/include/arpa/inet.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/arpa/inet.h:
 
 asyn.h:
 
-/usr/include/setjmp.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/setjmp.h:
 
-/usr/include/x86_64-linux-gnu/bits/setjmp.h:
-
-/usr/include/x86_64-linux-gnu/bits/setjmp2.h:
+/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include/machine/setjmp.h:
 
 splay.h:
 

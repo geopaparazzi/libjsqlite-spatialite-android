@@ -500,7 +500,7 @@ skip_geos:
 #endif	/* end GEOS conditional */
 
 #ifdef GEOS_ADVANCED	/* only if GEOS_ADVANCED is supported */
-    if (strcmp(GEOSversion (), "3.3") < 0)
+    if (strcmp(GEOSversion (), "3.4") < 0)
     {
     /* 
        skipping GEOS tests if some obsolete version is found 
@@ -520,28 +520,6 @@ skip_geos:
 
     skip_geos_advanced:
 #endif	/* end GEOS_ADVANCED conditional */
-
-#ifdef GEOS_TRUNK	/* only if GEOS_TRUNK is supported */
-    if (strcmp(GEOSversion (), "3.3") < 0)
-    {
-    /* 
-       skipping GEOS tests if some obsolete version is found 
-
-       rationale: obsolete versions may return substantially
-       different results, thus causing many testcases to fail
-    */
-        fprintf(stderr, "WARNING: skipping GEOS_TRUNK testcases; obsolete version found !!!\n");
-        goto skip_geos_trunk;
-    }
-    
-    result = run_subdir_test("sql_stmt_geostrunk_tests", conn, load_extension);
-    if (result != 0)
-    {
-        return result;
-    }
-    
-skip_geos_trunk:
-#endif	/* end GEOS_TRUNK conditional */
 
 #ifdef ENABLE_LWGEOM	/* only if LWGEOM is supported */
     result = run_subdir_test("sql_stmt_lwgeom_tests", conn, load_extension);

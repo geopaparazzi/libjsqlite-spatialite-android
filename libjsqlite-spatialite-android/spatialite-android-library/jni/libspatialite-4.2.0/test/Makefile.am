@@ -7,11 +7,11 @@ check_PROGRAMS = check_endian \
 		check_geom_aux \
 		check_geometry_cols \
 		check_create \
-                check_bufovflw \
+		check_bufovflw \
 		check_fdo1 \
 		check_fdo2 \
 		check_fdo3 \
-                check_fdo_bufovflw \
+		check_fdo_bufovflw \
 		check_md5 \
 		check_dbf_load \
 		check_shp_load \
@@ -36,7 +36,7 @@ check_PROGRAMS = check_endian \
 		check_virtualtable4 \
 		check_virtualtable5 \
 		check_virtualtable6 \
-                check_virtual_ovflw \
+		check_virtual_ovflw \
 		check_mbrcache \
 		check_spatialindex \
 		check_exif \
@@ -51,6 +51,7 @@ check_PROGRAMS = check_endian \
 		check_wfsin \
 		check_dxf \
 		check_metacatalog
+		
 if ENABLE_GEOPACKAGE
 check_PROGRAMS += \
 		check_createBaseTables \
@@ -173,7 +174,7 @@ EXTRA_DIST = asprintf4win.h \
 	symbol.dxf
 
 SUBDIRS = sql_stmt_geosadvanced_tests sql_stmt_geos_tests \
-	sql_stmt_geostrunk_tests sql_stmt_libxml2_tests \
-	sql_stmt_lwgeom_tests sql_stmt_mathsql_tests \
-	sql_stmt_proj_tests sql_stmt_security_tests \
-	sql_stmt_tests sql_stmt_xmlsec_tests
+	sql_stmt_libxml2_tests sql_stmt_lwgeom_tests \
+	sql_stmt_mathsql_tests sql_stmt_proj_tests \
+	sql_stmt_security_tests sql_stmt_tests \
+	sql_stmt_xmlsec_tests

@@ -379,7 +379,6 @@ evalGeosCache (struct splite_internal_cache *cache, gaiaGeomCollPtr geom1,
 	       gaiaGeomCollPtr * geom)
 {
 /* handling the internal GEOS cache */
-#ifdef GEOS_ADVANCED		/* only if GEOS advanced features are enabled */
     struct splite_geos_cache_item *p1 = &(cache->cacheItem1);
     struct splite_geos_cache_item *p2 = &(cache->cacheItem2);
     uLong crc1 = crc32 (0L, blob1, size1);
@@ -475,7 +474,6 @@ evalGeosCache (struct splite_internal_cache *cache, gaiaGeomCollPtr geom1,
 	GEOSGeom_destroy_r (handle, p2->geosGeom);
     p2->geosGeom = NULL;
     p2->preparedGeosGeom = NULL;
-#endif /* end GEOS_ADVANCED */
 
     return 0;
 }
@@ -604,8 +602,6 @@ gaiaGeomCollIntersects_r (const void *p_cache, gaiaGeomCollPtr geom1,
     return ret;
 }
 
-#ifdef GEOS_ADVANCED		/* only if GEOS advanced features are enabled */
-
 GAIAGEO_DECLARE int
 gaiaGeomCollPreparedIntersects (const void *p_cache, gaiaGeomCollPtr geom1,
 				unsigned char *blob1, int size1,
@@ -655,8 +651,6 @@ gaiaGeomCollPreparedIntersects (const void *p_cache, gaiaGeomCollPtr geom1,
     GEOSGeom_destroy_r (handle, g2);
     return ret;
 }
-
-#endif /* end GEOS_ADVANCED */
 
 GAIAGEO_DECLARE int
 gaiaGeomCollDisjoint (gaiaGeomCollPtr geom1, gaiaGeomCollPtr geom2)
@@ -720,8 +714,6 @@ gaiaGeomCollDisjoint_r (const void *p_cache, gaiaGeomCollPtr geom1,
     return ret;
 }
 
-#ifdef GEOS_ADVANCED		/* only if GEOS advanced features are enabled */
-
 GAIAGEO_DECLARE int
 gaiaGeomCollPreparedDisjoint (const void *p_cache, gaiaGeomCollPtr geom1,
 			      unsigned char *blob1, int size1,
@@ -772,8 +764,6 @@ gaiaGeomCollPreparedDisjoint (const void *p_cache, gaiaGeomCollPtr geom1,
     GEOSGeom_destroy_r (handle, g2);
     return ret;
 }
-
-#endif /* end GEOS_ADVANCED */
 
 GAIAGEO_DECLARE int
 gaiaGeomCollOverlaps (gaiaGeomCollPtr geom1, gaiaGeomCollPtr geom2)
@@ -837,8 +827,6 @@ gaiaGeomCollOverlaps_r (const void *p_cache, gaiaGeomCollPtr geom1,
     return ret;
 }
 
-#ifdef GEOS_ADVANCED		/* only if GEOS advanced features are enabled */
-
 GAIAGEO_DECLARE int
 gaiaGeomCollPreparedOverlaps (const void *p_cache, gaiaGeomCollPtr geom1,
 			      unsigned char *blob1, int size1,
@@ -889,8 +877,6 @@ gaiaGeomCollPreparedOverlaps (const void *p_cache, gaiaGeomCollPtr geom1,
     GEOSGeom_destroy_r (handle, g2);
     return ret;
 }
-
-#endif /* end GEOS_ADVANCED */
 
 GAIAGEO_DECLARE int
 gaiaGeomCollCrosses (gaiaGeomCollPtr geom1, gaiaGeomCollPtr geom2)
@@ -954,8 +940,6 @@ gaiaGeomCollCrosses_r (const void *p_cache, gaiaGeomCollPtr geom1,
     return ret;
 }
 
-#ifdef GEOS_ADVANCED		/* only if GEOS advanced features are enabled */
-
 GAIAGEO_DECLARE int
 gaiaGeomCollPreparedCrosses (const void *p_cache, gaiaGeomCollPtr geom1,
 			     unsigned char *blob1, int size1,
@@ -1006,8 +990,6 @@ gaiaGeomCollPreparedCrosses (const void *p_cache, gaiaGeomCollPtr geom1,
     GEOSGeom_destroy_r (handle, g2);
     return ret;
 }
-
-#endif /* end GEOS_ADVANCED */
 
 GAIAGEO_DECLARE int
 gaiaGeomCollTouches (gaiaGeomCollPtr geom1, gaiaGeomCollPtr geom2)
@@ -1071,8 +1053,6 @@ gaiaGeomCollTouches_r (const void *p_cache, gaiaGeomCollPtr geom1,
     return ret;
 }
 
-#ifdef GEOS_ADVANCED		/* only if GEOS advanced features are enabled */
-
 GAIAGEO_DECLARE int
 gaiaGeomCollPreparedTouches (const void *p_cache, gaiaGeomCollPtr geom1,
 			     unsigned char *blob1, int size1,
@@ -1123,8 +1103,6 @@ gaiaGeomCollPreparedTouches (const void *p_cache, gaiaGeomCollPtr geom1,
     GEOSGeom_destroy_r (handle, g2);
     return ret;
 }
-
-#endif /* end GEOS_ADVANCED */
 
 GAIAGEO_DECLARE int
 gaiaGeomCollWithin (gaiaGeomCollPtr geom1, gaiaGeomCollPtr geom2)
@@ -1188,8 +1166,6 @@ gaiaGeomCollWithin_r (const void *p_cache, gaiaGeomCollPtr geom1,
     return ret;
 }
 
-#ifdef GEOS_ADVANCED		/* only if GEOS advanced features are enabled */
-
 GAIAGEO_DECLARE int
 gaiaGeomCollPreparedWithin (const void *p_cache, gaiaGeomCollPtr geom1,
 			    unsigned char *blob1, int size1,
@@ -1243,8 +1219,6 @@ gaiaGeomCollPreparedWithin (const void *p_cache, gaiaGeomCollPtr geom1,
     GEOSGeom_destroy_r (handle, g2);
     return ret;
 }
-
-#endif /* end GEOS_ADVANCED */
 
 GAIAGEO_DECLARE int
 gaiaGeomCollContains (gaiaGeomCollPtr geom1, gaiaGeomCollPtr geom2)
@@ -1308,8 +1282,6 @@ gaiaGeomCollContains_r (const void *p_cache, gaiaGeomCollPtr geom1,
     return ret;
 }
 
-#ifdef GEOS_ADVANCED		/* only if GEOS advanced features are enabled */
-
 GAIAGEO_DECLARE int
 gaiaGeomCollPreparedContains (const void *p_cache, gaiaGeomCollPtr geom1,
 			      unsigned char *blob1, int size1,
@@ -1363,8 +1335,6 @@ gaiaGeomCollPreparedContains (const void *p_cache, gaiaGeomCollPtr geom1,
     GEOSGeom_destroy_r (handle, g2);
     return ret;
 }
-
-#endif /* end GEOS_ADVANCED */
 
 GAIAGEO_DECLARE int
 gaiaGeomCollRelate (gaiaGeomCollPtr geom1, gaiaGeomCollPtr geom2,
@@ -3608,8 +3578,6 @@ gaiaPolygonize_r (const void *p_cache, gaiaGeomCollPtr geom, int force_multi)
     return gaiaPolygonizeCommon (cache, handle, geom, force_multi);
 }
 
-#ifdef GEOS_ADVANCED		/* GEOS advanced features */
-
 GAIAGEO_DECLARE int
 gaiaGeomCollCovers (gaiaGeomCollPtr geom1, gaiaGeomCollPtr geom2)
 {
@@ -3846,7 +3814,5 @@ gaiaGeomCollPreparedCoveredBy (const void *p_cache, gaiaGeomCollPtr geom1,
 	return -1;
     return ret;
 }
-
-#endif /* end GEOS advanced features */
 
 #endif /* end including GEOS */

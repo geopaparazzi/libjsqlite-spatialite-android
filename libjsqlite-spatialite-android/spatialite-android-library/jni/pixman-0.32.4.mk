@@ -14,12 +14,12 @@ LOCAL_MODULE    := libpixman
  -include "limits.h" 
 
 ifeq ($(TARGET_ARCH),x86)
- LOCAL_CFLAGS   := $(webp_flags)
+ LOCAL_CFLAGS   := $(pixman_flags)
 else 
  ifeq ($(TARGET_ARCH),mips)
-  LOCAL_CFLAGS   := $(webp_flags)
+  LOCAL_CFLAGS   := $(pixman_flags)
  else
-  LOCAL_CFLAGS   := -DUSE_ARM_NEON -DUSE_ARM_SIMD  $(webp_flags)
+  LOCAL_CFLAGS   := -DUSE_ARM_NEON -DUSE_ARM_SIMD  $(pixman_flags)
   pixman_src := \
   	$(PIXMAN_PATH)/pixman/pixman-arm-simd.c \
  	 $(PIXMAN_PATH)/pixman/pixman-arm-simd-asm.S  \

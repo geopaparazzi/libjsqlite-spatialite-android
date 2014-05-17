@@ -724,7 +724,7 @@ gaiaSnapToGrid (gaiaGeomCollPtr geom, double origin_x, double origin_y,
     return result;
 }
 
-#ifdef GEOS_ADVANCED		/* GEOS advanced features */
+#ifndef OMIT_GEOS		/* only if GEOS is enabled */
 
 static void
 get_grid_bbox (gaiaGeomCollPtr geom, double *min_x, double *min_y,

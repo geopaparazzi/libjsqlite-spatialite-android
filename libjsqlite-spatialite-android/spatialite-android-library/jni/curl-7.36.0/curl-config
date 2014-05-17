@@ -75,7 +75,7 @@ while test $# -gt 0; do
         ;;
 
     --cc)
-        echo "gcc"
+        echo "/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc"
         ;;
 
     --prefix)
@@ -83,13 +83,13 @@ while test $# -gt 0; do
         ;;
 
     --feature|--features)
-        for feature in SSL libz IDN NTLM NTLM_WB TLS-SRP ""; do
+        for feature in  ""; do
             test -n "$feature" && echo "$feature"
         done
         ;;
 
     --protocols)
-        for protocol in DICT FILE FTP FTPS GOPHER HTTP HTTPS IMAP IMAPS LDAP LDAPS POP3 POP3S RTMP RTSP SMTP SMTPS TELNET TFTP; do
+        for protocol in DICT FILE FTP GOPHER HTTP IMAP POP3 RTSP SMTP TELNET TFTP; do
             echo "$protocol"
         done
         ;;
@@ -148,7 +148,7 @@ while test $# -gt 0; do
            CURLLIBDIR=""
         fi
         if test "Xyes" = "Xyes"; then
-          echo ${CURLLIBDIR}-lcurl -lidn -lrtmp -lssl -lcrypto -lldap -lz -lrt
+          echo ${CURLLIBDIR}-lcurl -lc -ldl -llog -lgcc -lm
         else
           echo ${CURLLIBDIR}-lcurl
         fi
@@ -156,7 +156,7 @@ while test $# -gt 0; do
 
     --static-libs)
         if test "Xyes" != "Xno" ; then
-          echo ${exec_prefix}/lib/libcurl.a  -lidn -lrtmp -lssl -lcrypto -lldap -lz -lrt
+          echo ${exec_prefix}/lib/libcurl.a -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/lib -Wl,--gc-sections -nostdlib -Wl,--no-undefined,-z,nocopyreloc -Wl,-dynamic-linker,/system/bin/linker -lc -ldl -llog -lgcc -lm
         else
           echo "curl was built with static libraries disabled" >&2
           exit 1
@@ -164,7 +164,7 @@ while test $# -gt 0; do
         ;;
 
     --configure)
-        echo " '--build=x86_64-pc-linux-gnu' '--host=arm-linux-eabi' 'build_alias=x86_64-pc-linux-gnu' 'host_alias=arm-linux-eabi'"
+        echo " '--host=arm-linux-eabi' '--without-zlib' '--disable-manual' 'host_alias=arm-linux-eabi' 'CC=/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc' 'CFLAGS=-march=armv5te -mtune=xscale -msoft-float -mandroid -fPIC -mthumb-interwork -mthumb -mlong-calls -ffunction-sections -fstack-protector -fno-short-enums -fomit-frame-pointer -fno-strict-aliasing -finline-limit=64 ' 'LDFLAGS=-L/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/lib -Wl,--gc-sections -nostdlib -Wl,--no-undefined,-z,nocopyreloc -Wl,-dynamic-linker,/system/bin/linker ' 'LIBS=-lc -ldl -llog -lgcc -lm' 'CPPFLAGS=-I/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include -D__ARM_ARCH_5__ -D__ARM_ARCH_5T__ -D__ARM_ARCH_5E__ -D__ARM_ARCH_5TE__ -DANDROID -DOS_ANDROID -D__NEW__ -D__SGI_STL_INTERNAL_PAIR_H '"
         ;;
 
     *)

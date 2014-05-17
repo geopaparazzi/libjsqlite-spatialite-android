@@ -17084,8 +17084,7 @@ fnct_Union_final (sqlite3_context * context)
       }
     chain = *p;
 
-#ifdef GEOS_ADVANCED
-/* we can apply UnaryUnion */
+/* applying UnaryUnion */
     item = chain->first;
     while (item)
       {
@@ -17113,67 +17112,6 @@ fnct_Union_final (sqlite3_context * context)
     else
 	result = gaiaUnaryUnion (aggregate);
     gaiaFreeGeomColl (aggregate);
-/* end UnaryUnion */
-#else
-/* old GEOS; no UnaryUnion available */
-    if (chain->all_polygs)
-      {
-	  /* all Polygons: we can apply UnionCascaded */
-	  item = chain->first;
-	  while (item)
-	    {
-		gaiaGeomCollPtr geom = item->geom;
-		if (item == chain->first)
-		  {
-		      /* initializing the aggregate geometry */
-		      aggregate = geom;
-		      item->geom = NULL;
-		      item = item->next;
-		      continue;
-		  }
-		if (data != NULL)
-		    tmp = gaiaMergeGeometries_r (data, aggregate, geom);
-		else
-		    tmp = gaiaMergeGeometries (aggregate, geom);
-		gaiaFreeGeomColl (aggregate);
-		gaiaFreeGeomColl (geom);
-		item->geom = NULL;
-		aggregate = tmp;
-		item = item->next;
-	    }
-	  if (data != NULL)
-	      result = gaiaUnionCascaded_r (data, aggregate);
-	  else
-	      result = gaiaUnionCascaded (aggregate);
-	  gaiaFreeGeomColl (aggregate);
-      }
-    else
-      {
-	  /* mixed types: the hardest/slowest way */
-	  item = chain->first;
-	  while (item)
-	    {
-		gaiaGeomCollPtr geom = item->geom;
-		if (item == chain->first)
-		  {
-		      result = geom;
-		      item->geom = NULL;
-		      item = item->next;
-		      continue;
-		  }
-		if (data != NULL)
-		    tmp = gaiaGeometryUnion_r (data, result, geom);
-		else
-		    tmp = gaiaGeometryUnion (result, geom);
-		gaiaFreeGeomColl (result);
-		gaiaFreeGeomColl (geom);
-		item->geom = NULL;
-		result = tmp;
-		item = item->next;
-	    }
-      }
-/* end old GEOS: no UnaryUnion available */
-#endif
     gaia_free_geom_chain (chain);
 
     if (result == NULL)
@@ -17462,19 +17400,12 @@ fnct_Intersects (sqlite3_context * context, int argc, sqlite3_value ** argv)
     else
       {
 	  void *data = sqlite3_user_data (context);
-#ifdef GEOS_ADVANCED		/* only if GEOS advanced features are enabled */
 	  if (data != NULL)
 	      ret = gaiaGeomCollPreparedIntersects (data,
 						    geo1, blob1, bytes1, geo2,
 						    blob2, bytes2);
 	  else
 	      ret = gaiaGeomCollIntersects (geo1, geo2);
-#else
-	  if (data != NULL)
-	      ret = gaiaGeomCollIntersects_r (data, geo1, geo2);
-	  else
-	      ret = gaiaGeomCollIntersects (geo1, geo2);
-#endif /* end GEOS_ADVANCED */
 	  sqlite3_result_int (context, ret);
       }
     gaiaFreeGeomColl (geo1);
@@ -17521,19 +17452,12 @@ fnct_Disjoint (sqlite3_context * context, int argc, sqlite3_value ** argv)
     else
       {
 	  void *data = sqlite3_user_data (context);
-#ifdef GEOS_ADVANCED		/* only if GEOS advanced features are enabled */
 	  if (data != NULL)
 	      ret = gaiaGeomCollPreparedDisjoint (data,
 						  geo1, blob1, bytes1, geo2,
 						  blob2, bytes2);
 	  else
 	      ret = gaiaGeomCollDisjoint (geo1, geo2);
-#else
-	  if (data != NULL)
-	      ret = gaiaGeomCollDisjoint_r (data, geo1, geo2);
-	  else
-	      ret = gaiaGeomCollDisjoint (geo1, geo2);
-#endif /* end GEOS_ADVANCED */
 	  sqlite3_result_int (context, ret);
       }
     gaiaFreeGeomColl (geo1);
@@ -17580,19 +17504,12 @@ fnct_Overlaps (sqlite3_context * context, int argc, sqlite3_value ** argv)
     else
       {
 	  void *data = sqlite3_user_data (context);
-#ifdef GEOS_ADVANCED		/* only if GEOS advanced features are enabled */
 	  if (data != NULL)
 	      ret = gaiaGeomCollPreparedOverlaps (data,
 						  geo1, blob1, bytes1, geo2,
 						  blob2, bytes2);
 	  else
 	      ret = gaiaGeomCollOverlaps (geo1, geo2);
-#else
-	  if (data != NULL)
-	      ret = gaiaGeomCollOverlaps_r (data, geo1, geo2);
-	  else
-	      ret = gaiaGeomCollOverlaps (geo1, geo2);
-#endif /* end GEOS_ADVANCED */
 	  sqlite3_result_int (context, ret);
       }
     gaiaFreeGeomColl (geo1);
@@ -17639,19 +17556,12 @@ fnct_Crosses (sqlite3_context * context, int argc, sqlite3_value ** argv)
     else
       {
 	  void *data = sqlite3_user_data (context);
-#ifdef GEOS_ADVANCED		/* only if GEOS advanced features are enabled */
 	  if (data != NULL)
 	      ret = gaiaGeomCollPreparedCrosses (data,
 						 geo1, blob1, bytes1, geo2,
 						 blob2, bytes2);
 	  else
 	      ret = gaiaGeomCollCrosses (geo1, geo2);
-#else
-	  if (data != NULL)
-	      ret = gaiaGeomCollCrosses_r (data, geo1, geo2);
-	  else
-	      ret = gaiaGeomCollCrosses (geo1, geo2);
-#endif /* end GEOS_ADVANCED */
 	  sqlite3_result_int (context, ret);
       }
     gaiaFreeGeomColl (geo1);
@@ -17698,19 +17608,12 @@ fnct_Touches (sqlite3_context * context, int argc, sqlite3_value ** argv)
     else
       {
 	  void *data = sqlite3_user_data (context);
-#ifdef GEOS_ADVANCED		/* only if GEOS advanced features are enabled */
 	  if (data != NULL)
 	      ret = gaiaGeomCollPreparedTouches (data,
 						 geo1, blob1, bytes1, geo2,
 						 blob2, bytes2);
 	  else
 	      ret = gaiaGeomCollTouches (geo1, geo2);
-#else
-	  if (data != NULL)
-	      ret = gaiaGeomCollTouches_r (data, geo1, geo2);
-	  else
-	      ret = gaiaGeomCollTouches (geo1, geo2);
-#endif /* end GEOS_ADVANCED */
 	  sqlite3_result_int (context, ret);
       }
     gaiaFreeGeomColl (geo1);
@@ -17757,19 +17660,12 @@ fnct_Within (sqlite3_context * context, int argc, sqlite3_value ** argv)
     else
       {
 	  void *data = sqlite3_user_data (context);
-#ifdef GEOS_ADVANCED		/* only if GEOS advanced features are enabled */
 	  if (data != NULL)
 	      ret = gaiaGeomCollPreparedWithin (data, geo1,
 						blob1, bytes1, geo2, blob2,
 						bytes2);
 	  else
 	      ret = gaiaGeomCollWithin (geo1, geo2);
-#else
-	  if (data != NULL)
-	      ret = gaiaGeomCollWithin_r (data, geo1, geo2);
-	  else
-	      ret = gaiaGeomCollWithin (geo1, geo2);
-#endif /* end GEOS_ADVANCED */
 	  sqlite3_result_int (context, ret);
       }
     gaiaFreeGeomColl (geo1);
@@ -17816,19 +17712,12 @@ fnct_Contains (sqlite3_context * context, int argc, sqlite3_value ** argv)
     else
       {
 	  void *data = sqlite3_user_data (context);
-#ifdef GEOS_ADVANCED		/* only if GEOS advanced features are enabled */
 	  if (data != NULL)
 	      ret = gaiaGeomCollPreparedContains (data,
 						  geo1, blob1, bytes1, geo2,
 						  blob2, bytes2);
 	  else
 	      ret = gaiaGeomCollContains (geo1, geo2);
-#else
-	  if (data != NULL)
-	      ret = gaiaGeomCollContains_r (data, geo1, geo2);
-	  else
-	      ret = gaiaGeomCollContains (geo1, geo2);
-#endif /* end GEOS_ADVANCED */
 	  sqlite3_result_int (context, ret);
       }
     gaiaFreeGeomColl (geo1);
@@ -17948,8 +17837,6 @@ fnct_Distance (sqlite3_context * context, int argc, sqlite3_value ** argv)
 		/* attempting to identify the corresponding ellipsoid */
 		if (getEllipsoidParams (sqlite, geo1->Srid, &a, &b, &rf))
 		  {
-#ifdef GEOS_ADVANCED
-		      /* GEOS advanced features support is strictly required */
 		      gaiaGeomCollPtr shortest;
 		      if (data != NULL)
 			  shortest = gaiaShortestLine_r (data, geo1, geo2);
@@ -18042,10 +17929,6 @@ fnct_Distance (sqlite3_context * context, int argc, sqlite3_value ** argv)
 				sqlite3_result_null (context);
 			    gaiaFreeGeomColl (shortest);
 			}
-#else
-		      /* GEOS advanced features support unavailable */
-		      sqlite3_result_null (context);
-#endif
 		  }
 		else
 		    sqlite3_result_null (context);
@@ -18664,8 +18547,6 @@ fnct_BdMPolyFromWKB2 (sqlite3_context * context, int argc,
     fnct_aux_polygonize (context, geo, 1, 1);
     return;
 }
-
-#ifdef GEOS_ADVANCED		/* GEOS advanced features */
 
 static int
 check_topo_table (sqlite3 * sqlite, const char *table, int is_view)
@@ -21630,9 +21511,7 @@ fnct_RingsCutAtNodes (sqlite3_context * context, int argc,
     gaiaFreeGeomColl (geom2);
 }
 
-#endif /* end GEOS advanced features */
-
-#ifdef GEOS_TRUNK		/* GEOS experimental features */
+#ifdef GEOS_ADVANCED		/* GEOS advanced features - 3.4.0 */
 
 static void
 fnct_DelaunayTriangulation (sqlite3_context * context, int argc,
@@ -21913,7 +21792,7 @@ fnct_ConcaveHull (sqlite3_context * context, int argc, sqlite3_value ** argv)
     gaiaFreeGeomColl (geo);
 }
 
-#endif /* end GEOS experimental features */
+#endif /* end GEOS advanced features */
 
 #ifdef ENABLE_LWGEOM		/* enabling LWGEOM support */
 
@@ -28773,9 +28652,6 @@ register_spatialite_sql_functions (void *p_db, const void *p_cache)
 			     fnct_BdMPolyFromWKB1, 0, 0);
     sqlite3_create_function (db, "ST_BdMPolyFromWKB", 2, SQLITE_ANY, cache,
 			     fnct_BdMPolyFromWKB2, 0, 0);
-
-#ifdef GEOS_ADVANCED		/* GEOS advanced features */
-
     sqlite3_create_function (db, "CreateTopologyTables", 2, SQLITE_ANY, 0,
 			     fnct_CreateTopologyTables, 0, 0);
     sqlite3_create_function (db, "CreateTopologyTables", 3, SQLITE_ANY, 0,
@@ -28885,10 +28761,8 @@ register_spatialite_sql_functions (void *p_db, const void *p_cache)
 			     fnct_RingsCutAtNodes, 0, 0);
     sqlite3_create_function (db, "ST_RingsCutAtNodes", 1, SQLITE_ANY, 0,
 			     fnct_RingsCutAtNodes, 0, 0);
-
-#endif /* end GEOS advanced features */
-
-#ifdef GEOS_TRUNK		/* GEOS experimental features */
+			     
+#ifdef GEOS_ADVANCED		/* GEOS advanced features - 3.4.0 */
 
     sqlite3_create_function (db, "DelaunayTriangulation", 1, SQLITE_ANY, cache,
 			     fnct_DelaunayTriangulation, 0, 0);
@@ -28935,7 +28809,7 @@ register_spatialite_sql_functions (void *p_db, const void *p_cache)
     sqlite3_create_function (db, "ST_ConcaveHull", 4, SQLITE_ANY, cache,
 			     fnct_ConcaveHull, 0, 0);
 
-#endif /* end GEOS experimental features */
+#endif /* end GEOS advanced features */
 
 #ifdef ENABLE_LWGEOM		/* enabling LWGEOM support */
 

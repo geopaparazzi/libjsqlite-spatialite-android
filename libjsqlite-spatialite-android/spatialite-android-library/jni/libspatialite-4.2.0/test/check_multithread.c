@@ -551,7 +551,7 @@ load_testcases (struct test_list *list)
     free (namelist);
 #endif /* end GEOS conditional */
 
-#ifdef GEOS_ADVANCED		/* only if GEOS_ADVANCED is supported */
+#ifdef GEOS_ADVANCED		/* only if GEOS_ADVANCED is supported - 3.4.0 */
 /* GEOS ADVANCED SQL testcases */
     current_dir = "sql_stmt_geosadvanced_tests";
     path = sqlite3_mprintf ("%s", current_dir);
@@ -577,33 +577,6 @@ load_testcases (struct test_list *list)
       }
     free (namelist);
 #endif /* end GEOS_ADVANCED conditional */
-
-#ifdef GEOS_TRUNK		/* only if GEOS_TRUNK is supported */
-/* GEOS TRUNK SQL testcases */
-    current_dir = "sql_stmt_geostrunk_tests";
-    path = sqlite3_mprintf ("%s", current_dir);
-    n = scandir (path, &namelist, test_case_filter, alphasort);
-    if (n < 0)
-      {
-	  perror ("scandir");
-	  return 0;
-      }
-    sqlite3_free (path);
-    for (i = 0; i < n; ++i)
-      {
-	  struct test_data *data;
-	  char *path;
-	  path = sqlite3_mprintf ("%s/%s", current_dir, namelist[i]->d_name);
-	  data = read_one_case (path);
-	  if (strcmp (data->database_name, ":memory:") == 0)
-	      add_test (list, data);
-	  else
-	      cleanup_test_data (data);
-	  sqlite3_free (path);
-	  free (namelist[i]);
-      }
-    free (namelist);
-#endif /* end GEOS_TRUNK conditional */
 
 #ifdef ENABLE_LWGEOM		/* only if LWGEOM is supported */
 /* LWGEOM SQL testcases */

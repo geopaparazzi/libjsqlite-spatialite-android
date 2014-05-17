@@ -75,8 +75,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = x86_64-pc-linux-gnu
-host_triplet = arm-linux-eabi
+build_triplet = x86_64-unknown-linux-gnu
+host_triplet = x86_64-unknown-linux-gnu
 subdir = test/sql_stmt_geosadvanced_tests
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -122,7 +122,7 @@ AUTOMAKE = automake-1.13
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -g -O2
+CFLAGS = -Wall -Wextra -Wunused -pedantic -g -O0 -fprofile-arcs -ftest-coverage -g
 CPP = gcc -E
 CPPFLAGS = 
 CXX = g++
@@ -134,37 +134,37 @@ DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DLLTOOL = dlltool
 DSYMUTIL = 
-DUMPBIN = :
+DUMPBIN = 
 ECHO_C = 
 ECHO_N = -n
 ECHO_T = 
-EGREP = /bin/grep -E
+EGREP = /usr/bin/grep -E
 EXEEXT = 
-FGREP = /bin/grep -F
-GEOSCONFIG = /usr/local/bin/geos-config
-GEOS_CFLAGS = -I/usr/local/include
-GEOS_LDFLAGS = -L/usr/local/lib
-GREP = /bin/grep
+FGREP = /usr/bin/grep -F
+GEOSCONFIG = /usr/bin/geos-config
+GEOS_CFLAGS = -I/usr/include
+GEOS_LDFLAGS = -L/usr/lib64
+GREP = /usr/bin/grep
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-LD = /usr/bin/ld
+LD = /usr/bin/ld -m elf_x86_64
 LDFLAGS = 
-LIBOBJS =  ${LIBOBJDIR}lstat$U.o ${LIBOBJDIR}memcmp$U.o ${LIBOBJDIR}stat$U.o
-LIBS = -lfreexl -lcharset -lproj -lz -lsqlite3 -L/usr/local/lib -lgeos_c
+LIBOBJS = 
+LIBS = -lgeos_c -lfreexl -lproj -lz -lsqlite3  -llwgeom -lgeos_c
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
-LIBXML2_CFLAGS = 
-LIBXML2_LIBS = 
+LIBXML2_CFLAGS = -I/usr/include/libxml2 
+LIBXML2_LIBS = -lxml2 
 LIPO = 
 LN_S = ln -s
-LTLIBOBJS =  ${LIBOBJDIR}lstat$U.lo ${LIBOBJDIR}memcmp$U.lo ${LIBOBJDIR}stat$U.lo
+LTLIBOBJS = 
 MAINT = #
 MAKEINFO = makeinfo
 MANIFEST_TOOL = :
-MKDIR_P = /bin/mkdir -p
-NM = nm
+MKDIR_P = /usr/bin/mkdir -p
+NM = /usr/bin/nm -B
 NMEDIT = 
 OBJDUMP = objdump
 OBJEXT = o
@@ -178,49 +178,49 @@ PACKAGE_TARNAME = libspatialite
 PACKAGE_URL = 
 PACKAGE_VERSION = 4.2.0-devel
 PATH_SEPARATOR = :
-PKG_CONFIG = 
+PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
-PKG_CONFIG_PATH = 
+PKG_CONFIG_PATH = /usr/local/lib/pkgconfig
 RANLIB = ranlib
-SED = /bin/sed
+SED = /usr/bin/sed
 SET_MAKE = 
-SHELL = /bin/bash
+SHELL = /bin/sh
 STRIP = strip
 VERSION = 4.2.0-devel
-abs_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.2.0/test/sql_stmt_geosadvanced_tests
-abs_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.2.0/test/sql_stmt_geosadvanced_tests
-abs_top_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.2.0
-abs_top_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.2.0
+abs_builddir = /home/sandro/fossil/libspatialite/test/sql_stmt_geosadvanced_tests
+abs_srcdir = /home/sandro/fossil/libspatialite/test/sql_stmt_geosadvanced_tests
+abs_top_builddir = /home/sandro/fossil/libspatialite
+abs_top_srcdir = /home/sandro/fossil/libspatialite
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
-ac_ct_DUMPBIN = link -dump
+ac_ct_DUMPBIN = 
 am__include = include
 am__leading_dot = .
 am__quote = 
 am__tar = $${TAR-tar} chof - "$$tardir"
 am__untar = $${TAR-tar} xf -
 bindir = ${exec_prefix}/bin
-build = x86_64-pc-linux-gnu
-build_alias = x86_64-pc-linux-gnu
+build = x86_64-unknown-linux-gnu
+build_alias = 
 build_cpu = x86_64
 build_os = linux-gnu
-build_vendor = pc
+build_vendor = unknown
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = arm-linux-eabi
-host_alias = arm-linux-eabi
-host_cpu = arm
-host_os = eabi
-host_vendor = linux
+host = x86_64-unknown-linux-gnu
+host_alias = 
+host_cpu = x86_64
+host_os = linux-gnu
+host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.2.0/install-sh
+install_sh = ${SHELL} /home/sandro/fossil/libspatialite/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -240,333 +240,63 @@ target_alias =
 top_build_prefix = ../../
 top_builddir = ../..
 top_srcdir = ../..
-EXTRA_DIST = closestpoint10.testcase \
-	closestpoint11.testcase \
-	closestpoint12.testcase \
-	closestpoint13.testcase \
-	closestpoint14.testcase \
-	closestpoint15.testcase \
-	closestpoint16.testcase \
-	closestpoint17.testcase \
-	closestpoint18.testcase \
-	closestpoint19.testcase \
-	closestpoint1.testcase \
-	closestpoint20.testcase \
-	closestpoint21.testcase \
-	closestpoint22.testcase \
-	closestpoint2.testcase \
-	closestpoint3.testcase \
-	closestpoint4.testcase \
-	closestpoint5.testcase \
-	closestpoint6.testcase \
-	closestpoint7.testcase \
-	closestpoint8.testcase \
-	closestpoint9.testcase \
-	coveredby1.testcase \
-	coveredby2.testcase \
-	covers1.testcase \
-	covers2.testcase \
-	covers_covered1.testcase \
-	covers_covered2.testcase \
-	covers_covered3.testcase \
-	covers_covered4.testcase \
-	covers_covered5.testcase \
-	covers_covered6.testcase \
-	covers_covered7.testcase \
-	createtopo10.testcase \
-	createtopo11.testcase \
-	createtopo12.testcase \
-	createtopo13.testcase \
-	createtopo14.testcase \
-	createtopo15.testcase \
-	createtopo16.testcase \
-	createtopo17.testcase \
-	createtopo18.testcase \
-	createtopo1.testcase \
-	createtopo2.testcase \
-	createtopo3.testcase \
-	createtopo4.testcase \
-	createtopo5.testcase \
-	createtopo6.testcase \
-	createtopo7.testcase \
-	createtopo8.testcase \
-	createtopo9.testcase \
-	distance_geogr10.testcase \
-	distance_geogr11.testcase \
-	distance_geogr12.testcase \
-	distance_geogr1.testcase \
-	distance_geogr2.testcase \
-	distance_geogr3.testcase \
-	distance_geogr4.testcase \
-	distance_geogr5.testcase \
-	distance_geogr6.testcase \
-	distance_geogr7.testcase \
-	distance_geogr8.testcase \
-	distance_geogr9.testcase \
-	hausdorffdistance1.testcase \
-	hausdorffdistance2.testcase \
-	hausdorffdistance3.testcase \
-	hausdorffdistance4.testcase \
-	hausdorffdistance5.testcase \
-	hausdorffdistance6.testcase \
-	hausdorffdistance7.testcase \
-	hexgrid10.testcase \
-	hexgrid11.testcase \
-	hexgrid12.testcase \
-	hexgrid13.testcase \
-	hexgrid14.testcase \
-	hexgrid15.testcase \
-	hexgrid16.testcase \
-	hexgrid17.testcase \
-	hexgrid18.testcase \
-	hexgrid19.testcase \
-	hexgrid1.testcase \
-	hexgrid20.testcase \
-	hexgrid21.testcase \
-	hexgrid22.testcase \
-	hexgrid23.testcase \
-	hexgrid2.testcase \
-	hexgrid3.testcase \
-	hexgrid4.testcase \
-	hexgrid5.testcase \
-	hexgrid6.testcase \
-	hexgrid7.testcase \
-	hexgrid8.testcase \
-	hexgrid9.testcase \
-	interpolateequidistantpoint10.testcase \
-	interpolateequidistantpoint11.testcase \
-	interpolateequidistantpoint12.testcase \
-	interpolateequidistantpoint13.testcase \
-	interpolateequidistantpoint14.testcase \
-	interpolateequidistantpoint1.testcase \
-	interpolateequidistantpoint2.testcase \
-	interpolateequidistantpoint3.testcase \
-	interpolateequidistantpoint4.testcase \
-	interpolateequidistantpoint5.testcase \
-	interpolateequidistantpoint6.testcase \
-	interpolateequidistantpoint7.testcase \
-	interpolateequidistantpoint8.testcase \
-	interpolateequidistantpoint9.testcase \
-	interpolatepoint10.testcase \
-	interpolatepoint11.testcase \
-	interpolatepoint12.testcase \
-	interpolatepoint13.testcase \
-	interpolatepoint14.testcase \
-	interpolatepoint1.testcase \
-	interpolatepoint2.testcase \
-	interpolatepoint3.testcase \
-	interpolatepoint4.testcase \
-	interpolatepoint5.testcase \
-	interpolatepoint6.testcase \
-	interpolatepoint7.testcase \
-	interpolatepoint8.testcase \
-	interpolatepoint9.testcase \
-	linemerge10.testcase \
-	linemerge1.testcase \
-	linemerge2.testcase \
-	linemerge3.testcase \
-	linemerge4.testcase \
-	linemerge5.testcase \
-	linemerge6.testcase \
-	linemerge7.testcase \
-	linemerge8.testcase \
-	linemerge9.testcase \
-	linesnodes10.testcase \
-	linesnodes11.testcase \
-	linesnodes12.testcase \
-	linesnodes13.testcase \
-	linesnodes14.testcase \
-	linesnodes15.testcase \
-	linesnodes16.testcase \
-	linesnodes17.testcase \
-	linesnodes18.testcase \
-	linesnodes19.testcase \
-	linesnodes1.testcase \
-	linesnodes2.testcase \
-	linesnodes3.testcase \
-	linesnodes4.testcase \
-	linesnodes5.testcase \
-	linesnodes6.testcase \
-	linesnodes7.testcase \
-	linesnodes8.testcase \
-	linesnodes9.testcase \
-	linesubstring10.testcase \
-	linesubstring11.testcase \
-	linesubstring12.testcase \
-	linesubstring13.testcase \
-	linesubstring14.testcase \
-	linesubstring15.testcase \
-	linesubstring16.testcase \
-	linesubstring17.testcase \
-	linesubstring18.testcase \
-	linesubstring19.testcase \
-	linesubstring1.testcase \
-	linesubstring20.testcase \
-	linesubstring21.testcase \
-	linesubstring22.testcase \
-	linesubstring23.testcase \
-	linesubstring24.testcase \
-	linesubstring25.testcase \
-	linesubstring26.testcase \
-	linesubstring2.testcase \
-	linesubstring3.testcase \
-	linesubstring4.testcase \
-	linesubstring5.testcase \
-	linesubstring6.testcase \
-	linesubstring7.testcase \
-	linesubstring8.testcase \
-	linesubstring9.testcase \
-	locatepoint10.testcase \
-	locatepoint11.testcase \
-	locatepoint12.testcase \
-	locatepoint1.testcase \
-	locatepoint2.testcase \
-	locatepoint3.testcase \
-	locatepoint4.testcase \
-	locatepoint5.testcase \
-	locatepoint6.testcase \
-	locatepoint7.testcase \
-	locatepoint8.testcase \
-	locatepoint9.testcase \
-	offsetcurve10.testcase \
-	offsetcurve11.testcase \
-	offsetcurve12.testcase \
-	offsetcurve13.testcase \
-	offsetcurve14.testcase \
-	offsetcurve1.testcase \
-	offsetcurve2.testcase \
-	offsetcurve3.testcase \
-	offsetcurve4.testcase \
-	offsetcurve5.testcase \
-	offsetcurve6.testcase \
-	offsetcurve7.testcase \
-	offsetcurve8.testcase \
-	offsetcurve9.testcase \
-	ringsnodes1.testcase \
-	ringsnodes2.testcase \
-	ringsnodes3.testcase \
-	ringsnodes4.testcase \
-	ringsnodes5.testcase \
-	ringsnodes6.testcase \
-	sharedpaths10.testcase \
-	sharedpaths11.testcase \
-	sharedpaths12.testcase \
-	sharedpaths13.testcase \
-	sharedpaths14.testcase \
-	sharedpaths15.testcase \
-	sharedpaths16.testcase \
-	sharedpaths17.testcase \
-	sharedpaths18.testcase \
-	sharedpaths19.testcase \
-	sharedpaths1.testcase \
-	sharedpaths20.testcase \
-	sharedpaths21.testcase \
-	sharedpaths22.testcase \
-	sharedpaths23.testcase \
-	sharedpaths24.testcase \
-	sharedpaths25.testcase \
-	sharedpaths26.testcase \
-	sharedpaths27.testcase \
-	sharedpaths28.testcase \
-	sharedpaths29.testcase \
-	sharedpaths2.testcase \
-	sharedpaths30.testcase \
-	sharedpaths31.testcase \
-	sharedpaths32.testcase \
-	sharedpaths3.testcase \
-	sharedpaths4.testcase \
-	sharedpaths5.testcase \
-	sharedpaths6.testcase \
-	sharedpaths7.testcase \
-	sharedpaths8.testcase \
-	sharedpaths9.testcase \
-	shortestline1.testcase \
-	shortestline2.testcase \
-	shortestline3.testcase \
-	shortestline4.testcase \
-	shortestline5.testcase \
-	shortestline6.testcase \
-	shortestline7.testcase \
-	singlesidedbuffer11.testcase \
-	singlesidedbuffer12.testcase \
-	singlesidedbuffer13.testcase \
-	singlesidedbuffer14.testcase \
-	singlesidedbuffer15.testcase \
-	singlesidedbuffer16.testcase \
-	singlesidedbuffer17.testcase \
-	singlesidedbuffer1.testcase \
-	singlesidedbuffer2.testcase \
-	singlesidedbuffer3.testcase \
-	singlesidedbuffer4.testcase \
-	singlesidedbuffer5.testcase \
-	singlesidedbuffer6.testcase \
-	singlesidedbuffer7.testcase \
-	singlesidedbuffer8.testcase \
-	singlesidedbuffer9.testcase \
-	snap10.testcase \
-	snap1.testcase \
-	snap2.testcase \
-	snap3.testcase \
-	snap4.testcase \
-	snap5.testcase \
-	snap6.testcase \
-	snap7.testcase \
-	snap8.testcase \
-	snap9.testcase \
-	squaregrid10.testcase \
-	squaregrid11.testcase \
-	squaregrid12.testcase \
-	squaregrid13.testcase \
-	squaregrid14.testcase \
-	squaregrid15.testcase \
-	squaregrid16.testcase \
-	squaregrid17.testcase \
-	squaregrid18.testcase \
-	squaregrid19.testcase \
-	squaregrid1.testcase \
-	squaregrid20.testcase \
-	squaregrid21.testcase \
-	squaregrid22.testcase \
-	squaregrid23.testcase \
-	squaregrid2.testcase \
-	squaregrid3.testcase \
-	squaregrid4.testcase \
-	squaregrid5.testcase \
-	squaregrid6.testcase \
-	squaregrid7.testcase \
-	squaregrid8.testcase \
-	squaregrid9.testcase \
-	trianggrid10.testcase \
-	trianggrid11.testcase \
-	trianggrid12.testcase \
-	trianggrid13.testcase \
-	trianggrid14.testcase \
-	trianggrid15.testcase \
-	trianggrid16.testcase \
-	trianggrid17.testcase \
-	trianggrid18.testcase \
-	trianggrid19.testcase \
-	trianggrid1.testcase \
-	trianggrid20.testcase \
-	trianggrid21.testcase \
-	trianggrid22.testcase \
-	trianggrid23.testcase \
-	trianggrid2.testcase \
-	trianggrid3.testcase \
-	trianggrid4.testcase \
-	trianggrid5.testcase \
-	trianggrid6.testcase \
-	trianggrid7.testcase \
-	trianggrid8.testcase \
-	trianggrid9.testcase \
-	unaryunion1.testcase \
-	unaryunion2.testcase \
-	unaryunion3.testcase \
-	unaryunion4.testcase \
-	unaryunion5.testcase \
-	unaryunion6.testcase \
-	unaryunion7.testcase \
-	unaryunion8.testcase 
+EXTRA_DIST = concave_hull10.testcase \
+	concave_hull11.testcase \
+	concave_hull12.testcase \
+	concave_hull13.testcase \
+	concave_hull14.testcase \
+	concave_hull15.testcase \
+	concave_hull16.testcase \
+	concave_hull17.testcase \
+	concave_hull18.testcase \
+	concave_hull19.testcase \
+	concave_hull1.testcase \
+	concave_hull2.testcase \
+	concave_hull3.testcase \
+	concave_hull4.testcase \
+	concave_hull5.testcase \
+	concave_hull6.testcase \
+	concave_hull7.testcase \
+	concave_hull8.testcase \
+	concave_hull9.testcase \
+	delaunay10.testcase \
+	delaunay11.testcase \
+	delaunay12.testcase \
+	delaunay13.testcase \
+	delaunay14.testcase \
+	delaunay15.testcase \
+	delaunay16.testcase \
+	delaunay17.testcase \
+	delaunay18.testcase \
+	delaunay19.testcase \
+	delaunay1.testcase \
+	delaunay2.testcase \
+	delaunay3.testcase \
+	delaunay4.testcase \
+	delaunay5.testcase \
+	delaunay6.testcase \
+	delaunay7.testcase \
+	delaunay8.testcase \
+	delaunay9.testcase \
+	voronoj10.testcase \
+	voronoj11.testcase \
+	voronoj12.testcase \
+	voronoj13.testcase \
+	voronoj14.testcase \
+	voronoj15.testcase \
+	voronoj16.testcase \
+	voronoj17.testcase \
+	voronoj18.testcase \
+	voronoj19.testcase \
+	voronoj1.testcase \
+	voronoj20.testcase \
+	voronoj2.testcase \
+	voronoj3.testcase \
+	voronoj4.testcase \
+	voronoj5.testcase \
+	voronoj6.testcase \
+	voronoj8.testcase \
+	voronoj9.testcase 
 
 all: all-am
 

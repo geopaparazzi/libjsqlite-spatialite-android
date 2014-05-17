@@ -76,7 +76,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = x86_64-pc-linux-gnu
+build_triplet = x86_64-unknown-linux-gnu
 host_triplet = arm-linux-eabi
 #am__append_1 = -DCURL_STATICLIB
 DIST_COMMON = $(srcdir)/Makefile.inc $(srcdir)/Makefile.in \
@@ -314,13 +314,13 @@ AUTOHEADER = ${SHELL} "/home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libj
 AUTOMAKE = ${SHELL} "/home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/curl-7.36.0/missing" --run automake-1.14
 AWK = gawk
 BLANK_AT_MAKETIME = 
-CC = gcc
+CC = /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -O2 -Wno-system-headers
+CFLAGS = -march=armv5te -mtune=xscale -msoft-float -mandroid -fPIC -mthumb-interwork -mthumb -mlong-calls -ffunction-sections -fstack-protector -fno-short-enums -fomit-frame-pointer -fno-strict-aliasing -finline-limit=64 -O2 -Wno-system-headers
 CFLAG_CURL_SYMBOL_HIDING = -fvisibility=hidden
-CONFIGURE_OPTIONS = " '--build=x86_64-pc-linux-gnu' '--host=arm-linux-eabi' 'build_alias=x86_64-pc-linux-gnu' 'host_alias=arm-linux-eabi'"
-CPP = gcc -E
-CPPFLAGS = 
+CONFIGURE_OPTIONS = " '--host=arm-linux-eabi' '--without-zlib' '--disable-manual' 'host_alias=arm-linux-eabi' 'CC=/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc' 'CFLAGS=-march=armv5te -mtune=xscale -msoft-float -mandroid -fPIC -mthumb-interwork -mthumb -mlong-calls -ffunction-sections -fstack-protector -fno-short-enums -fomit-frame-pointer -fno-strict-aliasing -finline-limit=64 ' 'LDFLAGS=-L/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/lib -Wl,--gc-sections -nostdlib -Wl,--no-undefined,-z,nocopyreloc -Wl,-dynamic-linker,/system/bin/linker ' 'LIBS=-lc -ldl -llog -lgcc -lm' 'CPPFLAGS=-I/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include -D__ARM_ARCH_5__ -D__ARM_ARCH_5T__ -D__ARM_ARCH_5E__ -D__ARM_ARCH_5TE__ -DANDROID -DOS_ANDROID -D__NEW__ -D__SGI_STL_INTERNAL_PAIR_H '"
+CPP = /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc -E
+CPPFLAGS = -isystem /home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include -D__ARM_ARCH_5__ -D__ARM_ARCH_5T__ -D__ARM_ARCH_5E__ -D__ARM_ARCH_5TE__ -DANDROID -DOS_ANDROID -D__NEW__ -D__SGI_STL_INTERNAL_PAIR_H
 CPPFLAG_CURL_STATICLIB = -DCURL_STATICLIB
 CURLVERSION = 7.36.0
 CURL_CA_BUNDLE = 
@@ -331,8 +331,8 @@ CURL_DISABLE_FTP =
 CURL_DISABLE_GOPHER = 
 CURL_DISABLE_HTTP = 
 CURL_DISABLE_IMAP = 
-CURL_DISABLE_LDAP = 
-CURL_DISABLE_LDAPS = 
+CURL_DISABLE_LDAP = 1
+CURL_DISABLE_LDAPS = 1
 CURL_DISABLE_POP3 = 
 CURL_DISABLE_PROXY = 
 CURL_DISABLE_RTSP = 
@@ -340,8 +340,8 @@ CURL_DISABLE_SMTP =
 CURL_DISABLE_TELNET = 
 CURL_DISABLE_TFTP = 
 CURL_LT_SHLIB_VERSIONED_FLAVOUR = 
-CURL_NETWORK_AND_TIME_LIBS = -lrt
-CURL_NETWORK_LIBS = 
+CURL_NETWORK_AND_TIME_LIBS = -lc -ldl -llog -lgcc -lm
+CURL_NETWORK_LIBS = -lc -ldl -llog -lgcc -lm
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
@@ -359,18 +359,18 @@ FGREP = /bin/grep -F
 GREP = /bin/grep
 HAVE_GNUTLS_SRP = 
 HAVE_LDAP_SSL = 1
-HAVE_LIBZ = 1
-HAVE_SSLEAY_SRP = 1
-IDN_ENABLED = 1
+HAVE_LIBZ = 
+HAVE_SSLEAY_SRP = 
+IDN_ENABLED = 
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 IPV6_ENABLED = 
-LD = /usr/bin/ld
-LDFLAGS = 
-LIBCURL_LIBS = -lidn -lrtmp -lssl -lcrypto -lldap -lz -lrt
+LD = /home/mj10777/gnu_source/adt-bundle-linux/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/arm-linux-androideabi/bin/ld
+LDFLAGS = -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/lib -Wl,--gc-sections -nostdlib -Wl,--no-undefined,-z,nocopyreloc -Wl,-dynamic-linker,/system/bin/linker
+LIBCURL_LIBS = -lc -ldl -llog -lgcc -lm
 LIBMETALINK_CPPFLAGS = 
 LIBMETALINK_LDFLAGS = 
 LIBMETALINK_LIBS = 
@@ -413,34 +413,34 @@ REQUIRE_LIB_DEPS = yes
 SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/bash
-SSL_ENABLED = 1
+SSL_ENABLED = 
 STRIP = strip
-SUPPORT_FEATURES = SSL libz IDN NTLM NTLM_WB TLS-SRP
-SUPPORT_PROTOCOLS = DICT FILE FTP FTPS GOPHER HTTP HTTPS IMAP IMAPS LDAP LDAPS POP3 POP3S RTMP RTSP SMTP SMTPS TELNET TFTP
+SUPPORT_FEATURES = 
+SUPPORT_PROTOCOLS = DICT FILE FTP GOPHER HTTP IMAP POP3 RTSP SMTP TELNET TFTP
 USE_ARES = 
 USE_AXTLS = 
 USE_CYASSL = 
 USE_DARWINSSL = 
 USE_GNUTLS = 
 USE_GNUTLS_NETTLE = 
-USE_LIBRTMP = 1
+USE_LIBRTMP = 
 USE_LIBSSH2 = 
 USE_NGHTTP2 = 
 USE_NSS = 
-USE_OPENLDAP = 1
+USE_OPENLDAP = 
 USE_POLARSSL = 
 USE_SCHANNEL = 
-USE_SSLEAY = 1
+USE_SSLEAY = 
 USE_WINDOWS_SSPI = 
 VERSION = -
 VERSIONNUM = 072400
-ZLIB_LIBS = -lz
+ZLIB_LIBS = 
 abs_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/curl-7.36.0/tests/server
 abs_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/curl-7.36.0/tests/server
 abs_top_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/curl-7.36.0
 abs_top_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/curl-7.36.0
 ac_ct_AR = 
-ac_ct_CC = gcc
+ac_ct_CC = 
 ac_ct_DUMPBIN = link -dump
 am__include = include
 am__leading_dot = .
@@ -448,11 +448,11 @@ am__quote =
 am__tar = $${TAR-tar} chof - "$$tardir"
 am__untar = $${TAR-tar} xf -
 bindir = ${exec_prefix}/bin
-build = x86_64-pc-linux-gnu
-build_alias = x86_64-pc-linux-gnu
+build = x86_64-unknown-linux-gnu
+build_alias = 
 build_cpu = x86_64
 build_os = linux-gnu
-build_vendor = pc
+build_vendor = unknown
 builddir = .
 datadir = ${datarootdir}
 datarootdir = ${prefix}/share
@@ -569,44 +569,44 @@ UTIL = \
 getpart_SOURCES = $(CURLX_SRCS) $(CURLX_HDRS) $(USEFUL) \
  testpart.c
 
-getpart_LDADD = -lrt
+getpart_LDADD = -lc -ldl -llog -lgcc -lm
 getpart_CFLAGS = $(AM_CFLAGS)
 resolve_SOURCES = $(CURLX_SRCS) $(CURLX_HDRS) $(USEFUL) $(UTIL) \
  resolve.c
 
-resolve_LDADD = -lrt
+resolve_LDADD = -lc -ldl -llog -lgcc -lm
 resolve_CFLAGS = $(AM_CFLAGS)
 rtspd_SOURCES = $(CURLX_SRCS) $(CURLX_HDRS) $(USEFUL) $(UTIL) \
  server_sockaddr.h \
  rtspd.c
 
-rtspd_LDADD = -lrt
+rtspd_LDADD = -lc -ldl -llog -lgcc -lm
 rtspd_CFLAGS = $(AM_CFLAGS)
 sockfilt_SOURCES = $(CURLX_SRCS) $(CURLX_HDRS) $(USEFUL) $(UTIL) \
  server_sockaddr.h \
  sockfilt.c \
  ../../lib/inet_pton.c
 
-sockfilt_LDADD = -lrt
+sockfilt_LDADD = -lc -ldl -llog -lgcc -lm
 sockfilt_CFLAGS = $(AM_CFLAGS)
 sws_SOURCES = $(CURLX_SRCS) $(CURLX_HDRS) $(USEFUL) $(UTIL) \
  server_sockaddr.h \
  sws.c \
  ../../lib/inet_pton.c
 
-sws_LDADD = -lrt
+sws_LDADD = -lc -ldl -llog -lgcc -lm
 sws_CFLAGS = $(AM_CFLAGS)
 tftpd_SOURCES = $(CURLX_SRCS) $(CURLX_HDRS) $(USEFUL) $(UTIL) \
  server_sockaddr.h \
  tftpd.c \
  tftp.h
 
-tftpd_LDADD = -lrt
+tftpd_LDADD = -lc -ldl -llog -lgcc -lm
 tftpd_CFLAGS = $(AM_CFLAGS)
 fake_ntlm_SOURCES = $(CURLX_SRCS) $(CURLX_HDRS) $(USEFUL) $(UTIL) \
  fake_ntlm.c
 
-fake_ntlm_LDADD = -lrt
+fake_ntlm_LDADD = -lc -ldl -llog -lgcc -lm
 fake_ntlm_CFLAGS = $(AM_CFLAGS)
 
 # Makefile.inc provides neat definitions

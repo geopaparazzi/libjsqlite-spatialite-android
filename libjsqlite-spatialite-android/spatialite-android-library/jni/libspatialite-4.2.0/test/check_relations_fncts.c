@@ -535,7 +535,6 @@ int test_current_mode ()
 	goto exit;
     }
     
-#ifdef GEOS_ADVANCED	/* only if GEOS_ADVANCED is supported */
     result = gaiaHausdorffDistance_r(cache, 0, validGeometry, &dummyResultArg);
     if (result != 0) {
 	fprintf(stderr, "bad result at %s:%i: %i\n", __FILE__, __LINE__, result);
@@ -598,7 +597,6 @@ int test_current_mode ()
 	returnValue = -42;
 	goto exit;
     }
-#endif	/* end GEOS_ADVANCED conditional */
     
     result = gaiaGeomCollDistance_r(cache, 0, validGeometry, &dummyResultArg);
     if (result != 0) {
@@ -664,7 +662,6 @@ int test_current_mode ()
 	goto exit;
     }
     
-#ifdef GEOS_ADVANCED	/* only if GEOS_ADVANCED is supported */
     resultDouble = gaiaLineLocatePoint_r(cache, 0, validGeometry);
     if (abs (resultDouble - -1.0) > double_eps) {
 	fprintf(stderr, "bad result at %s:%i: %f\n", __FILE__, __LINE__, resultDouble);
@@ -783,7 +780,6 @@ int test_current_mode ()
 	returnValue = -61;
 	goto exit;
     }
-#endif	/* end GEOS_ADVANCED conditional */
   
     geom = gaiaGeometryIntersection_r(cache, 0, validGeometry);
     if (geom != NULL) {
@@ -921,7 +917,6 @@ int test_current_mode ()
 	goto exit;
     }
 
-#ifdef GEOS_ADVANCED		/* only if GEOS_ADVANCED is supported */
     geom = gaiaOffsetCurve_r (cache, 0, 1.5, 10, 1);
     if (geom != NULL) {
 	gaiaFree(geom);
@@ -969,7 +964,6 @@ int test_current_mode ()
 	returnValue = -87;
 	goto exit;
     }
-#endif	/* end GEOS_ADVANCED conditional */
     
     /* Test some strange conditions */
     result = gaiaGeomCollLength_r(cache, validGeometry, &dummyResultArg);
@@ -1015,7 +1009,6 @@ int test_current_mode ()
     gaiaSetPoint(rng->Coords, 3, 4.5, 30.5);
     gaiaSetPoint(rng->Coords, 4, 4.5, 4.5);
 
-#ifdef GEOS_ADVANCED	/* only if GEOS_ADVANCED is supported */
     /* Tests Polygons UnaryUnion [as in aggregate ST_Union] */
     g = gaiaUnaryUnion_r(cache, geom);
     if (g == NULL) {
@@ -1032,7 +1025,6 @@ int test_current_mode ()
 	goto exit;
     }
     gaiaFreeGeomColl(g);
-#endif	/* end GEOS_ADVANCED conditional */
  
     /* Tests Polygons UnionCascaded [as in aggregate ST_Union] */
     g = gaiaUnionCascaded_r(cache, geom);
@@ -1287,7 +1279,6 @@ int test_legacy_mode ()
 	goto exit;
     }
     
-#ifdef GEOS_ADVANCED	/* only if GEOS_ADVANCED is supported */
     result = gaiaHausdorffDistance(0, validGeometry, &dummyResultArg);
     if (result != 0) {
 	fprintf(stderr, "bad result at %s:%i: %i\n", __FILE__, __LINE__, result);
@@ -1350,7 +1341,6 @@ int test_legacy_mode ()
 	returnValue = -42;
 	goto exit;
     }
-#endif	/* end GEOS_ADVANCED conditional */
     
     result = gaiaGeomCollDistance(0, validGeometry, &dummyResultArg);
     if (result != 0) {
@@ -1416,7 +1406,6 @@ int test_legacy_mode ()
 	goto exit;
     }
     
-#ifdef GEOS_ADVANCED	/* only if GEOS_ADVANCED is supported */
     resultDouble = gaiaLineLocatePoint(0, validGeometry);
     if (abs (resultDouble - -1.0) > double_eps) {
 	fprintf(stderr, "bad result at %s:%i: %f\n", __FILE__, __LINE__, resultDouble);
@@ -1535,7 +1524,6 @@ int test_legacy_mode ()
 	returnValue = -61;
 	goto exit;
     }
-#endif	/* end GEOS_ADVANCED conditional */
   
     geom = gaiaGeometryIntersection(0, validGeometry);
     if (geom != NULL) {
@@ -1673,7 +1661,6 @@ int test_legacy_mode ()
 	goto exit;
     }
 
-#ifdef GEOS_ADVANCED		/* only if GEOS_ADVANCED is supported */
     geom = gaiaOffsetCurve (0, 1.5, 10, 1);
     if (geom != NULL) {
 	gaiaFree(geom);
@@ -1721,7 +1708,6 @@ int test_legacy_mode ()
 	returnValue = -87;
 	goto exit;
     }
-#endif	/* end GEOS_ADVANCED conditional */
     
     /* Test some strange conditions */
     result = gaiaGeomCollLength(validGeometry, &dummyResultArg);
@@ -1767,7 +1753,6 @@ int test_legacy_mode ()
     gaiaSetPoint(rng->Coords, 3, 4.5, 30.5);
     gaiaSetPoint(rng->Coords, 4, 4.5, 4.5);
 
-#ifdef GEOS_ADVANCED	/* only if GEOS_ADVANCED is supported */
     /* Tests Polygons UnaryUnion [as in aggregate ST_Union] */
     g = gaiaUnaryUnion(geom);
     if (g == NULL) {
@@ -1784,7 +1769,6 @@ int test_legacy_mode ()
 	goto exit;
     }
     gaiaFreeGeomColl(g);
-#endif	/* end GEOS_ADVANCED conditional */
  
     /* Tests Polygons UnionCascaded [as in aggregate ST_Union] */
     g = gaiaUnionCascaded(geom);

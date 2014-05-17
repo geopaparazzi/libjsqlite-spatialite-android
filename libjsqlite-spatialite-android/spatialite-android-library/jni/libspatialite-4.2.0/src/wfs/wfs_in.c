@@ -76,6 +76,7 @@ Regione Toscana - Settore Sistema Informativo Territoriale ed Ambientale
 #ifdef ENABLE_LIBXML2		/* LIBXML2 enabled: supporting XML documents */
 
 #include <libxml/parser.h>
+#include <libxml/nanohttp.h>
 
 #define MAX_GTYPES	28
 

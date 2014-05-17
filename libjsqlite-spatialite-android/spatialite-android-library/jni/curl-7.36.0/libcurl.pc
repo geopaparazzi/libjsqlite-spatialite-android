@@ -27,13 +27,13 @@ prefix=/usr/local
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
-supported_protocols="DICT FILE FTP FTPS GOPHER HTTP HTTPS IMAP IMAPS LDAP LDAPS POP3 POP3S RTMP RTSP SMTP SMTPS TELNET TFTP"
-supported_features="SSL libz IDN NTLM NTLM_WB TLS-SRP"
+supported_protocols="DICT FILE FTP GOPHER HTTP IMAP POP3 RTSP SMTP TELNET TFTP"
+supported_features=""
 
 Name: libcurl
 URL: http://curl.haxx.se/
 Description: Library to transfer files with ftp, http, etc.
 Version: 7.36.0
 Libs: -L${libdir} -lcurl
-Libs.private: -lidn -lrtmp -lssl -lcrypto -lldap -lz -lrt
+Libs.private: -lc -ldl -llog -lgcc -lm
 Cflags: -I${includedir} -DCURL_STATICLIB

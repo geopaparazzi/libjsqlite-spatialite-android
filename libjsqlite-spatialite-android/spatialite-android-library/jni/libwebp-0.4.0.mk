@@ -56,6 +56,7 @@ LOCAL_SRC_FILES := \
 	$(WEBP_PATH)/src/enc/tree.c \
 	$(WEBP_PATH)/src/enc/vp8l.c \
 	$(WEBP_PATH)/src/enc/webpenc.c \
+	$(WEBP_PATH)/src/utils/alpha_processing.c \
 	$(WEBP_PATH)/src/utils/bit_reader.c \
 	$(WEBP_PATH)/src/utils/bit_writer.c \
 	$(WEBP_PATH)/src/utils/color_cache.c \
@@ -69,8 +70,6 @@ LOCAL_SRC_FILES := \
 	$(WEBP_PATH)/src/utils/utils.c
 LOCAL_STATIC_LIBRARIES := cpufeatures
 include $(BUILD_STATIC_LIBRARY)
-
-
 
 
  

@@ -66,8 +66,6 @@ the terms of any one of the MPL, the GPL or the LGPL.
 
 #ifndef OMIT_GEOS		/* including GEOS */
 
-#ifdef GEOS_ADVANCED		/* GEOS advanced features */
-
 GAIAGEO_DECLARE gaiaGeomCollPtr
 gaiaOffsetCurve (gaiaGeomCollPtr geom, double radius, int points,
 		 int left_right)
@@ -4034,9 +4032,7 @@ gaiaLinesCutAtNodes (gaiaGeomCollPtr geom1, gaiaGeomCollPtr geom2)
     return result;
 }
 
-#endif /* end GEOS advanced features */
-
-#ifdef GEOS_TRUNK		/* GEOS experimental features */
+#ifdef GEOS_ADVANCED		/* GEOS advanced features - 3.4.0 */
 
 GAIAGEO_DECLARE gaiaGeomCollPtr
 gaiaDelaunayTriangulation (gaiaGeomCollPtr geom, double tolerance,
@@ -4404,6 +4400,6 @@ gaiaConcaveHull_r (const void *p_cache, gaiaGeomCollPtr geom, double factor,
     return result;
 }
 
-#endif /* end GEOS experimental features */
+#endif /* end GEOS advanced features */
 
 #endif /* end including GEOS */

@@ -697,8 +697,6 @@ test7:
     }
     sqlite3_free_table (results);
 
-#ifdef GEOS_ADVANCED		/* GEOS advanced features */
-
 /* creating a topology */
     sql = sqlite3_mprintf("SELECT CreateTopologyTables(%Q, 4326, 'XY')", topology);
     ret = sqlite3_get_table (handle, sql, &results, &rows, &columns, &err_msg);
@@ -719,8 +717,6 @@ test7:
         return -63;
     }
     sqlite3_free_table (results);
-
-#endif /* end GEOS advanced features */
 
     sqlite3_free(table_a);
     sqlite3_free(table_b);

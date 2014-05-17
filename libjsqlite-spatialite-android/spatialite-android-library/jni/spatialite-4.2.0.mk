@@ -140,6 +140,11 @@ LOCAL_SRC_FILES := \
 	$(SPATIALITE_PATH)/src/srsinit/epsg_inlined_38.c \
 	$(SPATIALITE_PATH)/src/srsinit/epsg_inlined_39.c \
 	$(SPATIALITE_PATH)/src/srsinit/epsg_inlined_40.c \
+	$(SPATIALITE_PATH)/src/srsinit/epsg_inlined_41.c \
+	$(SPATIALITE_PATH)/src/srsinit/epsg_inlined_42.c \
+	$(SPATIALITE_PATH)/src/srsinit/epsg_inlined_43.c \
+	$(SPATIALITE_PATH)/src/srsinit/epsg_inlined_44.c \
+	$(SPATIALITE_PATH)/src/srsinit/epsg_inlined_45.c \
 	$(SPATIALITE_PATH)/src/srsinit/epsg_inlined_extra.c \
 	$(SPATIALITE_PATH)/src/srsinit/epsg_inlined_prussian.c \
 	$(SPATIALITE_PATH)/src/srsinit/epsg_inlined_wgs84_00.c \
