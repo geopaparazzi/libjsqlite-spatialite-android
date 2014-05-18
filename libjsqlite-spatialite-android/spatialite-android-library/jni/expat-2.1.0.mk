@@ -8,21 +8,15 @@ LOCAL_MODULE    := libexpat
  -DHAVE_EXPAT_CONFIG_H
 
 LOCAL_CFLAGS    := \
-	$(expat_flags)
+ $(expat_flags)
 
 LOCAL_C_INCLUDES := \
  $(EXPAT_PATH)/lib \
  $(EXPAT_PATH)
 LOCAL_SRC_FILES := \
-	$(EXPAT_PATH)/lib/xmlparse.c \ \
-	$(EXPAT_PATH)/lib/xmlrole.c \
-	$(EXPAT_PATH)/lib/xmltok.c
+ $(EXPAT_PATH)/lib/xmlparse.c \
+ $(EXPAT_PATH)/lib/xmlrole.c \
+ $(EXPAT_PATH)/lib/xmltok.c
 include $(BUILD_STATIC_LIBRARY)
-
-	
-
-
-
-
 
 

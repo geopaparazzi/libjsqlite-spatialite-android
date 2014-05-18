@@ -5,7 +5,7 @@
 /* #undef AC_APPLE_UNIVERSAL_BUILD */
 
 /* The normal alignment of `double', in bytes. */
-#define ALIGNOF_DOUBLE 8
+/* #define ALIGNOF_DOUBLE 4 */
 
 /* Use libxml2 instead of Expat */
 /* #undef ENABLE_LIBXML2 */
@@ -17,7 +17,7 @@
 /* #undef FC_ARCHITECTURE */
 
 /* System font directory */
-#define FC_DEFAULT_FONTS "/usr/share/fonts"
+/* #define FC_DEFAULT_FONTS "/usr/share/fonts" */
 
 /* Define to nothing if C supports flexible array members, and to 1 if it does
    not. That way, with a declaration like `struct s { int n; double
@@ -129,7 +129,7 @@
 #define HAVE_RAND 1
 
 /* Define to 1 if you have the `random' function. */
-#define HAVE_RANDOM 0
+/*#define HAVE_RANDOM 0 */
 
 /* Define to 1 if you have the `random_r' function. */
 /* #define HAVE_RANDOM_R 0 */
@@ -290,7 +290,7 @@
 /* #undef SIZEOF_VOIDP */
 
 /* The size of `void *', as computed by sizeof. */
-#define SIZEOF_VOID_P 4
+/* #define SIZEOF_VOID_P 4 */
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
