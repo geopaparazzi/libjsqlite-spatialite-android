@@ -1,6 +1,11 @@
 /* config.h.  Generated from config.h.in by configure.  */
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* definition to expand macro then apply to pragma message */
+#define VALUE_TO_STRING(x) #x
+#define VALUE(x) VALUE_TO_STRING(x)
+#define VAR_NAME_VALUE(var) #var "="  VALUE(var)
+
 /* Should be defined in order to enable GeoPackage support. */
 #define ENABLE_GEOPACKAGE 1
 
@@ -201,7 +206,8 @@
 #define STDC_HEADERS 1
 
 /* Should contain a text-string describing the intended target CPU */
-#define TARGET_CPU "x86_64-linux-gnu"
+/* #define TARGET_CPU "x86_64-linux-gnu" */
+#pragma message(VAR_NAME_VALUE(TARGET_CPU))
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #define TIME_WITH_SYS_TIME 1

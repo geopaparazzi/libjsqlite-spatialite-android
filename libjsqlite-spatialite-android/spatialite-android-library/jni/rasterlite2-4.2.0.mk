@@ -16,17 +16,17 @@ common_sqlite_flags := \
  -DSQLITE_ENABLE_RTREE=1 \
  -DSQLITE_DEFAULT_FILE_FORMAT=4
 
-
-# spatialite flags [may not be needed for rasterlite2]
+# comment out TARGET_CPU in config.h - will be replaced with TARGET_ARCH_ABI
 spatialite_flags := \
  -DOMIT_FREEXL \
- -DVERSION=\"4.2.0\" \
+ -DTARGET_CPU=\"$(TARGET_ARCH_ABI)\" \
  -Dfdatasync=fsync \
  -DSQLITE_ENABLE_RTREE=1 \
  -DSQLITE_OMIT_BUILTIN_TEST=1
 
+# comment out TARGET_CPU in config.h - will be replaced with TARGET_ARCH_ABI
 rasterlite2_flags := \
- -DTARGET_CPU=\"$(ANDROID_ABI)\" \
+ -DTARGET_CPU=\"$(TARGET_ARCH_ABI)\" \
  -O
 
 LOCAL_CFLAGS    := \
