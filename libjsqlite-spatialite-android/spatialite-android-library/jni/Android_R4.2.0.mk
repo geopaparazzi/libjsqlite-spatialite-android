@@ -1,6 +1,6 @@
 LOCAL_PATH := $(call my-dir)
 JSQLITE_PATH := javasqlite-20120209
-SPATIALITE_PATH := libspatialite-4.2.0
+SPATIALITE_PATH := libspatialite-4.2.0-rc1
 GEOS_PATH := geos-3.4.2
 PROJ4_PATH := proj-4.8.0
 SQLITE_PATH := sqlite-amalgamation-3080403

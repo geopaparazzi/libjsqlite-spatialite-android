@@ -1,5 +1,6 @@
 include $(CLEAR_VARS)
-# ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
+# ./configure --enable-examples=no --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
+# 2015-05-22: libspatialite-4.2.0-rc1
 LOCAL_MODULE    := spatialite
 
 # SQLite flags copied from ASOP
@@ -20,7 +21,7 @@ common_sqlite_flags := \
 # spatialite flags
 spatialite_flags := \
  -DOMIT_FREEXL \
- -DVERSION=\"4.2.0\" \
+ -DVERSION=\"4.2.0-rc1\" \
  -Dfdatasync=fsync \
  -DSQLITE_ENABLE_RTREE=1 \
  -DSQLITE_OMIT_BUILTIN_TEST=1
@@ -57,25 +58,30 @@ LOCAL_SRC_FILES := \
  $(SPATIALITE_PATH)/src/gaiaexif/gaia_exif.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_advanced.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_endian.c \
- $(SPATIALITE_PATH)/src/gaiageo/gg_ewkt.c \
- $(SPATIALITE_PATH)/src/gaiageo/gg_extras.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_geodesic.c \
- $(SPATIALITE_PATH)/src/gaiageo/gg_geoJSON.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_geometries.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_geoscvt.c \
- $(SPATIALITE_PATH)/src/gaiageo/gg_gml.c \
- $(SPATIALITE_PATH)/src/gaiageo/gg_kml.c \
- $(SPATIALITE_PATH)/src/gaiageo/gg_lwgeom.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_relations.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_relations_ext.c \
+ $(SPATIALITE_PATH)/src/gaiageo/gg_lwgeom.c \
+ $(SPATIALITE_PATH)/src/gaiageo/gg_extras.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_shape.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_transform.c \
- $(SPATIALITE_PATH)/src/gaiageo/gg_vanuatu.c \
- $(SPATIALITE_PATH)/src/gaiageo/gg_voronoj.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_wkb.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_wkt.c \
+ $(SPATIALITE_PATH)/src/gaiageo/gg_vanuatu.c \
+ $(SPATIALITE_PATH)/src/gaiageo/gg_ewkt.c \
+ $(SPATIALITE_PATH)/src/gaiageo/gg_geoJSON.c \
+ $(SPATIALITE_PATH)/src/gaiageo/gg_kml.c \
+ $(SPATIALITE_PATH)/src/gaiageo/gg_gml.c \
+ $(SPATIALITE_PATH)/src/gaiageo/gg_voronoj.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_xml.c \
+ $(SPATIALITE_PATH)/src/geopackage/gaia_cvt_gpkg.c \
+ $(SPATIALITE_PATH)/src/geopackage/gpkgAddGeometryColumn.c \
+ $(SPATIALITE_PATH)/src/geopackage/gpkg_add_geometry_triggers.c \
+ $(SPATIALITE_PATH)/src/geopackage/gpkg_add_spatial_index.c \
  $(SPATIALITE_PATH)/src/geopackage/gpkg_add_tile_triggers.c \
+ $(SPATIALITE_PATH)/src/geopackage/gpkgBinary.c \
  $(SPATIALITE_PATH)/src/geopackage/gpkgCreateBaseTables.c \
  $(SPATIALITE_PATH)/src/geopackage/gpkgCreateTilesTable.c \
  $(SPATIALITE_PATH)/src/geopackage/gpkgCreateTilesZoomLevel.c \
@@ -83,11 +89,11 @@ LOCAL_SRC_FILES := \
  $(SPATIALITE_PATH)/src/geopackage/gpkg_get_normal_row.c \
  $(SPATIALITE_PATH)/src/geopackage/gpkg_get_normal_zoom.c \
  $(SPATIALITE_PATH)/src/geopackage/gpkgInsertEpsgSRID.c \
- $(SPATIALITE_PATH)/src/geopackage/gpkgAddGeometryColumn.c \
  $(SPATIALITE_PATH)/src/geopackage/gpkgMakePoint.c \
- $(SPATIALITE_PATH)/src/geopackage/gpkgBinary.c \
  $(SPATIALITE_PATH)/src/md5/gaia_md5.c \
  $(SPATIALITE_PATH)/src/md5/md5.c \
+ $(SPATIALITE_PATH)/src/shapefiles/shapefiles.c \
+ $(SPATIALITE_PATH)/src/shapefiles/validator.c \
  $(SPATIALITE_PATH)/src/spatialite/extra_tables.c \
  $(SPATIALITE_PATH)/src/spatialite/mbrcache.c \
  $(SPATIALITE_PATH)/src/spatialite/metatables.c \
@@ -97,6 +103,7 @@ LOCAL_SRC_FILES := \
  $(SPATIALITE_PATH)/src/spatialite/virtualbbox.c \
  $(SPATIALITE_PATH)/src/spatialite/virtualdbf.c \
  $(SPATIALITE_PATH)/src/spatialite/virtualfdo.c \
+ $(SPATIALITE_PATH)/src/spatialite/virtualgpkg.c \
  $(SPATIALITE_PATH)/src/spatialite/virtualnetwork.c \
  $(SPATIALITE_PATH)/src/spatialite/virtualshape.c \
  $(SPATIALITE_PATH)/src/spatialite/virtualspatialindex.c \
