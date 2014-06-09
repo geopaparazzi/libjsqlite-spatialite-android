@@ -1185,7 +1185,8 @@ is_without_rowid_table (sqlite3 * sqlite, const char *table)
       {
 	  const char *index = results[(i * columns) + 1];
 	  sql = sqlite3_mprintf ("SELECT count(*) FROM sqlite_master WHERE "
-				 "type = 'index' AND tbl_name = %Q AND name = %Q",
+				 "type = 'index' AND Lower(tbl_name) = Lower(%Q) "
+				 "AND Lower(name) = Lower(%Q)",
 				 table, index);
 	  ret =
 	      sqlite3_get_table (sqlite, sql, &results2, &rows2, &columns2,

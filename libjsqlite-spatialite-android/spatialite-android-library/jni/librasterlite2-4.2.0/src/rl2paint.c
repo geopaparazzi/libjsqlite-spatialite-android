@@ -53,16 +53,15 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #include "rasterlite2/rl2graphics.h"
 #include "rasterlite2_private.h"
 
-/*
- * -- 20140505- mj10777: removed 'cairo/'
-#include <cairo/cairo.h>
-#include <cairo/cairo-svg.h>
-#include <cairo/cairo-pdf.h>
-*/
-
+#ifdef __ANDROID__ /* Android specific */
 #include <cairo.h>
 #include <cairo-svg.h>
 #include <cairo-pdf.h>
+#else /* any other standard platform (Win, Linux, Mac) */
+#include <cairo/cairo.h>
+#include <cairo/cairo-svg.h>
+#include <cairo/cairo-pdf.h>
+#endif
 
 #define RL2_SURFACE_IMG 2671
 #define RL2_SURFACE_SVG 1267
@@ -748,7 +747,7 @@ rl2_graph_set_font (rl2GraphicsContextPtr context, rl2GraphicsFontPtr font)
 }
 
 static int
-gg_endian_arch ()
+rl2cr_endian_arch ()
 {
 /* checking if target CPU is a little-endian one */
     union cvt
@@ -774,7 +773,7 @@ adjust_for_endianness (unsigned char *rgbaArray, int width, int height)
     unsigned char alpha;
     unsigned char *p_in = rgbaArray;
     unsigned char *p_out = rgbaArray;
-    int little_endian = gg_endian_arch ();
+    int little_endian = rl2cr_endian_arch ();
 
     for (y = 0; y < height; y++)
       {
@@ -1218,7 +1217,7 @@ rl2_graph_stroke_path (rl2GraphicsContextPtr context, int preserve)
         cairo = ctx->cairo;
 
     set_current_pen (ctx);
-    if (preserve)
+    if (preserve == RL2_PRESERVE_PATH)
         cairo_stroke_preserve (cairo);
     else
         cairo_stroke (cairo);
@@ -1239,7 +1238,7 @@ rl2_graph_fill_path (rl2GraphicsContextPtr context, int preserve)
         cairo = ctx->cairo;
 
     set_current_brush (ctx);
-    if (preserve)
+    if (preserve == RL2_PRESERVE_PATH)
         cairo_fill_preserve (cairo);
     else
         cairo_fill (cairo);
@@ -1398,7 +1397,7 @@ rl2_graph_get_context_rgb_array (rl2GraphicsContextPtr context)
     unsigned char *p_in;
     unsigned char *p_out;
     unsigned char *rgb;
-    int little_endian = gg_endian_arch ();
+    int little_endian = rl2cr_endian_arch ();
     RL2GraphContextPtr ctx = (RL2GraphContextPtr) context;
 
     if (ctx == NULL)
@@ -1452,7 +1451,7 @@ rl2_graph_get_context_alpha_array (rl2GraphicsContextPtr context)
     unsigned char *p_in;
     unsigned char *p_out;
     unsigned char *alpha;
-    int little_endian = gg_endian_arch ();
+    int little_endian = rl2cr_endian_arch ();
     RL2GraphContextPtr ctx = (RL2GraphContextPtr) context;
 
     if (ctx == NULL)
@@ -1486,7 +1485,7 @@ rl2_graph_get_context_alpha_array (rl2GraphicsContextPtr context)
 }
 
 RL2_DECLARE int
-rl2_rgba_to_pdf (unsigned short width, unsigned short height,
+rl2_rgba_to_pdf (unsigned int width, unsigned int height,
                  unsigned char *rgba, unsigned char **pdf, int *pdf_size)
 {
 /* attempting to create an RGB PDF map */

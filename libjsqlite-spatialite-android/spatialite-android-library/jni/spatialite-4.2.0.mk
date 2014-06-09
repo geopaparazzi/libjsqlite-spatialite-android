@@ -1,6 +1,6 @@
 include $(CLEAR_VARS)
 # ./configure --enable-examples=no --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
-# 2015-05-22: libspatialite-4.2.0-rc1
+# 2015-06-09: libspatialite-4.2.0-rc1
 LOCAL_MODULE    := spatialite
 
 # SQLite flags copied from ASOP
@@ -59,23 +59,23 @@ LOCAL_SRC_FILES := \
  $(SPATIALITE_PATH)/src/gaiaexif/gaia_exif.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_advanced.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_endian.c \
+ $(SPATIALITE_PATH)/src/gaiageo/gg_ewkt.c \
+ $(SPATIALITE_PATH)/src/gaiageo/gg_extras.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_geodesic.c \
+ $(SPATIALITE_PATH)/src/gaiageo/gg_geoJSON.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_geometries.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_geoscvt.c \
+ $(SPATIALITE_PATH)/src/gaiageo/gg_gml.c \
+ $(SPATIALITE_PATH)/src/gaiageo/gg_kml.c \
+ $(SPATIALITE_PATH)/src/gaiageo/gg_lwgeom.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_relations.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_relations_ext.c \
- $(SPATIALITE_PATH)/src/gaiageo/gg_lwgeom.c \
- $(SPATIALITE_PATH)/src/gaiageo/gg_extras.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_shape.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_transform.c \
+ $(SPATIALITE_PATH)/src/gaiageo/gg_vanuatu.c \
+ $(SPATIALITE_PATH)/src/gaiageo/gg_voronoj.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_wkb.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_wkt.c \
- $(SPATIALITE_PATH)/src/gaiageo/gg_vanuatu.c \
- $(SPATIALITE_PATH)/src/gaiageo/gg_ewkt.c \
- $(SPATIALITE_PATH)/src/gaiageo/gg_geoJSON.c \
- $(SPATIALITE_PATH)/src/gaiageo/gg_kml.c \
- $(SPATIALITE_PATH)/src/gaiageo/gg_gml.c \
- $(SPATIALITE_PATH)/src/gaiageo/gg_voronoj.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_xml.c \
  $(SPATIALITE_PATH)/src/geopackage/gaia_cvt_gpkg.c \
  $(SPATIALITE_PATH)/src/geopackage/gpkgAddGeometryColumn.c \
@@ -160,8 +160,8 @@ LOCAL_SRC_FILES := \
  $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_prussian.c \
  $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_wgs84_00.c \
  $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_wgs84_01.c \
- $(SPATIALITE_PATH)/src/srsinit/epsg_update/auto_epsg.c \
  $(SPATIALITE_PATH)/src/srsinit/srs_init.c \
+ $(SPATIALITE_PATH)/src/srsinit/epsg_update/auto_epsg.c \
  $(SPATIALITE_PATH)/src/versioninfo/version.c \
  $(SPATIALITE_PATH)/src/virtualtext/virtualtext.c \
  $(SPATIALITE_PATH)/src/wfs/wfs_in.c

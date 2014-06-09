@@ -97,7 +97,8 @@ check_PROGRAMS = test_coverage$(EXEEXT) test_palette$(EXEEXT) \
 	test_map_indiana$(EXEEXT) test_load_wms$(EXEEXT) \
 	test_map_noref$(EXEEXT) test_map_trento$(EXEEXT) \
 	test_map_trieste$(EXEEXT) test_map_infrared$(EXEEXT) \
-	test_map_orbetello$(EXEEXT) test_raster_symbolizer$(EXEEXT)
+	test_map_orbetello$(EXEEXT) test_raster_symbolizer$(EXEEXT) \
+	test_svg$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp $(top_srcdir)/test-driver
@@ -260,6 +261,9 @@ test_raster_symbolizer_LDADD = $(LDADD)
 test_section_SOURCES = test_section.c
 test_section_OBJECTS = test_section.$(OBJEXT)
 test_section_LDADD = $(LDADD)
+test_svg_SOURCES = test_svg.c
+test_svg_OBJECTS = test_svg.$(OBJEXT)
+test_svg_LDADD = $(LDADD)
 test_tifin_SOURCES = test_tifin.c
 test_tifin_OBJECTS = test_tifin.$(OBJEXT)
 test_tifin_LDADD = $(LDADD)
@@ -320,8 +324,9 @@ SOURCES = check_sql_stmt.c test1.c test10.c test11.c test12.c test13.c \
 	test_map_noref.c test_map_orbetello.c test_map_rgb.c \
 	test_map_srtm.c test_map_trento.c test_map_trieste.c \
 	test_mask.c test_paint.c test_palette.c test_raster.c \
-	test_raster_symbolizer.c test_section.c test_tifin.c \
-	test_webp.c test_wms1.c test_wms2.c test_wr_tiff.c
+	test_raster_symbolizer.c test_section.c test_svg.c \
+	test_tifin.c test_webp.c test_wms1.c test_wms2.c \
+	test_wr_tiff.c
 DIST_SOURCES = check_sql_stmt.c test1.c test10.c test11.c test12.c \
 	test13.c test14.c test15.c test16.c test17.c test18.c test19.c \
 	test2.c test20.c test3.c test4.c test5.c test6.c test7.c \
@@ -333,8 +338,9 @@ DIST_SOURCES = check_sql_stmt.c test1.c test10.c test11.c test12.c \
 	test_map_noref.c test_map_orbetello.c test_map_rgb.c \
 	test_map_srtm.c test_map_trento.c test_map_trieste.c \
 	test_mask.c test_paint.c test_palette.c test_raster.c \
-	test_raster_symbolizer.c test_section.c test_tifin.c \
-	test_webp.c test_wms1.c test_wms2.c test_wr_tiff.c
+	test_raster_symbolizer.c test_section.c test_svg.c \
+	test_tifin.c test_webp.c test_wms1.c test_wms2.c \
+	test_wr_tiff.c
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -743,7 +749,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AM_CPPFLAGS = -I@srcdir@/../headers
+AM_CPPFLAGS = -I@srcdir@/../headers @LIBXML2_CFLAGS@
 AM_LDFLAGS = -L../src -lrasterlite2 @LIBCAIRO_LIBS@ @LIBPNG_LIBS@ \
 	@LIBWEBP_LIBS@ @LIBLZMA_LIBS@ @LIBSPATIALITE_LIBS@ \
 	@LIBCURL_LIBS@ @LIBXML2_LIBS@ $(GCOV_FLAGS)
@@ -810,7 +816,18 @@ EXTRA_DIST = jpeg1.jpg jpeg2.jpg png1.png mask1.png \
 	rgb_normalize.xml gray_gamma.xml gray_histogram.xml \
 	gray_normalize.xml rgb_normalize2.xml \
 	rgb_histogram2.xml rgb_gamma.xml gray_normalize2.xml \
-	gray_histogram2.xml gray_gamma2.xml
+	gray_histogram2.xml gray_gamma2.xml group_style_1.xml \
+	group_style_2.xml bicycle.svg car_repair.svg \
+	Car_Yellow.svg Circle_and_quadratic_bezier.svg \
+	Coat_of_arms_Holy_See.svg doctors.svg fastfood.svg \
+	Flag_of_the_United_Kingdom.svg Flag_of_the_United_States.svg \
+	hospital.svg jewelry.svg motorcycle.svg \
+	Negative_and_positive_skew_diagrams_(English).svg \
+	Netherlands_roundel.svg pharmacy.svg photo.svg restaurant.svg \
+	Roundel_of_the_Royal_Canadian_Air_Force_(1946-1965).svg \
+	Roundel_of_the_Syrian_Air_Force.svg \
+	Royal_Coat_of_Arms_of_the_United_Kingdom.svg \
+	supermarket.svg tobacco.svg
 
 SUBDIRS = sql_stmt_security_tests sql_stmt_tests 
 all: all-recursive
@@ -1049,6 +1066,10 @@ test_section$(EXEEXT): $(test_section_OBJECTS) $(test_section_DEPENDENCIES) $(EX
 	@rm -f test_section$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_section_OBJECTS) $(test_section_LDADD) $(LIBS)
 
+test_svg$(EXEEXT): $(test_svg_OBJECTS) $(test_svg_DEPENDENCIES) $(EXTRA_test_svg_DEPENDENCIES) 
+	@rm -f test_svg$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(test_svg_OBJECTS) $(test_svg_LDADD) $(LIBS)
+
 test_tifin$(EXEEXT): $(test_tifin_OBJECTS) $(test_tifin_DEPENDENCIES) $(EXTRA_test_tifin_DEPENDENCIES) 
 	@rm -f test_tifin$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(test_tifin_OBJECTS) $(test_tifin_LDADD) $(LIBS)
@@ -1123,6 +1144,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_raster.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_raster_symbolizer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_section.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_svg.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_tifin.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_webp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_wms1.Po@am__quote@
@@ -1763,6 +1785,13 @@ test_map_orbetello.log: test_map_orbetello$(EXEEXT)
 test_raster_symbolizer.log: test_raster_symbolizer$(EXEEXT)
 	@p='test_raster_symbolizer$(EXEEXT)'; \
 	b='test_raster_symbolizer'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test_svg.log: test_svg$(EXEEXT)
+	@p='test_svg$(EXEEXT)'; \
+	b='test_svg'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

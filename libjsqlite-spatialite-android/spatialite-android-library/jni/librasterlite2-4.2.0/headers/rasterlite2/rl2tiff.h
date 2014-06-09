@@ -108,8 +108,8 @@ extern "C"
     RL2_DECLARE int rl2_set_tiff_origin_not_referenced (rl2TiffOriginPtr tiff);
 
     RL2_DECLARE int
-	rl2_get_tiff_origin_size (rl2TiffOriginPtr tiff, unsigned short *width,
-				  unsigned short *height);
+	rl2_get_tiff_origin_size (rl2TiffOriginPtr tiff, unsigned int *width,
+				  unsigned int *height);
 
     RL2_DECLARE int
 	rl2_get_tiff_origin_type (rl2TiffOriginPtr tiff,
@@ -149,12 +149,12 @@ extern "C"
 
     RL2_DECLARE int
 	rl2_get_tiff_origin_tile_size (rl2TiffOriginPtr tiff,
-				       unsigned short *tile_width,
-				       unsigned short *tile_height);
+				       unsigned int *tile_width,
+				       unsigned int *tile_height);
 
     RL2_DECLARE int
 	rl2_get_tiff_origin_strip_size (rl2TiffOriginPtr tiff,
-					unsigned short *strip_size);
+					unsigned int *strip_size);
 
     RL2_DECLARE rl2RasterPtr
 	rl2_get_tile_from_tiff_origin (rl2CoveragePtr cvg,
@@ -163,41 +163,43 @@ extern "C"
 				       unsigned int startCol, int force_srid);
 
     RL2_DECLARE rl2TiffDestinationPtr
-	rl2_create_tiff_destination (const char *path, unsigned short width,
-				     unsigned short height,
+	rl2_create_tiff_destination (const char *path, unsigned int width,
+				     unsigned int height,
 				     unsigned char sample_type,
 				     unsigned char pixel_type,
 				     unsigned char num_bands, rl2PalettePtr plt,
 				     unsigned char tiff_compression, int tiled,
-				     int tile_size);
+				     unsigned int tile_size);
 
     RL2_DECLARE rl2TiffDestinationPtr
 	rl2_create_geotiff_destination (const char *path, sqlite3 * handle,
-					unsigned short width,
-					unsigned short height,
+					unsigned int width,
+					unsigned int height,
 					unsigned char sample_type,
 					unsigned char pixel_type,
 					unsigned char num_bands,
 					rl2PalettePtr plt,
 					unsigned char tiff_compression,
-					int tiles, int tile_size, int srid,
-					double minX, double minY, double maxX,
-					double maxY, double hResolution,
-					double vResolution, int with_worldfile);
+					int tiles, unsigned int tile_size,
+					int srid, double minX, double minY,
+					double maxX, double maxY,
+					double hResolution, double vResolution,
+					int with_worldfile);
 
     RL2_DECLARE rl2TiffDestinationPtr
 	rl2_create_tiff_worldfile_destination (const char *path,
-					       unsigned short width,
-					       unsigned short height,
+					       unsigned int width,
+					       unsigned int height,
 					       unsigned char sample_type,
 					       unsigned char pixel_type,
 					       unsigned char num_bands,
 					       rl2PalettePtr plt,
 					       unsigned char tiff_compression,
-					       int tiles, int tile_size,
-					       int srid, double minX,
-					       double minY, double maxX,
-					       double maxY, double hResolution,
+					       int tiles,
+					       unsigned int tile_size, int srid,
+					       double minX, double minY,
+					       double maxX, double maxY,
+					       double hResolution,
 					       double vResolution);
 
     RL2_DECLARE void rl2_destroy_tiff_destination (rl2TiffDestinationPtr tiff);
@@ -217,8 +219,8 @@ extern "C"
 
     RL2_DECLARE int
 	rl2_get_tiff_destination_size (rl2TiffDestinationPtr tiff,
-				       unsigned short *width,
-				       unsigned short *height);
+				       unsigned int *width,
+				       unsigned int *height);
 
     RL2_DECLARE int
 	rl2_get_tiff_destination_type (rl2TiffDestinationPtr tiff,
@@ -250,12 +252,12 @@ extern "C"
 
     RL2_DECLARE int
 	rl2_get_tiff_destination_tile_size (rl2TiffDestinationPtr tiff,
-					    unsigned short *tile_width,
-					    unsigned short *tile_height);
+					    unsigned int *tile_width,
+					    unsigned int *tile_height);
 
     RL2_DECLARE int
 	rl2_get_tiff_destination_strip_size (rl2TiffDestinationPtr tiff,
-					     unsigned short *strip_size);
+					     unsigned int *strip_size);
 
     RL2_DECLARE int
 	rl2_write_tiff_tile (rl2TiffDestinationPtr tiff, rl2RasterPtr raster,
@@ -268,14 +270,13 @@ extern "C"
     RL2_DECLARE int rl2_write_tiff_worldfile (rl2TiffDestinationPtr tiff);
 
     RL2_DECLARE void
-	rl2_prime_void_tile (void *pixels, unsigned short width,
-			     unsigned short height, unsigned char sample_type,
+	rl2_prime_void_tile (void *pixels, unsigned int width,
+			     unsigned int height, unsigned char sample_type,
 			     unsigned char num_bands, rl2PixelPtr no_data);
 
     RL2_DECLARE void
-	rl2_prime_void_tile_palette (void *pixels, unsigned short width,
-				     unsigned short height,
-				     rl2PixelPtr no_data);
+	rl2_prime_void_tile_palette (void *pixels, unsigned int width,
+				     unsigned int height, rl2PixelPtr no_data);
 
     RL2_DECLARE int
 	rl2_raster_to_tiff_mono4 (rl2RasterPtr rst, unsigned char **tiff,

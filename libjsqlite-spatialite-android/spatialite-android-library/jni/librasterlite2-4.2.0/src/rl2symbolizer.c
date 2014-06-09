@@ -1584,3 +1584,419 @@ rl2_get_raster_style_color_map_entry (rl2RasterStylePtr style, int index,
       }
     return RL2_ERROR;
 }
+
+static void
+parse_sld_named_style (xmlNodePtr node, char **namedStyle)
+{
+/* attempting to parse an SLD Named Style */
+    while (node)
+      {
+	  if (node->type == XML_ELEMENT_NODE)
+	    {
+		const char *name = (const char *) (node->name);
+		if (strcmp (name, "Name") == 0)
+		  {
+		      xmlNodePtr child = node->children;
+		      while (child)
+			{
+			    if (child->type == XML_TEXT_NODE
+				&& child->content != NULL)
+			      {
+				  int len =
+				      (int)
+				      strlen ((const char *) (child->content));
+				  *namedStyle = malloc (len + 1);
+				  strcpy (*namedStyle,
+					  (const char *) (child->content));
+			      }
+			    child = child->next;
+			}
+		  }
+	    }
+	  node = node->next;
+      }
+}
+
+static int
+parse_sld_named_layer (xmlNodePtr node, char **namedLayer, char **namedStyle)
+{
+/* attempting to parse an SLD Named Layer */
+    int ok = 0;
+    while (node)
+      {
+	  if (node->type == XML_ELEMENT_NODE)
+	    {
+		const char *name = (const char *) (node->name);
+		if (strcmp (name, "Name") == 0)
+		  {
+		      xmlNodePtr child = node->children;
+		      while (child)
+			{
+			    if (child->type == XML_TEXT_NODE
+				&& child->content != NULL)
+			      {
+				  int len =
+				      (int)
+				      strlen ((const char *) (child->content));
+				  *namedLayer = malloc (len + 1);
+				  strcpy (*namedLayer,
+					  (const char *) (child->content));
+				  ok = 1;
+			      }
+			    child = child->next;
+			}
+		  }
+		if (strcmp (name, "NamedStyle") == 0)
+		    parse_sld_named_style (node->children, namedStyle);
+	    }
+	  node = node->next;
+      }
+    return ok;
+}
+
+static int
+parse_sld (xmlNodePtr node, rl2PrivGroupStylePtr style)
+{
+/* attempting to parse an SLD Style */
+    int ok = 0;
+    while (node)
+      {
+	  if (node->type == XML_ELEMENT_NODE)
+	    {
+		const char *name = (const char *) (node->name);
+		if (strcmp (name, "NamedLayer") == 0)
+		  {
+		      char *namedLayer = NULL;
+		      char *namedStyle = NULL;
+		      int ret =
+			  parse_sld_named_layer (node->children, &namedLayer,
+						 &namedStyle);
+		      if (ret)
+			{
+			    rl2PrivChildStylePtr child =
+				malloc (sizeof (rl2PrivChildStyle));
+			    child->namedLayer = namedLayer;
+			    child->namedStyle = namedStyle;
+			    child->validLayer = 0;
+			    child->validStyle = 0;
+			    child->next = NULL;
+			    if (style->first == NULL)
+				style->first = child;
+			    if (style->last != NULL)
+				style->last->next = child;
+			    style->last = child;
+			    ok = 1;
+			}
+		  }
+	    }
+	  node = node->next;
+      }
+    return ok;
+}
+
+static int
+parse_group_style (xmlNodePtr node, rl2PrivGroupStylePtr style)
+{
+/* parsing an SLD Style */
+    while (node)
+      {
+	  if (node->type == XML_ELEMENT_NODE)
+	    {
+		const char *name = (const char *) (node->name);
+		if (strcmp (name, "StyledLayerDescriptor") == 0)
+		  {
+		      int ret = parse_sld (node->children, style);
+		      return ret;
+		  }
+	    }
+	  node = node->next;
+      }
+    return 0;
+}
+
+RL2_PRIVATE rl2GroupStylePtr
+group_style_from_sld_xml (char *name, char *title, char *abstract,
+			  unsigned char *xml)
+{
+/* attempting to build a Layer Group Style object from an SLD XML style */
+    rl2PrivGroupStylePtr style = NULL;
+    xmlDocPtr xml_doc = NULL;
+    xmlNodePtr root;
+    xmlGenericErrorFunc silentError = (xmlGenericErrorFunc) dummySilentError;
+
+    style = malloc (sizeof (rl2PrivGroupStyle));
+    if (style == NULL)
+	return NULL;
+    style->name = name;
+    style->title = title;
+    style->abstract = abstract;
+    style->first = NULL;
+    style->last = NULL;
+    style->valid = 0;
+
+/* parsing the XML document */
+    xmlSetGenericErrorFunc (NULL, silentError);
+    xml_doc =
+	xmlReadMemory ((const char *) xml, strlen ((const char *) xml),
+		       "noname.xml", NULL, 0);
+    if (xml_doc == NULL)
+      {
+	  /* parsing error; not a well-formed XML */
+	  goto error;
+      }
+    root = xmlDocGetRootElement (xml_doc);
+    if (root == NULL)
+	goto error;
+    if (!parse_group_style (root, style))
+	goto error;
+    xmlFreeDoc (xml_doc);
+    free (xml);
+    xml = NULL;
+
+    if (style->name == NULL)
+	goto error;
+
+    return (rl2GroupStylePtr) style;
+
+  error:
+    if (xml != NULL)
+	free (xml);
+    if (xml_doc != NULL)
+	xmlFreeDoc (xml_doc);
+    if (style != NULL)
+	rl2_destroy_group_style ((rl2GroupStylePtr) style);
+    return NULL;
+}
+
+RL2_DECLARE void
+rl2_destroy_group_style (rl2GroupStylePtr style)
+{
+/* destroying a Group Style object */
+    rl2PrivChildStylePtr child;
+    rl2PrivChildStylePtr child_n;
+    rl2PrivGroupStylePtr stl = (rl2PrivGroupStylePtr) style;
+    if (stl == NULL)
+	return;
+
+    if (stl->name != NULL)
+	free (stl->name);
+    if (stl->title != NULL)
+	free (stl->title);
+    if (stl->abstract != NULL)
+	free (stl->abstract);
+    child = stl->first;
+    while (child != NULL)
+      {
+	  child_n = child->next;
+	  if (child->namedLayer != NULL)
+	      free (child->namedLayer);
+	  if (child->namedStyle != NULL)
+	      free (child->namedStyle);
+	  free (child);
+	  child = child_n;
+      }
+    free (stl);
+}
+
+RL2_DECLARE const char *
+rl2_get_group_style_name (rl2GroupStylePtr style)
+{
+/* return the Group Style Name */
+    rl2PrivGroupStylePtr stl = (rl2PrivGroupStylePtr) style;
+    if (stl == NULL)
+	return NULL;
+    return stl->name;
+}
+
+RL2_DECLARE const char *
+rl2_get_group_style_title (rl2GroupStylePtr style)
+{
+/* return the Group Style Title */
+    rl2PrivGroupStylePtr stl = (rl2PrivGroupStylePtr) style;
+    if (stl == NULL)
+	return NULL;
+    return stl->title;
+}
+
+RL2_DECLARE const char *
+rl2_get_group_style_abstract (rl2GroupStylePtr style)
+{
+/* return the Group Style Abstract */
+    rl2PrivGroupStylePtr stl = (rl2PrivGroupStylePtr) style;
+    if (stl == NULL)
+	return NULL;
+    return stl->abstract;
+}
+
+RL2_DECLARE int
+rl2_is_valid_group_style (rl2GroupStylePtr style, int *valid)
+{
+/* testing a Group Style for validity */
+    rl2PrivGroupStylePtr stl = (rl2PrivGroupStylePtr) style;
+    if (stl == NULL)
+	return RL2_ERROR;
+    *valid = stl->valid;
+    return RL2_OK;
+}
+
+RL2_DECLARE int
+rl2_get_group_style_count (rl2GroupStylePtr style, int *count)
+{
+/* return the total count of Group Style Items */
+    int cnt = 0;
+    rl2PrivChildStylePtr child;
+    rl2PrivGroupStylePtr stl = (rl2PrivGroupStylePtr) style;
+    if (stl == NULL)
+	return RL2_ERROR;
+    child = stl->first;
+    while (child != NULL)
+      {
+	  /* counting how many Children */
+	  cnt++;
+	  child = child->next;
+      }
+    *count = cnt;
+    return RL2_OK;
+}
+
+RL2_DECLARE const char *
+rl2_get_group_named_layer (rl2GroupStylePtr style, int index)
+{
+/* return the Nth NamedLayer from a Group Style */
+    int cnt = 0;
+    const char *str;
+    rl2PrivChildStylePtr child;
+    rl2PrivGroupStylePtr stl = (rl2PrivGroupStylePtr) style;
+    if (stl == NULL)
+	return NULL;
+    if (index < 0)
+	return NULL;
+    child = stl->first;
+    while (child != NULL)
+      {
+	  /* counting how many Children */
+	  cnt++;
+	  child = child->next;
+      }
+    if (index >= cnt)
+	return NULL;
+    cnt = 0;
+    child = stl->first;
+    while (child != NULL)
+      {
+	  if (cnt == index)
+	    {
+		str = child->namedLayer;
+		break;
+	    }
+	  cnt++;
+	  child = child->next;
+      }
+    return str;
+}
+
+RL2_DECLARE const char *
+rl2_get_group_named_style (rl2GroupStylePtr style, int index)
+{
+/* return the Nth NamedStyle from a Group Style */
+    int cnt = 0;
+    const char *str;
+    rl2PrivChildStylePtr child;
+    rl2PrivGroupStylePtr stl = (rl2PrivGroupStylePtr) style;
+    if (stl == NULL)
+	return NULL;
+    if (index < 0)
+	return NULL;
+    child = stl->first;
+    while (child != NULL)
+      {
+	  /* counting how many Children */
+	  cnt++;
+	  child = child->next;
+      }
+    if (index >= cnt)
+	return NULL;
+    cnt = 0;
+    child = stl->first;
+    while (child != NULL)
+      {
+	  if (cnt == index)
+	    {
+		str = child->namedStyle;
+		break;
+	    }
+	  cnt++;
+	  child = child->next;
+      }
+    return str;
+}
+
+RL2_DECLARE int
+rl2_is_valid_group_named_layer (rl2GroupStylePtr style, int index, int *valid)
+{
+/* testing for validity the Nth NamedLayer from a Group Style */
+    int cnt = 0;
+    rl2PrivChildStylePtr child;
+    rl2PrivGroupStylePtr stl = (rl2PrivGroupStylePtr) style;
+    if (stl == NULL)
+	return RL2_ERROR;
+    if (index < 0)
+	return RL2_ERROR;
+    child = stl->first;
+    while (child != NULL)
+      {
+	  /* counting how many Children */
+	  cnt++;
+	  child = child->next;
+      }
+    if (index >= cnt)
+	return RL2_ERROR;
+    cnt = 0;
+    child = stl->first;
+    while (child != NULL)
+      {
+	  if (cnt == index)
+	    {
+		*valid = child->validLayer;
+		break;
+	    }
+	  cnt++;
+	  child = child->next;
+      }
+    return RL2_OK;
+}
+
+RL2_DECLARE int
+rl2_is_valid_group_named_style (rl2GroupStylePtr style, int index, int *valid)
+{
+/* testing for validity the Nth NamedStyle from a Group Style */
+    int cnt = 0;
+    rl2PrivChildStylePtr child;
+    rl2PrivGroupStylePtr stl = (rl2PrivGroupStylePtr) style;
+    if (stl == NULL)
+	return RL2_ERROR;
+    if (index < 0)
+	return RL2_ERROR;
+    child = stl->first;
+    while (child != NULL)
+      {
+	  /* counting how many Children */
+	  cnt++;
+	  child = child->next;
+      }
+    if (index >= cnt)
+	return RL2_ERROR;
+    cnt = 0;
+    child = stl->first;
+    while (child != NULL)
+      {
+	  if (cnt == index)
+	    {
+		*valid = child->validStyle;
+		break;
+	    }
+	  cnt++;
+	  child = child->next;
+      }
+    return RL2_OK;
+}

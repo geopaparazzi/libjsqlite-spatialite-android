@@ -1164,8 +1164,8 @@ main (int argc, char *argv[])
     rl2AsciiGridDestinationPtr ascii;
     unsigned char *pixels;
     const char *path;
-    unsigned short width;
-    unsigned short height;
+    unsigned int width;
+    unsigned int height;
     double x;
     double y;
     double res;

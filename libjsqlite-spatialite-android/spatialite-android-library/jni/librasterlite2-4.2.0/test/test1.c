@@ -50,8 +50,8 @@ test_rgb_jpeg (const char *path)
 {
     unsigned char *buffer;
     int buf_size;
-    unsigned short width;
-    unsigned short height;
+    unsigned int width;
+    unsigned int height;
     unsigned char *p_data1;
     unsigned char *p_data2;
     rl2PixelPtr pxl;
@@ -69,8 +69,8 @@ test_rgb_jpeg (const char *path)
     int is_transparent;
     unsigned char compression;
     int is_compressed;
-    unsigned short tile_width;
-    unsigned short tile_height;
+    unsigned int tile_width;
+    unsigned int tile_height;
     int srid;
     double minX;
     double minY;
@@ -933,8 +933,8 @@ test_palette_png (const char *path)
 {
     unsigned char *buffer;
     int buf_size;
-    unsigned short width;
-    unsigned short height;
+    unsigned int width;
+    unsigned int height;
     unsigned char *p_data1;
     unsigned char *p_data2;
     unsigned char sample;
@@ -944,8 +944,8 @@ test_palette_png (const char *path)
     unsigned short num_entries;
     unsigned char compression;
     int is_compressed;
-    unsigned short tile_width;
-    unsigned short tile_height;
+    unsigned int tile_width;
+    unsigned int tile_height;
     int srid;
     double minX;
     double minY;

@@ -3437,16 +3437,16 @@ destroy_mono_handling (rl2BandHandlingPtr mono)
 
 RL2_PRIVATE int
 copy_raw_pixels (rl2RasterPtr raster, unsigned char *outbuf,
-		 unsigned short width,
-		 unsigned short height, unsigned char sample_type,
+		 unsigned int width,
+		 unsigned int height, unsigned char sample_type,
 		 unsigned char num_bands, double x_res, double y_res,
 		 double minx, double maxy, double tile_minx, double tile_maxy,
 		 rl2PixelPtr no_data, rl2RasterStylePtr style,
 		 rl2RasterStatisticsPtr stats)
 {
 /* copying raw pixels into the output buffer */
-    unsigned short tile_width;
-    unsigned short tile_height;
+    unsigned int tile_width;
+    unsigned int tile_height;
     rl2PrivRasterPtr rst = (rl2PrivRasterPtr) raster;
 
     if (rl2_get_raster_size (raster, &tile_width, &tile_height) != RL2_OK)
@@ -4225,7 +4225,7 @@ shaded_relief_value (double relief_factor, double scale_factor,
 RL2_PRIVATE int
 rl2_build_shaded_relief_mask (sqlite3 * handle, rl2CoveragePtr cvg,
 			      double relief_factor, double scale_factor,
-			      unsigned short width, unsigned short height,
+			      unsigned int width, unsigned int height,
 			      double minx, double miny, double maxx,
 			      double maxy, double x_res, double y_res,
 			      float **shaded_relief, int *shaded_relief_sz)

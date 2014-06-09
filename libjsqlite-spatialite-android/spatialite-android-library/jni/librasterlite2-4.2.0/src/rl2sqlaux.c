@@ -137,7 +137,7 @@ get_coverage_sample_bands (sqlite3 * sqlite, const char *coverage,
 
 RL2_PRIVATE int
 get_coverage_defs (sqlite3 * sqlite, const char *coverage,
-		   unsigned short *tile_width, unsigned short *tile_height,
+		   unsigned int *tile_width, unsigned int *tile_height,
 		   unsigned char *sample_type, unsigned char *pixel_type,
 		   unsigned char *num_bands, unsigned char *compression)
 {
@@ -435,7 +435,7 @@ RL2_PRIVATE int
 do_insert_wms_tile (sqlite3 * handle, unsigned char *blob_odd, int blob_odd_sz,
 		    unsigned char *blob_even, int blob_even_sz,
 		    sqlite3_int64 section_id, int srid, double res_x,
-		    double res_y, unsigned short tile_w, unsigned short tile_h,
+		    double res_y, unsigned int tile_w, unsigned int tile_h,
 		    double miny, double maxx, double tile_minx,
 		    double tile_miny, double tile_maxx, double tile_maxy,
 		    rl2PalettePtr aux_palette, rl2PixelPtr no_data,
@@ -616,8 +616,8 @@ get_section_name (const char *src_path)
 
 RL2_PRIVATE int
 do_insert_section (sqlite3 * handle, const char *src_path,
-		   const char *section, int srid, unsigned short width,
-		   unsigned short height, double minx, double miny,
+		   const char *section, int srid, unsigned int width,
+		   unsigned int height, double minx, double miny,
 		   double maxx, double maxy, sqlite3_stmt * stmt_sect,
 		   sqlite3_int64 * id)
 {
@@ -679,8 +679,8 @@ build_wms_tile (rl2CoveragePtr coverage, const unsigned char *rgba_tile)
     unsigned char *p_out;
     unsigned char *p_msk;
     int requires_mask = 0;
-    int x;
-    int y;
+    unsigned int x;
+    unsigned int y;
 
     if (coverage == NULL || rgba_tile == NULL)
 	return NULL;
@@ -708,7 +708,7 @@ build_wms_tile (rl2CoveragePtr coverage, const unsigned char *rgba_tile)
       }
 
     p_msk = mask;
-    for (x = 0; x < mask_size; x++)
+    for (x = 0; x < (unsigned int) mask_size; x++)
       {
 	  /* priming a full opaque mask */
 	  *p_msk++ = 1;
@@ -1165,14 +1165,14 @@ gray_to_rgba (unsigned short width, unsigned short height, unsigned char *gray)
 }
 
 static unsigned char *
-rgb_to_rgba (unsigned short width, unsigned short height, unsigned char *rgb)
+rgb_to_rgba (unsigned int width, unsigned int height, unsigned char *rgb)
 {
 /* transforming an RGB buffer to RGBA */
     unsigned char *rgba = NULL;
     unsigned char *p_out;
     const unsigned char *p_in;
-    int x;
-    int y;
+    unsigned int x;
+    unsigned int y;
 
     rgba = malloc (width * height * 4);
     if (rgba == NULL)
@@ -1193,7 +1193,7 @@ rgb_to_rgba (unsigned short width, unsigned short height, unsigned char *rgb)
 }
 
 RL2_PRIVATE int
-get_payload_from_monochrome_opaque (unsigned short width, unsigned short height,
+get_payload_from_monochrome_opaque (unsigned int width, unsigned int height,
 				    sqlite3 * handle, double minx, double miny,
 				    double maxx, double maxy, int srid,
 				    unsigned char *pixels, unsigned char format,
@@ -1205,8 +1205,8 @@ get_payload_from_monochrome_opaque (unsigned short width, unsigned short height,
     unsigned char *p_in;
     unsigned char *p_out;
     unsigned char *gray = NULL;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     unsigned char *rgba = NULL;
 
     gray = malloc (width * height);
@@ -1279,8 +1279,8 @@ get_payload_from_monochrome_opaque (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-get_payload_from_monochrome_transparent (unsigned short width,
-					 unsigned short height,
+get_payload_from_monochrome_transparent (unsigned int width,
+					 unsigned int height,
 					 unsigned char *pixels,
 					 unsigned char format, int quality,
 					 unsigned char **image, int *image_sz,
@@ -1292,8 +1292,8 @@ get_payload_from_monochrome_transparent (unsigned short width,
     unsigned char *p_msk;
     unsigned char *gray = NULL;
     unsigned char *mask = NULL;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
 
     if (quality > 100)
 	quality = 100;
@@ -1347,7 +1347,7 @@ get_payload_from_monochrome_transparent (unsigned short width,
 }
 
 RL2_PRIVATE int
-get_payload_from_palette_opaque (unsigned short width, unsigned short height,
+get_payload_from_palette_opaque (unsigned int width, unsigned int height,
 				 sqlite3 * handle, double minx, double miny,
 				 double maxx, double maxy, int srid,
 				 unsigned char *pixels, rl2PalettePtr palette,
@@ -1361,8 +1361,8 @@ get_payload_from_palette_opaque (unsigned short width, unsigned short height,
     unsigned char *p_out;
     unsigned char *gray = NULL;
     unsigned char *rgb = NULL;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     unsigned char out_format;
     unsigned char *rgba = NULL;
 
@@ -1516,8 +1516,8 @@ get_payload_from_palette_opaque (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-get_payload_from_palette_transparent (unsigned short width,
-				      unsigned short height,
+get_payload_from_palette_transparent (unsigned int width,
+				      unsigned int height,
 				      unsigned char *pixels,
 				      rl2PalettePtr palette,
 				      unsigned char format, int quality,
@@ -1534,8 +1534,8 @@ get_payload_from_palette_transparent (unsigned short width,
     unsigned char *gray = NULL;
     unsigned char *rgb = NULL;
     unsigned char *mask = NULL;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     unsigned char out_format;
 
     if (quality > 100)
@@ -1649,7 +1649,7 @@ get_payload_from_palette_transparent (unsigned short width,
 }
 
 RL2_PRIVATE int
-get_payload_from_grayscale_opaque (unsigned short width, unsigned short height,
+get_payload_from_grayscale_opaque (unsigned int width, unsigned int height,
 				   sqlite3 * handle, double minx, double miny,
 				   double maxx, double maxy, int srid,
 				   unsigned char *pixels, unsigned char format,
@@ -1711,8 +1711,8 @@ get_payload_from_grayscale_opaque (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-get_payload_from_grayscale_transparent (unsigned short width,
-					unsigned short height,
+get_payload_from_grayscale_transparent (unsigned int width,
+					unsigned int height,
 					unsigned char *pixels,
 					unsigned char format, int quality,
 					unsigned char **image, int *image_sz,
@@ -1762,7 +1762,7 @@ get_payload_from_grayscale_transparent (unsigned short width,
 }
 
 RL2_PRIVATE int
-get_payload_from_rgb_opaque (unsigned short width, unsigned short height,
+get_payload_from_rgb_opaque (unsigned int width, unsigned int height,
 			     sqlite3 * handle, double minx, double miny,
 			     double maxx, double maxy, int srid,
 			     unsigned char *pixels, unsigned char format,
@@ -1822,7 +1822,7 @@ get_payload_from_rgb_opaque (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-get_payload_from_rgb_transparent (unsigned short width, unsigned short height,
+get_payload_from_rgb_transparent (unsigned int width, unsigned int height,
 				  unsigned char *pixels, unsigned char format,
 				  int quality, unsigned char **image,
 				  int *image_sz, unsigned char bg_red,
@@ -1833,8 +1833,8 @@ get_payload_from_rgb_transparent (unsigned short width, unsigned short height,
     unsigned char *p_in;
     unsigned char *p_msk;
     unsigned char *mask = NULL;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
 
     if (quality > 100)
 	quality = 100;
@@ -1897,7 +1897,7 @@ test_no_data_8 (rl2PrivPixelPtr no_data, unsigned char *p_in)
 }
 
 RL2_PRIVATE int
-get_rgba_from_monochrome_mask (unsigned short width, unsigned short height,
+get_rgba_from_monochrome_mask (unsigned int width, unsigned int height,
 			       unsigned char *pixels, unsigned char *mask,
 			       rl2PrivPixelPtr no_data, unsigned char *rgba)
 {
@@ -1905,8 +1905,8 @@ get_rgba_from_monochrome_mask (unsigned short width, unsigned short height,
     unsigned char *p_in;
     unsigned char *p_out;
     unsigned char *p_msk;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     int transparent;
 
     p_in = pixels;
@@ -1948,14 +1948,14 @@ get_rgba_from_monochrome_mask (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-get_rgba_from_monochrome_opaque (unsigned short width, unsigned short height,
+get_rgba_from_monochrome_opaque (unsigned int width, unsigned int height,
 				 unsigned char *pixels, unsigned char *rgba)
 {
 /* input: Monochrome    output: Grayscale */
     unsigned char *p_in;
     unsigned char *p_out;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     p_in = pixels;
     p_out = rgba;
     for (row = 0; row < height; row++)
@@ -1983,16 +1983,16 @@ get_rgba_from_monochrome_opaque (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-get_rgba_from_monochrome_transparent (unsigned short width,
-				      unsigned short height,
+get_rgba_from_monochrome_transparent (unsigned int width,
+				      unsigned int height,
 				      unsigned char *pixels,
 				      unsigned char *rgba)
 {
 /* input: Monochrome    output: Grayscale */
     unsigned char *p_in;
     unsigned char *p_out;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
 
     p_in = pixels;
     p_out = rgba;
@@ -2021,7 +2021,7 @@ get_rgba_from_monochrome_transparent (unsigned short width,
 }
 
 RL2_PRIVATE int
-get_rgba_from_palette_mask (unsigned short width, unsigned short height,
+get_rgba_from_palette_mask (unsigned int width, unsigned int height,
 			    unsigned char *pixels, unsigned char *mask,
 			    rl2PalettePtr palette, rl2PrivPixelPtr no_data,
 			    unsigned char *rgba)
@@ -2031,8 +2031,8 @@ get_rgba_from_palette_mask (unsigned short width, unsigned short height,
     unsigned char *p_in;
     unsigned char *p_out;
     unsigned char *p_msk;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     unsigned char out_format;
     int transparent;
 
@@ -2130,7 +2130,7 @@ get_rgba_from_palette_mask (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-get_rgba_from_palette_opaque (unsigned short width, unsigned short height,
+get_rgba_from_palette_opaque (unsigned int width, unsigned int height,
 			      unsigned char *pixels, rl2PalettePtr palette,
 			      unsigned char *rgba)
 {
@@ -2138,8 +2138,8 @@ get_rgba_from_palette_opaque (unsigned short width, unsigned short height,
     rl2PrivPalettePtr plt = (rl2PrivPalettePtr) palette;
     unsigned char *p_in;
     unsigned char *p_out;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     unsigned char out_format;
 
     p_in = pixels;
@@ -2202,7 +2202,7 @@ get_rgba_from_palette_opaque (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-get_rgba_from_palette_transparent (unsigned short width, unsigned short height,
+get_rgba_from_palette_transparent (unsigned int width, unsigned int height,
 				   unsigned char *pixels, rl2PalettePtr palette,
 				   unsigned char *rgba, unsigned char bg_red,
 				   unsigned char bg_green,
@@ -2212,8 +2212,8 @@ get_rgba_from_palette_transparent (unsigned short width, unsigned short height,
     rl2PrivPalettePtr plt = (rl2PrivPalettePtr) palette;
     unsigned char *p_in;
     unsigned char *p_out;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     unsigned char out_format;
 
     p_in = pixels;
@@ -2282,7 +2282,7 @@ get_rgba_from_palette_transparent (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-get_rgba_from_grayscale_mask (unsigned short width, unsigned short height,
+get_rgba_from_grayscale_mask (unsigned int width, unsigned int height,
 			      unsigned char *pixels, unsigned char *mask,
 			      rl2PrivPixelPtr no_data, unsigned char *rgba)
 {
@@ -2290,8 +2290,8 @@ get_rgba_from_grayscale_mask (unsigned short width, unsigned short height,
     unsigned char *p_in;
     unsigned char *p_out;
     unsigned char *p_msk;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     int transparent;
 
     p_in = pixels;
@@ -2331,14 +2331,14 @@ get_rgba_from_grayscale_mask (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-get_rgba_from_grayscale_opaque (unsigned short width, unsigned short height,
+get_rgba_from_grayscale_opaque (unsigned int width, unsigned int height,
 				unsigned char *pixels, unsigned char *rgba)
 {
 /* input: Grayscale    output: Grayscale */
     unsigned char *p_in;
     unsigned char *p_out;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
 
     p_in = pixels;
     p_out = rgba;
@@ -2358,16 +2358,16 @@ get_rgba_from_grayscale_opaque (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-get_rgba_from_grayscale_transparent (unsigned short width,
-				     unsigned short height,
+get_rgba_from_grayscale_transparent (unsigned int width,
+				     unsigned int height,
 				     unsigned char *pixels, unsigned char *rgba,
 				     unsigned char bg_gray)
 {
 /* input: Grayscale    output: Grayscale */
     unsigned char *p_in;
     unsigned char *p_out;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
 
     p_in = pixels;
     p_out = rgba;
@@ -2390,7 +2390,7 @@ get_rgba_from_grayscale_transparent (unsigned short width,
 }
 
 RL2_PRIVATE int
-get_rgba_from_rgb_mask (unsigned short width, unsigned short height,
+get_rgba_from_rgb_mask (unsigned int width, unsigned int height,
 			unsigned char *pixels, unsigned char *mask,
 			rl2PrivPixelPtr no_data, unsigned char *rgba)
 {
@@ -2398,8 +2398,8 @@ get_rgba_from_rgb_mask (unsigned short width, unsigned short height,
     unsigned char *p_in;
     unsigned char *p_out;
     unsigned char *p_msk;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     int transparent;
 
     p_in = pixels;
@@ -2438,14 +2438,14 @@ get_rgba_from_rgb_mask (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-get_rgba_from_rgb_opaque (unsigned short width, unsigned short height,
+get_rgba_from_rgb_opaque (unsigned int width, unsigned int height,
 			  unsigned char *pixels, unsigned char *rgba)
 {
 /* input: RGB    output: RGB */
     unsigned char *p_in;
     unsigned char *p_out;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
 
     p_in = pixels;
     p_out = rgba;
@@ -2464,7 +2464,7 @@ get_rgba_from_rgb_opaque (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-get_rgba_from_rgb_transparent (unsigned short width, unsigned short height,
+get_rgba_from_rgb_transparent (unsigned int width, unsigned int height,
 			       unsigned char *pixels, unsigned char *rgba,
 			       unsigned char bg_red, unsigned char bg_green,
 			       unsigned char bg_blue)
@@ -2472,8 +2472,8 @@ get_rgba_from_rgb_transparent (unsigned short width, unsigned short height,
 /* input: RGB    output: RGB */
     unsigned char *p_in;
     unsigned char *p_out;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
 
     p_in = pixels;
     p_out = rgba;
@@ -2498,15 +2498,15 @@ get_rgba_from_rgb_transparent (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-rgba_from_int8 (unsigned short width, unsigned short height,
+rgba_from_int8 (unsigned int width, unsigned int height,
 		char *pixels, unsigned char *mask, unsigned char *rgba)
 {
 /* input: DataGrid INT8   output: Grayscale */
     char *p_in;
     unsigned char *p_out;
     unsigned char *p_msk;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     int transparent;
 
     p_in = pixels;
@@ -2541,7 +2541,7 @@ rgba_from_int8 (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-rgba_from_uint8 (unsigned short width, unsigned short height,
+rgba_from_uint8 (unsigned int width, unsigned int height,
 		 unsigned char *pixels, unsigned char *mask,
 		 unsigned char *rgba)
 {
@@ -2549,8 +2549,8 @@ rgba_from_uint8 (unsigned short width, unsigned short height,
     unsigned char *p_in;
     unsigned char *p_out;
     unsigned char *p_msk;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     int transparent;
 
     p_in = pixels;
@@ -2585,15 +2585,15 @@ rgba_from_uint8 (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-rgba_from_int16 (unsigned short width, unsigned short height,
+rgba_from_int16 (unsigned int width, unsigned int height,
 		 short *pixels, unsigned char *mask, unsigned char *rgba)
 {
 /* input: DataGrid INT16   output: Grayscale */
     short *p_in;
     unsigned char *p_out;
     unsigned char *p_msk;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     short min = SHRT_MAX;
     short max = SHRT_MIN;
     double min2;
@@ -2722,7 +2722,7 @@ rgba_from_int16 (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-rgba_from_uint16 (unsigned short width, unsigned short height,
+rgba_from_uint16 (unsigned int width, unsigned int height,
 		  unsigned short *pixels, unsigned char *mask,
 		  unsigned char *rgba)
 {
@@ -2730,8 +2730,8 @@ rgba_from_uint16 (unsigned short width, unsigned short height,
     unsigned short *p_in;
     unsigned char *p_out;
     unsigned char *p_msk;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     unsigned short min = USHRT_MAX;
     unsigned short max = 0;
     double min2;
@@ -2860,15 +2860,15 @@ rgba_from_uint16 (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-rgba_from_int32 (unsigned short width, unsigned short height,
+rgba_from_int32 (unsigned int width, unsigned int height,
 		 int *pixels, unsigned char *mask, unsigned char *rgba)
 {
 /* input: DataGrid INT32   output: Grayscale */
     int *p_in;
     unsigned char *p_out;
     unsigned char *p_msk;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     int min = INT_MAX;
     int max = INT_MIN;
     double min2;
@@ -2997,7 +2997,7 @@ rgba_from_int32 (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-rgba_from_uint32 (unsigned short width, unsigned short height,
+rgba_from_uint32 (unsigned int width, unsigned int height,
 		  unsigned int *pixels, unsigned char *mask,
 		  unsigned char *rgba)
 {
@@ -3005,8 +3005,8 @@ rgba_from_uint32 (unsigned short width, unsigned short height,
     unsigned int *p_in;
     unsigned char *p_out;
     unsigned char *p_msk;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     unsigned int min = UINT_MAX;
     unsigned int max = 0;
     double min2;
@@ -3135,15 +3135,15 @@ rgba_from_uint32 (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-rgba_from_float (unsigned short width, unsigned short height,
+rgba_from_float (unsigned int width, unsigned int height,
 		 float *pixels, unsigned char *mask, unsigned char *rgba)
 {
 /* input: DataGrid FLOAT   output: Grayscale */
     float *p_in;
     unsigned char *p_out;
     unsigned char *p_msk;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     float min = FLT_MAX;
     float max = 0.0 - FLT_MAX;
     double min2;
@@ -3272,15 +3272,15 @@ rgba_from_float (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-rgba_from_double (unsigned short width, unsigned short height,
+rgba_from_double (unsigned int width, unsigned int height,
 		  double *pixels, unsigned char *mask, unsigned char *rgba)
 {
 /* input: DataGrid DOUBLE   output: Grayscale */
     double *p_in;
     unsigned char *p_out;
     unsigned char *p_msk;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     double min = DBL_MAX;
     double max = 0.0 - DBL_MAX;
     double min2;
@@ -3409,7 +3409,7 @@ rgba_from_double (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-get_rgba_from_datagrid_mask (unsigned short width, unsigned short height,
+get_rgba_from_datagrid_mask (unsigned int width, unsigned int height,
 			     unsigned char sample_type, void *pixels,
 			     unsigned char *mask, rl2PrivPixelPtr no_data,
 			     unsigned char *rgba)
@@ -3453,7 +3453,7 @@ get_rgba_from_datagrid_mask (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-get_payload_from_gray_rgba_opaque (unsigned short width, unsigned short height,
+get_payload_from_gray_rgba_opaque (unsigned int width, unsigned int height,
 				   sqlite3 * handle, double minx, double miny,
 				   double maxx, double maxy, int srid,
 				   unsigned char *rgb, unsigned char format,
@@ -3464,8 +3464,8 @@ get_payload_from_gray_rgba_opaque (unsigned short width, unsigned short height,
     int ret;
     unsigned char *p_in;
     unsigned char *p_out;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     unsigned char *rgba = NULL;
     unsigned char *gray = malloc (width * height);
 
@@ -3534,8 +3534,8 @@ get_payload_from_gray_rgba_opaque (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-get_payload_from_gray_rgba_transparent (unsigned short width,
-					unsigned short height,
+get_payload_from_gray_rgba_transparent (unsigned int width,
+					unsigned int height,
 					unsigned char *rgb,
 					unsigned char *alpha,
 					unsigned char format, int quality,
@@ -3599,7 +3599,7 @@ get_payload_from_gray_rgba_transparent (unsigned short width,
 }
 
 RL2_PRIVATE int
-get_payload_from_rgb_rgba_opaque (unsigned short width, unsigned short height,
+get_payload_from_rgb_rgba_opaque (unsigned int width, unsigned int height,
 				  sqlite3 * handle, double minx, double miny,
 				  double maxx, double maxy, int srid,
 				  unsigned char *rgb, unsigned char format,
@@ -3659,8 +3659,8 @@ get_payload_from_rgb_rgba_opaque (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-get_payload_from_rgb_rgba_transparent (unsigned short width,
-				       unsigned short height,
+get_payload_from_rgb_rgba_transparent (unsigned int width,
+				       unsigned int height,
 				       unsigned char *rgb, unsigned char *alpha,
 				       unsigned char format, int quality,
 				       unsigned char **image, int *image_sz,
@@ -3669,8 +3669,8 @@ get_payload_from_rgb_rgba_transparent (unsigned short width,
 /* RGB, Transparent */
     unsigned char *p_msk;
     unsigned char *p_alpha;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     unsigned char *mask = malloc (width * height);
 
     if (quality > 100)
@@ -3710,14 +3710,14 @@ get_payload_from_rgb_rgba_transparent (unsigned short width,
 }
 
 RL2_PRIVATE int
-build_rgb_alpha (unsigned short width, unsigned short height,
+build_rgb_alpha (unsigned int width, unsigned int height,
 		 unsigned char *rgba, unsigned char **rgb,
 		 unsigned char **alpha, unsigned char bg_red,
 		 unsigned char bg_green, unsigned char bg_blue)
 {
 /* creating separate RGB and Alpha buffers from RGBA */
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     unsigned char *p_in = rgba;
     unsigned char *p_out;
     unsigned char *p_msk;
@@ -3762,7 +3762,7 @@ build_rgb_alpha (unsigned short width, unsigned short height,
 }
 
 RL2_PRIVATE int
-get_rgba_from_multiband8 (unsigned short width, unsigned short height,
+get_rgba_from_multiband8 (unsigned int width, unsigned int height,
 			  unsigned char red_band, unsigned char green_band,
 			  unsigned char blue_band, unsigned char num_bands,
 			  unsigned char *pixels, unsigned char *mask,
@@ -3772,8 +3772,8 @@ get_rgba_from_multiband8 (unsigned short width, unsigned short height,
     unsigned char *p_in;
     unsigned char *p_out;
     unsigned char *p_msk;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     int transparent;
 
     p_in = pixels;
@@ -3862,7 +3862,7 @@ test_no_data_16 (rl2PrivPixelPtr no_data, unsigned short *p_in)
 }
 
 RL2_PRIVATE int
-get_rgba_from_multiband16 (unsigned short width, unsigned short height,
+get_rgba_from_multiband16 (unsigned int width, unsigned int height,
 			   unsigned char red_band, unsigned char green_band,
 			   unsigned char blue_band, unsigned char num_bands,
 			   unsigned short *pixels, unsigned char *mask,
@@ -3872,8 +3872,8 @@ get_rgba_from_multiband16 (unsigned short width, unsigned short height,
     unsigned short *p_in;
     unsigned char *p_out;
     unsigned char *p_msk;
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     int transparent;
     unsigned short min = USHRT_MAX;
     unsigned short max = 0;
@@ -4309,4 +4309,93 @@ get_raster_band_histogram (rl2PrivBandStatisticsPtr band,
 	 RL2_PIXEL_GRAYSCALE, image, image_sz) == RL2_OK)
 	return RL2_OK;
     return RL2_ERROR;
+}
+
+RL2_PRIVATE int
+set_coverage_infos (sqlite3 * sqlite, const char *coverage_name,
+		    const char *title, const char *abstract)
+{
+/* auxiliary function: updates the Coverage descriptive infos */
+    int ret;
+    const char *sql;
+    sqlite3_stmt *stmt;
+    int exists = 0;
+    int retval = 0;
+
+    /* checking if the Group already exists */
+    sql = "SELECT coverage_name FROM raster_coverages "
+	"WHERE coverage_name = Lower(?)";
+    ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr, "SetCoverageInfos: \"%s\"\n",
+		   sqlite3_errmsg (sqlite));
+	  goto stop;
+      }
+    sqlite3_reset (stmt);
+    sqlite3_clear_bindings (stmt);
+    sqlite3_bind_text (stmt, 1, coverage_name, strlen (coverage_name),
+		       SQLITE_STATIC);
+    while (1)
+      {
+	  /* scrolling the result set rows */
+	  ret = sqlite3_step (stmt);
+	  if (ret == SQLITE_DONE)
+	      break;		/* end of result set */
+	  if (ret == SQLITE_ROW)
+	      exists = 1;
+      }
+    sqlite3_finalize (stmt);
+
+    if (!exists)
+	return 0;
+    /* update Coverage */
+    sql =
+	"UPDATE raster_coverages SET title = ?, abstract = ? WHERE coverage_name = ?";
+    ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr, "SetCoverageInfos: \"%s\"\n",
+		   sqlite3_errmsg (sqlite));
+	  goto stop;
+      }
+    sqlite3_reset (stmt);
+    sqlite3_clear_bindings (stmt);
+    sqlite3_bind_text (stmt, 1, title, strlen (title), SQLITE_STATIC);
+    sqlite3_bind_text (stmt, 2, abstract, strlen (abstract), SQLITE_STATIC);
+    sqlite3_bind_text (stmt, 3, coverage_name, strlen (coverage_name),
+		       SQLITE_STATIC);
+    ret = sqlite3_step (stmt);
+    if (ret == SQLITE_DONE || ret == SQLITE_ROW)
+	retval = 1;
+    else
+	fprintf (stderr, "SetCoverageInfos() error: \"%s\"\n",
+		 sqlite3_errmsg (sqlite));
+    sqlite3_finalize (stmt);
+    return retval;
+  stop:
+    return 0;
+}
+
+RL2_PRIVATE int
+rl2_test_layer_group (sqlite3 * handle, const char *name)
+{
+/* testing for an eventual Layer Group */
+    int ret;
+    char **results;
+    int rows;
+    int columns;
+    int i;
+    int ok = 0;
+/* testing if Layer Group exists */
+    char *sql = sqlite3_mprintf ("SELECT group_name FROM SE_styled_groups "
+				 "WHERE Lower(group_name) = Lower(%Q)", name);
+    ret = sqlite3_get_table (handle, sql, &results, &rows, &columns, NULL);
+    sqlite3_free (sql);
+    if (ret != SQLITE_OK)
+	return 0;
+    for (i = 1; i <= rows; i++)
+	ok = 1;
+    sqlite3_free_table (results);
+    return ok;
 }

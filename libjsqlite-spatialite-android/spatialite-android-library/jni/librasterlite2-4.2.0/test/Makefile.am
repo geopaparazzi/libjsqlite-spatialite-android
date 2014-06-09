@@ -17,9 +17,10 @@ check_PROGRAMS = test_coverage test_palette \
 	test_map_indiana test_load_wms \
 	test_map_noref test_map_trento \
 	test_map_trieste test_map_infrared \
-	test_map_orbetello test_raster_symbolizer
+	test_map_orbetello test_raster_symbolizer \
+	test_svg
 
-AM_CPPFLAGS = -I@srcdir@/../headers
+AM_CPPFLAGS = -I@srcdir@/../headers @LIBXML2_CFLAGS@
 AM_LDFLAGS = -L../src -lrasterlite2 @LIBCAIRO_LIBS@ @LIBPNG_LIBS@ \
 	@LIBWEBP_LIBS@ @LIBLZMA_LIBS@ @LIBSPATIALITE_LIBS@ \
 	@LIBCURL_LIBS@ @LIBXML2_LIBS@ $(GCOV_FLAGS)
@@ -88,7 +89,18 @@ EXTRA_DIST = jpeg1.jpg jpeg2.jpg png1.png mask1.png \
 	rgb_normalize.xml gray_gamma.xml gray_histogram.xml \
 	gray_normalize.xml rgb_normalize2.xml \
 	rgb_histogram2.xml rgb_gamma.xml gray_normalize2.xml \
-	gray_histogram2.xml gray_gamma2.xml
+	gray_histogram2.xml gray_gamma2.xml group_style_1.xml \
+	group_style_2.xml bicycle.svg car_repair.svg \
+	Car_Yellow.svg Circle_and_quadratic_bezier.svg \
+	Coat_of_arms_Holy_See.svg doctors.svg fastfood.svg \
+	Flag_of_the_United_Kingdom.svg Flag_of_the_United_States.svg \
+	hospital.svg jewelry.svg motorcycle.svg \
+	Negative_and_positive_skew_diagrams_(English).svg \
+	Netherlands_roundel.svg pharmacy.svg photo.svg restaurant.svg \
+	Roundel_of_the_Royal_Canadian_Air_Force_(1946-1965).svg \
+	Roundel_of_the_Syrian_Air_Force.svg \
+	Royal_Coat_of_Arms_of_the_United_Kingdom.svg \
+	supermarket.svg tobacco.svg
 
 SUBDIRS = sql_stmt_security_tests sql_stmt_tests 
 

@@ -392,7 +392,7 @@ RL2_DECLARE rl2CoveragePtr
 rl2_create_coverage (const char *name, unsigned char sample_type,
 		     unsigned char pixel_type, unsigned char num_samples,
 		     unsigned char compression, int quality,
-		     unsigned short tile_width, unsigned short tile_height,
+		     unsigned int tile_width, unsigned int tile_height,
 		     rl2PixelPtr no_data)
 {
 /* allocating and initializing a Coverage object */
@@ -567,8 +567,8 @@ rl2_is_coverage_compression_lossy (rl2CoveragePtr ptr, int *is_lossy)
 }
 
 RL2_DECLARE int
-rl2_get_coverage_tile_size (rl2CoveragePtr ptr, unsigned short *tile_width,
-			    unsigned short *tile_height)
+rl2_get_coverage_tile_size (rl2CoveragePtr ptr, unsigned int *tile_width,
+			    unsigned int *tile_height)
 {
 /* return the Coverage tile width */
     rl2PrivCoveragePtr cvg = (rl2PrivCoveragePtr) ptr;
@@ -612,7 +612,7 @@ rl2_get_coverage_srid (rl2CoveragePtr ptr, int *srid)
 
 RL2_DECLARE rl2SectionPtr
 rl2_create_section (const char *name, unsigned char compression,
-		    unsigned short tile_width, unsigned short tile_height,
+		    unsigned int tile_width, unsigned int tile_height,
 		    rl2RasterPtr rst)
 {
 /* allocating and initializing a Section object */
@@ -747,8 +747,8 @@ rl2_is_section_compression_lossy (rl2SectionPtr ptr, int *is_lossy)
 }
 
 RL2_DECLARE int
-rl2_get_section_tile_size (rl2SectionPtr ptr, unsigned short *tile_width,
-			   unsigned short *tile_height)
+rl2_get_section_tile_size (rl2SectionPtr ptr, unsigned int *tile_width,
+			   unsigned int *tile_height)
 {
 /* return the Section tile width */
     rl2PrivSectionPtr scn = (rl2PrivSectionPtr) ptr;
@@ -811,7 +811,7 @@ check_raster_no_data (rl2PrivPixelPtr pxl_no_data, unsigned char sample_type,
 }
 
 RL2_DECLARE rl2RasterPtr
-rl2_create_raster (unsigned short width, unsigned short height,
+rl2_create_raster (unsigned int width, unsigned int height,
 		   unsigned char sample_type, unsigned char pixel_type,
 		   unsigned char num_samples, unsigned char *bufpix,
 		   int bufpix_size, rl2PalettePtr palette, unsigned char *mask,
@@ -820,8 +820,8 @@ rl2_create_raster (unsigned short width, unsigned short height,
 /* allocating and initializing a Raster object */
     rl2PrivPixelPtr pxl_no_data = (rl2PrivPixelPtr) no_data;
     unsigned char *p;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     int raster_size;
     rl2PrivRasterPtr rst = NULL;
 
@@ -849,7 +849,7 @@ rl2_create_raster (unsigned short width, unsigned short height,
     if (mask != NULL)
       {
 	  /* checking the mask size */
-	  if (width * height != mask_size)
+	  if (width * height != (unsigned int) mask_size)
 	      return NULL;
 	  p = mask;
 	  for (row = 0; row < height; row++)
@@ -978,10 +978,10 @@ rl2_get_raster_type (rl2RasterPtr ptr, unsigned char *sample_type,
 }
 
 RL2_DECLARE int
-rl2_get_raster_size (rl2RasterPtr ptr, unsigned short *width,
-		     unsigned short *height)
+rl2_get_raster_size (rl2RasterPtr ptr, unsigned int *width,
+		     unsigned int *height)
 {
-/* return the Raster width */
+/* return the Raster width and height */
     rl2PrivRasterPtr rst = (rl2PrivRasterPtr) ptr;
     if (rst == NULL)
 	return RL2_ERROR;
@@ -2421,8 +2421,8 @@ rl2_create_raster_pixel (rl2RasterPtr ptr)
 }
 
 RL2_DECLARE int
-rl2_get_raster_pixel (rl2RasterPtr ptr, rl2PixelPtr pixel, unsigned short row,
-		      unsigned short col)
+rl2_get_raster_pixel (rl2RasterPtr ptr, rl2PixelPtr pixel, unsigned int row,
+		      unsigned int col)
 {
 /* fetching a Pixel from a Raster */
     int nBand;
@@ -2538,8 +2538,8 @@ rl2_get_raster_pixel (rl2RasterPtr ptr, rl2PixelPtr pixel, unsigned short row,
 }
 
 RL2_DECLARE int
-rl2_set_raster_pixel (rl2RasterPtr ptr, rl2PixelPtr pixel, unsigned short row,
-		      unsigned short col)
+rl2_set_raster_pixel (rl2RasterPtr ptr, rl2PixelPtr pixel, unsigned int row,
+		      unsigned int col)
 {
 /* changing a Pixel into a Raster */
     int nBand;

@@ -55,7 +55,7 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #include "rasterlite2_private.h"
 
 static int
-parse_ncols (const char *str, unsigned short *width)
+parse_ncols (const char *str, unsigned int *width)
 {
 /* attempting to parse the NCOLS item */
     if (strncasecmp (str, "ncols ", 6) == 0)
@@ -67,7 +67,7 @@ parse_ncols (const char *str, unsigned short *width)
 }
 
 static int
-parse_nrows (const char *str, unsigned short *height)
+parse_nrows (const char *str, unsigned int *height)
 {
 /* attempting to parse the NROWS item */
     if (strncasecmp (str, "nrows ", 6) == 0)
@@ -151,7 +151,7 @@ parse_nodata (const char *str, double *no_data)
 }
 
 static int
-get_ascii_header (FILE * in, unsigned short *width, unsigned short *height,
+get_ascii_header (FILE * in, unsigned int *width, unsigned int *height,
 		  double *minx, double *miny, double *maxx, double *maxy,
 		  double *xres, double *yres, double *no_data)
 {
@@ -259,8 +259,8 @@ rl2_create_ascii_grid_origin (const char *path, int srid,
 {
 /* creating an ASCII Grid Origin */
     FILE *in;
-    unsigned short width;
-    unsigned short height;
+    unsigned int width;
+    unsigned int height;
     double minx;
     double miny;
     double maxx;
@@ -270,8 +270,8 @@ rl2_create_ascii_grid_origin (const char *path, int srid,
     double no_data;
     char buf[1024];
     char *p_out = buf;
-    int line_no = 0;
-    int col_no = 0;
+    unsigned int line_no = 0;
+    unsigned int col_no = 0;
     int new_line = 1;
     int c;
     rl2PrivAsciiOriginPtr ascii = NULL;
@@ -498,7 +498,7 @@ rl2_get_ascii_grid_origin_path (rl2AsciiGridOriginPtr ascii)
 
 RL2_DECLARE int
 rl2_get_ascii_grid_origin_size (rl2AsciiGridOriginPtr ascii,
-				unsigned short *width, unsigned short *height)
+				unsigned int *width, unsigned int *height)
 {
 /* retrieving Width and Height from an ASCII Grid origin */
     rl2PrivAsciiOriginPtr origin = (rl2PrivAsciiOriginPtr) ascii;
@@ -616,15 +616,15 @@ rl2_eval_ascii_grid_origin_compatibility (rl2CoveragePtr cvg,
 }
 
 static int
-read_ascii_int8 (rl2PrivAsciiOriginPtr origin, unsigned short width,
-		 unsigned short height, unsigned int startRow,
+read_ascii_int8 (rl2PrivAsciiOriginPtr origin, unsigned int width,
+		 unsigned int height, unsigned int startRow,
 		 unsigned int startCol, char *pixels)
 {
 /* reading from the Temporary helper file - INT8 */
-    int x;
-    int y;
-    int row;
-    int col;
+    unsigned int x;
+    unsigned int y;
+    unsigned int row;
+    unsigned int col;
     for (y = 0, row = startRow; y < height && row < origin->height; y++, row++)
       {
 	  /* looping on rows */
@@ -645,15 +645,15 @@ read_ascii_int8 (rl2PrivAsciiOriginPtr origin, unsigned short width,
 }
 
 static int
-read_ascii_uint8 (rl2PrivAsciiOriginPtr origin, unsigned short width,
-		  unsigned short height, unsigned int startRow,
+read_ascii_uint8 (rl2PrivAsciiOriginPtr origin, unsigned int width,
+		  unsigned int height, unsigned int startRow,
 		  unsigned int startCol, unsigned char *pixels)
 {
 /* reading from the Temporary helper file - UINT8 */
-    int x;
-    int y;
-    int row;
-    int col;
+    unsigned int x;
+    unsigned int y;
+    unsigned int row;
+    unsigned int col;
     for (y = 0, row = startRow; y < height && row < origin->height; y++, row++)
       {
 	  /* looping on rows */
@@ -674,15 +674,15 @@ read_ascii_uint8 (rl2PrivAsciiOriginPtr origin, unsigned short width,
 }
 
 static int
-read_ascii_int16 (rl2PrivAsciiOriginPtr origin, unsigned short width,
-		  unsigned short height, unsigned int startRow,
+read_ascii_int16 (rl2PrivAsciiOriginPtr origin, unsigned int width,
+		  unsigned int height, unsigned int startRow,
 		  unsigned int startCol, short *pixels)
 {
 /* reading from the Temporary helper file - INT16 */
-    int x;
-    int y;
-    int row;
-    int col;
+    unsigned int x;
+    unsigned int y;
+    unsigned int row;
+    unsigned int col;
     for (y = 0, row = startRow; y < height && row < origin->height; y++, row++)
       {
 	  /* looping on rows */
@@ -705,15 +705,15 @@ read_ascii_int16 (rl2PrivAsciiOriginPtr origin, unsigned short width,
 }
 
 static int
-read_ascii_uint16 (rl2PrivAsciiOriginPtr origin, unsigned short width,
-		   unsigned short height, unsigned int startRow,
+read_ascii_uint16 (rl2PrivAsciiOriginPtr origin, unsigned int width,
+		   unsigned int height, unsigned int startRow,
 		   unsigned int startCol, unsigned short *pixels)
 {
 /* reading from the Temporary helper file - UINT16 */
-    int x;
-    int y;
-    int row;
-    int col;
+    unsigned int x;
+    unsigned int y;
+    unsigned int row;
+    unsigned int col;
     for (y = 0, row = startRow; y < height && row < origin->height; y++, row++)
       {
 	  /* looping on rows */
@@ -737,15 +737,15 @@ read_ascii_uint16 (rl2PrivAsciiOriginPtr origin, unsigned short width,
 }
 
 static int
-read_ascii_int32 (rl2PrivAsciiOriginPtr origin, unsigned short width,
-		  unsigned short height, unsigned int startRow,
+read_ascii_int32 (rl2PrivAsciiOriginPtr origin, unsigned int width,
+		  unsigned int height, unsigned int startRow,
 		  unsigned int startCol, int *pixels)
 {
 /* reading from the Temporary helper file - INT32 */
-    int x;
-    int y;
-    int row;
-    int col;
+    unsigned int x;
+    unsigned int y;
+    unsigned int row;
+    unsigned int col;
     for (y = 0, row = startRow; y < height && row < origin->height; y++, row++)
       {
 	  /* looping on rows */
@@ -767,15 +767,15 @@ read_ascii_int32 (rl2PrivAsciiOriginPtr origin, unsigned short width,
 }
 
 static int
-read_ascii_uint32 (rl2PrivAsciiOriginPtr origin, unsigned short width,
-		   unsigned short height, unsigned int startRow,
+read_ascii_uint32 (rl2PrivAsciiOriginPtr origin, unsigned int width,
+		   unsigned int height, unsigned int startRow,
 		   unsigned int startCol, unsigned int *pixels)
 {
 /* reading from the Temporary helper file - UINT32 */
-    int x;
-    int y;
-    int row;
-    int col;
+    unsigned int x;
+    unsigned int y;
+    unsigned int row;
+    unsigned int col;
     for (y = 0, row = startRow; y < height && row < origin->height; y++, row++)
       {
 	  /* looping on rows */
@@ -798,15 +798,15 @@ read_ascii_uint32 (rl2PrivAsciiOriginPtr origin, unsigned short width,
 }
 
 static int
-read_ascii_float (rl2PrivAsciiOriginPtr origin, unsigned short width,
-		  unsigned short height, unsigned int startRow,
+read_ascii_float (rl2PrivAsciiOriginPtr origin, unsigned int width,
+		  unsigned int height, unsigned int startRow,
 		  unsigned int startCol, float *pixels)
 {
 /* reading from the Temporary helper file - FLOAT */
-    int x;
-    int y;
-    int row;
-    int col;
+    unsigned int x;
+    unsigned int y;
+    unsigned int row;
+    unsigned int col;
     for (y = 0, row = startRow; y < height && row < origin->height; y++, row++)
       {
 	  /* looping on rows */
@@ -829,15 +829,15 @@ read_ascii_float (rl2PrivAsciiOriginPtr origin, unsigned short width,
 }
 
 static int
-read_ascii_double (rl2PrivAsciiOriginPtr origin, unsigned short width,
-		   unsigned short height, unsigned int startRow,
+read_ascii_double (rl2PrivAsciiOriginPtr origin, unsigned int width,
+		   unsigned int height, unsigned int startRow,
 		   unsigned int startCol, double *pixels)
 {
 /* reading from the Temporary helper file - DOUBLE */
-    int x;
-    int y;
-    int row;
-    int col;
+    unsigned int x;
+    unsigned int y;
+    unsigned int row;
+    unsigned int col;
     for (y = 0, row = startRow; y < height && row < origin->height; y++, row++)
       {
 	  /* looping on rows */
@@ -986,8 +986,8 @@ rl2_get_tile_from_ascii_grid_origin (rl2CoveragePtr cvg,
     int pixels_sz = 0;
     unsigned char *mask = NULL;
     int mask_size = 0;
-    int unused_width = 0;
-    int unused_height = 0;
+    unsigned int unused_width = 0;
+    unsigned int unused_height = 0;
 
     if (coverage == NULL || origin == NULL)
 	return NULL;
@@ -1024,9 +1024,9 @@ rl2_get_tile_from_ascii_grid_origin (rl2CoveragePtr cvg,
 	   * creating a Transparency Mask so to shadow any 
 	   * unused portion of the current tile 
 	   */
-	  int shadow_x = coverage->tileWidth - unused_width;
-	  int shadow_y = coverage->tileHeight - unused_height;
-	  int row;
+	  unsigned int shadow_x = coverage->tileWidth - unused_width;
+	  unsigned int shadow_y = coverage->tileHeight - unused_height;
+	  unsigned int row;
 	  mask_size = coverage->tileWidth * coverage->tileHeight;
 	  mask = malloc (mask_size);
 	  if (mask == NULL)
@@ -1059,8 +1059,8 @@ rl2_get_tile_from_ascii_grid_origin (rl2CoveragePtr cvg,
 }
 
 static rl2PrivAsciiDestinationPtr
-alloc_ascii_destination (const char *path, unsigned short width,
-			 unsigned short height, double x, double y,
+alloc_ascii_destination (const char *path, unsigned int width,
+			 unsigned int height, double x, double y,
 			 double res, int is_centered, double no_data,
 			 int decimal_digits)
 {
@@ -1095,8 +1095,8 @@ alloc_ascii_destination (const char *path, unsigned short width,
 }
 
 RL2_DECLARE rl2AsciiGridDestinationPtr
-rl2_create_ascii_grid_destination (const char *path, unsigned short width,
-				   unsigned short height, double resolution,
+rl2_create_ascii_grid_destination (const char *path, unsigned int width,
+				   unsigned int height, double resolution,
 				   double x, double y, int is_centered,
 				   double no_data, int decimal_digits,
 				   void *pixels, int pixels_size,
@@ -1133,7 +1133,7 @@ rl2_create_ascii_grid_destination (const char *path, unsigned short width,
       };
     if (pix_sz < 1)
 	return NULL;
-    if (pixels_size != (width * height * pix_sz))
+    if (pixels_size != (int) (width * height * pix_sz))
 	return NULL;
 
     out = fopen (path, "w");
@@ -1196,8 +1196,7 @@ rl2_get_ascii_grid_destination_path (rl2AsciiGridDestinationPtr ascii)
 
 RL2_DECLARE int
 rl2_get_ascii_grid_destination_size (rl2AsciiGridDestinationPtr ascii,
-				     unsigned short *width,
-				     unsigned short *height)
+				     unsigned int *width, unsigned int *height)
 {
 /* retrieving Width and Height from an ASCII Grid destination */
     rl2PrivAsciiDestinationPtr dst = (rl2PrivAsciiDestinationPtr) ascii;
@@ -1296,7 +1295,7 @@ format_pixel (double cell_value, int decimal_digits)
 
 RL2_DECLARE int
 rl2_write_ascii_grid_scanline (rl2AsciiGridDestinationPtr ascii,
-			       unsigned short *line_no)
+			       unsigned int *line_no)
 {
 /* attempting to write a scanline into an ASCII Grid */
     char *p8;
@@ -1309,7 +1308,7 @@ rl2_write_ascii_grid_scanline (rl2AsciiGridDestinationPtr ascii,
     double *pdbl;
     double cell_value;
     char *pxl;
-    int x;
+    unsigned int x;
     rl2PrivAsciiDestinationPtr dst = (rl2PrivAsciiDestinationPtr) ascii;
 
     if (dst == NULL)

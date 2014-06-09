@@ -408,8 +408,8 @@ compress_jpeg (unsigned short width, unsigned short height,
     const char *comment;
     const unsigned char *p_data;
     const unsigned char *p_mask;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     unsigned short num_entries;
     unsigned char *red = NULL;
     unsigned char *green = NULL;
@@ -771,7 +771,7 @@ rl2_raster_to_jpeg (rl2RasterPtr raster, unsigned char **jpeg, int *jpeg_size,
 }
 
 RL2_DECLARE int
-rl2_rgb_to_jpeg (unsigned short width, unsigned short height,
+rl2_rgb_to_jpeg (unsigned int width, unsigned int height,
 		 const unsigned char *rgb, int quality, unsigned char **jpeg,
 		 int *jpeg_size)
 {
@@ -791,7 +791,7 @@ rl2_rgb_to_jpeg (unsigned short width, unsigned short height,
 }
 
 RL2_DECLARE int
-rl2_gray_to_jpeg (unsigned short width, unsigned short height,
+rl2_gray_to_jpeg (unsigned int width, unsigned int height,
 		  const unsigned char *gray, int quality, unsigned char **jpeg,
 		  int *jpeg_size)
 {
@@ -812,8 +812,8 @@ rl2_gray_to_jpeg (unsigned short width, unsigned short height,
 
 RL2_PRIVATE int
 rl2_data_to_jpeg (const unsigned char *pixels, const unsigned char *mask,
-		  rl2PalettePtr palette, unsigned short width,
-		  unsigned short height, unsigned char sample_type,
+		  rl2PalettePtr palette, unsigned int width,
+		  unsigned int height, unsigned char sample_type,
 		  unsigned char pixel_type, unsigned char **jpeg,
 		  int *jpeg_size, int quality)
 {
@@ -863,8 +863,8 @@ rl2_raster_from_jpeg (const unsigned char *jpeg, int jpeg_size)
     rl2RasterPtr rst = NULL;
     unsigned char *data = NULL;
     int data_size;
-    unsigned short width;
-    unsigned short height;
+    unsigned int width;
+    unsigned int height;
     unsigned char pixel_type;
     int nBands;
 
@@ -895,7 +895,7 @@ rl2_raster_from_jpeg (const unsigned char *jpeg, int jpeg_size)
 
 RL2_PRIVATE int
 rl2_decode_jpeg_scaled (int scale, const unsigned char *jpeg, int jpeg_size,
-			unsigned short *width, unsigned short *height,
+			unsigned int *width, unsigned int *height,
 			unsigned char *xpixel_type, unsigned char **pixels,
 			int *pixels_size)
 {
@@ -1272,8 +1272,8 @@ rl2_get_tile_from_jpeg_origin (rl2CoveragePtr cvg, rl2RasterPtr jpeg,
     int pixels_sz = 0;
     unsigned char *mask = NULL;
     int mask_size = 0;
-    int unused_width = 0;
-    int unused_height = 0;
+    unsigned int unused_width = 0;
+    unsigned int unused_height = 0;
 
     if (coverage == NULL || origin == NULL)
 	return NULL;
@@ -1308,9 +1308,9 @@ rl2_get_tile_from_jpeg_origin (rl2CoveragePtr cvg, rl2RasterPtr jpeg,
 	   * creating a Transparency Mask so to shadow any 
 	   * unused portion of the current tile 
 	   */
-	  int shadow_x = coverage->tileWidth - unused_width;
-	  int shadow_y = coverage->tileHeight - unused_height;
-	  int row;
+	  unsigned int shadow_x = coverage->tileWidth - unused_width;
+	  unsigned int shadow_y = coverage->tileHeight - unused_height;
+	  unsigned int row;
 	  mask_size = coverage->tileWidth * coverage->tileHeight;
 	  mask = malloc (mask_size);
 	  if (mask == NULL)

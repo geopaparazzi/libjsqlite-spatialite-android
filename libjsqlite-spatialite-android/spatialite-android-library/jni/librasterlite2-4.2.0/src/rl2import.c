@@ -321,7 +321,7 @@ compute_aggregate_sq_diff (rl2RasterStatisticsPtr section_stats)
 static int
 do_import_ascii_grid (sqlite3 * handle, const char *src_path,
 		      rl2CoveragePtr cvg, const char *section, int srid,
-		      unsigned short tile_w, unsigned short tile_h,
+		      unsigned int tile_w, unsigned int tile_h,
 		      int pyramidize, unsigned char sample_type,
 		      unsigned char compression, sqlite3_stmt * stmt_data,
 		      sqlite3_stmt * stmt_tils, sqlite3_stmt * stmt_sect,
@@ -333,10 +333,10 @@ do_import_ascii_grid (sqlite3 * handle, const char *src_path,
     rl2RasterPtr raster = NULL;
     rl2RasterStatisticsPtr section_stats = NULL;
     rl2PixelPtr no_data = NULL;
-    int row;
-    int col;
-    unsigned short width;
-    unsigned short height;
+    unsigned int row;
+    unsigned int col;
+    unsigned int width;
+    unsigned int height;
     unsigned char *blob_odd = NULL;
     unsigned char *blob_even = NULL;
     int blob_odd_sz;
@@ -891,10 +891,10 @@ do_import_file (sqlite3 * handle, const char *src_path,
     rl2PalettePtr aux_palette = NULL;
     rl2RasterStatisticsPtr section_stats = NULL;
     rl2PixelPtr no_data = NULL;
-    int row;
-    int col;
-    unsigned short width;
-    unsigned short height;
+    unsigned int row;
+    unsigned int col;
+    unsigned int width;
+    unsigned int height;
     unsigned char *blob_odd = NULL;
     unsigned char *blob_even = NULL;
     int blob_odd_sz;
@@ -1228,14 +1228,14 @@ do_import_common (sqlite3 * handle, const char *src_path, const char *dir_path,
     unsigned char sample_type;
     unsigned char pixel_type;
     unsigned char num_bands;
-    unsigned short tile_w;
-    unsigned short tile_h;
+    unsigned int tile_w;
+    unsigned int tile_h;
     unsigned char compression;
     int quality;
     char *table;
     char *xtable;
-    unsigned short tileWidth;
-    unsigned short tileHeight;
+    unsigned int tileWidth;
+    unsigned int tileHeight;
     sqlite3_stmt *stmt_data = NULL;
     sqlite3_stmt *stmt_tils = NULL;
     sqlite3_stmt *stmt_sect = NULL;
@@ -1422,14 +1422,15 @@ rl2_load_mrasters_into_dbms (sqlite3 * handle, const char *dir_path,
 
 static void
 copy_int8_outbuf_to_tile (const char *outbuf, char *tile,
-			  unsigned short width,
-			  unsigned short height,
+			  unsigned int width,
+			  unsigned int height,
 			  unsigned short tile_width,
-			  unsigned short tile_height, int base_y, int base_x)
+			  unsigned short tile_height, unsigned int base_y,
+			  unsigned int base_x)
 {
 /* copying INT8 pixels from the output buffer into the tile */
-    int x;
-    int y;
+    unsigned int x;
+    unsigned int y;
     const char *p_in;
     char *p_out = tile;
 
@@ -1454,13 +1455,14 @@ copy_int8_outbuf_to_tile (const char *outbuf, char *tile,
 static void
 copy_uint8_outbuf_to_tile (const unsigned char *outbuf, unsigned char *tile,
 			   unsigned char num_bands, unsigned short width,
-			   unsigned short height,
-			   unsigned short tile_width,
-			   unsigned short tile_height, int base_y, int base_x)
+			   unsigned int height,
+			   unsigned int tile_width,
+			   unsigned short tile_height, unsigned int base_y,
+			   unsigned int base_x)
 {
 /* copying UINT8 pixels from the output buffer into the tile */
-    int x;
-    int y;
+    unsigned int x;
+    unsigned int y;
     int b;
     const unsigned char *p_in;
     unsigned char *p_out = tile;
@@ -1488,14 +1490,15 @@ copy_uint8_outbuf_to_tile (const unsigned char *outbuf, unsigned char *tile,
 
 static void
 copy_int16_outbuf_to_tile (const short *outbuf, short *tile,
-			   unsigned short width,
-			   unsigned short height,
+			   unsigned int width,
+			   unsigned int height,
 			   unsigned short tile_width,
-			   unsigned short tile_height, int base_y, int base_x)
+			   unsigned short tile_height, unsigned int base_y,
+			   unsigned int base_x)
 {
 /* copying INT16 pixels from the output buffer into the tile */
-    int x;
-    int y;
+    unsigned int x;
+    unsigned int y;
     const short *p_in;
     short *p_out = tile;
 
@@ -1520,13 +1523,14 @@ copy_int16_outbuf_to_tile (const short *outbuf, short *tile,
 static void
 copy_uint16_outbuf_to_tile (const unsigned short *outbuf, unsigned short *tile,
 			    unsigned char num_bands, unsigned short width,
-			    unsigned short height,
-			    unsigned short tile_width,
-			    unsigned short tile_height, int base_y, int base_x)
+			    unsigned int height,
+			    unsigned int tile_width,
+			    unsigned short tile_height, unsigned int base_y,
+			    unsigned int base_x)
 {
 /* copying UINT16 pixels from the output buffer into the tile */
-    int x;
-    int y;
+    unsigned int x;
+    unsigned int y;
     int b;
     const unsigned short *p_in;
     unsigned short *p_out = tile;
@@ -1555,13 +1559,14 @@ copy_uint16_outbuf_to_tile (const unsigned short *outbuf, unsigned short *tile,
 static void
 copy_int32_outbuf_to_tile (const int *outbuf, int *tile,
 			   unsigned short width,
-			   unsigned short height,
-			   unsigned short tile_width,
-			   unsigned short tile_height, int base_y, int base_x)
+			   unsigned int height,
+			   unsigned int tile_width,
+			   unsigned short tile_height, unsigned int base_y,
+			   unsigned int base_x)
 {
 /* copying INT32 pixels from the output buffer into the tile */
-    int x;
-    int y;
+    unsigned int x;
+    unsigned int y;
     const int *p_in;
     int *p_out = tile;
 
@@ -1616,14 +1621,15 @@ copy_uint32_outbuf_to_tile (const unsigned int *outbuf, unsigned int *tile,
 
 static void
 copy_float_outbuf_to_tile (const float *outbuf, float *tile,
-			   unsigned short width,
-			   unsigned short height,
+			   unsigned int width,
+			   unsigned int height,
 			   unsigned short tile_width,
-			   unsigned short tile_height, int base_y, int base_x)
+			   unsigned short tile_height, unsigned int base_y,
+			   unsigned int base_x)
 {
 /* copying FLOAT pixels from the output buffer into the tile */
-    int x;
-    int y;
+    unsigned int x;
+    unsigned int y;
     const float *p_in;
     float *p_out = tile;
 
@@ -1648,13 +1654,14 @@ copy_float_outbuf_to_tile (const float *outbuf, float *tile,
 static void
 copy_double_outbuf_to_tile (const double *outbuf, double *tile,
 			    unsigned short width,
-			    unsigned short height,
-			    unsigned short tile_width,
-			    unsigned short tile_height, int base_y, int base_x)
+			    unsigned int height,
+			    unsigned int tile_width,
+			    unsigned short tile_height, unsigned int base_y,
+			    unsigned int base_x)
 {
 /* copying DOUBLE pixels from the output buffer into the tile */
-    int x;
-    int y;
+    unsigned int x;
+    unsigned int y;
     const double *p_in;
     double *p_out = tile;
 
@@ -1679,9 +1686,9 @@ copy_double_outbuf_to_tile (const double *outbuf, double *tile,
 static void
 copy_from_outbuf_to_tile (const unsigned char *outbuf, unsigned char *tile,
 			  unsigned char sample_type, unsigned char num_bands,
-			  unsigned short width, unsigned short height,
+			  unsigned int width, unsigned int height,
 			  unsigned short tile_width, unsigned short tile_height,
-			  int base_y, int base_x)
+			  unsigned int base_y, unsigned int base_x)
 {
 /* copying pixels from the output buffer into the tile */
     switch (sample_type)
@@ -1732,7 +1739,7 @@ copy_from_outbuf_to_tile (const unsigned char *outbuf, unsigned char *tile,
 }
 
 static int
-mismatching_size (unsigned short width, unsigned short height, double x_res,
+mismatching_size (unsigned int width, unsigned int height, double x_res,
 		  double y_res, double minx, double miny, double maxx,
 		  double maxy)
 {
@@ -1755,9 +1762,9 @@ RL2_DECLARE int
 rl2_export_geotiff_from_dbms (sqlite3 * handle, const char *dst_path,
 			      rl2CoveragePtr cvg, double x_res, double y_res,
 			      double minx, double miny, double maxx,
-			      double maxy, unsigned short width,
-			      unsigned short height, unsigned char compression,
-			      unsigned short tile_sz, int with_worldfile)
+			      double maxy, unsigned int width,
+			      unsigned int height, unsigned char compression,
+			      unsigned int tile_sz, int with_worldfile)
 {
 /* exporting a GeoTIFF from the DBMS into the file-system */
     rl2RasterPtr raster = NULL;
@@ -1778,8 +1785,8 @@ rl2_export_geotiff_from_dbms (sqlite3 * handle, const char *dst_path,
     unsigned char *bufpix = NULL;
     int bufpix_size;
     int pix_sz = 1;
-    int base_x;
-    int base_y;
+    unsigned int base_x;
+    unsigned int base_y;
 
     if (rl2_find_matching_resolution
 	(handle, cvg, &xx_res, &yy_res, &level, &scale) != RL2_OK)
@@ -1921,10 +1928,10 @@ rl2_export_tiff_worldfile_from_dbms (sqlite3 * handle, const char *dst_path,
 				     rl2CoveragePtr cvg, double x_res,
 				     double y_res, double minx, double miny,
 				     double maxx, double maxy,
-				     unsigned short width,
-				     unsigned short height,
+				     unsigned int width,
+				     unsigned int height,
 				     unsigned char compression,
-				     unsigned short tile_sz)
+				     unsigned int tile_sz)
 {
 /* exporting a TIFF+TFW from the DBMS into the file-system */
     rl2RasterPtr raster = NULL;
@@ -1945,8 +1952,8 @@ rl2_export_tiff_worldfile_from_dbms (sqlite3 * handle, const char *dst_path,
     unsigned char *bufpix = NULL;
     int bufpix_size;
     int pix_sz = 1;
-    int base_x;
-    int base_y;
+    unsigned int base_x;
+    unsigned int base_y;
 
     if (rl2_find_matching_resolution
 	(handle, cvg, &xx_res, &yy_res, &level, &scale) != RL2_OK)
@@ -2084,9 +2091,9 @@ RL2_DECLARE int
 rl2_export_tiff_from_dbms (sqlite3 * handle, const char *dst_path,
 			   rl2CoveragePtr cvg, double x_res, double y_res,
 			   double minx, double miny, double maxx,
-			   double maxy, unsigned short width,
-			   unsigned short height, unsigned char compression,
-			   unsigned short tile_sz)
+			   double maxy, unsigned int width,
+			   unsigned int height, unsigned char compression,
+			   unsigned int tile_sz)
 {
 /* exporting a plain TIFF from the DBMS into the file-system */
     rl2RasterPtr raster = NULL;
@@ -2107,8 +2114,8 @@ rl2_export_tiff_from_dbms (sqlite3 * handle, const char *dst_path,
     unsigned char *bufpix = NULL;
     int bufpix_size;
     int pix_sz = 1;
-    int base_x;
-    int base_y;
+    unsigned int base_x;
+    unsigned int base_y;
 
     if (rl2_find_matching_resolution
 	(handle, cvg, &xx_res, &yy_res, &level, &scale) != RL2_OK)
@@ -2244,13 +2251,13 @@ rl2_export_triple_band_geotiff_from_dbms (sqlite3 * handle,
 					  rl2CoveragePtr cvg, double x_res,
 					  double y_res, double minx,
 					  double miny, double maxx,
-					  double maxy, unsigned short width,
-					  unsigned short height,
+					  double maxy, unsigned int width,
+					  unsigned int height,
 					  unsigned char red_band,
 					  unsigned char green_band,
 					  unsigned char blue_band,
 					  unsigned char compression,
-					  unsigned short tile_sz,
+					  unsigned int tile_sz,
 					  int with_worldfile)
 {
 /* exporting a Band-Composed GeoTIFF from the DBMS into the file-system */
@@ -2270,8 +2277,8 @@ rl2_export_triple_band_geotiff_from_dbms (sqlite3 * handle,
     int outbuf_size;
     unsigned char *bufpix = NULL;
     int bufpix_size;
-    int base_x;
-    int base_y;
+    unsigned int base_x;
+    unsigned int base_y;
 
     if (rl2_find_matching_resolution
 	(handle, cvg, &xx_res, &yy_res, &level, &scale) != RL2_OK)
@@ -2383,11 +2390,11 @@ rl2_export_mono_band_geotiff_from_dbms (sqlite3 * handle,
 					rl2CoveragePtr cvg, double x_res,
 					double y_res, double minx,
 					double miny, double maxx,
-					double maxy, unsigned short width,
-					unsigned short height,
+					double maxy, unsigned int width,
+					unsigned int height,
 					unsigned char mono_band,
 					unsigned char compression,
-					unsigned short tile_sz,
+					unsigned int tile_sz,
 					int with_worldfile)
 {
 /* exporting a Mono-Band GeoTIFF from the DBMS into the file-system */
@@ -2407,8 +2414,8 @@ rl2_export_mono_band_geotiff_from_dbms (sqlite3 * handle,
     int outbuf_size;
     unsigned char *bufpix = NULL;
     int bufpix_size;
-    int base_x;
-    int base_y;
+    unsigned int base_x;
+    unsigned int base_y;
     unsigned char out_pixel;
 
     if (rl2_find_matching_resolution
@@ -2520,13 +2527,13 @@ rl2_export_triple_band_tiff_worldfile_from_dbms (sqlite3 * handle,
 						 double x_res, double y_res,
 						 double minx, double miny,
 						 double maxx, double maxy,
-						 unsigned short width,
-						 unsigned short height,
+						 unsigned int width,
+						 unsigned int height,
 						 unsigned char red_band,
 						 unsigned char green_band,
 						 unsigned char blue_band,
 						 unsigned char compression,
-						 unsigned short tile_sz)
+						 unsigned int tile_sz)
 {
 /* exporting a Band-Composed TIFF+TFW from the DBMS into the file-system */
     rl2RasterPtr raster = NULL;
@@ -2545,8 +2552,8 @@ rl2_export_triple_band_tiff_worldfile_from_dbms (sqlite3 * handle,
     int outbuf_size;
     unsigned char *bufpix = NULL;
     int bufpix_size;
-    int base_x;
-    int base_y;
+    unsigned int base_x;
+    unsigned int base_y;
 
     if (rl2_find_matching_resolution
 	(handle, cvg, &xx_res, &yy_res, &level, &scale) != RL2_OK)
@@ -2656,11 +2663,11 @@ rl2_export_mono_band_tiff_worldfile_from_dbms (sqlite3 * handle,
 					       double x_res, double y_res,
 					       double minx, double miny,
 					       double maxx, double maxy,
-					       unsigned short width,
-					       unsigned short height,
+					       unsigned int width,
+					       unsigned int height,
 					       unsigned char mono_band,
 					       unsigned char compression,
-					       unsigned short tile_sz)
+					       unsigned int tile_sz)
 {
 /* exporting a Mono-Band TIFF+TFW from the DBMS into the file-system */
     rl2RasterPtr raster = NULL;
@@ -2679,8 +2686,8 @@ rl2_export_mono_band_tiff_worldfile_from_dbms (sqlite3 * handle,
     int outbuf_size;
     unsigned char *bufpix = NULL;
     int bufpix_size;
-    int base_x;
-    int base_y;
+    unsigned int base_x;
+    unsigned int base_y;
     unsigned char out_pixel;
 
     if (rl2_find_matching_resolution
@@ -2787,13 +2794,13 @@ rl2_export_triple_band_tiff_from_dbms (sqlite3 * handle, const char *dst_path,
 				       rl2CoveragePtr cvg, double x_res,
 				       double y_res, double minx, double miny,
 				       double maxx, double maxy,
-				       unsigned short width,
-				       unsigned short height,
+				       unsigned int width,
+				       unsigned int height,
 				       unsigned char red_band,
 				       unsigned char green_band,
 				       unsigned char blue_band,
 				       unsigned char compression,
-				       unsigned short tile_sz)
+				       unsigned int tile_sz)
 {
 /* exporting a plain Band-Composed TIFF from the DBMS into the file-system */
     rl2RasterPtr raster = NULL;
@@ -2812,8 +2819,8 @@ rl2_export_triple_band_tiff_from_dbms (sqlite3 * handle, const char *dst_path,
     int outbuf_size;
     unsigned char *bufpix = NULL;
     int bufpix_size;
-    int base_x;
-    int base_y;
+    unsigned int base_x;
+    unsigned int base_y;
 
     if (rl2_find_matching_resolution
 	(handle, cvg, &xx_res, &yy_res, &level, &scale) != RL2_OK)
@@ -2915,11 +2922,11 @@ rl2_export_mono_band_tiff_from_dbms (sqlite3 * handle, const char *dst_path,
 				     rl2CoveragePtr cvg, double x_res,
 				     double y_res, double minx, double miny,
 				     double maxx, double maxy,
-				     unsigned short width,
-				     unsigned short height,
+				     unsigned int width,
+				     unsigned int height,
 				     unsigned char mono_band,
 				     unsigned char compression,
-				     unsigned short tile_sz)
+				     unsigned int tile_sz)
 {
 /* exporting a plain Mono-Band TIFF from the DBMS into the file-system */
     rl2RasterPtr raster = NULL;
@@ -2938,8 +2945,8 @@ rl2_export_mono_band_tiff_from_dbms (sqlite3 * handle, const char *dst_path,
     int outbuf_size;
     unsigned char *bufpix = NULL;
     int bufpix_size;
-    int base_x;
-    int base_y;
+    unsigned int base_x;
+    unsigned int base_y;
     unsigned char out_pixel;
 
     if (rl2_find_matching_resolution
@@ -3039,8 +3046,8 @@ RL2_DECLARE int
 rl2_export_ascii_grid_from_dbms (sqlite3 * handle, const char *dst_path,
 				 rl2CoveragePtr cvg, double res,
 				 double minx, double miny, double maxx,
-				 double maxy, unsigned short width,
-				 unsigned short height, int is_centered,
+				 double maxy, unsigned int width,
+				 unsigned int height, int is_centered,
 				 int decimal_digits)
 {
 /* exporting an ASCII Grid from the DBMS into the file-system */
@@ -3055,7 +3062,7 @@ rl2_export_ascii_grid_from_dbms (sqlite3 * handle, const char *dst_path,
     unsigned char pixel_type;
     unsigned char num_bands;
     double no_data = -9999.0;
-    int base_y;
+    unsigned int base_y;
     unsigned char *pixels = NULL;
     int pixels_size;
 
@@ -3154,7 +3161,7 @@ rl2_export_ascii_grid_from_dbms (sqlite3 * handle, const char *dst_path,
     for (base_y = 0; base_y < height; base_y++)
       {
 	  /* exporting all scanlines from the output buffer */
-	  unsigned short line_no;
+	  unsigned int line_no;
 	  if (rl2_write_ascii_grid_scanline (ascii, &line_no) != RL2_OK)
 	      goto error;
       }
@@ -3179,9 +3186,8 @@ rl2_export_jpeg_from_dbms (sqlite3 * handle, const char *dst_path,
 			   rl2CoveragePtr cvg, double x_res,
 			   double y_res, double minx, double miny,
 			   double maxx, double maxy,
-			   unsigned short width,
-			   unsigned short height, int quality,
-			   int with_worldfile)
+			   unsigned int width,
+			   unsigned int height, int quality, int with_worldfile)
 {
 /* exporting a JPEG (with possible JGW) from the DBMS into the file-system */
     rl2SectionPtr section = NULL;
@@ -4535,10 +4541,10 @@ upate_sect_pyramid_grid (sqlite3 * handle, sqlite3_stmt * stmt_rd,
     unsigned char *mask = NULL;
     SectionPyramidTileOutPtr tile_out;
     SectionPyramidTileRefPtr tile_in;
-    int x;
-    int y;
-    int row;
-    int col;
+    unsigned int x;
+    unsigned int y;
+    unsigned int row;
+    unsigned int col;
     int tic_x;
     int tic_y;
     double pos_y;
@@ -4603,10 +4609,10 @@ upate_sect_pyramid_grid (sqlite3 * handle, sqlite3_stmt * stmt_rd,
 		p = mask;
 		for (row = 0; row < tileHeight; row++)
 		  {
-		      int x_row = tile_out->row + row;
+		      unsigned int x_row = tile_out->row + row;
 		      for (col = 0; col < tileWidth; col++)
 			{
-			    int x_col = tile_out->col + col;
+			    unsigned int x_col = tile_out->col + col;
 			    if (x_row >= pyr->scaled_height
 				|| x_col >= pyr->scaled_width)
 			      {
@@ -4709,14 +4715,14 @@ upate_sect_pyramid_grid (sqlite3 * handle, sqlite3_stmt * stmt_rd,
 }
 
 static double
-rescale_mb_pixel_uint8 (const unsigned char *buf_in, unsigned short tileWidth,
-			unsigned short tileHeight, int x, int y,
+rescale_mb_pixel_uint8 (const unsigned char *buf_in, unsigned int tileWidth,
+			unsigned int tileHeight, unsigned int x, unsigned int y,
 			unsigned char nd, unsigned char nb,
 			unsigned char num_bands)
 {
 /* rescaling a MultiBand pixel sample (8x8) - UINT8 */
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     int nodata = 0;
     int valid = 0;
     double sum = 0.0;
@@ -4724,14 +4730,14 @@ rescale_mb_pixel_uint8 (const unsigned char *buf_in, unsigned short tileWidth,
     for (row = 0; row < 8; row++)
       {
 	  const unsigned char *p_in_base;
-	  unsigned short yy = y + row;
+	  unsigned int yy = y + row;
 	  if (yy >= tileHeight)
 	      break;
 	  p_in_base = buf_in + (yy * tileWidth * num_bands);
 	  for (col = 0; col < 8; col++)
 	    {
 		const unsigned char *p_in;
-		unsigned short xx = x + col;
+		unsigned int xx = x + col;
 		if (xx >= tileWidth)
 		    break;
 		p_in = p_in_base + (xx * num_bands) + nb;
@@ -4751,14 +4757,15 @@ rescale_mb_pixel_uint8 (const unsigned char *buf_in, unsigned short tileWidth,
 }
 
 static void
-rescale_multiband_uint8 (unsigned char *buf_out, unsigned short tileWidth,
-			 unsigned short tileHeight, const unsigned char *buf_in,
-			 int x, int y, int tic_x, int tic_y,
-			 unsigned char num_bands, rl2PixelPtr no_data)
+rescale_multiband_uint8 (unsigned char *buf_out, unsigned int tileWidth,
+			 unsigned int tileHeight, const unsigned char *buf_in,
+			 unsigned int x, unsigned int y, unsigned int tic_x,
+			 unsigned int tic_y, unsigned char num_bands,
+			 rl2PixelPtr no_data)
 {
 /* rescaling a MultiBand tile - unsigned int 8 bit */
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     unsigned char nb;
     unsigned char nd = 0;
     rl2PrivPixelPtr pxl = (rl2PrivPixelPtr) no_data;
@@ -4771,7 +4778,7 @@ rescale_multiband_uint8 (unsigned char *buf_out, unsigned short tileWidth,
 	      break;
 	  for (col = 0; col < tic_x; col++)
 	    {
-		unsigned short xx = col + x;
+		unsigned int xx = col + x;
 		unsigned char *p_out = p_out_base + (xx * num_bands);
 		if (xx >= tileWidth)
 		    break;
@@ -4796,14 +4803,14 @@ rescale_multiband_uint8 (unsigned char *buf_out, unsigned short tileWidth,
 }
 
 static double
-rescale_mb_pixel_uint16 (const unsigned short *buf_in, unsigned short tileWidth,
-			 unsigned short tileHeight, int x, int y,
-			 unsigned short nd, unsigned char nb,
+rescale_mb_pixel_uint16 (const unsigned short *buf_in, unsigned int tileWidth,
+			 unsigned int tileHeight, unsigned int x,
+			 unsigned int y, unsigned short nd, unsigned char nb,
 			 unsigned char num_bands)
 {
 /* rescaling a MultiBand pixel sample (8x8) - UINT16 */
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     int nodata = 0;
     int valid = 0;
     double sum = 0.0;
@@ -4838,28 +4845,29 @@ rescale_mb_pixel_uint16 (const unsigned short *buf_in, unsigned short tileWidth,
 }
 
 static void
-rescale_multiband_uint16 (unsigned short *buf_out, unsigned short tileWidth,
-			  unsigned short tileHeight,
-			  const unsigned short *buf_in, int x, int y, int tic_x,
-			  int tic_y, unsigned char num_bands,
+rescale_multiband_uint16 (unsigned short *buf_out, unsigned int tileWidth,
+			  unsigned int tileHeight,
+			  const unsigned short *buf_in, unsigned int x,
+			  unsigned int y, unsigned int tic_x,
+			  unsigned int tic_y, unsigned char num_bands,
 			  rl2PixelPtr no_data)
 {
 /* rescaling a MultiBand tile - unsigned int 16 bit */
-    unsigned short row;
-    unsigned short col;
+    unsigned int row;
+    unsigned int col;
     unsigned char nb;
     unsigned short nd = 0;
     rl2PrivPixelPtr pxl = (rl2PrivPixelPtr) no_data;
 
     for (row = 0; row < tic_y; row++)
       {
-	  unsigned short yy = row + y;
+	  unsigned int yy = row + y;
 	  unsigned short *p_out_base = buf_out + (yy * tileWidth * num_bands);
 	  if (yy >= tileHeight)
 	      break;
 	  for (col = 0; col < tic_x; col++)
 	    {
-		unsigned short xx = col + x;
+		unsigned int xx = col + x;
 		unsigned short *p_out = p_out_base + (xx * num_bands);
 		if (xx >= tileWidth)
 		    break;
@@ -4884,10 +4892,11 @@ rescale_multiband_uint16 (unsigned short *buf_out, unsigned short tileWidth,
 }
 
 static void
-rescale_multiband (void *buf_out, unsigned short tileWidth,
-		   unsigned short tileHeight, const void *buf_in,
-		   unsigned char sample_type, unsigned char num_bands, int x,
-		   int y, int tic_x, int tic_y, rl2PixelPtr no_data)
+rescale_multiband (void *buf_out, unsigned int tileWidth,
+		   unsigned int tileHeight, const void *buf_in,
+		   unsigned char sample_type, unsigned char num_bands,
+		   unsigned int x, unsigned int y, unsigned int tic_x,
+		   unsigned int tic_y, rl2PixelPtr no_data)
 {
 /* rescaling a Multiband tile */
     switch (sample_type)
@@ -4909,8 +4918,8 @@ static int
 upate_sect_pyramid_multiband (sqlite3 * handle, sqlite3_stmt * stmt_rd,
 			      sqlite3_stmt * stmt_tils,
 			      sqlite3_stmt * stmt_data, SectionPyramid * pyr,
-			      unsigned short tileWidth,
-			      unsigned short tileHeight, int id_level,
+			      unsigned int tileWidth,
+			      unsigned int tileHeight, int id_level,
 			      rl2PixelPtr no_data, unsigned char sample_type,
 			      unsigned char num_bands,
 			      unsigned char compression)
@@ -4920,12 +4929,12 @@ upate_sect_pyramid_multiband (sqlite3 * handle, sqlite3_stmt * stmt_rd,
     unsigned char *mask = NULL;
     SectionPyramidTileOutPtr tile_out;
     SectionPyramidTileRefPtr tile_in;
-    int x;
-    int y;
-    int row;
-    int col;
-    int tic_x;
-    int tic_y;
+    unsigned int x;
+    unsigned int y;
+    unsigned int row;
+    unsigned int col;
+    unsigned int tic_x;
+    unsigned int tic_y;
     double pos_y;
     double pos_x;
     double geo_x;
@@ -4979,10 +4988,10 @@ upate_sect_pyramid_multiband (sqlite3 * handle, sqlite3_stmt * stmt_rd,
 		p = mask;
 		for (row = 0; row < tileHeight; row++)
 		  {
-		      int x_row = tile_out->row + row;
+		      unsigned int x_row = tile_out->row + row;
 		      for (col = 0; col < tileWidth; col++)
 			{
-			    int x_col = tile_out->col + col;
+			    unsigned int x_col = tile_out->col + col;
 			    if (x_row >= pyr->scaled_height
 				|| x_col >= pyr->scaled_width)
 			      {
@@ -5088,8 +5097,8 @@ upate_sect_pyramid_multiband (sqlite3 * handle, sqlite3_stmt * stmt_rd,
 static int
 upate_sect_pyramid (sqlite3 * handle, sqlite3_stmt * stmt_rd,
 		    sqlite3_stmt * stmt_tils, sqlite3_stmt * stmt_data,
-		    SectionPyramid * pyr, unsigned short tileWidth,
-		    unsigned short tileHeight, int id_level,
+		    SectionPyramid * pyr, unsigned int tileWidth,
+		    unsigned int tileHeight, int id_level,
 		    rl2PalettePtr palette, rl2PixelPtr no_data,
 		    unsigned char pixel_type)
 {
@@ -5099,12 +5108,12 @@ upate_sect_pyramid (sqlite3 * handle, sqlite3_stmt * stmt_rd,
     SectionPyramidTileRefPtr tile_in;
     rl2GraphicsBitmapPtr base_tile;
     rl2GraphicsContextPtr ctx = NULL;
-    int x;
-    int y;
-    int row;
-    int col;
-    int tic_x;
-    int tic_y;
+    unsigned int x;
+    unsigned int y;
+    unsigned int row;
+    unsigned int col;
+    unsigned int tic_x;
+    unsigned int tic_y;
     double pos_y;
     double pos_x;
     double geo_x;
@@ -5187,10 +5196,10 @@ upate_sect_pyramid (sqlite3 * handle, sqlite3_stmt * stmt_rd,
 	  p = alpha;
 	  for (row = 0; row < tileHeight; row++)
 	    {
-		int x_row = tile_out->row + row;
+		unsigned int x_row = tile_out->row + row;
 		for (col = 0; col < tileWidth; col++)
 		  {
-		      int x_col = tile_out->col + col;
+		      unsigned int x_col = tile_out->col + col;
 		      if (x_row >= pyr->scaled_height
 			  || x_col >= pyr->scaled_width)
 			{
@@ -6723,8 +6732,8 @@ rl2_build_section_pyramid (sqlite3 * handle, const char *coverage,
     unsigned char num_bands;
     unsigned char compression;
     int quality;
-    unsigned short tileWidth;
-    unsigned short tileHeight;
+    unsigned int tileWidth;
+    unsigned int tileHeight;
     int srid;
     int build = 0;
     unsigned char bgRed;

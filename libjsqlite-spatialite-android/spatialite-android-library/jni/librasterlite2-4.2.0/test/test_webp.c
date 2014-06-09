@@ -50,10 +50,10 @@ static int
 test_no_alpha_webp (const char *path)
 {
     rl2RasterPtr rst;
-    unsigned short width;
-    unsigned short height;
-    int row;
-    int col;
+    unsigned int width;
+    unsigned int height;
+    unsigned int row;
+    unsigned int col;
     unsigned char *rgbbuf;
     int rgbbuf_sz;
     unsigned char *mskbuf;

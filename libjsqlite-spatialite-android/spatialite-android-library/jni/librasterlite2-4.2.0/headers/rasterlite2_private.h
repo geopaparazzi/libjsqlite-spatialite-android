@@ -236,8 +236,8 @@ extern "C"
 	unsigned char sampleType;
 	unsigned char pixelType;
 	unsigned char nBands;
-	unsigned short width;
-	unsigned short height;
+	unsigned int width;
+	unsigned int height;
 	double minX;
 	double minY;
 	double maxX;
@@ -265,8 +265,8 @@ extern "C"
     {
 	char *sectionName;
 	unsigned char Compression;
-	unsigned short tileWidth;
-	unsigned short tileHeight;
+	unsigned int tileWidth;
+	unsigned int tileHeight;
 	rl2PrivRasterPtr Raster;
     } rl2PrivSection;
     typedef rl2PrivSection *rl2PrivSectionPtr;
@@ -279,8 +279,8 @@ extern "C"
 	unsigned char nBands;
 	unsigned char Compression;
 	int Quality;
-	unsigned short tileWidth;
-	unsigned short tileHeight;
+	unsigned int tileWidth;
+	unsigned int tileHeight;
 	int Srid;
 	double hResolution;
 	double vResolution;
@@ -371,8 +371,8 @@ extern "C"
     {
 	char *path;
 	FILE *tmp;
-	unsigned short width;
-	unsigned short height;
+	unsigned int width;
+	unsigned int height;
 	int Srid;
 	double hResolution;
 	double vResolution;
@@ -389,15 +389,15 @@ extern "C"
     {
 	char *path;
 	FILE *out;
-	unsigned short width;
-	unsigned short height;
+	unsigned int width;
+	unsigned int height;
 	double Resolution;
 	double X;
 	double Y;
 	int isCentered;
 	double noData;
 	int decimalDigits;
-	unsigned short nextLineNo;
+	unsigned int nextLineNo;
 	char headerDone;
 	void *pixels;
 	unsigned char sampleType;
@@ -545,6 +545,27 @@ extern "C"
     } rl2PrivRasterStyle;
     typedef rl2PrivRasterStyle *rl2PrivRasterStylePtr;
 
+    typedef struct rl2_priv_child_style
+    {
+	char *namedLayer;
+	char *namedStyle;
+	int validLayer;
+	int validStyle;
+	struct rl2_priv_child_style *next;
+    } rl2PrivChildStyle;
+    typedef rl2PrivChildStyle *rl2PrivChildStylePtr;
+
+    typedef struct rl2_priv_group_style
+    {
+	char *name;
+	char *title;
+	char *abstract;
+	rl2PrivChildStylePtr first;
+	rl2PrivChildStylePtr last;
+	int valid;
+    } rl2PrivGroupStyle;
+    typedef rl2PrivGroupStyle *rl2PrivGroupStylePtr;
+
     typedef struct wms_retry_item
     {
 	int done;
@@ -582,8 +603,8 @@ extern "C"
 
     typedef struct section_pyramid_tile_out
     {
-	unsigned short row;
-	unsigned short col;
+	unsigned int row;
+	unsigned int col;
 	double minx;
 	double miny;
 	double maxx;
@@ -604,12 +625,12 @@ extern "C"
 	unsigned char compression;
 	int quality;
 	int srid;
-	unsigned short full_width;
-	unsigned short full_height;
+	unsigned int full_width;
+	unsigned int full_height;
 	double res_x;
 	double res_y;
-	unsigned short scaled_width;
-	unsigned short scaled_height;
+	unsigned int scaled_width;
+	unsigned int scaled_height;
 	double tile_width;
 	double tile_height;
 	double minx;
@@ -664,8 +685,8 @@ extern "C"
 	unsigned char compression;
 	double horz_res;
 	double vert_res;
-	unsigned short tile_width;
-	unsigned short tile_height;
+	unsigned int tile_width;
+	unsigned int tile_height;
 	rl2PixelPtr no_data;
 	sqlite3_stmt *stmt_sect;
 	sqlite3_stmt *stmt_levl;
@@ -691,15 +712,15 @@ extern "C"
 
     RL2_PRIVATE int
 	rl2_decode_jpeg_scaled (int scale, const unsigned char *jpeg,
-				int jpeg_sz, unsigned short *width,
-				unsigned short *height,
+				int jpeg_sz, unsigned int *width,
+				unsigned int *height,
 				unsigned char *pixel_type,
 				unsigned char **pixels, int *pixels_sz);
 
     RL2_PRIVATE int
 	rl2_decode_webp_scaled (int scale, const unsigned char *webp,
-				int webp_sz, unsigned short *width,
-				unsigned short *height,
+				int webp_sz, unsigned int *width,
+				unsigned int *height,
 				unsigned char pixel_type,
 				unsigned char **pixels, int *pixels_sz,
 				unsigned char **mask, int *mask_sz);
@@ -707,13 +728,13 @@ extern "C"
     RL2_PRIVATE int
 	rl2_data_to_png (const unsigned char *pixels, const unsigned char *mask,
 			 double opacity, rl2PalettePtr plt,
-			 unsigned short width, unsigned short height,
+			 unsigned int width, unsigned int height,
 			 unsigned char sample_type, unsigned char pixel_type,
 			 unsigned char **compr_data, int *compressed_size);
 
     RL2_PRIVATE int
 	rl2_decode_png (const unsigned char *png, int png_sz,
-			unsigned short *width, unsigned short *height,
+			unsigned int *width, unsigned int *height,
 			unsigned char *sample_type, unsigned char *pixel_type,
 			unsigned char *num_bands, unsigned char **pixels,
 			int *pixels_sz, unsigned char **mask, int *mask_sz,
@@ -721,14 +742,14 @@ extern "C"
 
     RL2_PRIVATE int
 	rl2_data_to_gif (const unsigned char *pixels,
-			 rl2PalettePtr plt, unsigned short width,
-			 unsigned short height, unsigned char sample_type,
+			 rl2PalettePtr plt, unsigned int width,
+			 unsigned int height, unsigned char sample_type,
 			 unsigned char pixel_type, unsigned char **compr_data,
 			 int *compressed_size);
 
     RL2_PRIVATE int
 	rl2_decode_gif (const unsigned char *gif, int gif_sz,
-			unsigned short *width, unsigned short *height,
+			unsigned int *width, unsigned int *height,
 			unsigned char *sample_type, unsigned char *pixel_type,
 			unsigned char **pixels, int *pixels_sz,
 			rl2PalettePtr * palette);
@@ -736,13 +757,13 @@ extern "C"
     RL2_PRIVATE int
 	rl2_data_to_jpeg (const unsigned char *pixels,
 			  const unsigned char *mask, rl2PalettePtr plt,
-			  unsigned short width, unsigned short height,
+			  unsigned int width, unsigned int height,
 			  unsigned char sample_type, unsigned char pixel_type,
 			  unsigned char **jpeg, int *jpeg_size, int quality);
 
     RL2_PRIVATE int
 	rl2_decode_tiff_mono4 (const unsigned char *tiff, int tiff_sz,
-			       unsigned short *width, unsigned short *height,
+			       unsigned int *width, unsigned int *height,
 			       unsigned char **pixels, int *pixels_sz);
 
     RL2_PRIVATE char truncate_8 (double val);
@@ -758,13 +779,13 @@ extern "C"
     RL2_PRIVATE unsigned int truncate_u32 (double val);
 
     RL2_PRIVATE void void_raw_buffer_palette (unsigned char *buffer,
-					      unsigned short width,
-					      unsigned short height,
+					      unsigned int width,
+					      unsigned int height,
 					      rl2PixelPtr no_data);
 
     RL2_PRIVATE void void_raw_buffer (unsigned char *buffer,
-				      unsigned short width,
-				      unsigned short height,
+				      unsigned int width,
+				      unsigned int height,
 				      unsigned char sample_type,
 				      unsigned char num_bands,
 				      rl2PixelPtr no_data);
@@ -773,8 +794,8 @@ extern "C"
 				     sqlite3_stmt * stmt_tiles,
 				     sqlite3_stmt * stmt_data,
 				     unsigned char *outbuf,
-				     unsigned short width,
-				     unsigned short height,
+				     unsigned int width,
+				     unsigned int height,
 				     unsigned char sample_type,
 				     unsigned char num_bands, double x_res,
 				     double y_res, double minx, double miny,
@@ -789,8 +810,8 @@ extern "C"
 					     sqlite3_stmt * stmt_tiles,
 					     sqlite3_stmt * stmt_data,
 					     unsigned char *outbuf,
-					     unsigned short width,
-					     unsigned short height,
+					     unsigned int width,
+					     unsigned int height,
 					     unsigned char sample_type,
 					     unsigned char num_bands,
 					     double x_res, double y_res,
@@ -807,8 +828,8 @@ extern "C"
 					       unsigned char *num_bands);
 
     RL2_PRIVATE int get_coverage_defs (sqlite3 * sqlite, const char *coverage,
-				       unsigned short *tile_width,
-				       unsigned short *tile_height,
+				       unsigned int *tile_width,
+				       unsigned int *tile_height,
 				       unsigned char *sample_type,
 				       unsigned char *pixel_type,
 				       unsigned char *num_bands,
@@ -836,8 +857,8 @@ extern "C"
 					int blob_even_sz,
 					sqlite3_int64 section_id, int srid,
 					double res_x, double res_y,
-					unsigned short tile_w,
-					unsigned short tile_h, double miny,
+					unsigned int tile_w,
+					unsigned int tile_h, double miny,
 					double maxx, double tile_minx,
 					double tile_miny, double tile_maxx,
 					double tile_maxy,
@@ -858,8 +879,8 @@ extern "C"
 
     RL2_PRIVATE int do_insert_section (sqlite3 * handle, const char *src_path,
 				       const char *section, int srid,
-				       unsigned short width,
-				       unsigned short height, double minx,
+				       unsigned int width,
+				       unsigned int height, double minx,
 				       double miny, double maxx, double maxy,
 				       sqlite3_stmt * stmt_sect,
 				       sqlite3_int64 * id);
@@ -892,8 +913,8 @@ extern "C"
 
     RL2_PRIVATE unsigned char get_palette_format (rl2PrivPalettePtr plt);
 
-    RL2_PRIVATE int get_payload_from_monochrome_opaque (unsigned short width,
-							unsigned short height,
+    RL2_PRIVATE int get_payload_from_monochrome_opaque (unsigned int width,
+							unsigned int height,
 							sqlite3 * handle,
 							double minx,
 							double miny,
@@ -905,9 +926,9 @@ extern "C"
 							unsigned char **image,
 							int *image_sz);
 
-    RL2_PRIVATE int get_payload_from_monochrome_transparent (unsigned short
+    RL2_PRIVATE int get_payload_from_monochrome_transparent (unsigned int
 							     width,
-							     unsigned short
+							     unsigned int
 							     height,
 							     unsigned char
 							     *pixels,
@@ -919,8 +940,8 @@ extern "C"
 							     int *image_sz,
 							     double opacity);
 
-    RL2_PRIVATE int get_payload_from_palette_opaque (unsigned short width,
-						     unsigned short height,
+    RL2_PRIVATE int get_payload_from_palette_opaque (unsigned int width,
+						     unsigned int height,
 						     sqlite3 * handle,
 						     double minx, double miny,
 						     double maxx, double maxy,
@@ -932,8 +953,8 @@ extern "C"
 						     unsigned char **image,
 						     int *image_sz);
 
-    RL2_PRIVATE int get_payload_from_palette_transparent (unsigned short width,
-							  unsigned short height,
+    RL2_PRIVATE int get_payload_from_palette_transparent (unsigned int width,
+							  unsigned int height,
 							  unsigned char *pixels,
 							  rl2PalettePtr palette,
 							  unsigned char format,
@@ -947,8 +968,8 @@ extern "C"
 							  bg_blue,
 							  double opacity);
 
-    RL2_PRIVATE int get_payload_from_grayscale_opaque (unsigned short width,
-						       unsigned short height,
+    RL2_PRIVATE int get_payload_from_grayscale_opaque (unsigned int width,
+						       unsigned int height,
 						       sqlite3 * handle,
 						       double minx, double miny,
 						       double maxx, double maxy,
@@ -959,9 +980,9 @@ extern "C"
 						       unsigned char **image,
 						       int *image_sz);
 
-    RL2_PRIVATE int get_payload_from_grayscale_transparent (unsigned short
+    RL2_PRIVATE int get_payload_from_grayscale_transparent (unsigned int
 							    width,
-							    unsigned short
+							    unsigned int
 							    height,
 							    unsigned char
 							    *pixels,
@@ -974,8 +995,8 @@ extern "C"
 							    bg_gray,
 							    double opacity);
 
-    RL2_PRIVATE int get_payload_from_rgb_opaque (unsigned short width,
-						 unsigned short height,
+    RL2_PRIVATE int get_payload_from_rgb_opaque (unsigned int width,
+						 unsigned int height,
 						 sqlite3 * handle, double minx,
 						 double miny, double maxx,
 						 double maxy, int srid,
@@ -985,8 +1006,8 @@ extern "C"
 						 unsigned char **image,
 						 int *image_sz);
 
-    RL2_PRIVATE int get_payload_from_rgb_transparent (unsigned short width,
-						      unsigned short height,
+    RL2_PRIVATE int get_payload_from_rgb_transparent (unsigned int width,
+						      unsigned int height,
 						      unsigned char *pixels,
 						      unsigned char format,
 						      int quality,
@@ -997,39 +1018,39 @@ extern "C"
 						      unsigned char bg_blue,
 						      double opacity);
 
-    RL2_PRIVATE int get_rgba_from_monochrome_mask (unsigned short width,
-						   unsigned short height,
+    RL2_PRIVATE int get_rgba_from_monochrome_mask (unsigned int width,
+						   unsigned int height,
 						   unsigned char *pixels,
 						   unsigned char *mask,
 						   rl2PrivPixelPtr no_data,
 						   unsigned char *rgba);
 
-    RL2_PRIVATE int get_rgba_from_monochrome_opaque (unsigned short width,
-						     unsigned short height,
+    RL2_PRIVATE int get_rgba_from_monochrome_opaque (unsigned int width,
+						     unsigned int height,
 						     unsigned char *pixels,
 						     unsigned char *rgba);
 
-    RL2_PRIVATE int get_rgba_from_monochrome_transparent (unsigned short width,
-							  unsigned short height,
+    RL2_PRIVATE int get_rgba_from_monochrome_transparent (unsigned int width,
+							  unsigned int height,
 							  unsigned char *pixels,
 							  unsigned char *rgba);
 
-    RL2_PRIVATE int get_rgba_from_palette_mask (unsigned short base_width,
-						unsigned short base_height,
+    RL2_PRIVATE int get_rgba_from_palette_mask (unsigned int base_width,
+						unsigned int base_height,
 						unsigned char *pixels,
 						unsigned char *mask,
 						rl2PalettePtr palette,
 						rl2PrivPixelPtr no_data,
 						unsigned char *rgba);
 
-    RL2_PRIVATE int get_rgba_from_palette_opaque (unsigned short base_width,
-						  unsigned short base_height,
+    RL2_PRIVATE int get_rgba_from_palette_opaque (unsigned int base_width,
+						  unsigned int base_height,
 						  unsigned char *pixels,
 						  rl2PalettePtr palette,
 						  unsigned char *rgba);
 
-    RL2_PRIVATE int get_rgba_from_palette_transparent (unsigned short width,
-						       unsigned short height,
+    RL2_PRIVATE int get_rgba_from_palette_transparent (unsigned int width,
+						       unsigned int height,
 						       unsigned char *pixels,
 						       rl2PalettePtr palette,
 						       unsigned char *rgba,
@@ -1037,54 +1058,54 @@ extern "C"
 						       unsigned char bg_green,
 						       unsigned char bg_blue);
 
-    RL2_PRIVATE int get_rgba_from_grayscale_mask (unsigned short width,
-						  unsigned short height,
+    RL2_PRIVATE int get_rgba_from_grayscale_mask (unsigned int width,
+						  unsigned int height,
 						  unsigned char *pixels,
 						  unsigned char *mask,
 						  rl2PrivPixelPtr no_data,
 						  unsigned char *rgba);
 
-    RL2_PRIVATE int get_rgba_from_grayscale_opaque (unsigned short width,
-						    unsigned short height,
+    RL2_PRIVATE int get_rgba_from_grayscale_opaque (unsigned int width,
+						    unsigned int height,
 						    unsigned char *pixels,
 						    unsigned char *rgba);
 
-    RL2_PRIVATE int get_rgba_from_grayscale_transparent (unsigned short width,
-							 unsigned short height,
+    RL2_PRIVATE int get_rgba_from_grayscale_transparent (unsigned int width,
+							 unsigned int height,
 							 unsigned char *pixels,
 							 unsigned char *rgba,
 							 unsigned char bg_gray);
 
-    RL2_PRIVATE int get_rgba_from_rgb_mask (unsigned short width,
-					    unsigned short height,
+    RL2_PRIVATE int get_rgba_from_rgb_mask (unsigned int width,
+					    unsigned int height,
 					    unsigned char *pixels,
 					    unsigned char *mask,
 					    rl2PrivPixelPtr no_data,
 					    unsigned char *rgba);
 
-    RL2_PRIVATE int get_rgba_from_rgb_opaque (unsigned short width,
-					      unsigned short height,
+    RL2_PRIVATE int get_rgba_from_rgb_opaque (unsigned int width,
+					      unsigned int height,
 					      unsigned char *pixels,
 					      unsigned char *rgba);
 
-    RL2_PRIVATE int get_rgba_from_rgb_transparent (unsigned short width,
-						   unsigned short height,
+    RL2_PRIVATE int get_rgba_from_rgb_transparent (unsigned int width,
+						   unsigned int height,
 						   unsigned char *pixels,
 						   unsigned char *rgba,
 						   unsigned char bg_red,
 						   unsigned char bg_green,
 						   unsigned char bg_blue);
 
-    RL2_PRIVATE int get_rgba_from_datagrid_mask (unsigned short width,
-						 unsigned short height,
+    RL2_PRIVATE int get_rgba_from_datagrid_mask (unsigned int width,
+						 unsigned int height,
 						 unsigned char sample_type,
 						 void *pixels,
 						 unsigned char *mask,
 						 rl2PrivPixelPtr no_made,
 						 unsigned char *rgba);
 
-    RL2_PRIVATE int get_payload_from_gray_rgba_opaque (unsigned short width,
-						       unsigned short height,
+    RL2_PRIVATE int get_payload_from_gray_rgba_opaque (unsigned int width,
+						       unsigned int height,
 						       sqlite3 * handle,
 						       double minx, double miny,
 						       double maxx, double maxy,
@@ -1095,9 +1116,9 @@ extern "C"
 						       unsigned char **image,
 						       int *image_sz);
 
-    RL2_PRIVATE int get_payload_from_gray_rgba_transparent (unsigned short
+    RL2_PRIVATE int get_payload_from_gray_rgba_transparent (unsigned int
 							    width,
-							    unsigned short
+							    unsigned int
 							    height,
 							    unsigned char *rgb,
 							    unsigned char
@@ -1109,8 +1130,8 @@ extern "C"
 							    int *image_sz,
 							    double opacity);
 
-    RL2_PRIVATE int get_payload_from_rgb_rgba_opaque (unsigned short width,
-						      unsigned short height,
+    RL2_PRIVATE int get_payload_from_rgb_rgba_opaque (unsigned int width,
+						      unsigned int height,
 						      sqlite3 * handle,
 						      double minx, double miny,
 						      double maxx, double maxy,
@@ -1121,8 +1142,8 @@ extern "C"
 						      unsigned char **image,
 						      int *image_sz);
 
-    RL2_PRIVATE int get_payload_from_rgb_rgba_transparent (unsigned short width,
-							   unsigned short
+    RL2_PRIVATE int get_payload_from_rgb_rgba_transparent (unsigned int width,
+							   unsigned int
 							   height,
 							   unsigned char *rgb,
 							   unsigned char *alpha,
@@ -1133,15 +1154,15 @@ extern "C"
 							   int *image_sz,
 							   double opacity);
 
-    RL2_PRIVATE int build_rgb_alpha (unsigned short width,
-				     unsigned short height, unsigned char *rgba,
+    RL2_PRIVATE int build_rgb_alpha (unsigned int width,
+				     unsigned int height, unsigned char *rgba,
 				     unsigned char **rgb, unsigned char **alpha,
 				     unsigned char bg_red,
 				     unsigned char bg_green,
 				     unsigned char bg_blue);
 
-    RL2_PRIVATE int get_rgba_from_multiband8 (unsigned short width,
-					      unsigned short height,
+    RL2_PRIVATE int get_rgba_from_multiband8 (unsigned int width,
+					      unsigned int height,
 					      unsigned char red_band,
 					      unsigned char green_band,
 					      unsigned char blue_band,
@@ -1151,8 +1172,8 @@ extern "C"
 					      rl2PrivPixelPtr no_data,
 					      unsigned char *rgba);
 
-    RL2_PRIVATE int get_rgba_from_multiband16 (unsigned short width,
-					       unsigned short height,
+    RL2_PRIVATE int get_rgba_from_multiband16 (unsigned int width,
+					       unsigned int height,
 					       unsigned char red_band,
 					       unsigned char green_band,
 					       unsigned char blue_band,
@@ -1170,13 +1191,18 @@ extern "C"
 								unsigned char
 								*xml);
 
+    RL2_PRIVATE rl2GroupStylePtr group_style_from_sld_xml (char *name,
+							   char *title,
+							   char *abstract,
+							   unsigned char *xml);
+
     RL2_PRIVATE int get_raster_band_histogram (rl2PrivBandStatisticsPtr band,
 					       unsigned char **image,
 					       int *image_sz);
 
     RL2_PRIVATE int copy_raw_pixels (rl2RasterPtr raster, unsigned char *outbuf,
-				     unsigned short width,
-				     unsigned short height,
+				     unsigned int width,
+				     unsigned int height,
 				     unsigned char sample_type,
 				     unsigned char num_bands, double x_res,
 				     double y_res, double minx, double maxy,
@@ -1189,13 +1215,21 @@ extern "C"
 						  rl2CoveragePtr cvg,
 						  double relief_factor,
 						  double scale_factor,
-						  unsigned short width,
-						  unsigned short height,
+						  unsigned int width,
+						  unsigned int height,
 						  double minx, double miny,
 						  double maxx, double maxy,
 						  double x_res, double y_res,
 						  float **shaded_relief,
 						  int *shaded_relief_sz);
+
+    RL2_PRIVATE int set_coverage_infos (sqlite3 * handle,
+					const char *coverage_name,
+					const char *title,
+					const char *abstract);
+
+    RL2_PRIVATE int rl2_test_layer_group (sqlite3 * handle,
+					  const char *group_name);
 
 #ifdef __cplusplus
 }

@@ -486,6 +486,41 @@ destroy_dxf_hole (gaiaDxfHolePtr hole)
     free (hole);
 }
 
+static int
+force_closure (gaiaDxfPolylinePtr line)
+{
+/* checking (and eventually forcing) first/last vertex coherency */
+    if (check_unclosed_polyg (line, 1))
+      {
+	  /* not properly closed: forcing the last vertex */
+	  double *ptr_x;
+	  double *ptr_y;
+	  double *ptr_z;
+	  ptr_x = realloc (line->x, sizeof (double) * (line->points + 1));
+	  ptr_y = realloc (line->y, sizeof (double) * (line->points + 1));
+	  ptr_z = realloc (line->z, sizeof (double) * (line->points + 1));
+	  if (ptr_x == NULL || ptr_y == NULL || ptr_z == NULL)
+	    {
+		/* some unexpected error happened - giving up */
+		if (ptr_x == NULL)
+		    free (ptr_x);
+		if (ptr_y == NULL)
+		    free (ptr_y);
+		if (ptr_z == NULL)
+		    free (ptr_z);
+		return 0;
+	    }
+	  line->x = ptr_x;
+	  line->y = ptr_y;
+	  line->z = ptr_z;
+	  *(line->x + line->points) = *(line->x + 0);
+	  *(line->y + line->points) = *(line->y + 0);
+	  *(line->z + line->points) = *(line->z + 0);
+	  line->points += 1;
+      }
+    return 1;
+}
+
 static void
 linked_rings (const void *p_cache, gaiaDxfPolylinePtr line)
 {
@@ -511,6 +546,9 @@ linked_rings (const void *p_cache, gaiaDxfPolylinePtr line)
 	return;
     if (line->points <= 0)
 	return;
+
+    if (!force_closure (line))
+	return 0;
 
     coll = malloc (sizeof (dxfLinkedSegments));
     coll->count = line->points - 1;
@@ -1279,6 +1317,9 @@ unlinked_rings (const void *p_cache, gaiaDxfPolylinePtr line)
 	return;
     if (line->points <= 0)
 	return;
+
+    if (!force_closure (line))
+	return 0;
 
     coll = alloc_dxf_rings ();
     start = 0;

@@ -112,7 +112,8 @@ get_max_tile_id (sqlite3 * sqlite, const char *coverage)
 }
 
 static int
-do_export_tile_image (sqlite3 * sqlite, const char *coverage, int tile_id, int transparent)
+do_export_tile_image (sqlite3 * sqlite, const char *coverage, int tile_id,
+		      int transparent)
 {
 /* attempting to export a visible Tile */
     char *sql;

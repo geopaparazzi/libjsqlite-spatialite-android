@@ -51,8 +51,8 @@ main (int argc, char *argv[])
     rl2SectionPtr section;
     unsigned char compression;
     int is_compressed;
-    unsigned short tile_width;
-    unsigned short tile_height;
+    unsigned int tile_width;
+    unsigned int tile_height;
     unsigned char *bufpix = malloc (256 * 256);
 
     if (argc > 1 || argv[0] == NULL)

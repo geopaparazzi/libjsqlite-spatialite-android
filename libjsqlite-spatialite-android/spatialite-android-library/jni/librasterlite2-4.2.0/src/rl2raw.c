@@ -173,8 +173,8 @@ rl2_raster_data_to_RGB (rl2RasterPtr ptr, unsigned char **buffer, int *buf_size)
 /* attempting to export Raster pixel data as an RGB array */
     unsigned char *buf;
     int sz;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     unsigned char *p_in;
     unsigned char *p_out;
     unsigned short max_palette;
@@ -289,8 +289,8 @@ rl2_raster_data_to_RGBA (rl2RasterPtr ptr, unsigned char **buffer,
 /* attempting to export Raster pixel data as an RGBA array */
     unsigned char *buf;
     int sz;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     unsigned char *p_in;
     unsigned char *p_mask;
     unsigned char *p_out;
@@ -512,8 +512,8 @@ rl2_raster_data_to_ARGB (rl2RasterPtr ptr, unsigned char **buffer,
 /* attempting to export Raster pixel data as an ARGB array */
     unsigned char *buf;
     int sz;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     unsigned char *p_in;
     unsigned char *p_mask;
     unsigned char *p_out;
@@ -695,8 +695,8 @@ rl2_raster_data_to_BGR (rl2RasterPtr ptr, unsigned char **buffer, int *buf_size)
 /* attempting to export Raster pixel data as an BGR array */
     unsigned char *buf;
     int sz;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     unsigned char *p_in;
     unsigned char *p_out;
     unsigned short max_palette;
@@ -799,8 +799,8 @@ rl2_raster_data_to_BGRA (rl2RasterPtr ptr, unsigned char **buffer,
 /* attempting to export Raster pixel data as an BGRA array */
     unsigned char *buf;
     int sz;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     unsigned char *p_in;
     unsigned char *p_mask;
     unsigned char *p_out;
@@ -1010,8 +1010,8 @@ rl2_raster_data_to_int8 (rl2RasterPtr ptr, char **buffer, int *buf_size)
 /* attempting to export Raster DATAGRID data as an INT-8 array */
     char *buf;
     int sz;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     char *p_in;
     char *p_out;
     rl2PrivRasterPtr rst = (rl2PrivRasterPtr) ptr;
@@ -1048,8 +1048,8 @@ rl2_raster_data_to_uint8 (rl2RasterPtr ptr, unsigned char **buffer,
 /* attempting to export Raster DATAGRID/GRAYSCALE data as a UINT-8 array */
     unsigned char *buf;
     int sz;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     unsigned char *p_in;
     unsigned char *p_out;
     rl2PrivRasterPtr rst = (rl2PrivRasterPtr) ptr;
@@ -1088,8 +1088,8 @@ rl2_raster_data_to_int16 (rl2RasterPtr ptr, short **buffer, int *buf_size)
 /* attempting to export Raster DATAGRID data as an INT-16 array */
     short *buf;
     int sz;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     short *p_in;
     short *p_out;
     rl2PrivRasterPtr rst = (rl2PrivRasterPtr) ptr;
@@ -1126,8 +1126,8 @@ rl2_raster_data_to_uint16 (rl2RasterPtr ptr, unsigned short **buffer,
 /* attempting to export Raster DATAGRID data as a UINT-16 array */
     unsigned short *buf;
     int sz;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     unsigned short *p_in;
     unsigned short *p_out;
     rl2PrivRasterPtr rst = (rl2PrivRasterPtr) ptr;
@@ -1163,8 +1163,8 @@ rl2_raster_data_to_int32 (rl2RasterPtr ptr, int **buffer, int *buf_size)
 /* attempting to export Raster DATAGRID data as an INT-32 array */
     int *buf;
     int sz;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     int *p_in;
     int *p_out;
     rl2PrivRasterPtr rst = (rl2PrivRasterPtr) ptr;
@@ -1201,8 +1201,8 @@ rl2_raster_data_to_uint32 (rl2RasterPtr ptr, unsigned int **buffer,
 /* attempting to export Raster DATAGRID data as a UINT-32 array */
     unsigned int *buf;
     int sz;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     unsigned int *p_in;
     unsigned int *p_out;
     rl2PrivRasterPtr rst = (rl2PrivRasterPtr) ptr;
@@ -1238,8 +1238,8 @@ rl2_raster_data_to_float (rl2RasterPtr ptr, float **buffer, int *buf_size)
 /* attempting to export Raster DATAGRID data as a FLOAT array */
     float *buf;
     int sz;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     float *p_in;
     float *p_out;
     rl2PrivRasterPtr rst = (rl2PrivRasterPtr) ptr;
@@ -1275,8 +1275,8 @@ rl2_raster_data_to_double (rl2RasterPtr ptr, double **buffer, int *buf_size)
 /* attempting to export Raster DATAGRID data as a DOUBLE array */
     double *buf;
     int sz;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     double *p_in;
     double *p_out;
     rl2PrivRasterPtr rst = (rl2PrivRasterPtr) ptr;
@@ -1330,8 +1330,8 @@ rl2_raster_data_to_1bit (rl2RasterPtr ptr, unsigned char **buffer,
 /* attempting to export Raster PALETTE/MONOCHROME 1bit data as a UINT-8 array */
     unsigned char *buf;
     int sz;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     unsigned char *p_in;
     unsigned char *p_out;
     rl2PrivRasterPtr rst = (rl2PrivRasterPtr) ptr;
@@ -1372,8 +1372,8 @@ rl2_raster_data_to_2bit (rl2RasterPtr ptr, unsigned char **buffer,
 /* attempting to export Raster PALETTE/GRAYSCALE 2bit data as a UINT-8 array */
     unsigned char *buf;
     int sz;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     unsigned char *p_in;
     unsigned char *p_out;
     rl2PrivRasterPtr rst = (rl2PrivRasterPtr) ptr;
@@ -1414,8 +1414,8 @@ rl2_raster_data_to_4bit (rl2RasterPtr ptr, unsigned char **buffer,
 /* attempting to export Raster PALETTE/GRAYSCALE 4bit data as a UINT-8 array */
     unsigned char *buf;
     int sz;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     unsigned char *p_in;
     unsigned char *p_out;
     rl2PrivRasterPtr rst = (rl2PrivRasterPtr) ptr;
@@ -1456,8 +1456,8 @@ rl2_raster_band_to_uint8 (rl2RasterPtr ptr, int band, unsigned char **buffer,
 /* attempting to export Raster BAND data as a UINT-8 array */
     unsigned char *buf;
     int sz;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     int nBand;
     unsigned char *p_in;
     unsigned char *p_out;
@@ -1503,8 +1503,8 @@ rl2_raster_band_to_uint16 (rl2RasterPtr ptr, int band, unsigned short **buffer,
 /* attempting to export Raster BAND data as a UINT-16 array */
     unsigned short *buf;
     int sz;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     int nBand;
     unsigned short *p_in;
     unsigned short *p_out;
@@ -1550,8 +1550,8 @@ rl2_raster_bands_to_RGB (rl2RasterPtr ptr, int bandR, int bandG, int bandB,
 /* attempting to export Raster MULTIBAND data as an RGB array */
     unsigned char *buf;
     int sz;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     int nBand;
     unsigned char *p_in;
     unsigned char *p_out;

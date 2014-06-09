@@ -67,8 +67,8 @@ main (int argc, char *argv[])
     int is_compressed;
     int srid;
     int quality;
-    unsigned short tileWidth;
-    unsigned short tileHeight;
+    unsigned int tileWidth;
+    unsigned int tileHeight;
 
     if (argc > 1 || argv[0] == NULL)
 	argc = 1;		/* silencing stupid compiler warnings */

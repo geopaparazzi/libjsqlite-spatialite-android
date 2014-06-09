@@ -875,9 +875,9 @@ do_insert_content (sqlite3 * handle, const char *table_name,
     xtable = gaiaDoubleQuotedSql (table_name);
     xgeom = gaiaDoubleQuotedSql (geometry_column);
     sql = sqlite3_mprintf ("INSERT INTO gpkg_contents (table_name, data_type, "
-			   "identifier, description, last_change, min_x, min_y, max_x, max_x, srs_id) "
+			   "identifier, description, last_change, min_x, min_y, max_x, max_y, srs_id) "
 			   "SELECT Lower(%Q), 'features', Lower(%Q), ' ', "
-			   "strftime('%%Y-%%m-%%dT%%H:%%M:%%fZ', 'now'), Max(ST_MinX(\"%s\")), "
+			   "strftime('%%Y-%%m-%%dT%%H:%%M:%%fZ', 'now'), Min(ST_MinX(\"%s\")), "
 			   "Min(ST_MinY(\"%s\")), Max(ST_MaxX(\"%s\")), Max(ST_MaxY(\"%s\")), %d "
 			   "FROM \"%s\"", table_name, table_name, xgeom, xgeom,
 			   xgeom, xgeom, srid, xtable);

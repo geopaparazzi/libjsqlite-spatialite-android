@@ -30,6 +30,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <inttypes.h>
+#include <float.h>
 
 #ifdef _WIN32
 /* This code is for win32 only */
@@ -126,6 +127,7 @@ struct neutral_socket
 struct wms_style
 {
 /* a struct wrapping a WMS style */
+    int valid;
     char *name;
     char *title;
     char *abstract;
@@ -135,6 +137,7 @@ struct wms_style
 struct wms_layer
 {
 /* a struct wrapping a WMS layer */
+    int valid;
     char *layer_name;
     char *title;
     char *abstract;
@@ -153,8 +156,10 @@ struct wms_layer
     unsigned char num_bands;
     int jpeg;
     int png;
-    struct wms_style *first;
-    struct wms_style *last;
+    struct wms_style *first_style;
+    struct wms_style *last_style;
+    struct wms_layer *first_child;
+    struct wms_layer *last_child;
     struct wms_layer *next;
 };
 
@@ -171,11 +176,47 @@ struct connections_pool
     struct read_connection connections[MAX_CONN];
 };
 
+struct wms_layer_ref
+{
+/* a struct wrapping a WMS layer reference */
+    struct wms_layer *layer_ref;
+    struct wms_layer_ref *next;
+};
+
+struct wms_group
+{
+/* a struct wrapping a WMS group of layers */
+    int valid;
+    char *group_name;
+    char *title;
+    char *abstract;
+    int srid;
+    int is_geographic;
+    double minx;
+    double miny;
+    double maxx;
+    double maxy;
+    double geo_minx;
+    double geo_miny;
+    double geo_maxx;
+    double geo_maxy;
+    struct wms_style *first_style;
+    struct wms_style *last_style;
+    struct wms_layer_ref *first_child;
+    struct wms_layer_ref *last_child;
+    struct wms_group *next;
+};
+
 struct wms_list
 {
 /* a struct wrapping a list of WMS layers */
-    struct wms_layer *first;
-    struct wms_layer *last;
+    struct wms_layer *first_layer;
+    struct wms_layer *last_layer;
+/* temporary structs to build the actual list */
+    struct wms_group *first_group;
+    struct wms_group *last_group;
+    struct wms_layer *first_child;
+    struct wms_layer *last_child;
 };
 
 struct wms_argument
@@ -279,6 +320,7 @@ alloc_wms_style (const char *name, const char *title, const char *abstract)
 /* creating a WMS Raster Style */
     int len;
     struct wms_style *style = malloc (sizeof (struct wms_style));
+    style->valid = 1;
     len = strlen (name);
     style->name = malloc (len + 1);
     strcpy (style->name, name);
@@ -326,6 +368,7 @@ alloc_wms_layer (const char *layer, const char *title, const char *abstract,
 /* creating a WMS layer item */
     int len;
     struct wms_layer *lyr = malloc (sizeof (struct wms_layer));
+    lyr->valid = 1;
     len = strlen (layer);
     lyr->layer_name = malloc (len + 1);
     strcpy (lyr->layer_name, layer);
@@ -354,8 +397,10 @@ alloc_wms_layer (const char *layer, const char *title, const char *abstract,
 	  lyr->png = 1;
 	  lyr->jpeg = 1;
       }
-    lyr->first = NULL;
-    lyr->last = NULL;
+    lyr->first_style = NULL;
+    lyr->last_style = NULL;
+    lyr->first_child = NULL;
+    lyr->last_child = NULL;
     lyr->next = NULL;
     return lyr;
 }
@@ -366,6 +411,8 @@ destroy_wms_layer (struct wms_layer *lyr)
 /* memory cleanup - freeing a WMS layer item */
     struct wms_style *style;
     struct wms_style *style_n;
+    struct wms_layer *child;
+    struct wms_layer *child_n;
     if (lyr == NULL)
 	return;
     if (lyr->layer_name != NULL)
@@ -374,14 +421,97 @@ destroy_wms_layer (struct wms_layer *lyr)
 	free (lyr->title);
     if (lyr->abstract != NULL)
 	free (lyr->abstract);
-    style = lyr->first;
+    style = lyr->first_style;
     while (style != NULL)
       {
 	  style_n = style->next;
 	  destroy_wms_style (style);
 	  style = style_n;
       }
+    child = lyr->first_child;
+    while (child != NULL)
+      {
+	  child_n = child->next;
+	  destroy_wms_layer (child);
+	  child = child_n;
+      }
     free (lyr);
+}
+
+static struct wms_layer_ref *
+alloc_wms_layer_ref (struct wms_layer *layer_ref)
+{
+/* creating a WMS layer_ref item */
+    struct wms_layer_ref *ref = malloc (sizeof (struct wms_layer_ref));
+    ref->layer_ref = layer_ref;
+    ref->next = NULL;
+    return ref;
+}
+
+static void
+destroy_wms_layer_ref (struct wms_layer_ref *ref)
+{
+/* memory cleanup - freeing a WMS layer_ref item */
+    if (ref == NULL)
+	return;
+    free (ref);
+}
+
+static struct wms_group *
+alloc_wms_group (const char *name, const char *title, const char *abstract)
+{
+/* creating a WMS group item */
+    int len;
+    struct wms_group *grp = malloc (sizeof (struct wms_group));
+    grp->valid = 1;
+    len = strlen (name);
+    grp->group_name = malloc (len + 1);
+    strcpy (grp->group_name, name);
+    len = strlen (title);
+    grp->title = malloc (len + 1);
+    strcpy (grp->title, title);
+    len = strlen (abstract);
+    grp->abstract = malloc (len + 1);
+    strcpy (grp->abstract, abstract);
+    grp->first_style = NULL;
+    grp->last_style = NULL;
+    grp->first_child = NULL;
+    grp->last_child = NULL;
+    grp->next = NULL;
+    return grp;
+}
+
+static void
+destroy_wms_group (struct wms_group *grp)
+{
+/* memory cleanup - freeing a WMS group item */
+    struct wms_style *style;
+    struct wms_style *style_n;
+    struct wms_layer_ref *child;
+    struct wms_layer_ref *child_n;
+    if (grp == NULL)
+	return;
+    if (grp->group_name != NULL)
+	free (grp->group_name);
+    if (grp->title != NULL)
+	free (grp->title);
+    if (grp->abstract != NULL)
+	free (grp->abstract);
+    style = grp->first_style;
+    while (style != NULL)
+      {
+	  style_n = style->next;
+	  destroy_wms_style (style);
+	  style = style_n;
+      }
+    child = grp->first_child;
+    while (child != NULL)
+      {
+	  child_n = child->next;
+	  destroy_wms_layer_ref (child);
+	  child = child_n;
+      }
+    free (grp);
 }
 
 static struct wms_list *
@@ -389,8 +519,12 @@ alloc_wms_list ()
 {
 /* allocating a list of WMS layers */
     struct wms_list *list = malloc (sizeof (struct wms_list));
-    list->first = NULL;
-    list->last = NULL;
+    list->first_layer = NULL;
+    list->last_layer = NULL;
+    list->first_group = NULL;
+    list->last_group = NULL;
+    list->first_child = NULL;
+    list->last_child = NULL;
     return list;
 }
 
@@ -400,9 +534,25 @@ destroy_wms_list (struct wms_list *list)
 /* memory cleanup - destroying a list of WMS layers */
     struct wms_layer *pl;
     struct wms_layer *pln;
+    struct wms_group *pg;
+    struct wms_group *pgn;
     if (list == NULL)
 	return;
-    pl = list->first;
+    pl = list->first_layer;
+    while (pl != NULL)
+      {
+	  pln = pl->next;
+	  destroy_wms_layer (pl);
+	  pl = pln;
+      }
+    pg = list->first_group;
+    while (pg != NULL)
+      {
+	  pgn = pg->next;
+	  destroy_wms_group (pg);
+	  pg = pgn;
+      }
+    pl = list->first_child;
     while (pl != NULL)
       {
 	  pln = pl->next;
@@ -421,18 +571,34 @@ add_style_to_wms_layer (struct wms_list *list, const char *coverage_name,
     struct wms_layer *lyr;
     if (list == NULL)
 	return;
-    lyr = list->first;
+    lyr = list->first_layer;
     while (lyr != NULL)
       {
 	  if (strcmp (lyr->layer_name, coverage_name) == 0)
 	    {
 		struct wms_style *style =
 		    alloc_wms_style (name, title, abstract);
-		if (lyr->first == NULL)
-		    lyr->first = style;
-		if (lyr->last != NULL)
-		    lyr->last->next = style;
-		lyr->last = style;
+		if (lyr->first_style == NULL)
+		    lyr->first_style = style;
+		if (lyr->last_style != NULL)
+		    lyr->last_style->next = style;
+		lyr->last_style = style;
+		return;
+	    }
+	  lyr = lyr->next;
+      }
+    lyr = list->first_child;
+    while (lyr != NULL)
+      {
+	  if (strcmp (lyr->layer_name, coverage_name) == 0)
+	    {
+		struct wms_style *style =
+		    alloc_wms_style (name, title, abstract);
+		if (lyr->first_style == NULL)
+		    lyr->first_style = style;
+		if (lyr->last_style != NULL)
+		    lyr->last_style->next = style;
+		lyr->last_style = style;
 		return;
 	    }
 	  lyr = lyr->next;
@@ -446,13 +612,13 @@ add_default_styles (struct wms_list *list)
     struct wms_layer *lyr;
     if (list == NULL)
 	return;
-    lyr = list->first;
+    lyr = list->first_layer;
     while (lyr != NULL)
       {
 	  struct wms_style *style;
 	  int has_default = 0;
 	  int count = 0;
-	  style = lyr->first;
+	  style = lyr->first_style;
 	  while (style != NULL)
 	    {
 		if (strcasecmp (style->name, "default") == 0)
@@ -465,13 +631,76 @@ add_default_styles (struct wms_list *list)
 		/* appending a Default style */
 		struct wms_style *style =
 		    alloc_wms_style ("default", NULL, NULL);
-		if (lyr->first == NULL)
-		    lyr->first = style;
-		if (lyr->last != NULL)
-		    lyr->last->next = style;
-		lyr->last = style;
+		if (lyr->first_style == NULL)
+		    lyr->first_style = style;
+		if (lyr->last_style != NULL)
+		    lyr->last_style->next = style;
+		lyr->last_style = style;
 	    }
 	  lyr = lyr->next;
+      }
+}
+
+static void
+add_style_to_wms_group (struct wms_list *list, const char *group_name,
+			const char *name, const char *title,
+			const char *abstract)
+{
+/* appending a Style to a WMS Group */
+    struct wms_group *grp;
+    if (list == NULL)
+	return;
+    grp = list->first_group;
+    while (grp != NULL)
+      {
+	  if (strcmp (grp->group_name, group_name) == 0)
+	    {
+		struct wms_style *style =
+		    alloc_wms_style (name, title, abstract);
+		if (grp->first_style == NULL)
+		    grp->first_style = style;
+		if (grp->last_style != NULL)
+		    grp->last_style->next = style;
+		grp->last_style = style;
+		return;
+	    }
+	  grp = grp->next;
+      }
+}
+
+static void
+add_default_group_styles (struct wms_list *list)
+{
+/* appending an implicit Default Style to each WMS Group */
+    struct wms_group *grp;
+    if (list == NULL)
+	return;
+    grp = list->first_group;
+    while (grp != NULL)
+      {
+	  struct wms_style *style;
+	  int has_default = 0;
+	  int count = 0;
+	  style = grp->first_style;
+	  while (style != NULL)
+	    {
+		if (strcasecmp (style->name, "default") == 0)
+		    has_default = 1;
+		count++;
+		style = style->next;
+	    }
+	  if (count && !has_default)
+	    {
+		/* appending a Default style */
+		struct wms_style *style =
+		    alloc_wms_style ("default", NULL, NULL);
+		if (grp->first_style == NULL)
+		    grp->first_style = style;
+		if (grp->last_style != NULL)
+		    grp->last_style->next = style;
+		grp->last_style = style;
+	    }
+	  grp = grp->next;
       }
 }
 
@@ -1032,6 +1261,7 @@ alloc_wms_args (const char *service_name)
     strcpy (args->service_name, service_name);
     args->first = NULL;
     args->last = NULL;
+    args->style = NULL;
     args->request_type = WMS_ILLEGAL_REQUEST;
     args->error = WMS_UNKNOWN;
     return args;
@@ -1047,6 +1277,8 @@ destroy_wms_args (struct wms_args *args)
 	return;
     if (args->service_name != NULL)
 	free (args->service_name);
+    if (args->style != NULL)
+	free (args->style);
     pa = args->first;
     while (pa != NULL)
       {
@@ -1367,7 +1599,7 @@ exists_layer (struct wms_list *list, const char *layer, int srid,
 	      double maxx, double maxy, const char **layer_name)
 {
 /* checking a required layer for validity */
-    struct wms_layer *lyr = list->first;
+    struct wms_layer *lyr = list->first_layer;
     while (lyr != NULL)
       {
 	  if (strcmp (lyr->layer_name, layer) == 0)
@@ -1558,6 +1790,7 @@ check_wms_request (struct wms_list *list, struct wms_args *args)
 		      args->error = WMS_INVALID_STYLE;
 		      return 200;
 		  }
+		args->style = style;
 		format = parse_format (p_format);
 		if (format == WMS_UNKNOWN)
 		  {
@@ -1616,7 +1849,6 @@ check_wms_request (struct wms_list *list, struct wms_args *args)
 		  }
 		args->width = width;
 		args->height = height;
-		args->style = style;
 		args->format = format;
 		args->transparent = transparent;
 		args->red = red;
@@ -1989,6 +2221,7 @@ build_get_capabilities (struct wms_list *list, char **cached, int *cached_len)
 {
 /* preparing the WMS GetCapabilities XML document */
     struct wms_layer *lyr;
+    struct wms_group *grp;
     struct wms_style *style;
     char *dummy;
     gaiaOutBuffer xml_text;
@@ -2065,15 +2298,21 @@ build_get_capabilities (struct wms_list *list, char **cached, int *cached_len)
     gaiaAppendToOutBuffer (&xml_text,
 			   "<Exception>\r\n<Format>XML</Format>\r\n</Exception>\r\n");
     gaiaAppendToOutBuffer (&xml_text,
-			   "<Layer>\r\n<Name>wms_main_layer</Name>\r\n");
-    gaiaAppendToOutBuffer (&xml_text,
-			   "<Title>RasterLite2 Coverages</Title>\r\n");
+			   "<Layer>\r\n<Title>RasterLite2 Coverages</Title>\r\n");
     gaiaAppendToOutBuffer (&xml_text,
 			   "<Abstract>OGC WMS compliant Service</Abstract>\r\n");
-    lyr = list->first;
+
+/* publishing any valid first-level Layer */
+    lyr = list->first_layer;
     while (lyr != NULL)
       {
 	  /* available Coverages */
+	  if (lyr->valid == 0)
+	    {
+		/* skipping any invalid Layer */
+		lyr = lyr->next;
+		continue;
+	    }
 	  gaiaAppendToOutBuffer (&xml_text,
 				 "<Layer queryable=\"0\" opaque=\"0\" cascaded=\"0\">\r\n");
 	  dummy = sqlite3_mprintf ("<Name>%s</Name>\r\n", lyr->layer_name);
@@ -2123,9 +2362,14 @@ build_get_capabilities (struct wms_list *list, char **cached, int *cached_len)
 				       lyr->maxx, lyr->maxy);
 	  gaiaAppendToOutBuffer (&xml_text, dummy);
 	  sqlite3_free (dummy);
-	  style = lyr->first;
+	  style = lyr->first_style;
 	  while (style != NULL)
 	    {
+		if (style->valid == 0)
+		  {
+		      style = style->next;
+		      continue;
+		  }
 		dummy =
 		    sqlite3_mprintf ("<Style>\r\n<Name>%s</Name>\r\n",
 				     style->name);
@@ -2151,6 +2395,203 @@ build_get_capabilities (struct wms_list *list, char **cached, int *cached_len)
 	  gaiaAppendToOutBuffer (&xml_text, "</Layer>\r\n");
 	  lyr = lyr->next;
       }
+
+/* publishing any valid Layer Group */
+    grp = list->first_group;
+    while (grp != NULL)
+      {
+	  /* available Groups */
+	  struct wms_layer_ref *ref;
+	  if (grp->valid == 0)
+	    {
+		/* skipping any invalid Layer */
+		grp = grp->next;
+		continue;
+	    }
+	  gaiaAppendToOutBuffer (&xml_text,
+				 "<Layer queryable=\"0\" opaque=\"0\" cascaded=\"0\">\r\n");
+	  dummy = sqlite3_mprintf ("<Name>%s</Name>\r\n", grp->group_name);
+	  gaiaAppendToOutBuffer (&xml_text, dummy);
+	  sqlite3_free (dummy);
+	  dummy = sqlite3_mprintf ("<Title>%s</Title>\r\n", grp->title);
+	  gaiaAppendToOutBuffer (&xml_text, dummy);
+	  sqlite3_free (dummy);
+	  dummy =
+	      sqlite3_mprintf ("<Abstract>%s</Abstract>\r\n", grp->abstract);
+	  gaiaAppendToOutBuffer (&xml_text, dummy);
+	  sqlite3_free (dummy);
+	  dummy = sqlite3_mprintf ("<CRS>EPSG:%d</CRS>\r\n", grp->srid);
+	  gaiaAppendToOutBuffer (&xml_text, dummy);
+	  sqlite3_free (dummy);
+	  gaiaAppendToOutBuffer (&xml_text, "<EX_GeographicBoundingBox>");
+	  dummy =
+	      sqlite3_mprintf ("<westBoundLongitude>%1.6f</westBoundLongitude>",
+			       grp->geo_minx);
+	  gaiaAppendToOutBuffer (&xml_text, dummy);
+	  sqlite3_free (dummy);
+	  dummy =
+	      sqlite3_mprintf ("<eastBoundLongitude>%1.6f</eastBoundLongitude>",
+			       grp->geo_maxx);
+	  gaiaAppendToOutBuffer (&xml_text, dummy);
+	  sqlite3_free (dummy);
+	  dummy =
+	      sqlite3_mprintf ("<southBoundLatitude>%1.6f</southBoundLatitude>",
+			       grp->geo_miny);
+	  gaiaAppendToOutBuffer (&xml_text, dummy);
+	  sqlite3_free (dummy);
+	  dummy =
+	      sqlite3_mprintf ("<northBoundLatitude>%1.6f</northBoundLatitude>",
+			       grp->geo_maxy);
+	  gaiaAppendToOutBuffer (&xml_text, dummy);
+	  sqlite3_free (dummy);
+	  gaiaAppendToOutBuffer (&xml_text, "</EX_GeographicBoundingBox>\r\n");
+	  if (grp->is_geographic)
+	      dummy = sqlite3_mprintf ("<BoundingBox CRS=\"EPSG:%d\" "
+				       "minx=\"%1.6f\" miny=\"%1.6f\" maxx=\"%1.6f\" maxy=\"%1.6f\"/>\r\n",
+				       grp->srid, grp->miny, grp->minx,
+				       grp->maxy, grp->maxx);
+	  else
+	      dummy = sqlite3_mprintf ("<BoundingBox CRS=\"EPSG:%d\" "
+				       "minx=\"%1.6f\" miny=\"%1.6f\" maxx=\"%1.6f\" maxy=\"%1.6f\"/>\r\n",
+				       grp->srid, grp->minx, grp->miny,
+				       grp->maxx, grp->maxy);
+	  gaiaAppendToOutBuffer (&xml_text, dummy);
+	  sqlite3_free (dummy);
+	  style = grp->first_style;
+	  while (style != NULL)
+	    {
+		if (style->valid == 0)
+		  {
+		      style = style->next;
+		      continue;
+		  }
+		dummy =
+		    sqlite3_mprintf ("<Style>\r\n<Name>%s</Name>\r\n",
+				     style->name);
+		gaiaAppendToOutBuffer (&xml_text, dummy);
+		sqlite3_free (dummy);
+		dummy =
+		    sqlite3_mprintf ("<Title>%s</Title>\r\n",
+				     (style->title ==
+				      NULL) ? style->name : style->title);
+		gaiaAppendToOutBuffer (&xml_text, dummy);
+		sqlite3_free (dummy);
+		if (style->abstract != NULL)
+		  {
+		      dummy =
+			  sqlite3_mprintf ("<Abstract>%s</Abstract>\r\n",
+					   style->abstract);
+		      gaiaAppendToOutBuffer (&xml_text, dummy);
+		      sqlite3_free (dummy);
+		  }
+		gaiaAppendToOutBuffer (&xml_text, "</Style>\r\n");
+		style = style->next;
+	    }
+	  /* publishing all valid children Layers */
+	  ref = grp->first_child;
+	  while (ref != NULL)
+	    {
+		/* available Coverages */
+		if (ref->layer_ref->valid == 0)
+		  {
+		      /* skipping any invalid Child */
+		      ref = ref->next;
+		      continue;
+		  }
+		lyr = ref->layer_ref;
+		gaiaAppendToOutBuffer (&xml_text,
+				       "<Layer queryable=\"0\" opaque=\"0\" cascaded=\"0\">\r\n");
+		dummy =
+		    sqlite3_mprintf ("<Name>%s</Name>\r\n", lyr->layer_name);
+		gaiaAppendToOutBuffer (&xml_text, dummy);
+		sqlite3_free (dummy);
+		dummy = sqlite3_mprintf ("<Title>%s</Title>\r\n", lyr->title);
+		gaiaAppendToOutBuffer (&xml_text, dummy);
+		sqlite3_free (dummy);
+		dummy =
+		    sqlite3_mprintf ("<Abstract>%s</Abstract>\r\n",
+				     lyr->abstract);
+		gaiaAppendToOutBuffer (&xml_text, dummy);
+		sqlite3_free (dummy);
+		dummy = sqlite3_mprintf ("<CRS>EPSG:%d</CRS>\r\n", lyr->srid);
+		gaiaAppendToOutBuffer (&xml_text, dummy);
+		sqlite3_free (dummy);
+		gaiaAppendToOutBuffer (&xml_text, "<EX_GeographicBoundingBox>");
+		dummy =
+		    sqlite3_mprintf
+		    ("<westBoundLongitude>%1.6f</westBoundLongitude>",
+		     lyr->geo_minx);
+		gaiaAppendToOutBuffer (&xml_text, dummy);
+		sqlite3_free (dummy);
+		dummy =
+		    sqlite3_mprintf
+		    ("<eastBoundLongitude>%1.6f</eastBoundLongitude>",
+		     lyr->geo_maxx);
+		gaiaAppendToOutBuffer (&xml_text, dummy);
+		sqlite3_free (dummy);
+		dummy =
+		    sqlite3_mprintf
+		    ("<southBoundLatitude>%1.6f</southBoundLatitude>",
+		     lyr->geo_miny);
+		gaiaAppendToOutBuffer (&xml_text, dummy);
+		sqlite3_free (dummy);
+		dummy =
+		    sqlite3_mprintf
+		    ("<northBoundLatitude>%1.6f</northBoundLatitude>",
+		     lyr->geo_maxy);
+		gaiaAppendToOutBuffer (&xml_text, dummy);
+		sqlite3_free (dummy);
+		gaiaAppendToOutBuffer (&xml_text,
+				       "</EX_GeographicBoundingBox>\r\n");
+		if (lyr->is_geographic)
+		    dummy = sqlite3_mprintf ("<BoundingBox CRS=\"EPSG:%d\" "
+					     "minx=\"%1.6f\" miny=\"%1.6f\" maxx=\"%1.6f\" maxy=\"%1.6f\"/>\r\n",
+					     lyr->srid, lyr->miny, lyr->minx,
+					     lyr->maxy, lyr->maxx);
+		else
+		    dummy = sqlite3_mprintf ("<BoundingBox CRS=\"EPSG:%d\" "
+					     "minx=\"%1.6f\" miny=\"%1.6f\" maxx=\"%1.6f\" maxy=\"%1.6f\"/>\r\n",
+					     lyr->srid, lyr->minx, lyr->miny,
+					     lyr->maxx, lyr->maxy);
+		gaiaAppendToOutBuffer (&xml_text, dummy);
+		sqlite3_free (dummy);
+		style = lyr->first_style;
+		while (style != NULL)
+		  {
+		      if (style->valid == 0)
+			{
+			    style = style->next;
+			    continue;
+			}
+		      dummy =
+			  sqlite3_mprintf ("<Style>\r\n<Name>%s</Name>\r\n",
+					   style->name);
+		      gaiaAppendToOutBuffer (&xml_text, dummy);
+		      sqlite3_free (dummy);
+		      dummy =
+			  sqlite3_mprintf ("<Title>%s</Title>\r\n",
+					   (style->title ==
+					    NULL) ? style->name : style->title);
+		      gaiaAppendToOutBuffer (&xml_text, dummy);
+		      sqlite3_free (dummy);
+		      if (style->abstract != NULL)
+			{
+			    dummy =
+				sqlite3_mprintf ("<Abstract>%s</Abstract>\r\n",
+						 style->abstract);
+			    gaiaAppendToOutBuffer (&xml_text, dummy);
+			    sqlite3_free (dummy);
+			}
+		      gaiaAppendToOutBuffer (&xml_text, "</Style>\r\n");
+		      style = style->next;
+		  }
+		gaiaAppendToOutBuffer (&xml_text, "</Layer>\r\n");
+		ref = ref->next;
+	    }
+	  gaiaAppendToOutBuffer (&xml_text, "</Layer>\r\n");
+	  grp = grp->next;
+      }
+
     gaiaAppendToOutBuffer (&xml_text,
 			   "</Layer>\r\n</Capability>\r\n</WMS_Capabilities>\r\n");
     gaiaAppendToOutBuffer (&xml_text, "");
@@ -2252,6 +2693,7 @@ wms_get_map (struct wms_args *args, int socket, struct server_log_item *log)
     stmt = args->stmt_get_map;
     sqlite3_reset (stmt);
     sqlite3_clear_bindings (stmt);
+    fprintf (stderr, "layer<%s>\n", args->layer);
     sqlite3_bind_text (stmt, 1, args->layer, strlen (args->layer),
 		       SQLITE_STATIC);
     sqlite3_bind_double (stmt, 2, args->minx);
@@ -2462,20 +2904,18 @@ win32_http_request (void *data)
     if (args->request_type == WMS_GET_MAP)
       {
 	  /* preparing the WMS GetMap payload */
+	  fprintf (stderr, "GetMap\n");
 	  args->db_handle = req->conn->handle;
 	  args->stmt_get_map = req->conn->stmt_get_map;
 	  log_get_map_1 (req->log, timestamp, http_status, method, url, args);
 	  wms_get_map (args, req->socket, req->log);
       }
-    destroy_wms_args (args);
     goto end_request;
 
 /* preparing an HTTP error code */
   http_error:
     gaiaOutBufferInitialize (&xml_response);
     build_http_error (http_status, &xml_response, req->port_no);
-    if (args != NULL)
-	destroy_wms_args (args);
     curr = 0;
     while (1)
       {
@@ -2494,8 +2934,6 @@ win32_http_request (void *data)
   illegal_request:
     gaiaOutBufferInitialize (&xml_response);
     build_wms_exception (args, &xml_response);
-    if (args != NULL)
-	destroy_wms_args (args);
     curr = 0;
     while (1)
       {
@@ -2510,6 +2948,8 @@ win32_http_request (void *data)
     gaiaOutBufferReset (&xml_response);
 
   end_request:
+    if (args != NULL)
+	destroy_wms_args (args);
     closesocket (req->socket);
     req->conn->status = CONNECTION_AVAILABLE;
     free (req);
@@ -2581,15 +3021,12 @@ berkeley_http_request (void *data)
 	  log_get_map_1 (req->log, timestamp, http_status, method, url, args);
 	  wms_get_map (args, req->socket, req->log);
       }
-    destroy_wms_args (args);
     goto end_request;
 
 /* preparing an HTTP error code */
   http_error:
     gaiaOutBufferInitialize (&xml_response);
     build_http_error (http_status, &xml_response, req->port_no);
-    if (args != NULL)
-	destroy_wms_args (args);
     curr = 0;
     while (1)
       {
@@ -2608,8 +3045,6 @@ berkeley_http_request (void *data)
   illegal_request:
     gaiaOutBufferInitialize (&xml_response);
     build_wms_exception (args, &xml_response);
-    if (args != NULL)
-	destroy_wms_args (args);
     curr = 0;
     while (1)
       {
@@ -2624,6 +3059,8 @@ berkeley_http_request (void *data)
     gaiaOutBufferReset (&xml_response);
 
   end_request:
+    if (args != NULL)
+	destroy_wms_args (args);
     close (req->socket);
     req->conn->status = CONNECTION_AVAILABLE;
     free (req);
@@ -2902,52 +3339,224 @@ do_start_http (int port_no, struct neutral_socket *srv_skt)
     return 1;
 }
 
+static int
+get_geographic_extent (sqlite3 * handle, struct wms_layer *lyr)
+{
+/* computing the Geographic Bounding Box for some WMS layer */
+    int retcode = 0;
+    const char *sql;
+    sqlite3_stmt *stmt = NULL;
+    int ret;
+    sql = "SELECT MbrMinX(g.g), MbrMinY(g.g), MbrMaxX(g.g), MbrMaxY(g.g) "
+	"FROM (SELECT ST_Transform(BuildMbr(?, ?, ?, ?, ?), 4326) AS g) AS g";
+    ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
+    if (ret != SQLITE_OK)
+      {
+	  lyr->geo_minx = -180.0;
+	  lyr->geo_miny = -90.0;
+	  lyr->geo_maxx = 180.0;
+	  lyr->geo_maxy = 90.0;
+	  return 0;
+      }
+    sqlite3_reset (stmt);
+    sqlite3_clear_bindings (stmt);
+    sqlite3_bind_double (stmt, 1, lyr->minx);
+    sqlite3_bind_double (stmt, 2, lyr->miny);
+    sqlite3_bind_double (stmt, 3, lyr->maxx);
+    sqlite3_bind_double (stmt, 4, lyr->maxy);
+    sqlite3_bind_int (stmt, 5, lyr->srid);
+    while (1)
+      {
+	  ret = sqlite3_step (stmt);
+	  if (ret == SQLITE_DONE)
+	      break;
+	  if (ret == SQLITE_ROW)
+	    {
+		lyr->geo_minx = sqlite3_column_double (stmt, 0);
+		lyr->geo_miny = sqlite3_column_double (stmt, 1);
+		lyr->geo_maxx = sqlite3_column_double (stmt, 2);
+		lyr->geo_maxy = sqlite3_column_double (stmt, 3);
+		retcode = 1;
+	    }
+      }
+    sqlite3_finalize (stmt);
+    return retcode;
+}
+
 static void
 compute_geographic_extents (sqlite3 * handle, struct wms_list *list)
 {
 /* computing the Geographic Bounding Box for every WMS layer */
-    const char *sql;
-    sqlite3_stmt *stmt = NULL;
-    int ret;
-    struct wms_layer *lyr = list->first;
+    struct wms_group *grp;
+    struct wms_layer *lyr;
+
+/* first level layers */
+    lyr = list->first_layer;
     while (lyr != NULL)
       {
-	  sql = "SELECT MbrMinX(g.g), MbrMinY(g.g), MbrMaxX(g.g), MbrMaxY(g.g) "
-	      "FROM (SELECT ST_Transform(BuildMbr(?, ?, ?, ?, ?), 4326) AS g) AS g";
-	  ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
-	  if (ret != SQLITE_OK)
-	    {
-		lyr->geo_minx = -180.0;
-		lyr->geo_miny = -90.0;
-		lyr->geo_maxx = 180.0;
-		lyr->geo_maxy = 90.0;
-		goto error;
-	    }
-	  sqlite3_reset (stmt);
-	  sqlite3_clear_bindings (stmt);
-	  sqlite3_bind_double (stmt, 1, lyr->minx);
-	  sqlite3_bind_double (stmt, 2, lyr->miny);
-	  sqlite3_bind_double (stmt, 3, lyr->maxx);
-	  sqlite3_bind_double (stmt, 4, lyr->maxy);
-	  sqlite3_bind_int (stmt, 5, lyr->srid);
-	  while (1)
-	    {
-		ret = sqlite3_step (stmt);
-		if (ret == SQLITE_DONE)
-		    break;
-		if (ret == SQLITE_ROW)
-		  {
-		      lyr->geo_minx = sqlite3_column_double (stmt, 0);
-		      lyr->geo_miny = sqlite3_column_double (stmt, 1);
-		      lyr->geo_maxx = sqlite3_column_double (stmt, 2);
-		      lyr->geo_maxy = sqlite3_column_double (stmt, 3);
-		      fprintf (stderr, "Publishing layer \"%s\"\n",
-			       lyr->layer_name);
-		  }
-	    }
-	  sqlite3_finalize (stmt);
-	error:
+	  if (get_geographic_extent (handle, lyr))
+	      fprintf (stderr, "Publishing layer \"%s\"\n", lyr->layer_name);
+	  else
+	      lyr->valid = 0;
 	  lyr = lyr->next;
+      }
+
+/* children layers */
+    lyr = list->first_child;
+    while (lyr != NULL)
+      {
+	  if (!get_geographic_extent (handle, lyr))
+	      lyr->valid = 0;
+	  lyr = lyr->next;
+      }
+
+    grp = list->first_group;
+    while (grp != NULL)
+      {
+	  /* validating layer groups */
+	  int valid;
+	  int count;
+	  int srid;
+	  struct wms_style *style;
+	  struct wms_layer_ref *ref;
+	  ref = grp->first_child;
+	  valid = 1;
+	  count = 0;
+	  if (ref != NULL)
+	      srid = ref->layer_ref->srid;
+	  while (ref != NULL)
+	    {
+		/* preliminary check */
+		if (ref->layer_ref->valid == 0)
+		    valid = 0;
+		if (ref->layer_ref->srid != srid)
+		    valid = 0;
+		count++;
+		ref = ref->next;
+	    }
+	  if (count < 1 || valid == 0)
+	    {
+		/* reporting an error condition */
+		fprintf (stderr,
+			 "ERROR: layer group \"%s\" has mismatching SRIDs !!!\n"
+			 "\t... will not be published\n", grp->group_name);
+		grp->valid = 0;
+	    }
+	  else
+	    {
+		/* final refinement pass */
+		double minx = DBL_MAX;
+		double maxx = 0.0 - DBL_MAX;
+		double miny = DBL_MAX;
+		double maxy = 0.0 - DBL_MAX;
+		double geo_minx = DBL_MAX;
+		double geo_maxx = 0.0 - DBL_MAX;
+		double geo_miny = DBL_MAX;
+		double geo_maxy = 0.0 - DBL_MAX;
+		ref = grp->first_child;
+		while (ref != NULL)
+		  {
+		      struct wms_layer *l = ref->layer_ref;
+		      if (ref == grp->first_child)
+			{
+			    grp->srid = l->srid;
+			    grp->is_geographic = l->is_geographic;
+			    if (l->minx < minx)
+				minx = l->minx;
+			    if (l->maxx > maxx)
+				maxx = l->maxx;
+			    if (l->miny < miny)
+				miny = l->miny;
+			    if (l->maxy > maxy)
+				maxy = l->maxy;
+			    if (l->geo_minx < geo_minx)
+				geo_minx = l->geo_minx;
+			    if (l->geo_maxx > geo_maxx)
+				geo_maxx = l->geo_maxx;
+			    if (l->geo_miny < geo_miny)
+				geo_miny = l->geo_miny;
+			    if (l->geo_maxy > geo_maxy)
+				geo_maxy = l->geo_maxy;
+			}
+		      ref = ref->next;
+		  }
+		grp->minx = minx;
+		grp->maxx = maxx;
+		grp->miny = miny;
+		grp->maxy = maxy;
+		grp->geo_minx = geo_minx;
+		grp->geo_maxx = geo_maxx;
+		grp->geo_miny = geo_miny;
+		grp->geo_maxy = geo_maxy;
+
+		/* validating Group Styles */
+		style = grp->first_style;
+		while (style != NULL)
+		  {
+		      int valid;
+		      rl2GroupStylePtr stl;
+		      if (strcmp (style->name, "default") == 0)
+			{
+			    /* ignoring default styles */
+			    style->valid = 0;
+			    style = style->next;
+			    continue;
+			}
+		      stl = rl2_create_group_style_from_dbms (handle,
+							      grp->group_name,
+							      style->name);
+		      if (stl == NULL)
+			{
+			    /* reporting an error condition */
+			    fprintf (stderr,
+				     "ERROR: layer group \"%s\" NULL style !!!\n"
+				     "\t... will be ignored\n",
+				     grp->group_name);
+			    style->valid = 0;
+			    style = style->next;
+			    continue;
+			}
+		      rl2_is_valid_group_style (stl, &valid);
+		      if (!valid)
+			{
+			    /* reporting an error condition */
+			    int count;
+			    int idx;
+			    fprintf (stderr,
+				     "ERROR: layer group \"%s\" invalid style \"%s\" !!!\n"
+				     "\t... will be ignored\n", grp->group_name,
+				     rl2_get_group_style_name (stl));
+			    rl2_get_group_style_count (stl, &count);
+			    for (idx = 0; idx < count; idx++)
+			      {
+				  rl2_is_valid_group_named_layer (stl, idx,
+								  &valid);
+				  if (!valid)
+				      fprintf (stderr,
+					       "\t%d/%d\tNamedLayer \"%s\" does not exists !!!\n",
+					       idx, count,
+					       rl2_get_group_named_layer (stl,
+									  idx));
+				  rl2_is_valid_group_named_style (stl, idx,
+								  &valid);
+				  if (!valid)
+				      fprintf (stderr,
+					       "\t\tNamedStyle \"%s\" does not exists !!!\n",
+					       rl2_get_group_named_style (stl,
+									  idx));
+			      }
+			    style->valid = 0;
+			    style = style->next;
+			    continue;
+			}
+		      rl2_destroy_group_style (stl);
+		      style = style->next;
+		  }
+		if (grp->valid)
+		    fprintf (stderr, "Publishing Layer Group \"%s\"\n",
+			     grp->group_name);
+		grp = grp->next;
+	    }
       }
 }
 
@@ -2980,6 +3589,150 @@ check_geographic_srid (sqlite3 * handle, int srid)
     return 0;
 }
 
+static struct wms_layer *
+load_layer (sqlite3 * handle, sqlite3_stmt * stmt)
+{
+/* creating a WMS layer from the resultset */
+    struct wms_layer *lyr = NULL;
+    const char *coverage_name = (const char *) sqlite3_column_text (stmt, 0);
+    const char *title = (const char *) sqlite3_column_text (stmt, 1);
+    const char *abstract = (const char *) sqlite3_column_text (stmt, 2);
+    const char *sample_type = (const char *) sqlite3_column_text (stmt, 3);
+    const char *pixel_type = (const char *) sqlite3_column_text (stmt, 4);
+    int num_bands = sqlite3_column_int (stmt, 5);
+    int srid = sqlite3_column_int (stmt, 6);
+    double minx = sqlite3_column_double (stmt, 7);
+    double miny = sqlite3_column_double (stmt, 8);
+    double maxx = sqlite3_column_double (stmt, 9);
+    double maxy = sqlite3_column_double (stmt, 10);
+    int is_geographic = check_geographic_srid (handle, srid);
+    if (strcmp (sample_type, "1-BIT") == 0
+	&& strcmp (pixel_type, "MONOCHROME") == 0 && num_bands == 1)
+	lyr =
+	    alloc_wms_layer (coverage_name, title, abstract, srid,
+			     is_geographic, minx, miny, maxx, maxy,
+			     RL2_SAMPLE_1_BIT, RL2_PIXEL_MONOCHROME, 1);
+    if (strcmp (sample_type, "1-BIT") == 0
+	&& strcmp (pixel_type, "PALETTE") == 0 && num_bands == 1)
+	lyr =
+	    alloc_wms_layer (coverage_name, title, abstract, srid,
+			     is_geographic, minx, miny, maxx, maxy,
+			     RL2_SAMPLE_1_BIT, RL2_PIXEL_PALETTE, 1);
+    if (strcmp (sample_type, "2-BIT") == 0
+	&& strcmp (pixel_type, "PALETTE") == 0 && num_bands == 1)
+	lyr =
+	    alloc_wms_layer (coverage_name, title, abstract, srid,
+			     is_geographic, minx, miny, maxx, maxy,
+			     RL2_SAMPLE_2_BIT, RL2_PIXEL_PALETTE, 1);
+    if (strcmp (sample_type, "4-BIT") == 0
+	&& strcmp (pixel_type, "PALETTE") == 0 && num_bands == 1)
+	lyr =
+	    alloc_wms_layer (coverage_name, title, abstract, srid,
+			     is_geographic, minx, miny, maxx, maxy,
+			     RL2_SAMPLE_4_BIT, RL2_PIXEL_PALETTE, 1);
+    if (strcmp (sample_type, "UINT8") == 0
+	&& strcmp (pixel_type, "PALETTE") == 0 && num_bands == 1)
+	lyr =
+	    alloc_wms_layer (coverage_name, title, abstract, srid,
+			     is_geographic, minx, miny, maxx, maxy,
+			     RL2_SAMPLE_UINT8, RL2_PIXEL_PALETTE, 1);
+    if (strcmp (sample_type, "UINT8") == 0
+	&& strcmp (pixel_type, "GRAYSCALE") == 0 && num_bands == 1)
+	lyr =
+	    alloc_wms_layer (coverage_name, title, abstract, srid,
+			     is_geographic, minx, miny, maxx, maxy,
+			     RL2_SAMPLE_UINT8, RL2_PIXEL_GRAYSCALE, 1);
+    if (strcmp (sample_type, "UINT8") == 0
+	&& strcmp (pixel_type, "RGB") == 0 && num_bands == 3)
+	lyr =
+	    alloc_wms_layer (coverage_name, title, abstract, srid,
+			     is_geographic, minx, miny, maxx, maxy,
+			     RL2_SAMPLE_UINT8, RL2_PIXEL_RGB, 3);
+    if (strcmp (sample_type, "UINT16") == 0
+	&& strcmp (pixel_type, "RGB") == 0 && num_bands == 3)
+	lyr =
+	    alloc_wms_layer (coverage_name, title, abstract, srid,
+			     is_geographic, minx, miny, maxx, maxy,
+			     RL2_SAMPLE_UINT16, RL2_PIXEL_RGB, 3);
+    if (strcmp (sample_type, "UINT8") == 0
+	&& strcmp (pixel_type, "MULTIBAND") == 0 && num_bands >= 2
+	&& num_bands < 255)
+	lyr =
+	    alloc_wms_layer (coverage_name, title, abstract, srid,
+			     is_geographic, minx, miny, maxx, maxy,
+			     RL2_SAMPLE_UINT8, RL2_PIXEL_MULTIBAND, num_bands);
+    if (strcmp (sample_type, "UINT16") == 0
+	&& strcmp (pixel_type, "MULTIBAND") == 0 && num_bands >= 2
+	&& num_bands < 255)
+	lyr =
+	    alloc_wms_layer (coverage_name, title, abstract, srid,
+			     is_geographic, minx, miny, maxx, maxy,
+			     RL2_SAMPLE_UINT16, RL2_PIXEL_MULTIBAND, num_bands);
+    if (strcmp (sample_type, "INT8") == 0
+	&& strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
+	lyr =
+	    alloc_wms_layer (coverage_name, title, abstract, srid,
+			     is_geographic, minx, miny, maxx, maxy,
+			     RL2_SAMPLE_INT8, RL2_PIXEL_DATAGRID, 1);
+    if (strcmp (sample_type, "UINT8") == 0
+	&& strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
+	lyr =
+	    alloc_wms_layer (coverage_name, title, abstract, srid,
+			     is_geographic, minx, miny, maxx, maxy,
+			     RL2_SAMPLE_UINT8, RL2_PIXEL_DATAGRID, 1);
+    if (strcmp (sample_type, "INT16") == 0
+	&& strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
+	lyr =
+	    alloc_wms_layer (coverage_name, title, abstract, srid,
+			     is_geographic, minx, miny, maxx, maxy,
+			     RL2_SAMPLE_INT16, RL2_PIXEL_DATAGRID, 1);
+    if (strcmp (sample_type, "UINT16") == 0
+	&& strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
+	lyr =
+	    alloc_wms_layer (coverage_name, title, abstract, srid,
+			     is_geographic, minx, miny, maxx, maxy,
+			     RL2_SAMPLE_UINT16, RL2_PIXEL_DATAGRID, 1);
+    if (strcmp (sample_type, "INT32") == 0
+	&& strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
+	lyr =
+	    alloc_wms_layer (coverage_name, title, abstract, srid,
+			     is_geographic, minx, miny, maxx, maxy,
+			     RL2_SAMPLE_INT32, RL2_PIXEL_DATAGRID, 1);
+    if (strcmp (sample_type, "UINT32") == 0
+	&& strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
+	lyr =
+	    alloc_wms_layer (coverage_name, title, abstract, srid,
+			     is_geographic, minx, miny, maxx, maxy,
+			     RL2_SAMPLE_UINT32, RL2_PIXEL_DATAGRID, 1);
+    if (strcmp (sample_type, "FLOAT") == 0
+	&& strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
+	lyr =
+	    alloc_wms_layer (coverage_name, title, abstract, srid,
+			     is_geographic, minx, miny, maxx, maxy,
+			     RL2_SAMPLE_FLOAT, RL2_PIXEL_DATAGRID, 1);
+    if (strcmp (sample_type, "DOUBLE") == 0
+	&& strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
+	lyr =
+	    alloc_wms_layer (coverage_name, title, abstract, srid,
+			     is_geographic, minx, miny, maxx, maxy,
+			     RL2_SAMPLE_DOUBLE, RL2_PIXEL_DATAGRID, 1);
+    return lyr;
+}
+
+static int
+is_child_layer (struct wms_list *list, struct wms_layer *lyr)
+{
+/* testing for children layers */
+    struct wms_layer *l = list->first_child;
+    while (l != NULL)
+      {
+	  if (strcmp (l->layer_name, lyr->layer_name) == 0)
+	      return 1;
+	  l = l->next;
+      }
+    return 0;
+}
+
 static struct wms_list *
 get_raster_coverages (sqlite3 * handle)
 {
@@ -2987,11 +3740,16 @@ get_raster_coverages (sqlite3 * handle)
     struct wms_list *list = NULL;
     int ret;
     sqlite3_stmt *stmt;
-    const char *sql = "SELECT coverage_name, title, abstract, sample_type, "
+    const char *sql;
+
+/* loading all child layers */
+    sql = "SELECT coverage_name, title, abstract, sample_type, "
 	"pixel_type, num_bands, srid, extent_minx, extent_miny, extent_maxx, extent_maxy "
 	"FROM raster_coverages "
 	"WHERE extent_minx IS NOT NULL AND extent_miny IS NOT NULL "
-	"AND extent_maxx IS NOT NULL AND extent_maxy IS NOT NULL";
+	"AND extent_maxx IS NOT NULL AND extent_maxy IS NOT NULL "
+	"AND coverage_name IN (SELECT DISTINCT coverage_name "
+	"FROM SE_styled_group_refs)";
     ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
     if (ret != SQLITE_OK)
 	return NULL;
@@ -3004,162 +3762,119 @@ get_raster_coverages (sqlite3 * handle)
 	      break;		/* end of result set */
 	  if (ret == SQLITE_ROW)
 	    {
+		struct wms_layer *lyr = load_layer (handle, stmt);
+		if (lyr != NULL)
+		  {
+		      if (list->first_child == NULL)
+			  list->first_child = lyr;
+		      if (list->last_child != NULL)
+			  list->last_child->next = lyr;
+		      list->last_child = lyr;
+		  }
+	    }
+      }
+    sqlite3_finalize (stmt);
+
+/* loading first-level layers */
+    sql = "SELECT coverage_name, title, abstract, sample_type, "
+	"pixel_type, num_bands, srid, extent_minx, extent_miny, extent_maxx, extent_maxy "
+	"FROM raster_coverages "
+	"WHERE extent_minx IS NOT NULL AND extent_miny IS NOT NULL "
+	"AND extent_maxx IS NOT NULL AND extent_maxy IS NOT NULL";
+    ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
+    if (ret != SQLITE_OK)
+	goto error;
+    while (1)
+      {
+	  /* scrolling the result set rows */
+	  ret = sqlite3_step (stmt);
+	  if (ret == SQLITE_DONE)
+	      break;		/* end of result set */
+	  if (ret == SQLITE_ROW)
+	    {
+		struct wms_layer *lyr = load_layer (handle, stmt);
+		if (lyr != NULL)
+		  {
+		      if (is_child_layer (list, lyr))
+			{
+			    /* discarding any child layer */
+			    destroy_wms_layer (lyr);
+			    continue;
+			}
+		      if (list->first_layer == NULL)
+			  list->first_layer = lyr;
+		      if (list->last_layer != NULL)
+			  list->last_layer->next = lyr;
+		      list->last_layer = lyr;
+		  }
+	    }
+      }
+    sqlite3_finalize (stmt);
+
+/* loading layer groups */
+    sql = "SELECT g.group_name, g.title, g.abstract, c.coverage_name "
+	"FROM SE_styled_groups AS g "
+	"LEFT JOIN  SE_styled_group_refs AS c ON (g.group_name = c.group_name) "
+	"ORDER BY c.paint_order";
+    ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
+    if (ret != SQLITE_OK)
+	goto error;
+    while (1)
+      {
+	  /* scrolling the result set rows */
+	  ret = sqlite3_step (stmt);
+	  if (ret == SQLITE_DONE)
+	      break;		/* end of result set */
+	  if (ret == SQLITE_ROW)
+	    {
+		struct wms_group *grp = NULL;
+		struct wms_layer_ref *ref = NULL;
 		struct wms_layer *lyr = NULL;
-		const char *coverage_name =
+		const char *group_name =
 		    (const char *) sqlite3_column_text (stmt, 0);
 		const char *title =
 		    (const char *) sqlite3_column_text (stmt, 1);
 		const char *abstract =
 		    (const char *) sqlite3_column_text (stmt, 2);
-		const char *sample_type =
+		const char *coverage_name =
 		    (const char *) sqlite3_column_text (stmt, 3);
-		const char *pixel_type =
-		    (const char *) sqlite3_column_text (stmt, 4);
-		int num_bands = sqlite3_column_int (stmt, 5);
-		int srid = sqlite3_column_int (stmt, 6);
-		double minx = sqlite3_column_double (stmt, 7);
-		double miny = sqlite3_column_double (stmt, 8);
-		double maxx = sqlite3_column_double (stmt, 9);
-		double maxy = sqlite3_column_double (stmt, 10);
-		int is_geographic = check_geographic_srid (handle, srid);
-		if (strcmp (sample_type, "1-BIT") == 0
-		    && strcmp (pixel_type, "MONOCHROME") == 0 && num_bands == 1)
-		    lyr =
-			alloc_wms_layer (coverage_name, title, abstract, srid,
-					 is_geographic, minx, miny, maxx, maxy,
-					 RL2_SAMPLE_1_BIT, RL2_PIXEL_MONOCHROME,
-					 1);
-		if (strcmp (sample_type, "1-BIT") == 0
-		    && strcmp (pixel_type, "PALETTE") == 0 && num_bands == 1)
-		    lyr =
-			alloc_wms_layer (coverage_name, title, abstract, srid,
-					 is_geographic, minx, miny, maxx, maxy,
-					 RL2_SAMPLE_1_BIT, RL2_PIXEL_PALETTE,
-					 1);
-		if (strcmp (sample_type, "2-BIT") == 0
-		    && strcmp (pixel_type, "PALETTE") == 0 && num_bands == 1)
-		    lyr =
-			alloc_wms_layer (coverage_name, title, abstract, srid,
-					 is_geographic, minx, miny, maxx, maxy,
-					 RL2_SAMPLE_2_BIT, RL2_PIXEL_PALETTE,
-					 1);
-		if (strcmp (sample_type, "4-BIT") == 0
-		    && strcmp (pixel_type, "PALETTE") == 0 && num_bands == 1)
-		    lyr =
-			alloc_wms_layer (coverage_name, title, abstract, srid,
-					 is_geographic, minx, miny, maxx, maxy,
-					 RL2_SAMPLE_4_BIT, RL2_PIXEL_PALETTE,
-					 1);
-		if (strcmp (sample_type, "UINT8") == 0
-		    && strcmp (pixel_type, "PALETTE") == 0 && num_bands == 1)
-		    lyr =
-			alloc_wms_layer (coverage_name, title, abstract, srid,
-					 is_geographic, minx, miny, maxx, maxy,
-					 RL2_SAMPLE_UINT8, RL2_PIXEL_PALETTE,
-					 1);
-		if (strcmp (sample_type, "UINT8") == 0
-		    && strcmp (pixel_type, "GRAYSCALE") == 0 && num_bands == 1)
-		    lyr =
-			alloc_wms_layer (coverage_name, title, abstract, srid,
-					 is_geographic, minx, miny, maxx, maxy,
-					 RL2_SAMPLE_UINT8, RL2_PIXEL_GRAYSCALE,
-					 1);
-		if (strcmp (sample_type, "UINT8") == 0
-		    && strcmp (pixel_type, "RGB") == 0 && num_bands == 3)
-		    lyr =
-			alloc_wms_layer (coverage_name, title, abstract, srid,
-					 is_geographic, minx, miny, maxx, maxy,
-					 RL2_SAMPLE_UINT8, RL2_PIXEL_RGB, 3);
-		if (strcmp (sample_type, "UINT16") == 0
-		    && strcmp (pixel_type, "RGB") == 0 && num_bands == 3)
-		    lyr =
-			alloc_wms_layer (coverage_name, title, abstract, srid,
-					 is_geographic, minx, miny, maxx, maxy,
-					 RL2_SAMPLE_UINT16, RL2_PIXEL_RGB, 3);
-		if (strcmp (sample_type, "UINT8") == 0
-		    && strcmp (pixel_type, "MULTIBAND") == 0 && num_bands >= 2
-		    && num_bands < 255)
-		    lyr =
-			alloc_wms_layer (coverage_name, title, abstract, srid,
-					 is_geographic, minx, miny, maxx, maxy,
-					 RL2_SAMPLE_UINT8, RL2_PIXEL_MULTIBAND,
-					 num_bands);
-		if (strcmp (sample_type, "UINT16") == 0
-		    && strcmp (pixel_type, "MULTIBAND") == 0 && num_bands >= 2
-		    && num_bands < 255)
-		    lyr =
-			alloc_wms_layer (coverage_name, title, abstract, srid,
-					 is_geographic, minx, miny, maxx, maxy,
-					 RL2_SAMPLE_UINT16, RL2_PIXEL_MULTIBAND,
-					 num_bands);
-		if (strcmp (sample_type, "INT8") == 0
-		    && strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
-		    lyr =
-			alloc_wms_layer (coverage_name, title, abstract, srid,
-					 is_geographic, minx, miny, maxx, maxy,
-					 RL2_SAMPLE_INT8, RL2_PIXEL_DATAGRID,
-					 1);
-		if (strcmp (sample_type, "UINT8") == 0
-		    && strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
-		    lyr =
-			alloc_wms_layer (coverage_name, title, abstract, srid,
-					 is_geographic, minx, miny, maxx, maxy,
-					 RL2_SAMPLE_UINT8, RL2_PIXEL_DATAGRID,
-					 1);
-		if (strcmp (sample_type, "INT16") == 0
-		    && strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
-		    lyr =
-			alloc_wms_layer (coverage_name, title, abstract, srid,
-					 is_geographic, minx, miny, maxx, maxy,
-					 RL2_SAMPLE_INT16, RL2_PIXEL_DATAGRID,
-					 1);
-		if (strcmp (sample_type, "UINT16") == 0
-		    && strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
-		    lyr =
-			alloc_wms_layer (coverage_name, title, abstract, srid,
-					 is_geographic, minx, miny, maxx, maxy,
-					 RL2_SAMPLE_UINT16, RL2_PIXEL_DATAGRID,
-					 1);
-		if (strcmp (sample_type, "INT32") == 0
-		    && strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
-		    lyr =
-			alloc_wms_layer (coverage_name, title, abstract, srid,
-					 is_geographic, minx, miny, maxx, maxy,
-					 RL2_SAMPLE_INT32, RL2_PIXEL_DATAGRID,
-					 1);
-		if (strcmp (sample_type, "UINT32") == 0
-		    && strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
-		    lyr =
-			alloc_wms_layer (coverage_name, title, abstract, srid,
-					 is_geographic, minx, miny, maxx, maxy,
-					 RL2_SAMPLE_UINT32, RL2_PIXEL_DATAGRID,
-					 1);
-		if (strcmp (sample_type, "FLOAT") == 0
-		    && strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
-		    lyr =
-			alloc_wms_layer (coverage_name, title, abstract, srid,
-					 is_geographic, minx, miny, maxx, maxy,
-					 RL2_SAMPLE_FLOAT, RL2_PIXEL_DATAGRID,
-					 1);
-		if (strcmp (sample_type, "DOUBLE") == 0
-		    && strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
-		    lyr =
-			alloc_wms_layer (coverage_name, title, abstract, srid,
-					 is_geographic, minx, miny, maxx, maxy,
-					 RL2_SAMPLE_DOUBLE, RL2_PIXEL_DATAGRID,
-					 1);
-		if (lyr != NULL)
+		grp = list->first_group;
+		while (grp != NULL)
 		  {
-		      if (list->first == NULL)
-			  list->first = lyr;
-		      if (list->last != NULL)
-			  list->last->next = lyr;
-		      list->last = lyr;
+		      if (strcmp (grp->group_name, group_name) == 0)
+			  goto group_found;
+		      grp = grp->next;
+		  }
+		grp = alloc_wms_group (group_name, title, abstract);
+		if (list->first_group == NULL)
+		    list->first_group = grp;
+		if (list->last_group != NULL)
+		    list->last_group->next = grp;
+		list->last_group = grp;
+	      group_found:
+		lyr = list->first_child;
+		while (lyr != NULL)
+		  {
+		      if (strcmp (lyr->layer_name, coverage_name) == 0)
+			{
+			    /* child layer match */
+			    ref = alloc_wms_layer_ref (lyr);
+			    break;
+			}
+		      lyr = lyr->next;
+		  }
+		if (ref != NULL)
+		  {
+		      if (grp->first_child == NULL)
+			  grp->first_child = ref;
+		      if (grp->last_child != NULL)
+			  grp->last_child->next = ref;
+		      grp->last_child = ref;
 		  }
 	    }
       }
     sqlite3_finalize (stmt);
-    if (list->first == NULL)
+    if (list->first_layer == NULL && list->first_group == NULL)
 	goto error;
     return list;
 
@@ -3203,6 +3918,42 @@ get_raster_styles (sqlite3 * handle, struct wms_list *list)
       }
     sqlite3_finalize (stmt);
     add_default_styles (list);
+}
+
+static void
+get_group_styles (sqlite3 * handle, struct wms_list *list)
+{
+/* retrieving all declared Group Styles */
+    int ret;
+    sqlite3_stmt *stmt;
+    const char *sql = "SELECT group_name, name, title, abstract "
+	"FROM SE_group_styles_view " "ORDER BY group_name, style_id";
+    ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
+    if (ret != SQLITE_OK)
+	return;
+    while (1)
+      {
+	  /* scrolling the result set rows */
+	  ret = sqlite3_step (stmt);
+	  if (ret == SQLITE_DONE)
+	      break;		/* end of result set */
+	  if (ret == SQLITE_ROW)
+	    {
+		const char *title = NULL;
+		const char *abstract = NULL;
+		const char *group_name =
+		    (const char *) sqlite3_column_text (stmt, 0);
+		const char *name = (const char *) sqlite3_column_text (stmt, 1);
+		if (sqlite3_column_type (stmt, 2) == SQLITE_TEXT)
+		    title = (const char *) sqlite3_column_text (stmt, 2);
+		if (sqlite3_column_type (stmt, 3) == SQLITE_TEXT)
+		    abstract = (const char *) sqlite3_column_text (stmt, 3);
+		add_style_to_wms_group (list, group_name, name, title,
+					abstract);
+	    }
+      }
+    sqlite3_finalize (stmt);
+    add_default_group_styles (list);
 }
 
 static void
@@ -3396,6 +4147,7 @@ main (int argc, char *argv[])
 	  goto stop;
       }
     get_raster_styles (handle, list);
+    get_group_styles (handle, list);
     glob.list = list;
     compute_geographic_extents (handle, list);
     build_get_capabilities (list, &cached_capabilities,
@@ -3470,6 +4222,7 @@ main (int argc, char *argv[])
 		    cached_capabilities, cached_capabilities_len);
 
   stop:
+    destroy_wms_list (list);
     clean_shutdown ();
     return 0;
 }

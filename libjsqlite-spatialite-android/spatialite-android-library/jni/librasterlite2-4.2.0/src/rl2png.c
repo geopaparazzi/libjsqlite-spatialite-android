@@ -109,8 +109,8 @@ rl2_png_flush (png_structp png_ptr)
 }
 
 static int
-compress_palette_png (const unsigned char *pixels, unsigned short width,
-		      unsigned short height, rl2PalettePtr plt,
+compress_palette_png (const unsigned char *pixels, unsigned int width,
+		      unsigned int height, rl2PalettePtr plt,
 		      unsigned char sample_type, unsigned char **png,
 		      int *png_size)
 {
@@ -120,8 +120,8 @@ compress_palette_png (const unsigned char *pixels, unsigned short width,
     int bit_depth;
     png_bytep *row_pointers = NULL;
     png_bytep p_out;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     png_color palette[256];
     unsigned short num_entries;
     unsigned char *red = NULL;
@@ -229,8 +229,8 @@ compress_palette_png (const unsigned char *pixels, unsigned short width,
 
 static int
 compress_grayscale_png (const unsigned char *pixels, const unsigned char *mask,
-			double opacity, unsigned short width,
-			unsigned short height, unsigned char sample_type,
+			double opacity, unsigned int width,
+			unsigned int height, unsigned char sample_type,
 			unsigned char pixel_type, unsigned char **png,
 			int *png_size)
 {
@@ -240,8 +240,8 @@ compress_grayscale_png (const unsigned char *pixels, const unsigned char *mask,
     int bit_depth;
     png_bytep *row_pointers = NULL;
     png_bytep p_out;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     const unsigned char *p_in;
     const unsigned char *p_mask;
     int nBands;
@@ -362,7 +362,7 @@ compress_grayscale_png (const unsigned char *pixels, const unsigned char *mask,
 
 static int
 compress_rgb_png (const unsigned char *pixels, const unsigned char *mask,
-		  double opacity, unsigned short width, unsigned short height,
+		  double opacity, unsigned int width, unsigned int height,
 		  unsigned char **png, int *png_size)
 {
 /* compressing a PNG image of the RGB type */
@@ -370,8 +370,8 @@ compress_rgb_png (const unsigned char *pixels, const unsigned char *mask,
     png_infop info_ptr;
     png_bytep *row_pointers = NULL;
     png_bytep p_out;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     const unsigned char *p_in;
     const unsigned char *p_mask;
     int nBands;
@@ -599,7 +599,7 @@ rl2_raster_to_png (rl2RasterPtr rst, unsigned char **png, int *png_size)
 }
 
 RL2_DECLARE int
-rl2_rgb_to_png (unsigned short width, unsigned short height,
+rl2_rgb_to_png (unsigned int width, unsigned int height,
 		const unsigned char *rgb, unsigned char **png, int *png_size)
 {
 /* creating a PNG image from an RGB buffer */
@@ -618,7 +618,7 @@ rl2_rgb_to_png (unsigned short width, unsigned short height,
 }
 
 RL2_DECLARE int
-rl2_rgb_alpha_to_png (unsigned short width, unsigned short height,
+rl2_rgb_alpha_to_png (unsigned int width, unsigned int height,
 		      const unsigned char *rgb, const unsigned char *alpha,
 		      unsigned char **png, int *png_size, double opacity)
 {
@@ -638,7 +638,7 @@ rl2_rgb_alpha_to_png (unsigned short width, unsigned short height,
 }
 
 RL2_DECLARE int
-rl2_gray_to_png (unsigned short width, unsigned short height,
+rl2_gray_to_png (unsigned int width, unsigned int height,
 		 const unsigned char *gray, unsigned char **png, int *png_size)
 {
 /* creating a PNG image from a Grayscale buffer */
@@ -657,7 +657,7 @@ rl2_gray_to_png (unsigned short width, unsigned short height,
 }
 
 RL2_DECLARE int
-rl2_gray_alpha_to_png (unsigned short width, unsigned short height,
+rl2_gray_alpha_to_png (unsigned int width, unsigned int height,
 		       const unsigned char *gray, const unsigned char *alpha,
 		       unsigned char **png, int *png_size, double opacity)
 {
@@ -678,8 +678,8 @@ rl2_gray_alpha_to_png (unsigned short width, unsigned short height,
 
 RL2_PRIVATE int
 rl2_data_to_png (const unsigned char *pixels, const unsigned char *mask,
-		 double opacity, rl2PalettePtr plt, unsigned short width,
-		 unsigned short height, unsigned char sample_type,
+		 double opacity, rl2PalettePtr plt, unsigned int width,
+		 unsigned int height, unsigned char sample_type,
 		 unsigned char pixel_type, unsigned char **png, int *png_size)
 {
 /* encoding a PNG image */
@@ -745,8 +745,8 @@ rl2_raster_from_png (const unsigned char *blob, int blob_size)
 {
 /* attempting to create a raster from a PNG image */
     rl2RasterPtr rst = NULL;
-    unsigned short width;
-    unsigned short height;
+    unsigned int width;
+    unsigned int height;
     unsigned char sample_type;
     unsigned char pixel_type;
     unsigned char nBands;
@@ -779,7 +779,7 @@ rl2_raster_from_png (const unsigned char *blob, int blob_size)
 
 RL2_PRIVATE int
 rl2_decode_png (const unsigned char *blob, int blob_size,
-		unsigned short *xwidth, unsigned short *xheight,
+		unsigned int *xwidth, unsigned int *xheight,
 		unsigned char *xsample_type, unsigned char *xpixel_type,
 		unsigned char *num_bands, unsigned char **pixels,
 		int *pixels_sz, unsigned char **xmask, int *xmask_sz,
@@ -812,8 +812,8 @@ rl2_decode_png (const unsigned char *blob, int blob_size,
     int data_size;
     png_bytep image_data = NULL;
     png_bytepp row_pointers = NULL;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     rl2PalettePtr rl_palette = NULL;
     int nPalette = 0;
     png_bytep transp;
@@ -924,7 +924,7 @@ rl2_decode_png (const unsigned char *blob, int blob_size,
     row_pointers = malloc (height * sizeof (png_bytep));
     if (!row_pointers)
 	goto error;
-    for (row = 0; row < (int) height; row++)
+    for (row = 0; row < height; row++)
 	row_pointers[row] = image_data + (row * rowbytes);
     png_read_image (png_ptr, row_pointers);
     png_read_end (png_ptr, NULL);
@@ -932,10 +932,10 @@ rl2_decode_png (const unsigned char *blob, int blob_size,
     switch (color_type)
       {
       case PNG_COLOR_TYPE_RGB:
-	  for (row = 0; row < (int) height; row++)
+	  for (row = 0; row < height; row++)
 	    {
 		png_bytep p_in = row_pointers[row];
-		for (col = 0; col < (int) width; col++)
+		for (col = 0; col < width; col++)
 		  {
 		      *p_data++ = *p_in++;
 		      *p_data++ = *p_in++;
@@ -944,10 +944,10 @@ rl2_decode_png (const unsigned char *blob, int blob_size,
 	    }
 	  break;
       case PNG_COLOR_TYPE_RGB_ALPHA:
-	  for (row = 0; row < (int) height; row++)
+	  for (row = 0; row < height; row++)
 	    {
 		png_bytep p_in = row_pointers[row];
-		for (col = 0; col < (int) width; col++)
+		for (col = 0; col < width; col++)
 		  {
 		      *p_data++ = *p_in++;
 		      *p_data++ = *p_in++;
@@ -965,10 +965,10 @@ rl2_decode_png (const unsigned char *blob, int blob_size,
 	    }
 	  break;
       case PNG_COLOR_TYPE_GRAY:
-	  for (row = 0; row < (int) height; row++)
+	  for (row = 0; row < height; row++)
 	    {
 		png_bytep p_in = row_pointers[row];
-		for (col = 0; col < (int) width; col++)
+		for (col = 0; col < width; col++)
 		  {
 		      unsigned char val = *p_in++;
 		      switch (sample_type)
@@ -986,10 +986,10 @@ rl2_decode_png (const unsigned char *blob, int blob_size,
 	    }
 	  break;
       case PNG_COLOR_TYPE_GRAY_ALPHA:
-	  for (row = 0; row < (int) height; row++)
+	  for (row = 0; row < height; row++)
 	    {
 		png_bytep p_in = row_pointers[row];
-		for (col = 0; col < (int) width; col++)
+		for (col = 0; col < width; col++)
 		  {
 		      *p_data++ = *p_in++;
 		      if (p_mask != NULL)
@@ -1005,10 +1005,10 @@ rl2_decode_png (const unsigned char *blob, int blob_size,
 	    }
 	  break;
       default:			/* palette */
-	  for (row = 0; row < (int) height; row++)
+	  for (row = 0; row < height; row++)
 	    {
 		png_bytep p_in = row_pointers[row];
-		for (col = 0; col < (int) width; col++)
+		for (col = 0; col < width; col++)
 		  {
 		      *p_data++ = *p_in;
 		      if (p_mask != NULL)

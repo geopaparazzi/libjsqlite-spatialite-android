@@ -72,12 +72,15 @@ LOCAL_SRC_FILES := \
  $(RASTERLITE2_PATH)/src/rl2png.c \
  $(RASTERLITE2_PATH)/src/rl2rastersym.c \
  $(RASTERLITE2_PATH)/src/rl2raw.c \
- $(RASTERLITE2_PATH)/src/rl2sqlaux.c \
  $(RASTERLITE2_PATH)/src/rl2sql.c \
+ $(RASTERLITE2_PATH)/src/rl2sqlaux.c \
+ $(RASTERLITE2_PATH)/src/rl2svg.c \
+ $(RASTERLITE2_PATH)/src/rl2svgaux.c \
+ $(RASTERLITE2_PATH)/src/rl2svgxml.c \
  $(RASTERLITE2_PATH)/src/rl2symbolizer.c \
  $(RASTERLITE2_PATH)/src/rl2tiff.c \
- $(RASTERLITE2_PATH)/src/rl2webp.c \
  $(RASTERLITE2_PATH)/src/rl2version.c \
+ $(RASTERLITE2_PATH)/src/rl2webp.c \
  $(RASTERLITE2_PATH)/src/rl2wms.c
 LOCAL_STATIC_LIBRARIES := libpng libwebp libxml2 spatialite libfreetype libcairo libcurl libgeotiff libtiff libgif libjpeg
 include $(BUILD_STATIC_LIBRARY)

@@ -530,7 +530,7 @@ test_GetCapabilities_rer (rl2WmsCachePtr cache)
 
 /* WMS GetCapabilities (valid) */
     url =
-	"http://servizigis.regione.emilia-romagna.it/wms/dbtr2008?service=wms&request=getcapabilities&version=130";
+	"http://mrdata.usgs.gov/services/az?request=getcapabilities&service=WMS&version=1.1.1";
     catalog = create_wms_catalog (cache, url, NULL, &err_msg);
     if (catalog == NULL)
       {
@@ -552,19 +552,19 @@ test_GetCapabilities_rer (rl2WmsCachePtr cache)
 	  return -104;
       }
     str = get_wms_layer_name (layer);
-    if (str != NULL)
+    if (strcmp (str, "Arizona_Geology") != 0)
       {
 	  fprintf (stderr, "GetWmsLayerName: unexpected result \"%s\"\n", str);
 	  return -105;
       }
     str = get_wms_layer_title (layer);
-    if (strcmp (str, "Layers") != 0)
+    if (strcmp (str, "Arizona_Geology") != 0)
       {
 	  fprintf (stderr, "GetWmsLayerTitle: unexpected result \"%s\"\n", str);
 	  return -106;
       }
     str = get_wms_layer_abstract (layer);
-    if (str != NULL)
+    if (strcmp (str, "Arizona_Geology") != 0)
       {
 	  fprintf (stderr, "GetWmsLayerAbstract: unexpected result \"%s\"\n",
 		   str);
@@ -605,33 +605,23 @@ test_GetCapabilities_rer (rl2WmsCachePtr cache)
 	  return -112;
       }
     count = get_wms_layer_crs_count (layer);
-    if (count != 16)
+    if (count != 6)
       {
 	  fprintf (stderr, "GetWmsLayerCrsCount: unexpected result %d\n",
 		   count);
 	  return -114;
       }
     str = get_wms_layer_crs (layer, 0);
-    if (strcmp (str, "CRS:84") != 0)
+    if (strcmp (str, "EPSG:4267") != 0)
       {
 	  fprintf (stderr, "GetWmsLayerCRS: unexpected result \"%s\"\n", str);
 	  return -115;
       }
-    if (get_wms_layer_bbox (layer, "EPSG:3003", &minx, &miny, &maxx, &maxy) !=
+    if (get_wms_layer_bbox (layer, "EPSG:3003", &minx, &miny, &maxx, &maxy) ==
 	1)
       {
-	  fprintf (stderr, "GetWmsLayerBBox: unexpected result FALSE\n");
+	  fprintf (stderr, "GetWmsLayerBBox: unexpected result TRUE\n");
 	  return -116;
-      }
-    else
-      {
-	  if (maxx != 4845820.0)
-	    {
-		fprintf (stderr,
-			 "GetWmsLayerBBox (MaxX): unexpected result %1.8f\n",
-			 maxx);
-		return -117;
-	    }
       }
     count = get_wms_layer_style_count (layer);
     if (count != 0)
@@ -671,7 +661,7 @@ test_GetCapabilities_rer (rl2WmsCachePtr cache)
 
 /* testing Child Layer */
     count = get_wms_layer_children_count (layer);
-    if (count != 43)
+    if (count != 4)
       {
 	  fprintf (stderr, "GetWmsLayerChildrenCount: unexpected result %d\n",
 		   count);
@@ -684,7 +674,7 @@ test_GetCapabilities_rer (rl2WmsCachePtr cache)
 	  return -124;
       }
     str = get_wms_layer_name (child);
-    if (strcmp (str, "Sfumo_Altimetrico_40x40") != 0)
+    if (strcmp (str, "Arizona_Lithology") != 0)
       {
 	  fprintf (stderr,
 		   "GetWmsLayerTitle (Child): unexpected result \"%s\"\n", str);
@@ -712,7 +702,7 @@ test_GetCapabilities_rer (rl2WmsCachePtr cache)
 	  return -128;
       }
     count = get_wms_layer_crs_count (child);
-    if (count != 32)
+    if (count != 6)
       {
 	  fprintf (stderr,
 		   "GetWmsLayerCrsCount (Child): unexpected result %d\n",
@@ -720,7 +710,7 @@ test_GetCapabilities_rer (rl2WmsCachePtr cache)
 	  return -130;
       }
     str = get_wms_layer_crs (child, 3);
-    if (strcmp (str, "EPSG:202003") != 0)
+    if (strcmp (str, "EPSG:3857") != 0)
       {
 	  fprintf (stderr, "GetWmsLayerCRS (Child): unexpected result \"%s\"\n",
 		   str);
@@ -745,146 +735,139 @@ test_GetCapabilities_rer (rl2WmsCachePtr cache)
 
 /* testing Service */
     str = get_wms_version (catalog);
-    if (strcmp (str, "1.3.0") != 0)
+    if (strcmp (str, "1.1.1") != 0)
       {
 	  fprintf (stderr, "GetWmsVersion: unexpected result \"%s\"\n", str);
 	  return -134;
       }
     str = get_wms_name (catalog);
-    if (strcmp (str, "WMS") != 0)
+    if (strcmp (str, "OGC:WMS") != 0)
       {
 	  fprintf (stderr, "GetWmsName: unexpected result \"%s\"\n", str);
 	  return -135;
       }
     str = get_wms_title (catalog);
-    if (strcmp (str, "dbtr2008_map") != 0)
+    if (strcmp (str, "Arizona_Geology") != 0)
       {
 	  fprintf (stderr, "GetWmsTitle: unexpected result \"%s\"\n", str);
 	  return -136;
       }
     str = get_wms_abstract (catalog);
-    if (strcmp (str, "Database Topografico Regionale release 2008") != 0)
+    if (str != NULL)
       {
 	  fprintf (stderr, "GetWmsAbstract: unexpected result \"%s\"\n", str);
 	  return -137;
       }
     str = get_wms_url_GetMap_get (catalog);
-    if (strcmp
-	(str,
-	 "http://servizigis.regione.emilia-romagna.it/wms/dbtr2008_map") != 0)
+    if (strcmp (str, "http://mrdata.usgs.gov/services/az?") != 0)
       {
 	  fprintf (stderr, "GetWmsGetMapGet: unexpected result \"%s\"\n", str);
 	  return -138;
       }
     str = get_wms_url_GetMap_post (catalog);
-    if (str != NULL)
+    if (strcmp (str, "http://mrdata.usgs.gov/services/az?") != 0)
       {
 	  fprintf (stderr, "GetWmsGetMapPost: unexpected result \"%s\"\n", str);
 	  return -139;
       }
     str = get_wms_url_GetFeatureInfo_get (catalog);
-    if (strcmp
-	(str,
-	 "http://servizigis.regione.emilia-romagna.it/wms/dbtr2008_map") != 0)
+    if (strcmp (str, "http://mrdata.usgs.gov/services/az?") != 0)
       {
 	  fprintf (stderr,
 		   "GetWmsGetFeatureInfoGet: unexpected result \"%s\"\n", str);
 	  return -140;
       }
     str = get_wms_url_GetFeatureInfo_post (catalog);
-    if (str != NULL)
+    if (strcmp (str, "http://mrdata.usgs.gov/services/az?") != 0)
       {
 	  fprintf (stderr,
 		   "GetWmsGetFeatureInfoPost: unexpected result \"%s\"\n", str);
 	  return -141;
       }
     str = get_wms_gml_mime_type (catalog);
-    if (str != NULL)
+    if (strcmp (str, "application/vnd.ogc.gml") != 0)
       {
 	  fprintf (stderr, "GetWmsGmlMimeType: unexpected result \"%s\"\n",
 		   str);
 	  return -142;
       }
     str = get_wms_xml_mime_type (catalog);
-    if (strcmp (str, "text/xml") != 0)
+    if (str != NULL)
       {
 	  fprintf (stderr, "GetWmsXmlMimeType: unexpected result \"%s\"\n",
 		   str);
 	  return -143;
       }
     str = get_wms_contact_person (catalog);
-    if (strcmp
-	(str,
-	 "Servizio sviluppo dell’amministrazione digitale e sistemi informativi geografici")
-	!= 0)
+    if (strcmp (str, "Peter N. Schweitzer") != 0)
       {
 	  fprintf (stderr, "GetContactPerson: unexpected result \"%s\"\n", str);
 	  return -144;
       }
     str = get_wms_contact_organization (catalog);
-    if (strcmp (str, "Regione Emilia-Romagna") != 0)
+    if (strcmp (str, "U.S. Geological Survey Mineral Resources Program") != 0)
       {
 	  fprintf (stderr, "GetContactOrganization: unexpected result \"%s\"\n",
 		   str);
 	  return -145;
       }
     str = get_wms_contact_position (catalog);
-    if (strcmp (str, "Centro Servizi per l'informazione geografica") != 0)
+    if (strcmp (str, "Geologist") != 0)
       {
 	  fprintf (stderr, "GetContactPosition: unexpected result \"%s\"\n",
 		   str);
 	  return -146;
       }
     str = get_wms_contact_postal_address (catalog);
-    if (strcmp (str, "Viale Aldo Moro, 52") != 0)
+    if (strcmp (str, "Mail Stop 954 USGS National Center") != 0)
       {
 	  fprintf (stderr,
 		   "GetContactPostalAddress: unexpected result \"%s\"\n", str);
 	  return -147;
       }
     str = get_wms_contact_city (catalog);
-    if (strcmp (str, "Bologna") != 0)
+    if (strcmp (str, "Reston") != 0)
       {
 	  fprintf (stderr, "GetContactCity: unexpected result \"%s\"\n", str);
 	  return -148;
       }
     str = get_wms_contact_state_province (catalog);
-    if (strcmp (str, "Emilia Romagna") != 0)
+    if (strcmp (str, "VA") != 0)
       {
 	  fprintf (stderr,
 		   "GetContactStateProvince: unexpected result \"%s\"\n", str);
 	  return -149;
       }
     str = get_wms_contact_post_code (catalog);
-    if (strcmp (str, "40100") != 0)
+    if (strcmp (str, "20192") != 0)
       {
 	  fprintf (stderr, "GetContactPostCode: unexpected result \"%s\"\n",
 		   str);
 	  return -150;
       }
     str = get_wms_contact_country (catalog);
-    if (strcmp (str, "Italy") != 0)
+    if (strcmp (str, "USA") != 0)
       {
 	  fprintf (stderr, "GetContactCountry: unexpected result \"%s\"\n",
 		   str);
 	  return -151;
       }
     str = get_wms_contact_voice_telephone (catalog);
-    if (strcmp (str, "+390515274483") != 0)
+    if (strcmp (str, "703-648-6533") != 0)
       {
 	  fprintf (stderr,
 		   "GetContactVoiceTelephone: unexpected result \"%s\"\n", str);
 	  return -152;
       }
     str = get_wms_contact_fax_telephone (catalog);
-    if (strcmp (str, "+390515274216") != 0)
+    if (strcmp (str, "703-648-6252") != 0)
       {
 	  fprintf (stderr, "GetContactFaxTelephone: unexpected result \"%s\"\n",
 		   str);
 	  return -153;
       }
     str = get_wms_contact_email_address (catalog);
-    if (strcmp (str, "gisadmins@regione.emilia-romagna.it") != 0)
+    if (strcmp (str, "pschweitzer@usgs.gov") != 0)
       {
 	  fprintf (stderr, "GetContactEMailAddress: unexpected result \"%s\"\n",
 		   str);
@@ -910,13 +893,13 @@ test_GetCapabilities_rer (rl2WmsCachePtr cache)
 	  return -157;
       }
     int_res = get_wms_max_width (catalog);
-    if (int_res != 3500)
+    if (int_res != -1)
       {
 	  fprintf (stderr, "GetMaxWidth: unexpected result %d\n", int_res);
 	  return -158;
       }
     int_res = get_wms_max_height (catalog);
-    if (int_res != 3500)
+    if (int_res != -1)
       {
 	  fprintf (stderr, "GetMaxHeight: unexpected result %d\n", int_res);
 	  return -159;
@@ -929,7 +912,7 @@ test_GetCapabilities_rer (rl2WmsCachePtr cache)
 	  return -160;
       }
     str = get_wms_format (catalog, 2, 0);
-    if (strcmp (str, "image/tiff") != 0)
+    if (strcmp (str, "image/gif") != 0)
       {
 	  fprintf (stderr, "GetWmsFormat: unexpected result \"%s\"\n", str);
 	  return -161;
@@ -1281,7 +1264,7 @@ main (int argc, char *argv[])
 	  return -85;
       }
     dblval = get_wms_total_download_size (cache);
-    if (dblval != 139874)
+    if (dblval != 21544)
       {
 	  fprintf (stderr, "GetWmsTotalDownloadSize: unexpected result %1.2f\n",
 		   dblval);

@@ -367,8 +367,8 @@ fnct_IsValidRasterTile (sqlite3_context * context, int argc,
     const unsigned char *blob_even;
     int blob_even_sz;
     const char *coverage;
-    unsigned short tile_width;
-    unsigned short tile_height;
+    unsigned int tile_width;
+    unsigned int tile_height;
     unsigned char sample_type = RL2_SAMPLE_UNKNOWN;
     unsigned char pixel_type = RL2_PIXEL_UNKNOWN;
     unsigned char num_bands = RL2_BANDS_UNKNOWN;
@@ -2094,6 +2094,46 @@ fnct_CreateCoverage (sqlite3_context * context, int argc, sqlite3_value ** argv)
 }
 
 static void
+fnct_SetCoverageInfos (sqlite3_context * context, int argc,
+		       sqlite3_value ** argv)
+{
+/* SQL function:
+/ SetCoverageInfos(String coverage_name, String title, 
+/		   String abstract)
+/
+/ inserts or updates the descriptive infos supporting a Raster Coverage
+/ returns 1 on success
+/ 0 on failure, -1 on invalid arguments
+*/
+    int ret;
+    const char *coverage_name;
+    const char *title = NULL;
+    const char *abstract = NULL;
+    sqlite3 *sqlite = sqlite3_context_db_handle (context);
+    RL2_UNUSED ();		/* LCOV_EXCL_LINE */
+    if (sqlite3_value_type (argv[0]) != SQLITE_TEXT)
+      {
+	  sqlite3_result_int (context, -1);
+	  return;
+      }
+    if (sqlite3_value_type (argv[1]) != SQLITE_TEXT)
+      {
+	  sqlite3_result_int (context, -1);
+	  return;
+      }
+    if (sqlite3_value_type (argv[2]) != SQLITE_TEXT)
+      {
+	  sqlite3_result_int (context, -1);
+	  return;
+      }
+    coverage_name = (const char *) sqlite3_value_text (argv[0]);
+    title = (const char *) sqlite3_value_text (argv[1]);
+    abstract = (const char *) sqlite3_value_text (argv[2]);
+    ret = set_coverage_infos (sqlite, coverage_name, title, abstract);
+    sqlite3_result_int (context, ret);
+}
+
+static void
 fnct_DeleteSection (sqlite3_context * context, int argc, sqlite3_value ** argv)
 {
 /* SQL function:
@@ -2705,8 +2745,8 @@ fnct_LoadRasterFromWMS (sqlite3_context * context, int argc,
     double y;
     double tilew;
     double tileh;
-    unsigned short tile_width;
-    unsigned short tile_height;
+    unsigned int tile_width;
+    unsigned int tile_height;
     WmsRetryListPtr retry_list = NULL;
     char *table;
     char *xtable;
@@ -2719,8 +2759,8 @@ fnct_LoadRasterFromWMS (sqlite3_context * context, int argc,
     int first = 1;
     double ext_x;
     double ext_y;
-    int width;
-    int height;
+    unsigned int width;
+    unsigned int height;
     sqlite3_int64 section_id;
     rl2PixelPtr no_data = NULL;
     unsigned char sample_type;
@@ -5091,6 +5131,7 @@ fnct_GetMapImage (sqlite3_context * context, int argc, sqlite3_value ** argv)
     rl2GraphicsBitmapPtr base_img = NULL;
     rl2GraphicsContextPtr ctx = NULL;
     rl2RasterStylePtr symbolizer = NULL;
+    int layerGroup = 0;
     rl2RasterStatisticsPtr stats = NULL;
     double opacity = 1.0;
     RL2_UNUSED ();		/* LCOV_EXCL_LINE */
@@ -5146,6 +5187,9 @@ fnct_GetMapImage (sqlite3_context * context, int argc, sqlite3_value ** argv)
 	goto error;
     if (height < 64 || height > 5000)
 	goto error;
+/* testing for a Layer Group */
+    layerGroup = rl2_test_layer_group (sqlite, cvg_name);
+    fprintf (stderr, "layerGroup=%d\n", layerGroup);
 /* validating the style */
     ok_style = 0;
     if (strcasecmp (style, "default") == 0)
@@ -6569,6 +6613,10 @@ register_rl2_sql_functions (void *p_db)
 			     fnct_DropCoverage, 0, 0);
     sqlite3_create_function (db, "RL2_DropCoverage", 2, SQLITE_ANY, 0,
 			     fnct_DropCoverage, 0, 0);
+    sqlite3_create_function (db, "SetCoverageInfos", 3, SQLITE_ANY, 0,
+			     fnct_SetCoverageInfos, 0, 0);
+    sqlite3_create_function (db, "RL2_SetCoverageInfos", 3, SQLITE_ANY, 0,
+			     fnct_SetCoverageInfos, 0, 0);
     sqlite3_create_function (db, "GetPaletteNumEntries", 1, SQLITE_ANY, 0,
 			     fnct_GetPaletteNumEntries, 0, 0);
     sqlite3_create_function (db, "RL2_GetPaletteNumEntries", 1, SQLITE_ANY, 0,

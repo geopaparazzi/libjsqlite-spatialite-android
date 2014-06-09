@@ -1136,8 +1136,8 @@ do_one_rgb_test (const unsigned char *rgb, const char *path, int tiled,
     rl2RasterPtr raster;
     int tile_size = 128;
     const char *xpath;
-    unsigned short xwidth;
-    unsigned short xheight;
+    unsigned int xwidth;
+    unsigned int xheight;
     unsigned char xsample_type;
     unsigned char xpixel_type;
     unsigned char alias_pixel_type;
@@ -1339,8 +1339,8 @@ check_origin (const char *path, const char *tfw_path, int srid, double minx,
     unsigned char xpixel_type;
     unsigned char alias_pixel_type;
     unsigned char xnum_bands;
-    unsigned short xwidth;
-    unsigned short xheight;
+    unsigned int xwidth;
+    unsigned int xheight;
     int xsrid;
     double minX;
     double minY;
@@ -1362,9 +1362,9 @@ check_origin (const char *path, const char *tfw_path, int srid, double minx,
     float vflt;
     double vdbl;
     int is_tiled;
-    unsigned short tileWidth;
-    unsigned short tileHeight;
-    unsigned short rowsPerStrip;
+    unsigned int tileWidth;
+    unsigned int tileHeight;
+    unsigned int rowsPerStrip;
 
     if (pixel_type == RL2_PIXEL_RGB)
 	num_bands = 3;
@@ -1897,9 +1897,9 @@ do_one_rgb_test_geotiff1 (const unsigned char *rgb, sqlite3 * handle,
     int is_tfw;
     const char *tfw_path;
     int is_tiled;
-    unsigned short tileWidth;
-    unsigned short tileHeight;
-    unsigned short rowsPerStrip;
+    unsigned int tileWidth;
+    unsigned int tileHeight;
+    unsigned int rowsPerStrip;
     if (tiled == 0)
 	tile_size = 1;
 
@@ -5398,16 +5398,16 @@ test_null (sqlite3 * handle)
 /* testing null/invalid arguments */
     rl2TiffDestinationPtr destination;
     rl2PalettePtr palette;
-    unsigned short width;
-    unsigned short height;
+    unsigned int width;
+    unsigned int height;
     unsigned char sample_type;
     unsigned char pixel_type;
     unsigned char alias_pixel_type;
     unsigned char num_bands;
     unsigned char compression;
-    unsigned short tile_width;
-    unsigned short tile_height;
-    unsigned short strip_size;
+    unsigned int tile_width;
+    unsigned int tile_height;
+    unsigned int strip_size;
     int is_tiled;
     int srid;
     double minX;

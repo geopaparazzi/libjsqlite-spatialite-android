@@ -103,7 +103,7 @@ writeGif (GifFileType * gif, const GifByteType * buf, int len)
 static void
 print_gif_error (int ErrorCode)
 {
-    char *Err = NULL;
+    const char *Err = NULL;
 #ifdef GIFLIB_MAJOR
     Err = GifErrorString (ErrorCode);
 #endif
@@ -208,7 +208,7 @@ compress_gif (rl2RasterPtr rst, unsigned char **gif, int *gif_size)
 
 RL2_PRIVATE int
 rl2_data_to_gif (const unsigned char *pixels, rl2PalettePtr plt,
-		 unsigned short width, unsigned short height,
+		 unsigned int width, unsigned int height,
 		 unsigned char sample_type, unsigned char pixel_type,
 		 unsigned char **gif, int *gif_size)
 {
@@ -221,8 +221,8 @@ rl2_data_to_gif (const unsigned char *pixels, rl2PalettePtr plt,
 #endif
     ColorMapObject *ColorMap = NULL;
     int i;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     const unsigned char *p_data;
     rl2PrivPalettePtr palette = (rl2PrivPalettePtr) plt;
     int max_palette;
@@ -564,12 +564,12 @@ rl2_section_from_gif (const char *path)
 }
 
 RL2_DECLARE rl2RasterPtr
-rl2_raster_from_gif (unsigned char *gif, int gif_size)
+rl2_raster_from_gif (const unsigned char *gif, int gif_size)
 {
 /* attempting to create a raster from a GIF image */
     rl2RasterPtr rst = NULL;
-    unsigned short width;
-    unsigned short height;
+    unsigned int width;
+    unsigned int height;
     unsigned char sample_type;
     unsigned char pixel_type;
     unsigned char *data = NULL;
@@ -596,8 +596,8 @@ rl2_raster_from_gif (unsigned char *gif, int gif_size)
 }
 
 RL2_PRIVATE int
-rl2_decode_gif (const unsigned char *gif, int gif_size, unsigned short *xwidth,
-		unsigned short *xheight, unsigned char *xsample_type,
+rl2_decode_gif (const unsigned char *gif, int gif_size, unsigned int *xwidth,
+		unsigned int *xheight, unsigned char *xsample_type,
 		unsigned char *xpixel_type, unsigned char **blob, int *blob_sz,
 		rl2PalettePtr * palette)
 {
@@ -612,8 +612,8 @@ rl2_decode_gif (const unsigned char *gif, int gif_size, unsigned short *xwidth,
     GifByteType *Extension;
     ColorMapObject *ColorMap;
     int ExtCode;
-    int width;
-    int height;
+    unsigned int width;
+    unsigned int height;
     int row;
     int col;
     int i;

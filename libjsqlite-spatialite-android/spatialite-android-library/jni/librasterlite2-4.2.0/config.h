@@ -144,7 +144,7 @@
 #define STDC_HEADERS 1
 
 /* Should contain a text-string describing the intended target CPU */
-/* #define TARGET_CPU "x86_64-linux-gnu" */
+#define TARGET_CPU "x86_64-linux-gnu"
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #define TIME_WITH_SYS_TIME 1
@@ -153,7 +153,7 @@
 /* #undef TM_IN_SYS_TIME */
 
 /* Version number of package */
-/* #define VERSION "0.8" */
+#define VERSION "0.8"
 
 /* Must be =64 in order to enable huge-file support. */
 #define _FILE_OFFSET_BITS 64

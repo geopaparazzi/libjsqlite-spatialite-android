@@ -52,9 +52,9 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #include "spatialite.h"
 
 int
-do_test_without_rowid (sqlite3 * handle)
+do_test_without_rowid_true (sqlite3 * handle)
 {
-/* testing WITHOUT ROWID */
+/* testing WITHOUT ROWID - true */
     char *err_msg = NULL;
     char **results;
     int rows;
@@ -196,21 +196,108 @@ do_test_without_rowid (sqlite3 * handle)
       }
     sqlite3_free_table (results);
     return 0;
+}
 
-/*
-    ret =
-	sqlite3_exec (handle,
-		      "SELECT RecoverGeometryColumn(1, 'geom', 23032, 'MULTIPOLYGON', 'XY')",
-		      NULL, NULL, &err_msg);
+int
+do_test_without_rowid_false (sqlite3 * handle)
+{
+/* testing WITHOUT ROWID - false */
+    char *err_msg = NULL;
+    char **results;
+    int rows;
+    int columns;
+    int ret = sqlite3_exec (handle,
+			    "CREATE TABLE not_without_rowid ("
+			    "id INTEGER NOT NULL PRIMARY KEY,"
+			    "name TEXT NOT NULL)",
+			    NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
-	  fprintf (stderr, "RecoverGeometryColumn(bad_councils) error: %s\n",
+	  fprintf (stderr, "CREATE TABLE not_without_rowid error: %s\n",
 		   err_msg);
 	  sqlite3_free (err_msg);
-	  return -54;
+	  return -327;
       }
-    return -113;
-    */
+    ret = sqlite3_exec (handle,
+			"CREATE INDEX idx_NAME on NOT_WITHOUT_ROWID(NAME)",
+			NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr, "CREATE TABLE not_without_rowid error: %s\n",
+		   err_msg);
+	  sqlite3_free (err_msg);
+	  return -328;
+      }
+    ret =
+	sqlite3_get_table (handle,
+			   "SELECT AddGeometryColumn('NOT_WITHOUT_ROWID', 'geom', 4326, 'POINT', 'XY')",
+			   &results, &rows, &columns, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr, "AddGeometryColumn(NOT_WITHOUT_ROWID) error: %s\n",
+		   err_msg);
+	  sqlite3_free (err_msg);
+	  return -329;
+      }
+    if ((rows != 1) || (columns != 1))
+      {
+	  fprintf (stderr,
+		   "Unexpected error: AddGeometryColumn(NOT_WITHOUT_ROWID) bad result: %i/%i.\n",
+		   rows, columns);
+	  sqlite3_free_table (results);
+	  return -330;
+      }
+    if (strcmp (results[1], "0") != 1)
+      {
+	  fprintf (stderr,
+		   "unexpected result AddGeometryColumn(NOT_WITHOUT_ROWID): %s\n",
+		   results[1]);
+	  sqlite3_free_table (results);
+	  return -331;
+      }
+    sqlite3_free_table (results);
+
+
+    ret = sqlite3_exec (handle,
+			"ALTER TABLE NOT_WITHOUT_ROWID ADD COLUMN geom2 BLOB",
+			NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr, "ALTER TABLE NOT_WITHOUT_ROWID error: %s\n",
+		   err_msg);
+	  sqlite3_free (err_msg);
+	  return -332;
+      }
+    ret =
+	sqlite3_get_table (handle,
+			   "SELECT RecoverGeometryColumn('NOT_WITHOUT_ROWID', 'geom2', 4326, 'POINT', 'XY')",
+			   &results, &rows, &columns, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr,
+		   "RecoverGeometryColumn(NOT_WITHOUT_ROWID) error: %s\n",
+		   err_msg);
+	  sqlite3_free (err_msg);
+	  return -333;
+      }
+    if ((rows != 1) || (columns != 1))
+      {
+	  fprintf (stderr,
+		   "Unexpected error: RecoverGeometryColumn(NOT_WITHOUT_ROWID) bad result: %i/%i.\n",
+		   rows, columns);
+	  sqlite3_free_table (results);
+	  return -319;
+      }
+    if (strcmp (results[1], "0") != 1)
+      {
+	  fprintf (stderr,
+		   "unexpected result RecoverGeometryColumn(NOT_WITHOUT_ROWID): %s\n",
+		   results[1]);
+	  sqlite3_free_table (results);
+	  return -334;
+      }
+    sqlite3_free_table (results);
+    return 0;
 }
 
 int
@@ -1537,13 +1624,20 @@ main (int argc, char *argv[])
     if (strcmp (sqlite3_libversion (), "3.8.2") >= 0)
       {
 	  /* testing WITHOUT ROWID (requires SQLIte 3.8.2 or later) */
-	  ret = do_test_without_rowid (handle);
+	  ret = do_test_without_rowid_true (handle);
 	  if (ret != 0)
 	    {
 		fprintf (stderr,
-			 "error while testing current style metadata layout (WITHOUT ROWID)\n");
+			 "error while testing current style metadata layout (WITHOUT ROWID / true)\n");
 		return ret;
 	    }
+      }
+    ret = do_test_without_rowid_false (handle);
+    if (ret != 0)
+      {
+	  fprintf (stderr,
+		   "error while testing current style metadata layout (WITHOUT ROWID / false)\n");
+	  return ret;
       }
 
     ret = sqlite3_close (handle);
@@ -1590,13 +1684,20 @@ main (int argc, char *argv[])
     if (strcmp (sqlite3_libversion (), "3.8.2") >= 0)
       {
 	  /* testing WITHOUT ROWID (requires SQLIte 3.8.2 or later) */
-	  ret = do_test_without_rowid (handle);
+	  ret = do_test_without_rowid_true (handle);
 	  if (ret != 0)
 	    {
 		fprintf (stderr,
-			 "error while testing legacy style metadata layout (WITHOUT ROWID)\n");
+			 "error while testing legacy style metadata layout (WITHOUT ROWID / true)\n");
 		return ret;
 	    }
+      }
+    ret = do_test_without_rowid_false (handle);
+    if (ret != 0)
+      {
+	  fprintf (stderr,
+		   "error while testing current style metadata layout (WITHOUT ROWID / false)\n");
+	  return ret;
       }
 
     ret = sqlite3_close (handle);

@@ -1744,6 +1744,21 @@ drop_coverage (sqlite3 * sqlite, unsigned char compression, int tile_sz,
 	  break;
       };
 
+/* setting a Title and Abstract for this DBMS Coverage */
+    sql =
+	sqlite3_mprintf ("SELECT RL2_SetCoverageInfos(%Q, %Q, %Q)", coverage,
+			 "this is a tile", "this is an abstact");
+    ret = execute_check (sqlite, sql);
+    sqlite3_free (sql);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr, "SetCoverageInfos \"%s\" error: %s\n", coverage,
+		   err_msg);
+	  sqlite3_free (err_msg);
+	  *retcode += -1;
+	  return 0;
+      }
+
 /* dropping the DBMS Coverage */
     sql = sqlite3_mprintf ("SELECT RL2_DropCoverage(%Q, 1)", coverage);
     ret = execute_check (sqlite, sql);

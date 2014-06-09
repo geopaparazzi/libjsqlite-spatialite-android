@@ -383,7 +383,7 @@ rl2_section_from_webp (const char *path)
 }
 
 RL2_DECLARE rl2RasterPtr
-rl2_raster_from_webp (unsigned char *webp, int webp_size)
+rl2_raster_from_webp (const unsigned char *webp, int webp_size)
 {
 /* attempting to create a raster from a WebP image */
     rl2RasterPtr rst = NULL;
@@ -391,8 +391,8 @@ rl2_raster_from_webp (unsigned char *webp, int webp_size)
     int buf_size;
     unsigned char *mask;
     int mask_size;
-    unsigned short width;
-    unsigned short height;
+    unsigned int width;
+    unsigned int height;
 
     if (rl2_decode_webp_scaled
 	(1, webp, webp_size, &width, &height, RL2_PIXEL_RGB, &buf, &buf_size,
@@ -414,7 +414,7 @@ rl2_raster_from_webp (unsigned char *webp, int webp_size)
 
 RL2_PRIVATE int
 rl2_decode_webp_scaled (int scale, const unsigned char *webp, int webp_size,
-			unsigned short *xwidth, unsigned short *xheight,
+			unsigned int *xwidth, unsigned int *xheight,
 			unsigned char pixel_type, unsigned char **pixels,
 			int *pixels_size, unsigned char **xmask,
 			int *xmask_size)
@@ -427,10 +427,10 @@ rl2_decode_webp_scaled (int scale, const unsigned char *webp, int webp_size,
     unsigned char *p_in;
     unsigned char *p_out;
     unsigned char *p_mask;
-    int width;
-    int height;
-    int row;
-    int col;
+    unsigned int width;
+    unsigned int height;
+    unsigned int row;
+    unsigned int col;
     WebPBitstreamFeatures features;
     WebPDecoderConfig config;
 

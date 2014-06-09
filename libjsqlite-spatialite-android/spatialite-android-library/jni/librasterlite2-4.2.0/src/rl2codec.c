@@ -979,8 +979,8 @@ pack_rle_rows (rl2PrivRasterPtr raster, unsigned char *in,
     unsigned char *p_in = in;
     unsigned char *rle;
     unsigned char *p_out;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
 
     for (row = 0; row < raster->height; row++)
       {
@@ -1153,8 +1153,8 @@ pack_1bit_rows (rl2PrivRasterPtr raster, unsigned char *in, int *xrow_stride,
     int row_stride = 0;
     unsigned char *pix_buf = NULL;
     int pix_size;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     int cnt = 0;
     unsigned char *p_in = in;
 
@@ -1247,8 +1247,8 @@ pack_2bit_rows (rl2PrivRasterPtr raster, int *xrow_stride,
     int row_stride = 0;
     unsigned char *pix_buf = NULL;
     int pix_size;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     int cnt = 0;
     unsigned char *p_in = raster->rasterBuffer;
 
@@ -1365,8 +1365,8 @@ pack_4bit_rows (rl2PrivRasterPtr raster, int *xrow_stride,
     int row_stride = 0;
     unsigned char *pix_buf = NULL;
     int pix_size;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     int cnt = 0;
     unsigned char *p_in = raster->rasterBuffer;
 
@@ -1520,15 +1520,15 @@ pack_4bit_rows (rl2PrivRasterPtr raster, int *xrow_stride,
 }
 
 static void
-feed_odd_even_int8 (void *in, int width, int height, int bands, void *pix_odd,
-		    void *pix_even)
+feed_odd_even_int8 (void *in, unsigned int width, unsigned int height,
+		    int bands, void *pix_odd, void *pix_even)
 {
 /* feeding Odd/Even pixel buffers - INT8 */
     char *p_in;
     char *p_odd = pix_odd;
     char *p_even = pix_even;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
 
     p_in = in;
     for (row = 0; row < height; row += 2)
@@ -1548,15 +1548,15 @@ feed_odd_even_int8 (void *in, int width, int height, int bands, void *pix_odd,
 }
 
 static void
-feed_odd_even_uint8 (void *in, int width, int height, int bands, void *pix_odd,
-		     void *pix_even)
+feed_odd_even_uint8 (void *in, unsigned int width, unsigned int height,
+		     int bands, void *pix_odd, void *pix_even)
 {
 /* feeding Odd/Even pixel buffers - UINT8 */
     unsigned char *p_in;
     unsigned char *p_odd = pix_odd;
     unsigned char *p_even = pix_even;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
 
     p_in = in;
     for (row = 0; row < height; row += 2)
@@ -1576,15 +1576,15 @@ feed_odd_even_uint8 (void *in, int width, int height, int bands, void *pix_odd,
 }
 
 static void
-feed_odd_even_int16 (void *in, int width, int height, int bands, void *pix_odd,
-		     void *pix_even, int swap)
+feed_odd_even_int16 (void *in, unsigned int width, unsigned int height,
+		     int bands, void *pix_odd, void *pix_even, int swap)
 {
 /* feeding Odd/Even pixel buffers - INT16 */
     short *p_in;
     short *p_odd = pix_odd;
     short *p_even = pix_even;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
 
     p_in = in;
     for (row = 0; row < height; row += 2)
@@ -1614,15 +1614,15 @@ feed_odd_even_int16 (void *in, int width, int height, int bands, void *pix_odd,
 }
 
 static void
-feed_odd_even_uint16 (void *in, int width, int height, int bands, void *pix_odd,
-		      void *pix_even, int swap)
+feed_odd_even_uint16 (void *in, unsigned int width, unsigned int height,
+		      int bands, void *pix_odd, void *pix_even, int swap)
 {
 /* feeding Odd/Even pixel buffers - UINT16 */
     unsigned short *p_in;
     unsigned short *p_odd = pix_odd;
     unsigned short *p_even = pix_even;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
 
     p_in = in;
     for (row = 0; row < height; row += 2)
@@ -1652,15 +1652,15 @@ feed_odd_even_uint16 (void *in, int width, int height, int bands, void *pix_odd,
 }
 
 static void
-feed_odd_even_int32 (void *in, int width, int height, int bands, void *pix_odd,
-		     void *pix_even, int swap)
+feed_odd_even_int32 (void *in, unsigned int width, unsigned int height,
+		     int bands, void *pix_odd, void *pix_even, int swap)
 {
 /* feeding Odd/Even pixel buffers - INT32 */
     int *p_in;
     int *p_odd = pix_odd;
     int *p_even = pix_even;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
 
     p_in = in;
     for (row = 0; row < height; row += 2)
@@ -1690,15 +1690,15 @@ feed_odd_even_int32 (void *in, int width, int height, int bands, void *pix_odd,
 }
 
 static void
-feed_odd_even_uint32 (void *in, int width, int height, int bands, void *pix_odd,
-		      void *pix_even, int swap)
+feed_odd_even_uint32 (void *in, unsigned int width, unsigned int height,
+		      int bands, void *pix_odd, void *pix_even, int swap)
 {
 /* feeding Odd/Even pixel buffers - UINT32 */
     unsigned int *p_in;
     unsigned int *p_odd = pix_odd;
     unsigned int *p_even = pix_even;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
 
     p_in = in;
     for (row = 0; row < height; row += 2)
@@ -1728,15 +1728,15 @@ feed_odd_even_uint32 (void *in, int width, int height, int bands, void *pix_odd,
 }
 
 static void
-feed_odd_even_float (void *in, int width, int height, int bands, void *pix_odd,
-		     void *pix_even, int swap)
+feed_odd_even_float (void *in, unsigned int width, unsigned int height,
+		     int bands, void *pix_odd, void *pix_even, int swap)
 {
 /* feeding Odd/Even pixel buffers - FLOAT */
     float *p_in;
     float *p_odd = pix_odd;
     float *p_even = pix_even;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
 
     p_in = in;
     for (row = 0; row < height; row += 2)
@@ -1766,15 +1766,15 @@ feed_odd_even_float (void *in, int width, int height, int bands, void *pix_odd,
 }
 
 static void
-feed_odd_even_double (void *in, int width, int height, int bands, void *pix_odd,
-		      void *pix_even, int swap)
+feed_odd_even_double (void *in, unsigned int width, unsigned int height,
+		      int bands, void *pix_odd, void *pix_even, int swap)
 {
 /* feeding Odd/Even pixel buffers - DOUBLE */
     double *p_in;
     double *p_odd = pix_odd;
     double *p_even = pix_even;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
 
     p_in = in;
     for (row = 0; row < height; row += 2)
@@ -1818,7 +1818,7 @@ odd_even_rows (rl2PrivRasterPtr raster, int *odd_rows, int *row_stride_odd,
     unsigned char *pix_even = NULL;
     int o_size;
     int e_size;
-    int row;
+    unsigned int row;
     int pix_size;
     int swap = 0;
     if (little_endian != endianArch ())
@@ -2514,8 +2514,8 @@ rl2_raster_encode (rl2RasterPtr rst, int compression, unsigned char **blob_odd,
 }
 
 static int
-check_blob_odd (const unsigned char *blob, int blob_sz, unsigned short *xwidth,
-		unsigned short *xheight, unsigned char *xsample_type,
+check_blob_odd (const unsigned char *blob, int blob_sz, unsigned int *xwidth,
+		unsigned int *xheight, unsigned char *xsample_type,
 		unsigned char *xpixel_type, unsigned char *xnum_bands,
 		unsigned char *xcompression, uLong * xcrc)
 {
@@ -2755,12 +2755,12 @@ check_scale (int scale, unsigned char sample_type, unsigned char compression,
 }
 
 static void
-do_copy2_int8 (const char *p_odd, char *buf, unsigned short width,
-	       unsigned short odd_rows)
+do_copy2_int8 (const char *p_odd, char *buf, unsigned int width,
+	       unsigned int odd_rows)
 {
 /* reassembling an INT8 raster - scale 1:2 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     char *p_out;
 
     p_out = buf;
@@ -2774,12 +2774,12 @@ do_copy2_int8 (const char *p_odd, char *buf, unsigned short width,
 
 static void
 do_copy2_uint8 (const unsigned char *p_odd, unsigned char *buf,
-		unsigned short width, unsigned short odd_rows,
+		unsigned int width, unsigned int odd_rows,
 		unsigned char num_bands)
 {
 /* reassembling a UINT8 raster - scale 1:2 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     int band;
     unsigned char *p_out;
 
@@ -2796,12 +2796,12 @@ do_copy2_uint8 (const unsigned char *p_odd, unsigned char *buf,
 }
 
 static void
-do_copy2_int16 (int swap, const short *p_odd, short *buf, unsigned short width,
-		unsigned short odd_rows)
+do_copy2_int16 (int swap, const short *p_odd, short *buf, unsigned int width,
+		unsigned int odd_rows)
 {
 /* reassembling an INT16 raster - scale 1:2 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     short *p_out;
 
     p_out = buf;
@@ -2820,12 +2820,12 @@ do_copy2_int16 (int swap, const short *p_odd, short *buf, unsigned short width,
 
 static void
 do_copy2_uint16 (int swap, const unsigned short *p_odd, unsigned short *buf,
-		 unsigned short width, unsigned short odd_rows,
+		 unsigned int width, unsigned int odd_rows,
 		 unsigned char num_bands)
 {
 /* reassembling a UINT16 raster - scale 1:2 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     int band;
     unsigned short *p_out;
 
@@ -2847,12 +2847,12 @@ do_copy2_uint16 (int swap, const unsigned short *p_odd, unsigned short *buf,
 }
 
 static void
-do_copy2_int32 (int swap, const int *p_odd, int *buf, unsigned short width,
-		unsigned short odd_rows)
+do_copy2_int32 (int swap, const int *p_odd, int *buf, unsigned int width,
+		unsigned int odd_rows)
 {
 /* reassembling an INT32 raster - scale 1:2 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     int *p_out;
 
     p_out = buf;
@@ -2871,11 +2871,11 @@ do_copy2_int32 (int swap, const int *p_odd, int *buf, unsigned short width,
 
 static void
 do_copy2_uint32 (int swap, const unsigned int *p_odd, unsigned int *buf,
-		 unsigned short width, unsigned short odd_rows)
+		 unsigned int width, unsigned int odd_rows)
 {
 /* reassembling an UINT32 raster - scale 1:2 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     unsigned int *p_out;
 
     p_out = buf;
@@ -2893,12 +2893,12 @@ do_copy2_uint32 (int swap, const unsigned int *p_odd, unsigned int *buf,
 }
 
 static void
-do_copy2_float (int swap, const float *p_odd, float *buf, unsigned short width,
-		unsigned short odd_rows)
+do_copy2_float (int swap, const float *p_odd, float *buf, unsigned int width,
+		unsigned int odd_rows)
 {
 /* reassembling a FLOAT raster - scale 1:2 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     float *p_out;
 
     p_out = buf;
@@ -2917,11 +2917,11 @@ do_copy2_float (int swap, const float *p_odd, float *buf, unsigned short width,
 
 static void
 do_copy2_double (int swap, const double *p_odd, double *buf,
-		 unsigned short width, unsigned short odd_rows)
+		 unsigned int width, unsigned int odd_rows)
 {
 /* reassembling a FLOAT raster - scale 1:2 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     double *p_out;
 
     p_out = buf;
@@ -2939,16 +2939,16 @@ do_copy2_double (int swap, const double *p_odd, double *buf,
 }
 
 static int
-build_pixel_buffer_2 (int swap, unsigned short *xwidth, unsigned short *xheight,
+build_pixel_buffer_2 (int swap, unsigned int *xwidth, unsigned int *xheight,
 		      unsigned char sample_type, unsigned char pixel_size,
 		      unsigned char num_bands, unsigned short odd_rows,
 		      const void *pixels_odd, void **pixels, int *pixels_sz)
 {
 /* decoding the raster - scale 1:2 */
-    unsigned short width = 0;
-    unsigned short height = 0;
-    int row;
-    int col;
+    unsigned int width = 0;
+    unsigned int height = 0;
+    unsigned int row;
+    unsigned int col;
     void *buf;
     int buf_size;
 
@@ -2998,12 +2998,12 @@ build_pixel_buffer_2 (int swap, unsigned short *xwidth, unsigned short *xheight,
 }
 
 static void
-do_copy4_int8 (const char *p_odd, char *buf, unsigned short width,
-	       unsigned short odd_rows)
+do_copy4_int8 (const char *p_odd, char *buf, unsigned int width,
+	       unsigned int odd_rows)
 {
 /* reassembling an INT8 raster - scale 1:4 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     char *p_out;
 
     p_out = buf;
@@ -3020,12 +3020,12 @@ do_copy4_int8 (const char *p_odd, char *buf, unsigned short width,
 
 static void
 do_copy4_uint8 (const unsigned char *p_odd, unsigned char *buf,
-		unsigned short width, unsigned short odd_rows,
+		unsigned int width, unsigned int odd_rows,
 		unsigned char num_bands)
 {
 /* reassembling a UINT8 raster - scale 1:4 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     int band;
     unsigned char *p_out;
 
@@ -3043,12 +3043,12 @@ do_copy4_uint8 (const unsigned char *p_odd, unsigned char *buf,
 }
 
 static void
-do_copy4_int16 (int swap, const short *p_odd, short *buf, unsigned short width,
-		unsigned short odd_rows)
+do_copy4_int16 (int swap, const short *p_odd, short *buf, unsigned int width,
+		unsigned int odd_rows)
 {
 /* reassembling an INT16 raster - scale 1:4 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     short *p_out;
 
     p_out = buf;
@@ -3068,12 +3068,12 @@ do_copy4_int16 (int swap, const short *p_odd, short *buf, unsigned short width,
 
 static void
 do_copy4_uint16 (int swap, const unsigned short *p_odd, unsigned short *buf,
-		 unsigned short width, unsigned short odd_rows,
+		 unsigned int width, unsigned int odd_rows,
 		 unsigned char num_bands)
 {
 /* reassembling a UINT16 raster - scale 1:4 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     int band;
     unsigned short *p_out;
 
@@ -3096,12 +3096,12 @@ do_copy4_uint16 (int swap, const unsigned short *p_odd, unsigned short *buf,
 }
 
 static void
-do_copy4_int32 (int swap, const int *p_odd, int *buf, unsigned short width,
-		unsigned short odd_rows)
+do_copy4_int32 (int swap, const int *p_odd, int *buf, unsigned int width,
+		unsigned int odd_rows)
 {
 /* reassembling an INT32 raster - scale 1:4 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     int *p_out;
 
     p_out = buf;
@@ -3121,11 +3121,11 @@ do_copy4_int32 (int swap, const int *p_odd, int *buf, unsigned short width,
 
 static void
 do_copy4_uint32 (int swap, const unsigned int *p_odd, unsigned int *buf,
-		 unsigned short width, unsigned short odd_rows)
+		 unsigned int width, unsigned int odd_rows)
 {
 /* reassembling an UINT32 raster - scale 1:4 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     unsigned int *p_out;
 
     p_out = buf;
@@ -3144,12 +3144,12 @@ do_copy4_uint32 (int swap, const unsigned int *p_odd, unsigned int *buf,
 }
 
 static void
-do_copy4_float (int swap, const float *p_odd, float *buf, unsigned short width,
-		unsigned short odd_rows)
+do_copy4_float (int swap, const float *p_odd, float *buf, unsigned int width,
+		unsigned int odd_rows)
 {
 /* reassembling a FLOAT raster - scale 1:4 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     float *p_out;
 
     p_out = buf;
@@ -3169,11 +3169,11 @@ do_copy4_float (int swap, const float *p_odd, float *buf, unsigned short width,
 
 static void
 do_copy4_double (int swap, const double *p_odd, double *buf,
-		 unsigned short width, unsigned short odd_rows)
+		 unsigned int width, unsigned int odd_rows)
 {
 /* reassembling a DOUBLE raster - scale 1:4 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     double *p_out;
 
     p_out = buf;
@@ -3192,16 +3192,16 @@ do_copy4_double (int swap, const double *p_odd, double *buf,
 }
 
 static int
-build_pixel_buffer_4 (int swap, unsigned short *xwidth, unsigned short *xheight,
+build_pixel_buffer_4 (int swap, unsigned int *xwidth, unsigned int *xheight,
 		      unsigned char sample_type, unsigned char pixel_size,
-		      unsigned char num_bands, unsigned short odd_rows,
+		      unsigned char num_bands, unsigned int odd_rows,
 		      const void *pixels_odd, void **pixels, int *pixels_sz)
 {
 /* decoding the raster - scale 1:4 */
     unsigned short width = 0;
     unsigned short height = 0;
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     void *buf;
     int buf_size;
 
@@ -3251,12 +3251,12 @@ build_pixel_buffer_4 (int swap, unsigned short *xwidth, unsigned short *xheight,
 }
 
 static void
-do_copy8_int8 (const char *p_odd, char *buf, unsigned short width,
-	       unsigned short odd_rows)
+do_copy8_int8 (const char *p_odd, char *buf, unsigned int width,
+	       unsigned int odd_rows)
 {
 /* reassembling an INT8 raster - scale 1:8 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     char *p_out;
 
     p_out = buf;
@@ -3273,12 +3273,12 @@ do_copy8_int8 (const char *p_odd, char *buf, unsigned short width,
 
 static void
 do_copy8_uint8 (const unsigned char *p_odd, unsigned char *buf,
-		unsigned short width, unsigned short odd_rows,
+		unsigned int width, unsigned int odd_rows,
 		unsigned char num_bands)
 {
 /* reassembling a UINT8 raster - scale 1:8 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     int band;
     unsigned char *p_out;
 
@@ -3296,12 +3296,12 @@ do_copy8_uint8 (const unsigned char *p_odd, unsigned char *buf,
 }
 
 static void
-do_copy8_int16 (int swap, const short *p_odd, short *buf, unsigned short width,
-		unsigned short odd_rows)
+do_copy8_int16 (int swap, const short *p_odd, short *buf, unsigned int width,
+		unsigned int odd_rows)
 {
 /* reassembling an INT16 raster - scale 1:8 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     short *p_out;
 
     p_out = buf;
@@ -3321,12 +3321,12 @@ do_copy8_int16 (int swap, const short *p_odd, short *buf, unsigned short width,
 
 static void
 do_copy8_uint16 (int swap, const unsigned short *p_odd, unsigned short *buf,
-		 unsigned short width, unsigned short odd_rows,
+		 unsigned int width, unsigned int odd_rows,
 		 unsigned char num_bands)
 {
 /* reassembling a UINT16 raster - scale 1:8 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     int band;
     unsigned short *p_out;
 
@@ -3349,12 +3349,12 @@ do_copy8_uint16 (int swap, const unsigned short *p_odd, unsigned short *buf,
 }
 
 static void
-do_copy8_int32 (int swap, const int *p_odd, int *buf, unsigned short width,
-		unsigned short odd_rows)
+do_copy8_int32 (int swap, const int *p_odd, int *buf, unsigned int width,
+		unsigned int odd_rows)
 {
 /* reassembling an INT32 raster - scale 1:8 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     int *p_out;
 
     p_out = buf;
@@ -3397,12 +3397,12 @@ do_copy8_uint32 (int swap, const unsigned int *p_odd, unsigned int *buf,
 }
 
 static void
-do_copy8_float (int swap, const float *p_odd, float *buf, unsigned short width,
-		unsigned short odd_rows)
+do_copy8_float (int swap, const float *p_odd, float *buf, unsigned int width,
+		unsigned int odd_rows)
 {
 /* reassembling a FLOAT raster - scale 1:8 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     float *p_out;
 
     p_out = buf;
@@ -3422,11 +3422,11 @@ do_copy8_float (int swap, const float *p_odd, float *buf, unsigned short width,
 
 static void
 do_copy8_double (int swap, const double *p_odd, double *buf,
-		 unsigned short width, unsigned short odd_rows)
+		 unsigned int width, unsigned int odd_rows)
 {
 /* reassembling a DOUBLE raster - scale 1:8 */
-    int row;
-    int col;
+    unsigned int row;
+    unsigned int col;
     double *p_out;
 
     p_out = buf;
@@ -3445,16 +3445,16 @@ do_copy8_double (int swap, const double *p_odd, double *buf,
 }
 
 static int
-build_pixel_buffer_8 (int swap, unsigned short *xwidth, unsigned short *xheight,
+build_pixel_buffer_8 (int swap, unsigned int *xwidth, unsigned int *xheight,
 		      unsigned char sample_type, unsigned char pixel_size,
 		      unsigned char num_bands, unsigned short odd_rows,
 		      const void *pixels_odd, void **pixels, int *pixels_sz)
 {
 /* decoding the raster - scale 1:8 */
-    unsigned short width = 0;
-    unsigned short height = 0;
-    int row;
-    int col;
+    unsigned int width = 0;
+    unsigned int height = 0;
+    unsigned int row;
+    unsigned int col;
     void *buf;
     int buf_size;
 
@@ -3812,15 +3812,15 @@ do_copy_double (int swap, const double *p_odd, const double *p_even,
 }
 
 static int
-build_pixel_buffer (int swap, int scale, unsigned short *xwidth,
-		    unsigned short *xheight, unsigned char sample_type,
+build_pixel_buffer (int swap, int scale, unsigned int *xwidth,
+		    unsigned int *xheight, unsigned char sample_type,
 		    unsigned char num_bands, unsigned short odd_rows,
 		    const void *pixels_odd, unsigned short even_rows,
 		    const void *pixels_even, void **pixels, int *pixels_sz)
 {
 /* decoding the raster */
-    unsigned short width = *xwidth;
-    unsigned short height = *xheight;
+    unsigned int width = *xwidth;
+    unsigned int height = *xheight;
     void *buf;
     int buf_size;
     unsigned char pixel_size;
@@ -4380,8 +4380,8 @@ unpack_4bit (unsigned short width, unsigned short height,
 }
 
 RL2_DECLARE int
-rl2_is_valid_dbms_raster_tile (unsigned short level, unsigned short tile_width,
-			       unsigned short tile_height,
+rl2_is_valid_dbms_raster_tile (unsigned short level, unsigned int tile_width,
+			       unsigned int tile_height,
 			       const unsigned char *blob_odd, int blob_odd_sz,
 			       const unsigned char *blob_even, int blob_even_sz,
 			       unsigned char sample_type,
@@ -4390,8 +4390,8 @@ rl2_is_valid_dbms_raster_tile (unsigned short level, unsigned short tile_width,
 			       unsigned char compression)
 {
 /* testing a serialized Raster Tile object for validity */
-    unsigned short width;
-    unsigned short height;
+    unsigned int width;
+    unsigned int height;
     unsigned char xsample_type;
     unsigned char xpixel_type;
     unsigned char xnum_bands;
@@ -4488,8 +4488,8 @@ rl2_raster_decode (int scale, const unsigned char *blob_odd,
     rl2RasterPtr raster;
     rl2PalettePtr palette = NULL;
     rl2PalettePtr palette2 = NULL;
-    unsigned short width;
-    unsigned short height;
+    unsigned int width;
+    unsigned int height;
     unsigned short mask_width;
     unsigned short mask_height;
     unsigned char sample_type;
@@ -4497,8 +4497,8 @@ rl2_raster_decode (int scale, const unsigned char *blob_odd,
     unsigned char num_bands;
     unsigned char compression;
     unsigned short row_stride_odd;
-    unsigned short odd_rows;
-    unsigned short even_rows;
+    unsigned int odd_rows;
+    unsigned int even_rows;
     int uncompressed_odd;
     int compressed_odd;
     int uncompressed_mask;

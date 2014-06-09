@@ -51,8 +51,8 @@ do_paint_test (rl2GraphicsContextPtr ctx)
 {
     unsigned char *buffer;
     int buf_size;
-    unsigned short width;
-    unsigned short height;
+    unsigned int width;
+    unsigned int height;
     rl2GraphicsBitmapPtr bmp;
     rl2GraphicsPatternPtr pattern;
     rl2RasterPtr rst;

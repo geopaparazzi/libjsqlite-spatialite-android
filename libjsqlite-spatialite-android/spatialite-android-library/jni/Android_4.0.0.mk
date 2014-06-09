@@ -1,3 +1,8 @@
+# -------------------
+# Android_4.0.0.mk
+# ndk-build clean
+# ndk-build
+# -------------------
 LOCAL_PATH := $(call my-dir)
 
 JSQLITE_PATH := javasqlite-20120209

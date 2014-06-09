@@ -48,6 +48,55 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #include "rasterlite2/rl2tiff.h"
 
 static int
+test_mem_tiff (const char *name)
+{
+/* testing a simple MEM-TIFF source */
+    char path[1024];
+    unsigned char *p_blob = NULL;
+    int n_bytes;
+    int rd;
+    FILE *in = NULL;
+    rl2RasterPtr rst = NULL;
+    char *msg;
+
+/* loading the image in-memory */
+    sprintf (path, "./%s.tif", name);
+    msg = sqlite3_mprintf ("Unable to load \"%s\" in-memory\n", path);
+    in = fopen (path, "rb");
+    if (in == NULL)
+	goto error;
+    if (fseek (in, 0, SEEK_END) < 0)
+	goto error;
+    n_bytes = ftell (in);
+    rewind (in);
+    p_blob = malloc (n_bytes);
+    rd = fread (p_blob, 1, n_bytes, in);
+    fclose (in);
+    in = NULL;
+    if (rd != n_bytes)
+	goto error;
+/* decoding */
+    sqlite3_free (msg);
+    msg = sqlite3_mprintf ("Unable to decode in-memory \"%s\"\n", path);
+    rst = rl2_raster_from_tiff (p_blob, n_bytes);
+    if (rst == NULL)
+	goto error;
+    free (p_blob);
+    rl2_destroy_raster (rst);
+    sqlite3_free (msg);
+    return 0;
+
+  error:
+    if (p_blob != NULL)
+	free (p_blob);
+    if (in != NULL)
+	fclose (in);
+    fprintf (stderr, msg);
+    sqlite3_free (msg);
+    return -100;
+}
+
+static int
 test_tiff (const char *name, unsigned char sample_type,
 	   unsigned char pixel_type, unsigned char nBands)
 {
@@ -56,10 +105,10 @@ test_tiff (const char *name, unsigned char sample_type,
     rl2CoveragePtr coverage = NULL;
     rl2RasterPtr raster = NULL;
     rl2SectionPtr img = NULL;
-    int row;
-    int col;
-    unsigned short width;
-    unsigned short height;
+    unsigned int row;
+    unsigned int col;
+    unsigned int width;
+    unsigned int height;
     unsigned char compression;
     char tile_name[256];
     char path[1024];
@@ -216,16 +265,16 @@ test_null ()
     rl2TiffOriginPtr origin;
     rl2RasterPtr raster;
     rl2CoveragePtr coverage;
-    unsigned short width;
-    unsigned short height;
+    unsigned int width;
+    unsigned int height;
     unsigned char sample_type;
     unsigned char pixel_type;
     unsigned char alias_pixel_type;
     unsigned char num_bands;
     unsigned char compression;
-    unsigned short tile_width;
-    unsigned short tile_height;
-    unsigned short strip_size;
+    unsigned int tile_width;
+    unsigned int tile_height;
+    unsigned int strip_size;
     int is_tiled;
     int srid;
     double minX;
@@ -544,6 +593,26 @@ main (int argc, char *argv[])
 	return -10;
     if (test_null () != 0)
 	return -11;
+    if (test_mem_tiff ("gray-striped") != 0)
+	return -12;
+    if (test_mem_tiff ("gray-tiled") != 0)
+	return -13;
+    if (test_mem_tiff ("plt-striped") != 0)
+	return -14;
+    if (test_mem_tiff ("plt-tiled") != 0)
+	return -15;
+    if (test_mem_tiff ("rgb-striped") != 0)
+	return -16;
+    if (test_mem_tiff ("rgb-tiled") != 0)
+	return -17;
+    if (test_mem_tiff ("mono3s") != 0)
+	return -18;
+    if (test_mem_tiff ("mono4s") != 0)
+	return -18;
+    if (test_mem_tiff ("mono3t") != 0)
+	return -20;
+    if (test_mem_tiff ("mono4t") != 0)
+	return -21;
 
     return 0;
 }

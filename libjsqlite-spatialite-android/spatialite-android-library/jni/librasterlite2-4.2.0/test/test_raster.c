@@ -68,8 +68,8 @@ main (int argc, char *argv[])
     unsigned char sample_type;
     unsigned char pixel_type;
     unsigned char num_bands;
-    unsigned short width;
-    unsigned short height;
+    unsigned int width;
+    unsigned int height;
     int srid;
     double minX;
     double minY;

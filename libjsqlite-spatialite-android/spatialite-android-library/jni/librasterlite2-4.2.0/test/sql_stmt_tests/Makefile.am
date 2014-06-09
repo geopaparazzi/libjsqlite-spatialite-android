@@ -387,6 +387,10 @@ EXTRA_DIST = createcov_16_mband1.testcase \
 	pyramidize14.testcase \
 	pyramidize15.testcase \
 	pyramidize16.testcase \
+	setcoverageinfos1.testcase \
+	setcoverageinfos2.testcase \
+	setcoverageinfos3.testcase \
+	setcoverageinfos4.testcase \
 	setpalettecolorentry1.testcase \
 	setpalettecolorentry2.testcase \
 	setpalettecolorentry3.testcase \
