@@ -1,6 +1,6 @@
 include $(CLEAR_VARS)
 # ./configure --enable-examples=no --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
-# 2015-06-09: libspatialite-4.2.0-rc1
+# 2015-07-09: libspatialite-4.2.0
 LOCAL_MODULE    := spatialite
 
 # SQLite flags copied from ASOP
