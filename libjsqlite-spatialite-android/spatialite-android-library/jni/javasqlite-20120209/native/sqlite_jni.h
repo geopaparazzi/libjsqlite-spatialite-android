@@ -9,6 +9,13 @@ extern "C" {
 #endif
 /*
  * Class:     SQLite_Database
+ * Method:    _count_connections
+ * Signature: ()J
+ */
+JNIEXPORT jint JNICALL Java_SQLite_Database__1count_1connections
+  (JNIEnv *, jobject);
+/*
+ * Class:     SQLite_Database
  * Method:    _open
  * Signature: (Ljava/lang/String;I)V
  */

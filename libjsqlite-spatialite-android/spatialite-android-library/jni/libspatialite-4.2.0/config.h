@@ -201,7 +201,7 @@
 #define STDC_HEADERS 1
 
 /* Should contain a text-string describing the intended target CPU */
-#define TARGET_CPU "x86_64-linux-gnu"
+/* #define TARGET_CPU "x86_64-linux-gnu" */
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #define TIME_WITH_SYS_TIME 1

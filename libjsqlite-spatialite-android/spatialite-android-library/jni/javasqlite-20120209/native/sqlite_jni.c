@@ -171,6 +171,14 @@ static jmethodID M_java_lang_String_initBytes2 = 0;
 
 static const char xdigits[] = "0123456789ABCDEF";
 
+static int SPATIALITE_CONNECTIONS=0;
+
+JNIEXPORT jint JNICALL
+Java_SQLite_Database__1count_1connectionst(JNIEnv *env, jobject obj)
+{
+    return SPATIALITE_CONNECTIONS;
+}
+
 static void
 seterr(JNIEnv *env, jobject obj, int err)
 {
@@ -880,6 +888,7 @@ doclose(JNIEnv *env, jobject obj, int final)
 	delglobrefp(env, &h->ph);
 	delglobrefp(env, &h->enc);
 	free(h);
+ SPATIALITE_CONNECTIONS--;
 	(*env)->SetLongField(env, obj, F_jsqlite_Database_handle, 0);
 	return;
     }
@@ -1267,14 +1276,23 @@ Java_jsqlite_Database__1open4(JNIEnv *env, jobject obj, jstring file, jint mode,
 #if HAVE_SPATIALITE41 == 1
  /* Since 4.1.1: spatialite_init(1) is now DEPRECATED because is not reentrant (not thread safe) */
  /* Initializes a SpatiaLite connection. */
-    void *cache = spatialite_alloc_connection();
-    spatialite_init_ex((sqlite3 *)h->sqlite,cache,0);
+    void *p_cache = spatialite_alloc_connection();
+    if (p_cache != NULL)
+    { // Avoid ERROR unable to initialize the SpatiaLite extension: NULL cache !!!
+     spatialite_init_ex((sqlite3 *)h->sqlite,p_cache,0);
 #pragma message(VAR_NAME_VALUE(HAVE_SPATIALITE41))
 #if HAVE_RASTERLITE2 == 1
-    /* Initializes the (Rasterlite2) library */
-    rl2_init((sqlite3 *)h->sqlite,0);
+     /* Initializes the (Rasterlite2) library */
+     rl2_init((sqlite3 *)h->sqlite,0);
 #pragma message(VAR_NAME_VALUE(HAVE_RASTERLITE2))
+     SPATIALITE_CONNECTIONS++;
 #endif
+    }
+    else
+    { // E Spatialite: ERROR: Too much connections: max 64
+     	throwex(env, err ? err : "E Spatialite: ERROR: Too many connections: max 64");
+	    return;
+    }
 #endif
 	h->ver = ((maj & 0xFF) << 16) | ((min & 0xFF) << 8) | (lev & 0xFF);
 	return;
