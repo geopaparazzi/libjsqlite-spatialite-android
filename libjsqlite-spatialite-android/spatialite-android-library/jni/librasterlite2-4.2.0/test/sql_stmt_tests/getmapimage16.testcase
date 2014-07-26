@@ -1,7 +1,0 @@
-RL2_GetMapImage - Invalid style
-:memory: #use in-memory database
-SELECT RL2_GetMapImage('landsat', BuildMbr(1, 1, 10, 10), 640, 480, 'gothic', 'image/png', '#ffffff', 1, 100, 0);
-1 # rows (not including the header row)
-1 # columns
-RL2_GetMapImage('landsat', BuildMbr(1, 1, 10, 10), 640, 480, 'gothic', 'image/png', '#ffffff', 1, 100, 0)
-(NULL)

@@ -661,7 +661,6 @@ a Geometry will be returned representing the MBR for the corresponding GARS area
                                 NULL will be returned if any error is encountered.</td></tr>
 			<tr><td><b>MbrMinX</b></td>
 				<td>MbrMinX( geom <i>Geometry</i>) : <i>Double precision</i><hr>
-				    ST_MbrMinX( geom <i>Geometry</i>) : <i>Double precision</i><hr>
 				    ST_MinX( geom <i>Geometry</i>) : <i>Double precision</i></td>
 				<td></td>
 				<td align="center" bgcolor="#d0f0d0">base</td>
@@ -669,7 +668,6 @@ a Geometry will be returned representing the MBR for the corresponding GARS area
                                 NULL will be returned if <i>geom</i> isn't a valid Geometry.</td></tr>
 			<tr><td><b>MbrMinY</b></td>
 				<td>MbrMinY( geom <i>Geometry</i>) : <i>Double precision</i><hr>
-				    ST_MbrMinY( geom <i>Geometry</i>) : <i>Double precision</i><hr>
 				    ST_MinY( geom <i>Geometry</i>) : <i>Double precision</i></td>
 				<td></td>
 				<td align="center" bgcolor="#d0f0d0">base</td>
@@ -677,7 +675,6 @@ a Geometry will be returned representing the MBR for the corresponding GARS area
                                 NULL will be returned if <i>geom</i> isn't a valid Geometry.</td></tr>
 			<tr><td><b>MbrMaxX</b></td>
 				<td>MbrMaxX( geom <i>Geometry</i>) : <i>Double precision</i><hr>
-				    ST_MbrMaxX( geom <i>Geometry</i>) : <i>Double precision</i><hr>
 				    ST_MaxX( geom <i>Geometry</i>) : <i>Double precision</i></td>
 				<td></td>
 				<td align="center" bgcolor="#d0f0d0">base</td>
@@ -685,7 +682,6 @@ a Geometry will be returned representing the MBR for the corresponding GARS area
                                 NULL will be returned if <i>geom</i> isn't a valid Geometry.</td></tr>
 			<tr><td><b>MbrMaxY</b></td>
 				<td>MbrMaxY( geom <i>Geometry</i>) : <i>Double precision</i><hr>
-				    ST_MbrMaxY( geom <i>Geometry</i>) : <i>Double precision</i><hr>
 				    ST_MaxY( geom <i>Geometry</i>) : <i>Double precision</i></td>
 				<td></td>
 				<td align="center" bgcolor="#d0f0d0">base</td>
@@ -3130,13 +3126,13 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				<td>The return type is Integer, with a return value of 1 for TRUE, 0 for FALSE, and &#8211;1 for UNKNOWN
 					corresponding to a function invocation on NULL arguments.</td></tr>
 			<tr><td><b>XB_IsSldSeVectorStyle</b></td>
-				<td>XB_IsSldSVectorStyle( xmlObject <i>XmlBLOB</i> ) : <i>Integer</i></td>
+				<td>XB_IsSldSeVectorStyle( xmlObject <i>XmlBLOB</i> ) : <i>Integer</i></td>
 				<td></td>
 				<td align="center" bgcolor="#99d099">libxml2</td>
 				<td>The return type is Integer, with a return value of 1 for TRUE, 0 for FALSE, and &#8211;1 for UNKNOWN
 					corresponding to a function invocation on NULL arguments.</td></tr>
 			<tr><td><b>XB_IsSldSeRasterStyle</b></td>
-				<td>XB_IsSldSRasterStyle( xmlObject <i>XmlBLOB</i> ) : <i>Integer</i></td>
+				<td>XB_IsSldSeRasterStyle( xmlObject <i>XmlBLOB</i> ) : <i>Integer</i></td>
 				<td></td>
 				<td align="center" bgcolor="#99d099">libxml2</td>
 				<td>The return type is Integer, with a return value of 1 for TRUE, 0 for FALSE, and &#8211;1 for UNKNOWN

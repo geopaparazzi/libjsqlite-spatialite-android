@@ -2,7 +2,7 @@
 
  virtualbbox.c -- SQLite3 extension [VIRTUAL TABLE accessing BoundingBox tables]
 
- version 4.1, 2013 July 15
+ version 4.2, 2014 July 25
 
  Author: Sandro Furieri a.furieri@lqt.it
 

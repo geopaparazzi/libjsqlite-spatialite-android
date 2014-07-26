@@ -1,7 +1,0 @@
-IsTransparentPixel - TRUE
-:memory: #use in-memory database
-SELECT RL2_IsTransparentPixel(RL2_SetTransparentPixel(RL2_CreatePixel('UINT8', 'GRAYSCALE', 1)));
-1 # rows (not including the header row)
-1 # columns
-RL2_IsTransparentPixel(RL2_SetTransparentPixel(RL2_CreatePixel('UINT8', 'GRAYSCALE', 1)))
-1

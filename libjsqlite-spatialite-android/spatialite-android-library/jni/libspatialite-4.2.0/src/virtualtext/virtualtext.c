@@ -2,7 +2,7 @@
 
  virtualtext.c -- SQLite3 extension [VIRTUAL TABLE accessing CSV/TXT]
 
- version 4.1, 2013 May 8
+ version 4.2, 2014 July 25
 
  Author: Sandro Furieri a.furieri@lqt.it
 
@@ -970,9 +970,9 @@ sqlite3VirtualTextInit (sqlite3 * db)
 }
 
 SPATIALITE_PRIVATE int
-virtualtext_extension_init (void * xdb)
+virtualtext_extension_init (void *xdb)
 {
-sqlite3 * db = (sqlite3 *)xdb;
+    sqlite3 *db = (sqlite3 *) xdb;
     return sqlite3VirtualTextInit (db);
 }
 

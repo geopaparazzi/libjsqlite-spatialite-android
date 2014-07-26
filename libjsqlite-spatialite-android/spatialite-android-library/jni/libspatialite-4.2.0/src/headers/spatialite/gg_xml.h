@@ -1,7 +1,7 @@
 /*
  gg_xml.h -- Gaia common support for XML documents
   
- version 4.1, 2013 May 8
+ version 4.2, 2014 July 25
 
  Author: Sandro Furieri a.furieri@lqt.it
 

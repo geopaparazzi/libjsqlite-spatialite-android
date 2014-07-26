@@ -70,6 +70,10 @@ Regione Toscana - Settore Sistema Informativo Territoriale ed Ambientale
 #include <spatialite_private.h>
 #include <spatialite/gaiaaux.h>
 
+#ifdef _WIN32
+#define strcasecmp	_stricmp
+#endif /* not WIN32 */
+
 static int
 check_splite_metacatalog (sqlite3 * sqlite)
 {

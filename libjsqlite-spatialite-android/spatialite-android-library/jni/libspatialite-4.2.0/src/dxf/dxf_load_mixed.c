@@ -3,7 +3,7 @@
  dxf_load_mixed.c -- implements DXF support
  [loding features into the DB - mixed layers by geometry type]
 
- version 4.1, 2013 May 14
+ version 4.2, 2014 July 25
 
  Author: Sandro Furieri a.furieri@lqt.it
 

@@ -1,7 +1,0 @@
-IsValidRasterStatistics - invalid UINT16
-:memory: #use in-memory database
-SELECT RL2_IsValidRasterStatistics(zeroblob(100), 'UINT16', 1);
-1 # rows (not including the header row)
-1 # columns
-RL2_IsValidRasterStatistics(zeroblob(100), 'UINT16', 1)
-0

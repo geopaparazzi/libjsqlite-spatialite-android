@@ -1,7 +1,0 @@
-RL2_WriteTripleBandTiff - invalid blue band (too big)
-:memory: #use in-memory database
-SELECT RL2_WriteTripleBandTiff('alpha', './test.tif', 1024, 1024, 0, 1, 500, BuildMbr(1, 1, 10, 10), 1, 1, 'JPEG', 256);
-1 # rows (not including the header row)
-1 # columns
-RL2_WriteTripleBandTiff('alpha', './test.tif', 1024, 1024, 0, 1, 500, BuildMbr(1, 1, 10, 10), 1, 1, 'JPEG', 256)
--1

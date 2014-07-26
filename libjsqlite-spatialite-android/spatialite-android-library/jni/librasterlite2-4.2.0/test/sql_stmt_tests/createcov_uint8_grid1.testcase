@@ -1,7 +1,0 @@
-RL2_CreateCoverage - UINT8 GRID invalid Bands
-:memory: #use in-memory database
-SELECT RL2_CreateCoverage('uint8_grid1', 'UINT8', 'DATAGRID', 2, 'NONE', 100, 512, 512, 3003, 1.0);
-1 # rows (not including the header row)
-1 # columns
-RL2_CreateCoverage('uint8_grid1', 'UINT8', 'DATAGRID', 2, 'NONE', 100, 512, 512, 3003, 1.0)
-0

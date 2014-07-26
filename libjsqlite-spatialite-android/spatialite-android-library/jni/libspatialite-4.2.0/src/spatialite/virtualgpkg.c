@@ -2,7 +2,7 @@
 
  virtualgpkg.c -- SQLite3 extension [VIRTUAL TABLE accessing GPKG tables]
 
- version 4.2, 2013 May 18
+ version 4.2, 2014 July 25
 
  Author: Sandro Furieri a.furieri@lqt.it
 
@@ -328,14 +328,14 @@ vgpkg_insert_row (VirtualGPKGPtr p_vt, sqlite3_int64 * rowid, int argc,
 	    {
 		/* this is the geometry column */
 		sql = sqlite3_mprintf ("%sAsGPB(?)", prefix);
-	  gaiaAppendToOutBuffer (&sql_statement, sql);
-	  sqlite3_free (sql);
+		gaiaAppendToOutBuffer (&sql_statement, sql);
+		sqlite3_free (sql);
 	    }
 	  else
-	  {
-	      sprintf (buf, "%s?", prefix);
-	  gaiaAppendToOutBuffer (&sql_statement, buf);
-  }
+	    {
+		sprintf (buf, "%s?", prefix);
+		gaiaAppendToOutBuffer (&sql_statement, buf);
+	    }
       }
     gaiaAppendToOutBuffer (&sql_statement, ")");
     if (sql_statement.Error == 0 && sql_statement.Buffer != NULL)

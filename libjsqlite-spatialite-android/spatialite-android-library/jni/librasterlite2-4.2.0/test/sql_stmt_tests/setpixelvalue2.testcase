@@ -1,7 +1,0 @@
-SetPixelValue - NULL pixel
-:memory: #use in-memory database
-SELECT RL2_SetPixelValue(NULL, 0, 255);
-1 # rows (not including the header row)
-1 # columns
-RL2_SetPixelValue(NULL, 0, 255)
-(NULL)

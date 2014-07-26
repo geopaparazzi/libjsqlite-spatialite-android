@@ -1,7 +1,0 @@
-RL2_GetTileImage - not existing coverage
-:memory: #use in-memory database
-SELECT RL2_GetTileImage('alpha', 1, '#ffffff');
-1 # rows (not including the header row)
-1 # columns
-RL2_GetTileImage('alpha', 1, '#ffffff')
-(NULL)

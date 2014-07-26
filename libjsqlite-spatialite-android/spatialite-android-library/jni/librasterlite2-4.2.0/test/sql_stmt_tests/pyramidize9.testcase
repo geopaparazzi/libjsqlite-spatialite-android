@@ -1,7 +1,0 @@
-rl2_pyramidize - NULL forced-rebuild
-:memory: #use in-memory database
-SELECT rl2_pyramidize('coverage', 'section', NULL);
-1 # rows (not including the header row)
-1 # columns
-rl2_pyramidize('coverage', 'section', NULL)
--1

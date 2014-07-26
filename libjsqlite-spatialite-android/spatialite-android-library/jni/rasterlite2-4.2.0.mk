@@ -25,8 +25,10 @@ spatialite_flags := \
  -DSQLITE_OMIT_BUILTIN_TEST=1
 
 # comment out TARGET_CPU in config.h - will be replaced with TARGET_ARCH_ABI
+# comment out VERSION in config.h - manually set to avoid conflict with other packages
 rasterlite2_flags := \
  -DTARGET_CPU=\"$(TARGET_ARCH_ABI)\" \
+ -DVERSION=\"0.9\" \
  -O
 
 LOCAL_CFLAGS    := \
@@ -34,6 +36,7 @@ LOCAL_CFLAGS    := \
  $(spatialite_flags) \
  $(rasterlite2_flags)
 
+# 2014-07-26 - adapted based on ls -1 result
 LOCAL_C_INCLUDES := \
  $(SQLITE_PATH) \
  $(GEOTIFF_PATH)/libxtiff \
@@ -72,10 +75,10 @@ LOCAL_SRC_FILES := \
  $(RASTERLITE2_PATH)/src/rl2png.c \
  $(RASTERLITE2_PATH)/src/rl2rastersym.c \
  $(RASTERLITE2_PATH)/src/rl2raw.c \
- $(RASTERLITE2_PATH)/src/rl2sql.c \
  $(RASTERLITE2_PATH)/src/rl2sqlaux.c \
- $(RASTERLITE2_PATH)/src/rl2svg.c \
+ $(RASTERLITE2_PATH)/src/rl2sql.c \
  $(RASTERLITE2_PATH)/src/rl2svgaux.c \
+ $(RASTERLITE2_PATH)/src/rl2svg.c \
  $(RASTERLITE2_PATH)/src/rl2svgxml.c \
  $(RASTERLITE2_PATH)/src/rl2symbolizer.c \
  $(RASTERLITE2_PATH)/src/rl2tiff.c \

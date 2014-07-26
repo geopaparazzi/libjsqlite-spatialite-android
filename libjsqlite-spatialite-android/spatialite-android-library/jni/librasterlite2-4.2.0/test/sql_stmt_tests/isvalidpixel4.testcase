@@ -1,7 +1,0 @@
-IsValidPixel - 4-BIT PALETTE
-:memory: #use in-memory database
-SELECT RL2_IsValidPixel(RL2_CreatePixel('4-BIT', 'PALETTE', 1), '4-BIT', 1);
-1 # rows (not including the header row)
-1 # columns
-RL2_IsValidPixel(RL2_CreatePixel('4-BIT', 'PALETTE', 1), '4-BIT', 1)
-1

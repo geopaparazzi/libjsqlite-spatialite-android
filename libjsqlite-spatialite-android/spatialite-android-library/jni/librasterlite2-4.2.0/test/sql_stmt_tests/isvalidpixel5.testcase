@@ -1,7 +1,0 @@
-IsValidPixel - 2-BIT GRAYSCALE
-:memory: #use in-memory database
-SELECT RL2_IsValidPixel(RL2_CreatePixel('2-BIT', 'GRAYSCALE', 1), '2-BIT', 1);
-1 # rows (not including the header row)
-1 # columns
-RL2_IsValidPixel(RL2_CreatePixel('2-BIT', 'GRAYSCALE', 1), '2-BIT', 1)
-1

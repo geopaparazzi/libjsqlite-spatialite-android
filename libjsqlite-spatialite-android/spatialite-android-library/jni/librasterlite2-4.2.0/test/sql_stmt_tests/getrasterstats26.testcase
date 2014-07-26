@@ -1,7 +1,0 @@
-RL2_GetBandStatistics_Histogram - NULL band index
-:memory: #use in-memory database
-SELECT RL2_GetBandStatistics_Histogram(zeroblob(100), NULL);
-1 # rows (not including the header row)
-1 # columns
-RL2_GetBandStatistics_Histogram(zeroblob(100), NULL)
-(NULL)

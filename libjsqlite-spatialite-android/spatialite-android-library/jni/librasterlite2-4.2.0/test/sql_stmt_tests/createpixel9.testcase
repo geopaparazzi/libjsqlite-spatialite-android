@@ -1,7 +1,0 @@
-CreatePixel - NULL bands
-:memory: #use in-memory database
-SELECT RL2_CreatePixel('UINT8', 'GRAYSCALE', NULL);
-1 # rows (not including the header row)
-1 # columns
-RL2_CreatePixel('UINT8', 'GRAYSCALE', NULL)
-(NULL)

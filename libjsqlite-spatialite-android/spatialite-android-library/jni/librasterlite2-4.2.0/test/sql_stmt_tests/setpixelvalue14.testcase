@@ -1,7 +1,0 @@
-SetPixelValue - mismatching 2-BIT value
-:memory: #use in-memory database
-SELECT RL2_SetPixelValue(RL2_CreatePixel('2-BIT', 'PALETTE', 1), 0, 4);
-1 # rows (not including the header row)
-1 # columns
-RL2_SetPixelValue(RL2_CreatePixel('2-BIT', 'PALETTE', 1), 0, 4)
-(NULL)

@@ -35,6 +35,11 @@ LOCAL_CFLAGS    := \
 # LOCAL_LDLIBS    := -llog -lz
 # LOADABLE_EXTENSION must NOT be defined
 # For Spatialite with VirtualShapes,VirtualXL support iconv is needed
+# 2014-07-26 - adapted based on ls -1 result in all directories
+# Note: not included are: /src/gaiageo/
+# --> Ewkt.c:2071:24: error: expected ')' before 'yymsp'
+# - Ewkt.c,geoJSON.c,Gml.c,Kml.c,vanuatuWkt.c
+# - lex.Ewkt.c,lex.geoJSON.c,lex.Gml.c,lex.Kml.c,lex.VanuatuWkt.c
 LOCAL_C_INCLUDES := \
  $(SQLITE_PATH) \
  $(SPATIALITE_PATH) \

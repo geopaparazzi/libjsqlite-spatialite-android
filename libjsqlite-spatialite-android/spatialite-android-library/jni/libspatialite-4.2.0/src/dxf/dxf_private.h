@@ -1,7 +1,7 @@
 /* 
  dxf_private.h -- DXF Import Private API
   
- version 4.1, 2013 May 14
+ version 4.2, 2014 July 25
 
  Author: Sandro Furieri a.furieri@lqt.it
 

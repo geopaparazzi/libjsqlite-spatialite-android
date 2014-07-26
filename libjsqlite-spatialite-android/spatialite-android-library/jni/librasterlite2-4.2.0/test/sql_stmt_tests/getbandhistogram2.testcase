@@ -1,7 +1,0 @@
-GetBandHistogramFromImage - invalid BLOB image
-:memory: #use in-memory database
-SELECT RL2_GetBandHistogramFromImage(zeroblob(100), 'image/png', 0);
-1 # rows (not including the header row)
-1 # columns
-RL2_GetBandHistogramFromImage(zeroblob(100), 'image/png', 0)
-(NULL)

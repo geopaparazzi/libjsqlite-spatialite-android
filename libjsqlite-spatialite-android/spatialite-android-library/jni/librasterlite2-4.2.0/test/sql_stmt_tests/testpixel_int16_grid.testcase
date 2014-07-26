@@ -1,7 +1,0 @@
-TestPixel - INT16 GRID (ok)
-:memory: #use in-memory database
-SELECT RL2_GetPixelValue(RL2_SetPixelValue(RL2_CreatePixel('INT16', 'DATAGRID', 1), 0, -16000), 0);
-1 # rows (not including the header row)
-1 # columns
-RL2_GetPixelValue(RL2_SetPixelValue(RL2_CreatePixel('INT16', 'DATAGRID', 1), 0, -16000), 0)
--16000

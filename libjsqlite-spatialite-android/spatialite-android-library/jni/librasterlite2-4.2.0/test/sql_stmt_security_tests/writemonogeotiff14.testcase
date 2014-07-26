@@ -1,7 +1,0 @@
-RL2_WriteMonoBandGeoTiff - invalid height (too small)
-:memory: #use in-memory database
-SELECT RL2_WriteMonoBandGeoTiff('alpha', './test.tif', 1024, 4, 0, MakePoint(1, 1), 0.5, 0.5, 1, 'FAX3', 512);
-1 # rows (not including the header row)
-1 # columns
-RL2_WriteMonoBandGeoTiff('alpha', './test.tif', 1024, 4, 0, MakePoint(1, 1), 0.5, 0.5, 1, 'FAX3', 512)
--1

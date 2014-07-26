@@ -1,7 +1,0 @@
-RL2_CreateCoverage - 1-BIT MONOCHROME FAX3
-:memory: #use in-memory database
-SELECT RL2_CreateCoverage('1bit_mono_fax3', '1-BIT', 'MONOCHROME', 1, 'FAX3', 100, 512, 512, 3003, 1.0, 1.0, NULL);
-1 # rows (not including the header row)
-1 # columns
-RL2_CreateCoverage('1bit_mono_fax3', '1-BIT', 'MONOCHROME', 1, 'FAX3', 100, 512, 512, 3003, 1.0, 1.0, NULL)
-0

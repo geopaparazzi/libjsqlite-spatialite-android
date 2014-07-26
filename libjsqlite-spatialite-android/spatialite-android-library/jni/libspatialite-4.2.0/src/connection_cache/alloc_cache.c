@@ -1,7 +1,7 @@
 /*
  alloc_cache.c -- Gaia spatial support for SQLite
 
- version 4.1, 2013 May 8
+ version 4.2, 2014 July 25
 
  Author: Sandro Furieri a.furieri@lqt.it
 
@@ -191,7 +191,7 @@ find_free_connection ()
 		return i;
 	    }
       }
-    spatialite_e ("ERROR: Too much connections: max %d\n",
+    spatialite_e ("ERROR: Too many connections: max %d\n",
 		  SPATIALITE_MAX_CONNECTIONS);
     return -1;
 }
@@ -716,7 +716,6 @@ spatialite_initialize (void)
 /* initializes the library */
     if (gaia_already_initialized)
 	return;
-    sqlite3_initialize ();
 
 #ifdef _WIN32
     InitializeCriticalSection (&gaia_cache_semaphore);
@@ -737,7 +736,6 @@ spatialite_shutdown (void)
     int i;
     if (!gaia_already_initialized)
 	return;
-    sqlite3_shutdown ();
 
 #ifdef _WIN32
     DeleteCriticalSection (&gaia_cache_semaphore);

@@ -3,7 +3,7 @@
  dxf_writer.c -- implements DXF support
  [exporting a DXF]
 
- version 4.1, 2013 May 27
+ version 4.2, 2014 July 25
 
  Author: Sandro Furieri a.furieri@lqt.it
 

@@ -4,7 +4,7 @@
                implementation from Alexander Peslyak 
                (released on the Public Domain)
 
- version 4.1, 2013 June 3
+ version 4.2, 2014 July 25
 
  Author: Sandro Furieri a.furieri@lqt.it
 

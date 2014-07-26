@@ -1,7 +1,0 @@
-RL2_CreateCoverage - 2-BIT PALETTE invalid Bands
-:memory: #use in-memory database
-SELECT RL2_CreateCoverage('2bit_palette1', '2-BIT', 'PALETTE', 2, 'NONE', 100, 256, 256, 3003, 1.0, 1.0, NULL);
-1 # rows (not including the header row)
-1 # columns
-RL2_CreateCoverage('2bit_palette1', '2-BIT', 'PALETTE', 2, 'NONE', 100, 256, 256, 3003, 1.0, 1.0, NULL)
-0

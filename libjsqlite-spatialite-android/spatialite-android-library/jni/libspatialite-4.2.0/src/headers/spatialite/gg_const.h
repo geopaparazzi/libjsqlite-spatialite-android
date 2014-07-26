@@ -1,7 +1,7 @@
 /*
  gg_const.h -- Gaia common support for geometries: constants
   
- version 4.1, 2013 May 8
+ version 4.2, 2014 July 25
 
  Author: Sandro Furieri a.furieri@lqt.it
 
@@ -61,6 +61,9 @@ extern "C"
 #endif
 
 /* constant values for getVectorLayersList modes */
+
+/** mode: FAST (QGIS data-provider) */
+#define GAIA_VECTORS_LIST_FAST	0
 
 /** mode: OPTIMISTIC */
 #define GAIA_VECTORS_LIST_OPTIMISTIC	1

@@ -1,7 +1,0 @@
-RL2_LoadRaster - TEXT worldfile
-:memory: #use in-memory database
-SELECT RL2_LoadRaster('alplha', 'somepath.tif', 'yes');
-1 # rows (not including the header row)
-1 # columns
-RL2_LoadRaster('alplha', 'somepath.tif', 'yes')
--1

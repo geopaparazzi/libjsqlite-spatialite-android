@@ -1,7 +1,0 @@
-SetPaletteColorEntry - BLOB palette
-:memory: #use in-memory database
-SELECT RL2_SetPaletteColorEntry(zeroblob(100), 0, '#ff0000');
-1 # rows (not including the header row)
-1 # columns
-RL2_SetPaletteColorEntry(zeroblob(100), 0, '#ff0000')
-(NULL)

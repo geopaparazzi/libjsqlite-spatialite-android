@@ -2,7 +2,7 @@
 
  virtualfdo.c -- SQLite3 extension [VIRTUAL TABLE accessing FDO-OGR tables]
 
- version 4.1, 2013 May 8
+ version 4.2, 2014 July 25
 
  Author: Sandro Furieri a.furieri@lqt.it
 

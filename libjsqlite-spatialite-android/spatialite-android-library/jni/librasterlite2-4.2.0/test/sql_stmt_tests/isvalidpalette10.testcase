@@ -1,7 +1,0 @@
-IsValidRasterPalette - invalid BLOB palette INT32
-:memory: #use in-memory database
-SELECT RL2_IsValidRasterPalette(zeroblob(100), 'INT32');
-1 # rows (not including the header row)
-1 # columns
-RL2_IsValidRasterPalette(zeroblob(100), 'INT32')
-0

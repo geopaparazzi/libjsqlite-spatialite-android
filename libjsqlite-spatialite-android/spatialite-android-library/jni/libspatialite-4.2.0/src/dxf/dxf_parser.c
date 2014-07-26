@@ -2,7 +2,7 @@
 
  dxf_parser.c -- implements DXF support [parsing]
 
- version 4.1, 2013 May 14
+ version 4.2, 2014 July 25
 
  Author: Sandro Furieri a.furieri@lqt.it
 

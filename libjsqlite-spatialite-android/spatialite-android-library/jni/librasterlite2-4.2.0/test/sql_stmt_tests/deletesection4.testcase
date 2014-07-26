@@ -1,7 +1,0 @@
-DeleteSection - not existing
-:memory: #use in-memory database
-SELECT RL2_DeleteSection('alpha', 'beta', 1);
-1 # rows (not including the header row)
-1 # columns
-RL2_DeleteSection('alpha', 'beta', 1)
-0
