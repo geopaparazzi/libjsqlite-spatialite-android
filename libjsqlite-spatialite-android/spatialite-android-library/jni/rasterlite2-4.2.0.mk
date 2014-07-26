@@ -73,12 +73,13 @@ LOCAL_SRC_FILES := \
  $(RASTERLITE2_PATH)/src/rl2jpeg.c \
  $(RASTERLITE2_PATH)/src/rl2paint.c \
  $(RASTERLITE2_PATH)/src/rl2png.c \
+ $(RASTERLITE2_PATH)/src/rl2pyramid.c \
  $(RASTERLITE2_PATH)/src/rl2rastersym.c \
  $(RASTERLITE2_PATH)/src/rl2raw.c \
- $(RASTERLITE2_PATH)/src/rl2sqlaux.c \
  $(RASTERLITE2_PATH)/src/rl2sql.c \
- $(RASTERLITE2_PATH)/src/rl2svgaux.c \
+ $(RASTERLITE2_PATH)/src/rl2sqlaux.c \
  $(RASTERLITE2_PATH)/src/rl2svg.c \
+ $(RASTERLITE2_PATH)/src/rl2svgaux.c \
  $(RASTERLITE2_PATH)/src/rl2svgxml.c \
  $(RASTERLITE2_PATH)/src/rl2symbolizer.c \
  $(RASTERLITE2_PATH)/src/rl2tiff.c \

@@ -1,0 +1,7 @@
+RL2_GetMonoBandTileImage - NULL coverage 
+:memory: #use in-memory database
+SELECT RL2_GetMonoBandTileImage(NULL, 1, 0);
+1 # rows (not including the header row)
+1 # columns
+RL2_GetMonoBandTileImage(NULL, 1, 0)
+(NULL)

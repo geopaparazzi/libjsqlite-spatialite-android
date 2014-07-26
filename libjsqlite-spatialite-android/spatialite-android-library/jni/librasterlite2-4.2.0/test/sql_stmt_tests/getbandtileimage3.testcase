@@ -1,0 +1,7 @@
+RL2_GetTripleBandTileImage - NULL red-band
+:memory: #use in-memory database
+SELECT RL2_GetTripleBandTileImage('alpha', 1, NULL, 1, 2);
+1 # rows (not including the header row)
+1 # columns
+RL2_GetTripleBandTileImage('alpha', 1, NULL, 1, 2)
+(NULL)

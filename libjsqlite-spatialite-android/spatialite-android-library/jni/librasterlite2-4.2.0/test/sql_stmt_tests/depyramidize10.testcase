@@ -1,0 +1,7 @@
+rl2_depyramidize - BLOB Transaction
+:memory: #use in-memory database
+SELECT rl2_depyramidize('coverage', 'section', zeroblob(4));
+1 # rows (not including the header row)
+1 # columns
+rl2_depyramidize('coverage', 'section', zeroblob(4))
+-1

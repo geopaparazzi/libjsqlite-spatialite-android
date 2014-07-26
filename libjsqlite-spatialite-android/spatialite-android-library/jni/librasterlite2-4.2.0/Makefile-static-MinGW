@@ -1,0 +1,76 @@
+# SandroFurieri (c) 2014
+# Makefile RasterLite2 statically linked CLI-tools [Win MSYS/MinGW]
+
+CFLAGS = -Wall -Wextra -Wunused -pedantic -I/usr/local/include
+GG = g++
+CC = gcc
+
+all: ./static_bin/rl2tool.exe ./static_bin/wmslite.exe
+
+./static_bin/rl2tool.exe: ./tools/rl2tool.o 
+	$(GG) ./tools/rl2tool.o -o ./static_bin/rl2tool.exe \
+	/usr/local/lib/librasterlite2.a \
+	/usr/local/lib/libspatialite.a \
+	/usr/local/lib/libsqlite3.a \
+	/usr/local/lib/liblwgeom.a \
+	/usr/local/lib/libproj.a \
+	/usr/local/lib/libgeos_c.a \
+	/usr/local/lib/libgeos.a \
+	/usr/local/lib/libfreexl.a \
+	/usr/local/lib/libcairo.a \
+	/usr/local/lib/libpixman-1.a \
+	/usr/local/lib/libfontconfig.a \
+	/usr/local/lib/libfreetype.a \
+	/usr/local/lib/libgif.a \
+	/usr/local/lib/libwebp.a \
+	/usr/local/lib/libjpeg.a \
+	/usr/local/lib/libgeotiff.a \
+	/usr/local/lib/libtiff.a \
+	/usr/local/lib/libpng.a \
+	/usr/local/lib/libcurl.a \
+	/usr/local/lib/libssl.a \
+	/usr/local/lib/libcrypto.a \
+	/usr/local/lib/libxml2.a \
+	/usr/local/lib/libexpat.a \
+	/usr/local/lib/liblzma.a \
+	/usr/local/lib/libz.a \
+	/usr/local/lib/libiconv.a \
+	-lm -lmsimg32 -lws2_32 -lgdi32 -lwldap32 -static-libstdc++ -static-libgcc
+	strip --strip-all ./static_bin/rl2tool.exe
+
+./static_bin/wmslite.exe: ./tools/wmslite.o 
+	$(GG) ./tools/wmslite.o -o ./static_bin/wmslite.exe \
+	/usr/local/lib/librasterlite2.a \
+	/usr/local/lib/libspatialite.a \
+	/usr/local/lib/libsqlite3.a \
+	/usr/local/lib/liblwgeom.a \
+	/usr/local/lib/libproj.a \
+	/usr/local/lib/libgeos_c.a \
+	/usr/local/lib/libgeos.a \
+	/usr/local/lib/libfreexl.a \
+	/usr/local/lib/libcairo.a \
+	/usr/local/lib/libpixman-1.a \
+	/usr/local/lib/libfontconfig.a \
+	/usr/local/lib/libfreetype.a \
+	/usr/local/lib/libgif.a \
+	/usr/local/lib/libwebp.a \
+	/usr/local/lib/libjpeg.a \
+	/usr/local/lib/libgeotiff.a \
+	/usr/local/lib/libtiff.a \
+	/usr/local/lib/libpng.a \
+	/usr/local/lib/libcurl.a \
+	/usr/local/lib/libssl.a \
+	/usr/local/lib/libcrypto.a \
+	/usr/local/lib/libxml2.a \
+	/usr/local/lib/libexpat.a \
+	/usr/local/lib/liblzma.a \
+	/usr/local/lib/libz.a \
+	/usr/local/lib/libiconv.a \
+	-lm -lmsimg32 -lws2_32 -lgdi32 -lwldap32 -static-libstdc++ -static-libgcc
+	strip --strip-all ./static_bin/wmslite.exe
+
+./tools/rl2tool.o: 
+	$(CC) $(CFLAGS) ./tools/rl2tool.c -c
+	
+./tools/wmslite.o:
+	$(CC) $(CFLAGS) ./tools/wmslite.c -c
