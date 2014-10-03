@@ -1,0 +1,7 @@
+RL2_ImportSectionRawPixels - NULL pixels
+:memory: #use in-memory database
+SELECT RL2_ImportSectionRawPixels('coverage', 'section', 1000, 1000, NULL, BuildMBR(1, 2, 3, 4));
+1 # rows (not including the header row)
+1 # columns
+RL2_ImportSectionRawPixels('coverage', 'section', 1000, 1000, NULL, BuildMBR(1, 2, 3, 4))
+-1

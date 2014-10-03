@@ -1,0 +1,7 @@
+SetPaletteColorEntry - NULL color
+:memory: #use in-memory database
+SELECT RL2_SetPaletteColorEntry(zeroblob(100), 0, NULL);
+1 # rows (not including the header row)
+1 # columns
+RL2_SetPaletteColorEntry(zeroblob(100), 0, NULL)
+(NULL)

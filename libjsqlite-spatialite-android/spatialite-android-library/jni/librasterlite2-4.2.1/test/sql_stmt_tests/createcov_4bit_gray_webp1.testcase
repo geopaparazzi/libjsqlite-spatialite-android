@@ -1,0 +1,7 @@
+RL2_CreateCoverage - 4-BIT GRAYSCALE LOSSY WEBP
+:memory: #use in-memory database
+SELECT RL2_CreateCoverage('4bit_gray_webp1', '4-BIT', 'GRAYSCALE', 1, 'WEBP', 100, 512, 512, 3003, 1.0);
+1 # rows (not including the header row)
+1 # columns
+RL2_CreateCoverage('4bit_gray_webp1', '4-BIT', 'GRAYSCALE', 1, 'WEBP', 100, 512, 512, 3003, 1.0)
+1

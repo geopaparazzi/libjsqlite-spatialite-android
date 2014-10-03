@@ -1,0 +1,7 @@
+rl2_PyramidizeMonolithic - NULL levels
+:memory: #use in-memory database
+SELECT rl2_PyramidizeMonolithic('coverage', NULL, 1);
+1 # rows (not including the header row)
+1 # columns
+rl2_PyramidizeMonolithic('coverage', NULL, 1)
+-1

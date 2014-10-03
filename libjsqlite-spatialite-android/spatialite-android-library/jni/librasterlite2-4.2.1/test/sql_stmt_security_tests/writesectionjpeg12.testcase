@@ -1,0 +1,7 @@
+RL2_WriteSectionJpeg - invalid height (too small)
+:memory: #use in-memory database
+SELECT RL2_WriteSectionJpeg('alpha', 1, './test.jpg', 1024, 4, MakePoint(1, 1), 0.5, 0.5, 80);
+1 # rows (not including the header row)
+1 # columns
+RL2_WriteSectionJpeg('alpha', 1, './test.jpg', 1024, 4, MakePoint(1, 1), 0.5, 0.5, 80)
+-1

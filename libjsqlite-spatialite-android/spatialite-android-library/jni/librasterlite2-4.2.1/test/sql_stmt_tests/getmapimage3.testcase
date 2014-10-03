@@ -1,0 +1,7 @@
+RL2_GetMapImage - NULL width
+:memory: #use in-memory database
+SELECT RL2_GetMapImage('landsat', BuildMbr(1, 1, 10, 10), NULL, 480);
+1 # rows (not including the header row)
+1 # columns
+RL2_GetMapImage('landsat', BuildMbr(1, 1, 10, 10), NULL, 480)
+(NULL)

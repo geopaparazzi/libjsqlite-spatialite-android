@@ -1,0 +1,7 @@
+RL2_WriteSectionTripleBandTiffTfw - NULL Width
+:memory: #use in-memory database
+SELECT RL2_WriteSectionTripleBandTiffTfw('alpha', 1, './test.tif', NULL, 1024, 0, 1, 2, MakePoint(1, 1), 1);
+1 # rows (not including the header row)
+1 # columns
+RL2_WriteSectionTripleBandTiffTfw('alpha', 1, './test.tif', NULL, 1024, 0, 1, 2, MakePoint(1, 1), 1)
+-1

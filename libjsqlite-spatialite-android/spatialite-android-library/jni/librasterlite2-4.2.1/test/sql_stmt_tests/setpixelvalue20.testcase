@@ -1,0 +1,7 @@
+SetPixelValue - mismatching UINT16 value
+:memory: #use in-memory database
+SELECT RL2_SetPixelValue(RL2_CreatePixel('UINT16', 'DATAGRID', 1), 0, 65536);
+1 # rows (not including the header row)
+1 # columns
+RL2_SetPixelValue(RL2_CreatePixel('UINT16', 'DATAGRID', 1), 0, 65536)
+(NULL)

@@ -1,0 +1,7 @@
+PixelEquals - NULL pixel-1
+:memory: #use in-memory database
+SELECT RL2_PixelEquals(NULL, RL2_SetTransparentPixel(RL2_SetPixelValue(RL2_CreatePixel('UINT8', 'GRAYSCALE', 1), 0, 128)));
+1 # rows (not including the header row)
+1 # columns
+RL2_PixelEquals(NULL, RL2_SetTransparentPixel(RL2_SetPixelValue(RL2_CreatePixel('UINT8', 'GRAYSCALE', 1), 0, 128)))
+-1

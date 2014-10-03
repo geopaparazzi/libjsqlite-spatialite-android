@@ -1,0 +1,10 @@
+<?xml version="1.0" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="600" height="600" version="1.1">
+  <g transform="translate(300,300)">
+    <circle r="300" fill="#ce1126"/>
+    <circle r="200" fill="#fff"/>
+    <circle r="100" fill="#000"/>
+    <path id="a" fill="#009e60" d="M 150,-45 L 160.103,-13.906 192.798,-13.906 L 166.347,5.312 176.45,36.406 L 150,17.188 123.55,36.406 L 133.653,5.312 107.202,-13.906 L 139.897,-13.906 z" />
+    <use xlink:href="#a" transform="scale(-1,1)"/>
+  </g>
+</svg>
