@@ -40,6 +40,8 @@ LOCAL_CFLAGS    := \
 # --> Ewkt.c:2071:24: error: expected ')' before 'yymsp'
 # - Ewkt.c,geoJSON.c,Gml.c,Kml.c,vanuatuWkt.c
 # - lex.Ewkt.c,lex.geoJSON.c,lex.Gml.c,lex.Kml.c,lex.VanuatuWkt.c
+# Note: not included are: /src/gsrsinit/epsg_update/
+# - epsg_from_gdal.c
 LOCAL_C_INCLUDES := \
  $(SQLITE_PATH) \
  $(SPATIALITE_PATH) \
@@ -173,7 +175,6 @@ LOCAL_SRC_FILES := \
  $(SPATIALITE_PATH)/src/srsinit/srs_init.c \
  $(SPATIALITE_PATH)/src/srsinit/epsg_update/auto_epsg.c \
  $(SPATIALITE_PATH)/src/srsinit/epsg_update/auto_epsg_ext.c \
- $(SPATIALITE_PATH)/src/srsinit/epsg_update/epsg_from_gdal.c \
  $(SPATIALITE_PATH)/src/versioninfo/version.c \
  $(SPATIALITE_PATH)/src/virtualtext/virtualtext.c \
  $(SPATIALITE_PATH)/src/wfs/wfs_in.c

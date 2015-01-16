@@ -57,10 +57,14 @@ the terms of any one of the MPL, the GPL or the LGPL.
 
 #ifndef OMIT_OPENJPEG		/* only if OpenJpeg is enabled */
 
-#ifdef HAVE_OPENJPEG_2_1_OPENJPEG_H
+#ifdef HAVE_OPENJPEG_2_1_OPENJPEG_H 
 #include <openjpeg-2.1/openjpeg.h>
 #else
+#ifdef __ANDROID__		/* Android specific */
+#include <openjpeg.h>
+#else
 #include <openjpeg-2.0/openjpeg.h>
+#endif
 #endif
 
 struct jp2_memfile

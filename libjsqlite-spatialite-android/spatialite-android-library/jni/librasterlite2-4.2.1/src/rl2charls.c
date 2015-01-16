@@ -56,7 +56,11 @@ the terms of any one of the MPL, the GPL or the LGPL.
 
 #ifndef OMIT_CHARLS		/* only if CharLS is enabled */
 
+#ifdef __ANDROID__		/* Android specific */
+#include <interface.h>
+#else
 #include <CharLS/interface.h>
+#endif
 
 static int
 endianness ()
