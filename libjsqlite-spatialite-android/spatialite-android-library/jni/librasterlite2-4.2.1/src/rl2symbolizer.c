@@ -1583,6 +1583,643 @@ rl2_get_raster_style_color_map_entry (rl2RasterStylePtr style, int index,
     return RL2_ERROR;
 }
 
+static const char *
+svg_parameter_name (xmlNodePtr node)
+{
+/* return the Name from a <SvgParameter> */
+    struct _xmlAttr *attr;
+
+    attr = node->properties;
+    while (attr != NULL)
+      {
+	  /* attributes */
+	  if (attr->type == XML_ATTRIBUTE_NODE)
+	    {
+		const char *name = (const char *) (attr->name);
+		if (strcmp (name, "name") == 0)
+		  {
+		      xmlNode *text = attr->children;
+		      if (text != NULL)
+			{
+			    if (text->type == XML_TEXT_NODE)
+				return (const char *) (text->content);
+			}
+		  }
+	    }
+	  attr = attr->next;
+      }
+    return NULL;
+}
+
+static void
+parse_line_stroke (xmlNodePtr node, rl2PrivLineSymbolizerPtr sym)
+{
+/* parsing LineSymbolizer Stroke */
+    while (node)
+      {
+	  if (node->type == XML_ELEMENT_NODE)
+	    {
+		const char *name = (const char *) (node->name);
+		if (strcmp (name, "Stroke") == 0)
+		  {
+		      xmlNodePtr child = node->children;
+		      sym->has_stroke = 1;
+		      while (child)
+			{
+			    if (child->type == XML_TEXT_NODE
+				&& child->content != NULL)
+			      {
+				  name = (const char *) (child->name);
+				  if (strcmp (name, "SvgParameter") == 0)
+				    {
+					const char *svg_name =
+					    svg_parameter_name (child);
+					if (name == NULL)
+					  {
+					      child = child->next;
+					      continue;
+					  }
+					if (strcmp (svg_name, "stroke") == 0)
+					  {
+					      unsigned char red;
+					      unsigned char green;
+					      unsigned char blue;
+					      if (parse_sld_se_color
+						  ((const char *)
+						   child->content, &red, &green,
+						   &blue))
+						{
+						    sym->stroke_red = red;
+						    sym->stroke_green = green;
+						    sym->stroke_blue = blue;
+						}
+
+					  }
+					if (strcmp (svg_name, "stroke-opacity")
+					    == 0)
+					    sym->stroke_opacity =
+						atof ((const char *)
+						      child->content);
+					if (strcmp (svg_name, "stroke-width") ==
+					    0)
+					    sym->stroke_width =
+						atof ((const char *)
+						      child->content);
+					if (strcmp (svg_name, "stroke-linejoin")
+					    == 0)
+					  {
+					      const char *type =
+						  (const char *) child->content;
+					      if (strcmp (type, "mitre") == 0)
+						  sym->stroke_linejoin =
+						      RL2_STROKE_LINEJOIN_MITRE;
+					      if (strcmp (type, "round") == 0)
+						  sym->stroke_linejoin =
+						      RL2_STROKE_LINEJOIN_ROUND;
+					      if (strcmp (type, "bevel") == 0)
+						  sym->stroke_linejoin =
+						      RL2_STROKE_LINEJOIN_BEVEL;
+					  }
+					if (strcmp (svg_name, "stroke-linecap")
+					    == 0)
+					  {
+					      const char *type =
+						  (const char *) child->content;
+					      if (strcmp (type, "butt") == 0)
+						  sym->stroke_linecap =
+						      RL2_STROKE_LINECAP_BUTT;
+					      if (strcmp (type, "round") == 0)
+						  sym->stroke_linecap =
+						      RL2_STROKE_LINECAP_ROUND;
+					      if (strcmp (type, "square") == 0)
+						  sym->stroke_linecap =
+						      RL2_STROKE_LINECAP_SQUARE;
+					  }
+				    }
+				  child = child->next;
+			      }
+			}
+		  }
+		node = node->next;
+	    }
+      }
+}
+
+static void
+parse_line_offset (xmlNodePtr node, rl2PrivLineSymbolizerPtr sym)
+{
+/* parsing LineSymbolizer PerpendicularOffset */
+    while (node)
+      {
+	  if (node->type == XML_ELEMENT_NODE)
+	    {
+		const char *name = (const char *) (node->name);
+		if (strcmp (name, "PerpendicularOffset") == 0)
+		  {
+		      xmlNodePtr child = node->children;
+		      while (child)
+			{
+			    if (child->type == XML_TEXT_NODE
+				&& child->content != NULL)
+				sym->perpendicular_offset =
+				    atof ((const char *) child->content);
+			    child = child->next;
+			}
+		  }
+	    }
+	  node = node->next;
+      }
+}
+
+static int
+parse_line_symbolizer (xmlNodePtr node, rl2PrivVectorStylePtr style)
+{
+/* attempting to parse an SLD/SE LineSymbolizer */
+    rl2PrivLineSymbolizerPtr sym;
+    if (style->symbolizer != NULL)
+	return 0;
+
+/* allocating a default Line Symbolizer */
+    sym = malloc (sizeof (rl2PrivLineSymbolizer));
+    sym->has_stroke = 0;
+    sym->stroke_red = 0;
+    sym->stroke_green = 0;
+    sym->stroke_blue = 0;
+    sym->stroke_opacity = 1.0;
+    sym->stroke_width = 1.0;
+    sym->stroke_linejoin = RL2_STROKE_LINEJOIN_UNKNOWN;
+    sym->stroke_linecap = RL2_STROKE_LINECAP_UNKNOWN;
+    sym->stroke_dash_count = 0;
+    sym->stroke_dash_list = NULL;
+    sym->stroke_dash_offset = 0.0;
+    sym->perpendicular_offset = 0.0;
+    style->style_type = RL2_VECTOR_STYLE_LINE;
+    style->symbolizer = sym;
+
+    parse_line_stroke (node->children, sym);
+    parse_line_offset (node->children, sym);
+    return 1;
+}
+
+static void
+parse_polygon_stroke (xmlNodePtr node, rl2PrivPolygonSymbolizerPtr sym)
+{
+/* parsing PolygonSymbolizer Stroke */
+    while (node)
+      {
+	  if (node->type == XML_ELEMENT_NODE)
+	    {
+		const char *name = (const char *) (node->name);
+		if (strcmp (name, "Stroke") == 0)
+		  {
+		      xmlNodePtr child = node->children;
+		      sym->has_stroke = 1;
+		      while (child)
+			{
+			    if (child->type == XML_TEXT_NODE
+				&& child->content != NULL)
+			      {
+				  name = (const char *) (child->name);
+				  if (strcmp (name, "SvgParameter") == 0)
+				    {
+					const char *svg_name =
+					    svg_parameter_name (child);
+					if (name == NULL)
+					  {
+					      child = child->next;
+					      continue;
+					  }
+					if (strcmp (svg_name, "stroke") == 0)
+					  {
+					      unsigned char red;
+					      unsigned char green;
+					      unsigned char blue;
+					      if (parse_sld_se_color
+						  ((const char *)
+						   child->content, &red, &green,
+						   &blue))
+						{
+						    sym->has_stroke = 1;
+						    sym->stroke_red = red;
+						    sym->stroke_green = green;
+						    sym->stroke_blue = blue;
+						}
+
+					  }
+					if (strcmp (svg_name, "stroke-opacity")
+					    == 0)
+					    sym->stroke_opacity =
+						atof ((const char *)
+						      child->content);
+					if (strcmp (svg_name, "stroke-width") ==
+					    0)
+					    sym->stroke_width =
+						atof ((const char *)
+						      child->content);
+					if (strcmp (svg_name, "stroke-linejoin")
+					    == 0)
+					  {
+					      const char *type =
+						  (const char *) child->content;
+					      if (strcmp (type, "mitre") == 0)
+						  sym->stroke_linejoin =
+						      RL2_STROKE_LINEJOIN_MITRE;
+					      if (strcmp (type, "round") == 0)
+						  sym->stroke_linejoin =
+						      RL2_STROKE_LINEJOIN_ROUND;
+					      if (strcmp (type, "bevel") == 0)
+						  sym->stroke_linejoin =
+						      RL2_STROKE_LINEJOIN_BEVEL;
+					  }
+					if (strcmp (svg_name, "stroke-linecap")
+					    == 0)
+					  {
+					      const char *type =
+						  (const char *) child->content;
+					      if (strcmp (type, "butt") == 0)
+						  sym->stroke_linecap =
+						      RL2_STROKE_LINECAP_BUTT;
+					      if (strcmp (type, "round") == 0)
+						  sym->stroke_linecap =
+						      RL2_STROKE_LINECAP_ROUND;
+					      if (strcmp (type, "square") == 0)
+						  sym->stroke_linecap =
+						      RL2_STROKE_LINECAP_SQUARE;
+					  }
+				    }
+				  child = child->next;
+			      }
+			}
+		  }
+		node = node->next;
+	    }
+      }
+}
+
+static void
+parse_polygon_fill (xmlNodePtr node, rl2PrivPolygonSymbolizerPtr sym)
+{
+/* parsing PolygonSymbolizer Fill */
+    while (node)
+      {
+	  if (node->type == XML_ELEMENT_NODE)
+	    {
+		const char *name = (const char *) (node->name);
+		if (strcmp (name, "Fill") == 0)
+		  {
+		      xmlNodePtr child = node->children;
+		      sym->has_fill = 1;
+		      while (child)
+			{
+			    if (child->type == XML_TEXT_NODE
+				&& child->content != NULL)
+			      {
+				  name = (const char *) (child->name);
+				  if (strcmp (name, "SvgParameter") == 0)
+				    {
+					const char *svg_name =
+					    svg_parameter_name (child);
+					if (name == NULL)
+					  {
+					      child = child->next;
+					      continue;
+					  }
+					if (strcmp (svg_name, "fill") == 0)
+					  {
+					      unsigned char red;
+					      unsigned char green;
+					      unsigned char blue;
+					      if (parse_sld_se_color
+						  ((const char *)
+						   child->content, &red, &green,
+						   &blue))
+						{
+						    sym->fill_red = red;
+						    sym->fill_green = green;
+						    sym->fill_blue = blue;
+						}
+
+					  }
+					if (strcmp (svg_name, "fill-opacity") ==
+					    0)
+					    sym->fill_opacity =
+						atof ((const char *)
+						      child->content);
+				    }
+				  child = child->next;
+			      }
+			}
+		  }
+		node = node->next;
+	    }
+      }
+}
+
+static void
+parse_polygon_offset (xmlNodePtr node, rl2PrivPolygonSymbolizerPtr sym)
+{
+/* parsing PolygonSymbolizer PerpendicularOffset */
+    while (node)
+      {
+	  if (node->type == XML_ELEMENT_NODE)
+	    {
+		const char *name = (const char *) (node->name);
+		if (strcmp (name, "PerpendicularOffset") == 0)
+		  {
+		      xmlNodePtr child = node->children;
+		      while (child)
+			{
+			    if (child->type == XML_TEXT_NODE
+				&& child->content != NULL)
+				sym->perpendicular_offset =
+				    atof ((const char *) child->content);
+			    child = child->next;
+			}
+		  }
+	    }
+	  node = node->next;
+      }
+}
+
+static void
+parse_polygon_displacement_xy (xmlNodePtr node, rl2PrivPolygonSymbolizerPtr sym)
+{
+/* parsing PolygonSymbolizer Displacement */
+    while (node)
+      {
+	  if (node->type == XML_ELEMENT_NODE)
+	    {
+		const char *name = (const char *) (node->name);
+		if (strcmp (name, "DisplacementX") == 0)
+		  {
+		      xmlNodePtr child = node->children;
+		      while (child)
+			{
+			    if (child->type == XML_TEXT_NODE
+				&& child->content != NULL)
+				sym->displacement_x =
+				    atof ((const char *) child->content);
+			    child = child->next;
+			}
+		  }
+		if (strcmp (name, "DisplacementY") == 0)
+		  {
+		      xmlNodePtr child = node->children;
+		      while (child)
+			{
+			    if (child->type == XML_TEXT_NODE
+				&& child->content != NULL)
+				sym->displacement_y =
+				    atof ((const char *) child->content);
+			    child = child->next;
+			}
+		  }
+	    }
+	  node = node->next;
+      }
+}
+
+static void
+parse_polygon_displacement (xmlNodePtr node, rl2PrivPolygonSymbolizerPtr sym)
+{
+/* parsing PolygonSymbolizer Displacement */
+    while (node)
+      {
+	  if (node->type == XML_ELEMENT_NODE)
+	    {
+		const char *name = (const char *) (node->name);
+		if (strcmp (name, "Displacement") == 0)
+		    parse_polygon_displacement_xy (node->children, sym);
+	    }
+	  node = node->next;
+      }
+}
+
+static int
+parse_polygon_symbolizer (xmlNodePtr node, rl2PrivVectorStylePtr style)
+{
+/* attempting to parse an SLD/SE PolygonSymbolizer */
+    rl2PrivPolygonSymbolizerPtr sym;
+    if (style->symbolizer != NULL)
+	return 0;
+
+/* allocating a default Polygon Symbolizer */
+    sym = malloc (sizeof (rl2PrivPolygonSymbolizer));
+    sym->has_stroke = 0;
+    sym->stroke_red = 0;
+    sym->stroke_green = 0;
+    sym->stroke_blue = 0;
+    sym->stroke_opacity = 1.0;
+    sym->stroke_width = 1.0;
+    sym->stroke_linejoin = RL2_STROKE_LINEJOIN_UNKNOWN;
+    sym->stroke_linecap = RL2_STROKE_LINECAP_UNKNOWN;
+    sym->stroke_dash_count = 0;
+    sym->stroke_dash_list = NULL;
+    sym->stroke_dash_offset = 0.0;
+    sym->has_fill = 0;
+    sym->fill_red = 128;
+    sym->fill_green = 128;
+    sym->fill_blue = 128;
+    sym->fill_opacity = 1.0;
+    sym->displacement_x = 0.0;
+    sym->displacement_y = 0.0;
+    sym->perpendicular_offset = 0.0;
+    style->style_type = RL2_VECTOR_STYLE_POLYGON;
+    style->symbolizer = sym;
+
+    parse_polygon_stroke (node->children, sym);
+    parse_polygon_fill (node->children, sym);
+    parse_polygon_offset (node->children, sym);
+    parse_polygon_displacement (node->children, sym);
+    return 1;
+}
+
+static int
+find_vector_symbolizer (xmlNodePtr node, rl2PrivVectorStylePtr style, int *loop)
+{
+/* recursively searching an SLD/SE VectorSymbolizer */
+    while (node)
+      {
+	  if (node->type == XML_ELEMENT_NODE)
+	    {
+		const char *name = (const char *) (node->name);
+		if (strcmp (name, "LineSymbolizer") == 0)
+		  {
+		      int ret = parse_line_symbolizer (node, style);
+		      *loop = 0;
+		      return ret;
+		  }
+		if (strcmp (name, "PolygonSymbolizer") == 0)
+		  {
+		      int ret = parse_polygon_symbolizer (node, style);
+		      *loop = 0;
+		      return ret;
+		  }
+		if (strcmp (name, "FeatureTypeStyle") == 0 ||
+		    strcmp (name, "Rule") == 0)
+		  {
+		      int ret =
+			  find_vector_symbolizer (node->children, style, loop);
+		      if (*loop == 0)
+			  return ret;
+		  }
+	    }
+	  node = node->next;
+      }
+    return 0;
+}
+
+RL2_PRIVATE rl2VectorStylePtr
+vector_style_from_sld_se_xml (char *name, char *title, char *abstract,
+			      unsigned char *xml)
+{
+/* attempting to build a VectorStyle object from an SLD/SE XML style */
+    rl2PrivVectorStylePtr style = NULL;
+    xmlDocPtr xml_doc = NULL;
+    xmlNodePtr root;
+    int loop = 1;
+    xmlGenericErrorFunc silentError = (xmlGenericErrorFunc) dummySilentError;
+
+    style = malloc (sizeof (rl2PrivVectorStyle));
+    if (style == NULL)
+	return NULL;
+    style->name = name;
+    style->title = title;
+    style->abstract = abstract;
+    style->style_type = RL2_VECTOR_STYLE_UNKNOWN;
+    style->symbolizer = NULL;
+
+/* parsing the XML document */
+    xmlSetGenericErrorFunc (NULL, silentError);
+    xml_doc =
+	xmlReadMemory ((const char *) xml, strlen ((const char *) xml),
+		       "noname.xml", NULL, 0);
+    if (xml_doc == NULL)
+      {
+	  /* parsing error; not a well-formed XML */
+	  goto error;
+      }
+    root = xmlDocGetRootElement (xml_doc);
+    if (root == NULL)
+	goto error;
+    if (!find_vector_symbolizer (root, style, &loop))
+	goto error;
+    xmlFreeDoc (xml_doc);
+    free (xml);
+    xml = NULL;
+
+    if (style->name == NULL)
+	goto error;
+
+    return (rl2VectorStylePtr) style;
+
+  error:
+    if (xml != NULL)
+	free (xml);
+    if (xml_doc != NULL)
+	xmlFreeDoc (xml_doc);
+    if (style != NULL)
+	rl2_destroy_vector_style ((rl2VectorStylePtr) style);
+    return NULL;
+}
+
+static void
+destroy_point_symbolizer (rl2PrivPointSymbolizerPtr ptr)
+{
+/* destroying a Point Symbolizer */
+    if (ptr == NULL)
+	return;
+    free (ptr);
+}
+
+static void
+destroy_line_symbolizer (rl2PrivLineSymbolizerPtr ptr)
+{
+/* destroying a Line Symbolizer */
+    if (ptr == NULL)
+	return;
+    if (ptr->stroke_dash_list != NULL)
+	free (ptr->stroke_dash_list);
+    free (ptr);
+}
+
+static void
+destroy_polygon_symbolizer (rl2PrivPolygonSymbolizerPtr ptr)
+{
+/* destroying a Polygon Symbolizer */
+    if (ptr == NULL)
+	return;
+    if (ptr->stroke_dash_list != NULL)
+	free (ptr->stroke_dash_list);
+    free (ptr);
+}
+
+static void
+destroy_text_symbolizer (rl2PrivTextSymbolizerPtr ptr)
+{
+/* destroying a Text Symbolizer */
+    if (ptr == NULL)
+	return;
+    free (ptr);
+}
+
+RL2_DECLARE void
+rl2_destroy_vector_style (rl2VectorStylePtr style)
+{
+/* destroying a VectorStyle object */
+    rl2PrivVectorStylePtr stl = (rl2PrivVectorStylePtr) style;
+    if (stl == NULL)
+	return;
+
+    if (stl->name != NULL)
+	free (stl->name);
+    if (stl->title != NULL)
+	free (stl->title);
+    if (stl->abstract != NULL)
+	free (stl->abstract);
+    if (stl->style_type == RL2_VECTOR_STYLE_POINT)
+	destroy_point_symbolizer ((rl2PrivPointSymbolizerPtr)
+				  (stl->symbolizer));
+    if (stl->style_type == RL2_VECTOR_STYLE_LINE)
+	destroy_line_symbolizer ((rl2PrivLineSymbolizerPtr) (stl->symbolizer));
+    if (stl->style_type == RL2_VECTOR_STYLE_POLYGON)
+	destroy_polygon_symbolizer ((rl2PrivPolygonSymbolizerPtr)
+				    (stl->symbolizer));
+    if (stl->style_type == RL2_VECTOR_STYLE_TEXT)
+	destroy_text_symbolizer ((rl2PrivTextSymbolizerPtr) (stl->symbolizer));
+    free (stl);
+}
+
+RL2_DECLARE const char *
+rl2_get_vector_style_name (rl2VectorStylePtr style)
+{
+/* return the VectorStyle Name */
+    rl2PrivVectorStylePtr stl = (rl2PrivVectorStylePtr) style;
+    if (stl == NULL)
+	return NULL;
+    return stl->name;
+}
+
+RL2_DECLARE const char *
+rl2_get_vector_style_title (rl2VectorStylePtr style)
+{
+/* return the VectorStyle Title */
+    rl2PrivRasterStylePtr stl = (rl2PrivRasterStylePtr) style;
+    if (stl == NULL)
+	return NULL;
+    return stl->title;
+}
+
+RL2_DECLARE const char *
+rl2_get_vector_style_abstract (rl2VectorStylePtr style)
+{
+/* return the VectorStyle Abstract */
+    rl2PrivVectorStylePtr stl = (rl2PrivVectorStylePtr) style;
+    if (stl == NULL)
+	return NULL;
+    return stl->abstract;
+}
+
 static void
 parse_sld_named_style (xmlNodePtr node, char **namedStyle)
 {
@@ -2023,7 +2660,7 @@ rl2_alloc_group_renderer (int count)
 	  lyr->layer_type = 0;
 	  lyr->layer_name = NULL;
 	  lyr->coverage = NULL;
-	  lyr->style_name = NULL;
+	  lyr->raster_style_id = -1;
 	  lyr->raster_symbolizer = NULL;
 	  lyr->raster_stats = NULL;
       }
@@ -2033,7 +2670,7 @@ rl2_alloc_group_renderer (int count)
 static int
 rl2_group_renderer_set_raster (rl2PrivGroupRendererPtr group, int index,
 			       const char *layer_name, rl2CoveragePtr coverage,
-			       const char *style_name,
+			       sqlite3_int64 style_id,
 			       rl2RasterStylePtr symbolizer,
 			       rl2RasterStatisticsPtr stats)
 {
@@ -2064,16 +2701,7 @@ rl2_group_renderer_set_raster (rl2PrivGroupRendererPtr group, int index,
     if (lyr->coverage != NULL)
 	rl2_destroy_coverage (lyr->coverage);
     lyr->coverage = (rl2CoveragePtr) coverage;
-    if (lyr->style_name != NULL)
-	free (lyr->style_name);
-    if (style_name == NULL)
-	lyr->style_name = NULL;
-    else
-      {
-	  len = strlen (style_name);
-	  lyr->style_name = malloc (len + 1);
-	  strcpy (lyr->style_name, style_name);
-      }
+    lyr->raster_style_id = style_id;
     if (lyr->raster_symbolizer != NULL)
 	rl2_destroy_raster_style ((rl2RasterStylePtr) (lyr->raster_symbolizer));
     lyr->raster_symbolizer = (rl2PrivRasterStylePtr) symbolizer;
@@ -2111,7 +2739,7 @@ rl2_is_valid_group_renderer (rl2PrivGroupRendererPtr ptr, int *valid)
 		    && lyr->raster_symbolizer == NULL)
 		    error = 1;
 	    }
-	  if (lyr->style_name == NULL)
+	  if (lyr->raster_style_id <= 0)
 	      error = 1;
 	  if (lyr->raster_stats == NULL)
 	      error = 1;
@@ -2147,7 +2775,9 @@ rl2_create_group_renderer (sqlite3 * sqlite, rl2GroupStylePtr group_style)
 	  rl2RasterStylePtr symbolizer = NULL;
 	  rl2RasterStatisticsPtr stats = NULL;
 	  const char *layer_name = rl2_get_group_named_layer (group_style, i);
-	  const char *layer_style = rl2_get_group_named_style (group_style, i);
+	  const char *layer_style_name =
+	      rl2_get_group_named_style (group_style, i);
+	  sqlite3_int64 layer_style_id = -1;
 	  rl2CoveragePtr coverage =
 	      rl2_create_coverage_from_dbms (sqlite, layer_name);
 	  rl2PrivCoveragePtr cvg = (rl2PrivCoveragePtr) coverage;
@@ -2156,17 +2786,13 @@ rl2_create_group_renderer (sqlite3 * sqlite, rl2GroupStylePtr group_style)
 		if (valid)
 		  {
 		      /* validating the style */
-		      if (layer_style == NULL)
-			  layer_style = "default";
-		      if (strcasecmp (layer_style, "default") == 0)
-			  ;
-		      else
+		      if (layer_style_id > 0)
 			{
 			    /* attempting to get a RasterSymbolizer style */
 			    symbolizer =
 				rl2_create_raster_style_from_dbms (sqlite,
 								   layer_name,
-								   layer_style);
+								   layer_style_id);
 			}
 		      stats =
 			  rl2_create_raster_statistics_from_dbms (sqlite,
@@ -2199,7 +2825,7 @@ rl2_create_group_renderer (sqlite3 * sqlite, rl2GroupStylePtr group_style)
 		  }
 	    }
 	  rl2_group_renderer_set_raster (group, i, layer_name, coverage,
-					 layer_style, symbolizer, stats);
+					 layer_style_id, symbolizer, stats);
       }
     if (rl2_is_valid_group_renderer (group, &valid) != RL2_OK)
 	goto error;
@@ -2228,8 +2854,6 @@ rl2_destroy_group_renderer (rl2GroupRendererPtr group)
 	      free (lyr->layer_name);
 	  if (lyr->coverage != NULL)
 	      rl2_destroy_coverage (lyr->coverage);
-	  if (lyr->style_name != NULL)
-	      free (lyr->style_name);
 	  if (lyr->raster_symbolizer != NULL)
 	      rl2_destroy_raster_style ((rl2RasterStylePtr)
 					(lyr->raster_symbolizer));

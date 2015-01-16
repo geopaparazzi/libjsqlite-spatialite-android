@@ -951,6 +951,17 @@ vbbox_rollback (sqlite3_vtab * pVTab)
 }
 
 static int
+vbox_rename (sqlite3_vtab * pVTab, const char *zNew)
+{
+/* BEGIN TRANSACTION */
+    if (pVTab)
+	pVTab = pVTab;		/* unused arg warning suppression */
+    if (zNew)
+	zNew = zNew;		/* unused arg warning suppression */
+    return SQLITE_ERROR;
+}
+
+static int
 spliteVirtualBBoxInit (sqlite3 * db, void *p_cache)
 {
     int rc = SQLITE_OK;
@@ -973,6 +984,7 @@ spliteVirtualBBoxInit (sqlite3 * db, void *p_cache)
     my_bbox_module.xCommit = &vbbox_commit;
     my_bbox_module.xRollback = &vbbox_rollback;
     my_bbox_module.xFindFunction = NULL;
+    my_bbox_module.xRename = &vbox_rename;
     sqlite3_create_module_v2 (db, "VirtualBBox", &my_bbox_module, p_cache, 0);
     return rc;
 }

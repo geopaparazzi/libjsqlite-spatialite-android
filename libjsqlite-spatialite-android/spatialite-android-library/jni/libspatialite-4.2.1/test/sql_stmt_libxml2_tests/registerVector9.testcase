@@ -1,8 +1,8 @@
 RegisterVectorStyledLayer - NULL style
 :memory: #use in-memory database
-SELECT RegisterVectorStyledLayer('alpha', 'beta', NULL);
+SELECT SE_RegisterVectorStyledLayer('alpha', NULL);
 1 # rows (not including the header row)
 1 # columns
-RegisterVectorStyledLayer('alpha', 'beta', NULL)
+SE_RegisterVectorStyledLayer('alpha', NULL)
 -1
 

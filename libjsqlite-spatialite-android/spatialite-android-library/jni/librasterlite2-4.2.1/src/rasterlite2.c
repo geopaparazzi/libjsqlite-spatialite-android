@@ -102,7 +102,9 @@ is_valid_compression (unsigned char compression)
       {
       case RL2_COMPRESSION_NONE:
       case RL2_COMPRESSION_DEFLATE:
+      case RL2_COMPRESSION_DEFLATE_NO:
       case RL2_COMPRESSION_LZMA:
+      case RL2_COMPRESSION_LZMA_NO:
       case RL2_COMPRESSION_PNG:
       case RL2_COMPRESSION_JPEG:
       case RL2_COMPRESSION_LOSSY_WEBP:
@@ -131,6 +133,10 @@ check_coverage_self_consistency (unsigned char sample_type,
 	  switch (compression)
 	    {
 	    case RL2_COMPRESSION_NONE:
+	    case RL2_COMPRESSION_DEFLATE:
+	    case RL2_COMPRESSION_DEFLATE_NO:
+	    case RL2_COMPRESSION_LZMA:
+	    case RL2_COMPRESSION_LZMA_NO:
 	    case RL2_COMPRESSION_PNG:
 	    case RL2_COMPRESSION_CCITTFAX4:
 		break;
@@ -155,6 +161,10 @@ check_coverage_self_consistency (unsigned char sample_type,
 	    {
 	    case RL2_COMPRESSION_NONE:
 	    case RL2_COMPRESSION_GIF:
+	    case RL2_COMPRESSION_DEFLATE:
+	    case RL2_COMPRESSION_DEFLATE_NO:
+	    case RL2_COMPRESSION_LZMA:
+	    case RL2_COMPRESSION_LZMA_NO:
 	    case RL2_COMPRESSION_PNG:
 		break;
 	    default:
@@ -177,7 +187,9 @@ check_coverage_self_consistency (unsigned char sample_type,
 	    {
 	    case RL2_COMPRESSION_NONE:
 	    case RL2_COMPRESSION_DEFLATE:
+	    case RL2_COMPRESSION_DEFLATE_NO:
 	    case RL2_COMPRESSION_LZMA:
+	    case RL2_COMPRESSION_LZMA_NO:
 	    case RL2_COMPRESSION_PNG:
 	    case RL2_COMPRESSION_JPEG:
 	    case RL2_COMPRESSION_LOSSY_WEBP:
@@ -207,7 +219,9 @@ check_coverage_self_consistency (unsigned char sample_type,
 		  {
 		  case RL2_COMPRESSION_NONE:
 		  case RL2_COMPRESSION_DEFLATE:
+		  case RL2_COMPRESSION_DEFLATE_NO:
 		  case RL2_COMPRESSION_LZMA:
+		  case RL2_COMPRESSION_LZMA_NO:
 		  case RL2_COMPRESSION_PNG:
 		  case RL2_COMPRESSION_CHARLS:
 		  case RL2_COMPRESSION_LOSSY_JP2:
@@ -223,7 +237,9 @@ check_coverage_self_consistency (unsigned char sample_type,
 		  {
 		  case RL2_COMPRESSION_NONE:
 		  case RL2_COMPRESSION_DEFLATE:
+		  case RL2_COMPRESSION_DEFLATE_NO:
 		  case RL2_COMPRESSION_LZMA:
+		  case RL2_COMPRESSION_LZMA_NO:
 		  case RL2_COMPRESSION_PNG:
 		  case RL2_COMPRESSION_JPEG:
 		  case RL2_COMPRESSION_LOSSY_WEBP:
@@ -256,7 +272,9 @@ check_coverage_self_consistency (unsigned char sample_type,
 			{
 			case RL2_COMPRESSION_NONE:
 			case RL2_COMPRESSION_DEFLATE:
+			case RL2_COMPRESSION_DEFLATE_NO:
 			case RL2_COMPRESSION_LZMA:
+			case RL2_COMPRESSION_LZMA_NO:
 			case RL2_COMPRESSION_PNG:
 			case RL2_COMPRESSION_CHARLS:
 			case RL2_COMPRESSION_LOSSY_JP2:
@@ -272,7 +290,9 @@ check_coverage_self_consistency (unsigned char sample_type,
 			{
 			case RL2_COMPRESSION_NONE:
 			case RL2_COMPRESSION_DEFLATE:
+			case RL2_COMPRESSION_DEFLATE_NO:
 			case RL2_COMPRESSION_LZMA:
+			case RL2_COMPRESSION_LZMA_NO:
 			case RL2_COMPRESSION_PNG:
 			case RL2_COMPRESSION_LOSSY_WEBP:
 			case RL2_COMPRESSION_LOSSLESS_WEBP:
@@ -291,7 +311,9 @@ check_coverage_self_consistency (unsigned char sample_type,
 		  {
 		  case RL2_COMPRESSION_NONE:
 		  case RL2_COMPRESSION_DEFLATE:
+		  case RL2_COMPRESSION_DEFLATE_NO:
 		  case RL2_COMPRESSION_LZMA:
+		  case RL2_COMPRESSION_LZMA_NO:
 		      break;
 		  default:
 		      return 0;
@@ -322,7 +344,9 @@ check_coverage_self_consistency (unsigned char sample_type,
 		  {
 		  case RL2_COMPRESSION_NONE:
 		  case RL2_COMPRESSION_DEFLATE:
+		  case RL2_COMPRESSION_DEFLATE_NO:
 		  case RL2_COMPRESSION_LZMA:
+		  case RL2_COMPRESSION_LZMA_NO:
 		  case RL2_COMPRESSION_PNG:
 		  case RL2_COMPRESSION_CHARLS:
 		  case RL2_COMPRESSION_LOSSY_JP2:
@@ -338,7 +362,9 @@ check_coverage_self_consistency (unsigned char sample_type,
 		  {
 		  case RL2_COMPRESSION_NONE:
 		  case RL2_COMPRESSION_DEFLATE:
+		  case RL2_COMPRESSION_DEFLATE_NO:
 		  case RL2_COMPRESSION_LZMA:
+		  case RL2_COMPRESSION_LZMA_NO:
 		      break;
 		  default:
 		      return 0;
@@ -441,6 +467,50 @@ rl2_free (void *ptr)
 /* memory cleanup - generic free */
     if (ptr != NULL)
 	free (ptr);
+}
+
+RL2_DECLARE int
+rl2_is_supported_codec (unsigned char compression)
+{
+/* Testing if a given codec/compressor is actually supported by the library */
+    switch (compression)
+      {
+      case RL2_COMPRESSION_NONE:
+      case RL2_COMPRESSION_DEFLATE:
+      case RL2_COMPRESSION_DEFLATE_NO:
+      case RL2_COMPRESSION_PNG:
+      case RL2_COMPRESSION_JPEG:
+      case RL2_COMPRESSION_CCITTFAX4:
+	  return RL2_TRUE;
+      case RL2_COMPRESSION_LZMA:
+      case RL2_COMPRESSION_LZMA_NO:
+#ifndef OMIT_LZMA
+	  return RL2_TRUE;
+#else
+	  return RL2_FALSE;
+#endif
+      case RL2_COMPRESSION_LOSSY_WEBP:
+      case RL2_COMPRESSION_LOSSLESS_WEBP:
+#ifndef OMIT_WEBP
+	  return RL2_TRUE;
+#else
+	  return RL2_FALSE;
+#endif
+      case RL2_COMPRESSION_CHARLS:
+#ifndef OMIT_CHARLS
+	  return RL2_TRUE;
+#else
+	  return RL2_FALSE;
+#endif
+      case RL2_COMPRESSION_LOSSY_JP2:
+      case RL2_COMPRESSION_LOSSLESS_JP2:
+#ifndef OMIT_OPENJPEG
+	  return RL2_TRUE;
+#else
+	  return RL2_FALSE;
+#endif
+      };
+    return RL2_ERROR;
 }
 
 static int
@@ -657,7 +727,9 @@ rl2_is_coverage_compression_lossless (rl2CoveragePtr ptr, int *is_lossless)
     switch (cvg->Compression)
       {
       case RL2_COMPRESSION_DEFLATE:
+      case RL2_COMPRESSION_DEFLATE_NO:
       case RL2_COMPRESSION_LZMA:
+      case RL2_COMPRESSION_LZMA_NO:
       case RL2_COMPRESSION_PNG:
       case RL2_COMPRESSION_LOSSLESS_WEBP:
       case RL2_COMPRESSION_CHARLS:
@@ -746,6 +818,102 @@ rl2_get_coverage_resolution (rl2CoveragePtr ptr, double *hResolution,
 	return RL2_ERROR;
     *hResolution = cvg->hResolution;
     *vResolution = cvg->vResolution;
+    return RL2_OK;
+}
+
+RL2_DECLARE rl2VectorLayerPtr
+rl2_create_vector_layer (const char *f_table_name,
+			 const char *f_geometry_column,
+			 unsigned short geometry_type, int srid,
+			 unsigned char spatial_index)
+{
+/* allocating and initializing a Coverage object */
+    int len;
+    rl2PrivVectorLayerPtr vector = NULL;
+    if (f_table_name == NULL || f_geometry_column == NULL)
+	return NULL;
+
+    vector = malloc (sizeof (rl2PrivVectorLayer));
+    if (vector == NULL)
+	return NULL;
+    len = strlen (f_table_name);
+    vector->f_table_name = malloc (len + 1);
+    strcpy (vector->f_table_name, f_table_name);
+    len = strlen (f_geometry_column);
+    vector->f_geometry_column = malloc (len + 1);
+    strcpy (vector->f_geometry_column, f_geometry_column);
+    vector->geometry_type = geometry_type;
+    vector->srid = srid;
+    vector->spatial_index = spatial_index;
+    return (rl2VectorLayerPtr) vector;
+}
+
+RL2_DECLARE void
+rl2_destroy_vector_layer (rl2VectorLayerPtr ptr)
+{
+/* memory cleanup - destroying a Vector Layer object */
+    rl2PrivVectorLayerPtr vector = (rl2PrivVectorLayerPtr) ptr;
+    if (vector == NULL)
+	return;
+    if (vector->f_table_name != NULL)
+	free (vector->f_table_name);
+    if (vector->f_geometry_column != NULL)
+	free (vector->f_geometry_column);
+    free (vector);
+}
+
+RL2_DECLARE const char *
+rl2_get_vector_table_name (rl2VectorLayerPtr ptr)
+{
+/* return the Vector Layer Table name */
+    rl2PrivVectorLayerPtr vector = (rl2PrivVectorLayerPtr) ptr;
+    if (vector == NULL)
+	return NULL;
+    return vector->f_table_name;
+}
+
+RL2_DECLARE const char *
+rl2_get_vector_geometry_name (rl2VectorLayerPtr ptr)
+{
+/* return the Vector Layer Geometry name */
+    rl2PrivVectorLayerPtr vector = (rl2PrivVectorLayerPtr) ptr;
+    if (vector == NULL)
+	return NULL;
+    return vector->f_geometry_column;
+}
+
+RL2_DECLARE int
+rl2_get_vector_geometry_type (rl2VectorLayerPtr ptr,
+			      unsigned short *geometry_type)
+{
+/* return the Vector Layer Geometry type */
+    rl2PrivVectorLayerPtr vector = (rl2PrivVectorLayerPtr) ptr;
+    if (vector == NULL)
+	return RL2_ERROR;
+    *geometry_type = vector->geometry_type;
+    return RL2_OK;
+}
+
+RL2_DECLARE int
+rl2_get_vector_srid (rl2VectorLayerPtr ptr, int *srid)
+{
+/* return the Vector Layer SRID */
+    rl2PrivVectorLayerPtr vector = (rl2PrivVectorLayerPtr) ptr;
+    if (vector == NULL)
+	return RL2_ERROR;
+    *srid = vector->srid;
+    return RL2_OK;
+}
+
+RL2_DECLARE int
+rl2_get_vector_spatial_index (rl2VectorLayerPtr ptr,
+			      unsigned char *spatial_index)
+{
+/* return the Vector Layer Spatial Index type */
+    rl2PrivVectorLayerPtr vector = (rl2PrivVectorLayerPtr) ptr;
+    if (vector == NULL)
+	return RL2_ERROR;
+    *spatial_index = vector->spatial_index;
     return RL2_OK;
 }
 
@@ -852,7 +1020,9 @@ rl2_is_section_compression_lossless (rl2SectionPtr ptr, int *is_lossless)
     switch (scn->Compression)
       {
       case RL2_COMPRESSION_DEFLATE:
+      case RL2_COMPRESSION_DEFLATE_NO:
       case RL2_COMPRESSION_LZMA:
+      case RL2_COMPRESSION_LZMA_NO:
       case RL2_COMPRESSION_PNG:
       case RL2_COMPRESSION_LOSSLESS_WEBP:
 	  *is_lossless = RL2_TRUE;

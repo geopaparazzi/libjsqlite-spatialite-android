@@ -18,7 +18,7 @@ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
 for the specific language governing rights and limitations under the
 License.
 
-The Original Code is the SpatiaLite library
+The Original Code is the RasterLite2 library
 
 The Initial Developer of the Original Code is Alessandro Furieri
  
@@ -1028,7 +1028,7 @@ test_grid (sqlite3 * sqlite, unsigned char sample, int *retcode)
     tile_size = 512;
 
 /* creating the DBMS Coverage */
-    sql = sqlite3_mprintf ("SELECT RL2_CreateCoverage("
+    sql = sqlite3_mprintf ("SELECT RL2_CreateRasterCoverage("
 			   "%Q, %Q, %Q, %d, %Q, %d, %d, %d, %d, %1.8f, %1.8f)",
 			   coverage, sample_name, pixel_name, num_bands,
 			   compression_name, qlty, tile_size, tile_size, 4326,
@@ -1037,7 +1037,7 @@ test_grid (sqlite3 * sqlite, unsigned char sample, int *retcode)
     sqlite3_free (sql);
     if (ret != SQLITE_OK)
       {
-	  fprintf (stderr, "CreateCoverage \"%s\" error: %s\n", coverage,
+	  fprintf (stderr, "CreateRasterCoverage \"%s\" error: %s\n", coverage,
 		   err_msg);
 	  sqlite3_free (err_msg);
 	  *retcode += -1;

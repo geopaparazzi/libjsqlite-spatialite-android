@@ -1,5 +1,6 @@
 include $(CLEAR_VARS)
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
+# 2015-01-16: libspatialite-4.2.1-rc2 [no new files]
 LOCAL_MODULE    := rasterlite2
 
 # SQLite flags copied from ASOP [may not be needed for rasterlite2]

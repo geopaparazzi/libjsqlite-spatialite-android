@@ -1282,7 +1282,7 @@ Java_jsqlite_Database__1open4(JNIEnv *env, jobject obj, jstring file, jint mode,
      spatialite_init_ex((sqlite3 *)h->sqlite,p_cache,0);
 #pragma message(VAR_NAME_VALUE(HAVE_SPATIALITE41))
 #if HAVE_RASTERLITE2 == 1
-     /* Initializes the (Rasterlite2) library */
+     /* Initializes the (RasterLite2) library */
      rl2_init((sqlite3 *)h->sqlite,0);
 #pragma message(VAR_NAME_VALUE(HAVE_RASTERLITE2))
      SPATIALITE_CONNECTIONS++;

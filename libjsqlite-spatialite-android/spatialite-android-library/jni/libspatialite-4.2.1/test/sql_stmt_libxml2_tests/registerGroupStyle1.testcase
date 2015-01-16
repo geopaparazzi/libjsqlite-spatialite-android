@@ -1,8 +1,8 @@
-RegisterGroupStyle - NULL group
+RegisterGroupStyle - NULL style
 :memory: #use in-memory database
-SELECT RegisterGroupStyle(NULL, NULL);
+SELECT SE_RegisterGroupStyle(NULL);
 1 # rows (not including the header row)
 1 # columns
-RegisterGroupStyle(NULL, NULL)
+SE_RegisterGroupStyle(NULL)
 -1
 

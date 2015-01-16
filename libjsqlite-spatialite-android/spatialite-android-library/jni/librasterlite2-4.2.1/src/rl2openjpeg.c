@@ -47,16 +47,6 @@ the terms of any one of the MPL, the GPL or the LGPL.
 
 #include "config.h"
 
-#ifdef HAVE_OPENJPEG_2_1_OPENJPEG_H 
-#include <openjpeg-2.1/openjpeg.h>
-#else
-#ifdef __ANDROID__		/* Android specific */
-#include <openjpeg.h>
-#else
-#include <openjpeg-2.0/openjpeg.h>
-#endif
-#endif
-
 #ifdef LOADABLE_EXTENSION
 #include "rasterlite2/sqlite.h"
 #endif
@@ -64,6 +54,14 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #include "rasterlite2/rasterlite2.h"
 #include "rasterlite2/rl2tiff.h"
 #include "rasterlite2_private.h"
+
+#ifndef OMIT_OPENJPEG		/* only if OpenJpeg is enabled */
+
+#ifdef HAVE_OPENJPEG_2_1_OPENJPEG_H
+#include <openjpeg-2.1/openjpeg.h>
+#else
+#include <openjpeg-2.0/openjpeg.h>
+#endif
 
 struct jp2_memfile
 {
@@ -1390,8 +1388,10 @@ rl2_get_jpeg2000_infos (const char *path, unsigned int *xwidth,
 }
 
 RL2_DECLARE int
-rl2_get_jpeg2000_blob_type (const unsigned char *jpeg2000, int jpeg2000_sz, unsigned char *xsample_type,
-			unsigned char *xpixel_type, unsigned char *xnum_bands)
+rl2_get_jpeg2000_blob_type (const unsigned char *jpeg2000, int jpeg2000_sz,
+			    unsigned char *xsample_type,
+			    unsigned char *xpixel_type,
+			    unsigned char *xnum_bands)
 {
 /* attempting to retrieve the basic infos about some Jpeg2000 - BLOB version */
     unsigned char sample_type = RL2_SAMPLE_UNKNOWN;
@@ -1629,3 +1629,5 @@ rl2_build_jpeg2000_xml_summary (unsigned int width, unsigned int height,
     sqlite3_free (prev);
     return xml;
 }
+
+#endif /* end OpenJpeg conditional */

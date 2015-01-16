@@ -1874,10 +1874,10 @@ check_spatial_metadata (const void *handle, const char *db_prefix)
 {
 /* internal utility function:
 /
-/ 0 - if no valid SpatialMetaData where found
-/ 1 - if SpatiaLite-like (legacy) SpatialMetadata where found
-/ 2 - if FDO-OGR-like SpatialMetadata where found
-/ 3 - if SpatiaLite-like (current) SpatialMetadata where found
+/ 0 - if no valid SpatialMetaData were found
+/ 1 - if SpatiaLite-like (legacy) SpatialMetadata were found
+/ 2 - if FDO-OGR-like SpatialMetadata were found
+/ 3 - if SpatiaLite-like (current) SpatialMetadata were found
 /
 */
     sqlite3 *sqlite = (sqlite3 *) handle;

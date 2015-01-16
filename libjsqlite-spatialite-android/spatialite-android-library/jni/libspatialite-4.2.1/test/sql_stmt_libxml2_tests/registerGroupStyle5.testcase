@@ -1,8 +1,7 @@
-RegisterGroupStyle - NULL style
+RegisterGroupStyle - BLOB style
 :memory: #use in-memory database
-SELECT RegisterGroupStyle('alpha', NULL);
+SELECT SE_RegisterGroupStyle(zeroblob(4));
 1 # rows (not including the header row)
 1 # columns
-RegisterGroupStyle('alpha', NULL)
--1
-
+SE_RegisterGroupStyle(zeroblob(4));
+0

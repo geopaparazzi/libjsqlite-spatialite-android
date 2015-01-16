@@ -7,6 +7,10 @@ EXTRA_DIST = blobfromfile1.testcase \
 	blobtofile2.testcase \
 	blobtofile3.testcase \
 	blobtofile4.testcase \
+	eval1.testcase \
+	eval2.testcase \
+	eval3.testcase \
+	eval4.testcase \
 	exportdbf1.testcase \
 	exportdbf2.testcase \
 	exportdbf3.testcase \

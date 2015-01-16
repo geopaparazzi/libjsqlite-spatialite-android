@@ -281,6 +281,8 @@ is_jpeg_image (const char *path)
     return 0;
 }
 
+#ifndef OMIT_OPENJPEG		/* only if OpenJpeg is enabled */
+
 static int
 is_jpeg2000_image (const char *path)
 {
@@ -293,6 +295,8 @@ is_jpeg2000_image (const char *path)
       }
     return 0;
 }
+
+#endif /* end OpenJpeg conditional */
 
 static void
 do_sniff_ascii_grid (const char *src_path, int with_md5)
@@ -550,6 +554,8 @@ do_sniff_jpeg_image (const char *src_path, int worldfile, int with_md5)
 		pixel, bands, "JPEG");
 }
 
+#ifndef OMIT_OPENJPEG		/* only if OpenJpeg is enabled */
+
 static void
 do_sniff_jpeg2000_image (const char *src_path, int worldfile, int with_md5)
 {
@@ -625,6 +631,8 @@ do_sniff_jpeg2000_image (const char *src_path, int worldfile, int with_md5)
 		(md5 == NULL) ? "" : md5, src_path, width, height, sample,
 		pixel, num_bands, "Jpeg2000");
 }
+
+#endif /* end OpenJpeg conditional */
 
 static int
 recover_incomplete_geotiff (TIFF * in, uint32 width, uint32 height,
@@ -1135,8 +1143,11 @@ do_sniff_file (const char *src_path, int worldfile, int with_md5)
 	do_sniff_ascii_grid (src_path, with_md5);
     if (is_jpeg_image (src_path))
 	do_sniff_jpeg_image (src_path, worldfile, with_md5);
+
+#ifndef OMIT_OPENJPEG		/* only if OpenJpeg is enabled */
     if (is_jpeg2000_image (src_path))
 	do_sniff_jpeg2000_image (src_path, worldfile, with_md5);
+#endif /* end OpenJpeg conditional */
 
     if (worldfile)
 	do_sniff_tiff_image (src_path, with_md5);

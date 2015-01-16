@@ -69,6 +69,24 @@ free_epsg_def (struct epsg_defs *ptr)
 	free (ptr->proj4text);
     if (ptr->srs_wkt)
 	free (ptr->srs_wkt);
+    if (ptr->spheroid)
+	free (ptr->spheroid);
+	if (ptr->prime_meridian)
+	free(ptr->prime_meridian);
+    if (ptr->datum)
+	free (ptr->datum);
+    if (ptr->projection)
+	free (ptr->projection);
+    if (ptr->unit)
+	free (ptr->unit);
+    if (ptr->axis_1)
+	free (ptr->axis_1);
+    if (ptr->orientation_1)
+	free (ptr->orientation_1);
+    if (ptr->axis_2)
+	free (ptr->axis_2);
+    if (ptr->orientation_2)
+	free (ptr->orientation_2);
     free (ptr);
 }
 
@@ -117,6 +135,160 @@ add_epsg_def (int filter_srid, struct epsg_defs **first,
 		    goto error;
 		strcpy (p->ref_sys_name, ref_sys_name);
 	    }
+      }
+    p->is_geographic = -1;
+    p->flipped_axes = -1;
+    p->spheroid = NULL;
+    p->prime_meridian = NULL;
+    p->datum = NULL;
+    p->projection = NULL;
+    p->unit = NULL;
+    p->axis_1 = NULL;
+    p->orientation_1 = NULL;
+    p->axis_2 = NULL;
+    p->orientation_2 = NULL;
+    if (*first == NULL)
+	*first = p;
+    if (*last != NULL)
+	(*last)->next = p;
+    *last = p;
+    return p;
+  error:
+    free_epsg_def (p);
+    return NULL;
+}
+
+SPATIALITE_PRIVATE struct epsg_defs *
+add_epsg_def_ex (int filter_srid, struct epsg_defs **first,
+		 struct epsg_defs **last, int srid, const char *auth_name,
+		 int auth_srid, const char *ref_sys_name, int is_geographic,
+		 int flipped_axes, const char *spheroid, const char *prime_meridian, const char *datum,
+		 const char *projection, const char *unit, const char *axis_1,
+		 const char *orientation_1, const char *axis_2,
+		 const char *orientation_2)
+{
+/* appending an EPSG def to the list */
+    int len;
+    struct epsg_defs *p;
+    if (filter_srid == GAIA_EPSG_NONE)
+	return NULL;
+    if (filter_srid == GAIA_EPSG_ANY || filter_srid == GAIA_EPSG_WGS84_ONLY)
+	;
+    else if (srid != filter_srid)
+	return NULL;
+    p = malloc (sizeof (struct epsg_defs));
+    if (!p)
+	return NULL;
+    p->srid = srid;
+    p->auth_name = NULL;
+    p->auth_srid = auth_srid;
+    p->ref_sys_name = NULL;
+    p->proj4text = NULL;
+    p->srs_wkt = NULL;
+    p->spheroid = NULL;
+    p->prime_meridian = NULL;
+    p->datum = NULL;
+    p->unit = NULL;
+    p->axis_1 = NULL;
+    p->orientation_1 = NULL;
+    p->axis_2 = NULL;
+    p->orientation_2 = NULL;
+    p->next = NULL;
+    if (auth_name)
+      {
+	  len = strlen (auth_name);
+	  if (len > 0)
+	    {
+		p->auth_name = malloc (len + 1);
+		if (p->auth_name == NULL)
+		    goto error;
+		strcpy (p->auth_name, auth_name);
+	    }
+      }
+    if (ref_sys_name)
+      {
+	  len = strlen (ref_sys_name);
+	  if (len > 0)
+	    {
+		p->ref_sys_name = malloc (len + 1);
+		if (p->ref_sys_name == NULL)
+		    goto error;
+		strcpy (p->ref_sys_name, ref_sys_name);
+	    }
+      }
+    p->is_geographic = is_geographic;
+    p->flipped_axes = flipped_axes;
+    if (spheroid)
+      {
+	  len = strlen (spheroid);
+	  p->spheroid = malloc (len + 1);
+	  if (p->spheroid == NULL)
+	      goto error;
+	  strcpy (p->spheroid, spheroid);
+      }
+    if (prime_meridian)
+      {
+	  len = strlen (prime_meridian);
+	  p->prime_meridian = malloc (len + 1);
+	  if (p->prime_meridian == NULL)
+	      goto error;
+	  strcpy (p->prime_meridian, prime_meridian);
+      }
+    if (datum)
+      {
+	  len = strlen (datum);
+	  p->datum = malloc (len + 1);
+	  if (p->datum == NULL)
+	      goto error;
+	  strcpy (p->datum, datum);
+      }
+    if (projection)
+      {
+	  len = strlen (projection);
+	  p->projection = malloc (len + 1);
+	  if (p->projection == NULL)
+	      goto error;
+	  strcpy (p->projection, projection);
+      }
+    if (unit)
+      {
+	  len = strlen (unit);
+	  p->unit = malloc (len + 1);
+	  if (p->unit == NULL)
+	      goto error;
+	  strcpy (p->unit, unit);
+      }
+    if (axis_1)
+      {
+	  len = strlen (axis_1);
+	  p->axis_1 = malloc (len + 1);
+	  if (p->axis_1 == NULL)
+	      goto error;
+	  strcpy (p->axis_1, axis_1);
+      }
+    if (orientation_1)
+      {
+	  len = strlen (orientation_1);
+	  p->orientation_1 = malloc (len + 1);
+	  if (p->orientation_1 == NULL)
+	      goto error;
+	  strcpy (p->orientation_1, orientation_1);
+      }
+    if (axis_2)
+      {
+	  len = strlen (axis_2);
+	  p->axis_2 = malloc (len + 1);
+	  if (p->axis_2 == NULL)
+	      goto error;
+	  strcpy (p->axis_2, axis_2);
+      }
+    if (orientation_2)
+      {
+	  len = strlen (orientation_2);
+	  p->orientation_2 = malloc (len + 1);
+	  if (p->orientation_2 == NULL)
+	      goto error;
+	  strcpy (p->orientation_2, orientation_2);
       }
     if (*first == NULL)
 	*first = p;
@@ -203,6 +375,44 @@ free_epsg (struct epsg_defs *first)
       }
 }
 
+static void
+create_spatial_ref_sys_aux (sqlite3 * handle)
+{
+/* just in case, we'll create the SPATIAL_REF_SYS_AUX table */
+    const char *sql = "CREATE TABLE IF NOT EXISTS spatial_ref_sys_aux (\n"
+	"\tsrid INTEGER NOT NULL PRIMARY KEY,\n"
+	"\tis_geographic INTEGER,\n"
+	"\thas_flipped_axes INTEGER,\n"
+	"\tspheroid TEXT,\n"
+	"\tprime_meridian TEXT,\n"
+	"\tdatum TEXT,\n"
+	"\tprojection TEXT,\n"
+	"\tunit TEXT,\n"
+	"\taxis_1_name TEXT,\n"
+	"\taxis_1_orientation TEXT,\n"
+	"\taxis_2_name TEXT,\n"
+	"\taxis_2_orientation TEXT,\n"
+	"\tCONSTRAINT fk_sprefsys FOREIGN KEY (srid) "
+	"\tREFERENCES spatial_ref_sys (srid))";
+    sqlite3_exec (handle, sql, NULL, NULL, NULL);
+/* creating the SPATIAL_REF_SYS_ALL view */
+    sql = "CREATE VIEW IF NOT EXISTS spatial_ref_sys_all AS\n"
+	"SELECT a.srid AS srid, a.auth_name AS auth_name, "
+	"a.auth_srid AS auth_srid, a.ref_sys_name AS ref_sys_name,\n"
+	"b.is_geographic AS is_geographic, "
+	"b.has_flipped_axes AS has_flipped_axes, "
+	"b.spheroid AS spheroid, b.prime_meridian AS prime_meridian, "
+	"b.datum AS datum, b.projection AS projection, b.unit AS unit,\n"
+	"b.axis_1_name AS axis_1_name, "
+	"b.axis_1_orientation AS axis_1_orientation,\n"
+	"b.axis_2_name AS axis_2_name, "
+	"b.axis_2_orientation AS axis_2_orientation,\n"
+	"a.proj4text AS proj4text, a.srtext AS srtext\n"
+	"FROM spatial_ref_sys AS a\n"
+	"LEFT JOIN spatial_ref_sys_aux AS b ON (a.srid = b.srid)";
+    sqlite3_exec (handle, sql, NULL, NULL, NULL);
+}
+
 static int
 populate_spatial_ref_sys (sqlite3 * handle, int mode)
 {
@@ -212,12 +422,15 @@ populate_spatial_ref_sys (sqlite3 * handle, int mode)
     struct epsg_defs *p;
     char sql[1024];
     int ret;
-    sqlite3_stmt *stmt;
+    sqlite3_stmt *stmt = NULL;
+    sqlite3_stmt *stmt_aux = NULL;
+    int ok_aux;
 
 /* initializing the EPSG defs list */
     initialize_epsg (mode, &first, &last);
 
-/* preparing the SQL parameterized statement */
+    create_spatial_ref_sys_aux (handle);
+/* preparing the SQL parameterized statement (main) */
     strcpy (sql, "INSERT INTO spatial_ref_sys ");
     strcat (sql,
 	    "(srid, auth_name, auth_srid, ref_sys_name, proj4text, srtext) ");
@@ -228,11 +441,25 @@ populate_spatial_ref_sys (sqlite3 * handle, int mode)
 	  spatialite_e ("%s\n", sqlite3_errmsg (handle));
 	  goto error;
       }
+/* preparing the SQL parameterized statement (aux) */
+    strcpy (sql, "INSERT INTO spatial_ref_sys_aux ");
+    strcat (sql, "(srid, is_geographic, has_flipped_axes, spheroid, prime_meridian, ");
+    strcat (sql, "datum, projection, unit, axis_1_name, axis_1_orientation, ");
+    strcat (sql, "axis_2_name, axis_2_orientation) ");
+    strcat (sql, "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt_aux, NULL);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("%s\n", sqlite3_errmsg (handle));
+	  goto error;
+      }
+
     p = first;
     while (p)
       {
 	  if (p->auth_name == NULL)
 	      break;
+	  /* inserting into SPATIAL_REF_SYS */
 	  sqlite3_reset (stmt);
 	  sqlite3_clear_bindings (stmt);
 	  sqlite3_bind_int (stmt, 1, p->srid);
@@ -254,19 +481,125 @@ populate_spatial_ref_sys (sqlite3 * handle, int mode)
 	  else
 	    {
 		spatialite_e ("%s\n", sqlite3_errmsg (handle));
-		sqlite3_finalize (stmt);
 		goto error;
+	    }
+
+	  /* inserting into SPATIAL_REF_SYS_AUX */
+	  ok_aux = 0;
+	  sqlite3_reset (stmt_aux);
+	  sqlite3_clear_bindings (stmt_aux);
+	  sqlite3_bind_int (stmt_aux, 1, p->srid);
+	  if (p->is_geographic < 0)
+	      sqlite3_bind_null (stmt_aux, 2);
+	  else
+	    {
+		sqlite3_bind_int (stmt_aux, 2, p->is_geographic);
+		ok_aux = 1;
+	    }
+	  if (p->flipped_axes < 0)
+	      sqlite3_bind_null (stmt_aux, 3);
+	  else
+	    {
+		sqlite3_bind_int (stmt_aux, 3, p->flipped_axes);
+		ok_aux = 1;
+	    }
+	  if (p->spheroid == NULL)
+	      sqlite3_bind_null (stmt_aux, 4);
+	  else
+	    {
+		sqlite3_bind_text (stmt_aux, 4, p->spheroid,
+				   strlen (p->spheroid), SQLITE_STATIC);
+		ok_aux = 1;
+	    }
+	  if (p->prime_meridian == NULL)
+	      sqlite3_bind_null (stmt_aux, 5);
+	  else
+	    {
+		sqlite3_bind_text (stmt_aux, 5, p->prime_meridian,
+				   strlen (p->prime_meridian), SQLITE_STATIC);
+		ok_aux = 1;
+	    }
+	  if (p->datum == NULL)
+	      sqlite3_bind_null (stmt_aux, 6);
+	  else
+	    {
+		sqlite3_bind_text (stmt_aux, 6, p->datum, strlen (p->datum),
+				   SQLITE_STATIC);
+		ok_aux = 1;
+	    }
+	  if (p->projection == NULL)
+	      sqlite3_bind_null (stmt_aux, 7);
+	  else
+	    {
+		sqlite3_bind_text (stmt_aux, 7, p->projection,
+				   strlen (p->projection), SQLITE_STATIC);
+		ok_aux = 1;
+	    }
+	  if (p->unit == NULL)
+	      sqlite3_bind_null (stmt_aux, 8);
+	  else
+	    {
+		sqlite3_bind_text (stmt_aux, 8, p->unit, strlen (p->unit),
+				   SQLITE_STATIC);
+		ok_aux = 1;
+	    }
+	  if (p->axis_1 == NULL)
+	      sqlite3_bind_null (stmt_aux, 9);
+	  else
+	    {
+		sqlite3_bind_text (stmt_aux, 9, p->axis_1, strlen (p->axis_1),
+				   SQLITE_STATIC);
+		ok_aux = 1;
+	    }
+	  if (p->orientation_1 == NULL)
+	      sqlite3_bind_null (stmt_aux, 10);
+	  else
+	    {
+		sqlite3_bind_text (stmt_aux, 10, p->orientation_1,
+				   strlen (p->orientation_1), SQLITE_STATIC);
+		ok_aux = 1;
+	    }
+	  if (p->axis_2 == NULL)
+	      sqlite3_bind_null (stmt_aux, 11);
+	  else
+	    {
+		sqlite3_bind_text (stmt_aux, 11, p->axis_2, strlen (p->axis_2),
+				   SQLITE_STATIC);
+		ok_aux = 1;
+	    }
+	  if (p->orientation_2 == NULL)
+	      sqlite3_bind_null (stmt_aux, 12);
+	  else
+	    {
+		sqlite3_bind_text (stmt_aux, 12, p->orientation_2,
+				   strlen (p->orientation_2), SQLITE_STATIC);
+		ok_aux = 1;
+	    }
+	  if (ok_aux)
+	    {
+		ret = sqlite3_step (stmt_aux);
+		if (ret == SQLITE_DONE || ret == SQLITE_ROW)
+		    ;
+		else
+		  {
+		      spatialite_e ("%s\n", sqlite3_errmsg (handle));
+		      goto error;
+		  }
 	    }
 	  p = p->next;
       }
     sqlite3_finalize (stmt);
+    sqlite3_finalize (stmt_aux);
 
 /* freeing the EPSG defs list */
     free_epsg (first);
-
     return 1;
-  error:
 
+  error:
+    if (stmt)
+	sqlite3_finalize (stmt);
+    if (stmt_aux)
+	sqlite3_finalize (stmt_aux);
 /* freeing the EPSG defs list */
     free_epsg (first);
 
@@ -454,7 +787,9 @@ insert_epsg_srid (sqlite3 * handle, int srid)
     char sql[1024];
     int ret;
     int error = 0;
-    sqlite3_stmt *stmt;
+    sqlite3_stmt *stmt = NULL;
+    sqlite3_stmt *stmt_aux = NULL;
+    int ok_aux;
 
     if (!exists_spatial_ref_sys (handle))
       {
@@ -477,6 +812,7 @@ insert_epsg_srid (sqlite3 * handle, int srid)
 	  return 0;
       }
 
+    create_spatial_ref_sys_aux (handle);
 /* preparing the SQL parameterized statement */
     strcpy (sql, "INSERT INTO spatial_ref_sys ");
     strcat (sql,
@@ -489,6 +825,21 @@ insert_epsg_srid (sqlite3 * handle, int srid)
 	  error = 1;
 	  goto stop;
       }
+/* preparing the SQL parameterized statement (aux) */
+    strcpy (sql, "INSERT INTO spatial_ref_sys_aux ");
+    strcat (sql, "(srid, is_geographic, has_flipped_axes, spheroid, prime_meridian, ");
+    strcat (sql, "datum, projection, unit, axis_1_name, axis_1_orientation, ");
+    strcat (sql, "axis_2_name, axis_2_orientation) ");
+    strcat (sql, "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt_aux, NULL);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("%s\n", sqlite3_errmsg (handle));
+	  error = 1;
+	  goto stop;
+      }
+
+    /* inserting into SPATIAL_REF_SYS_AUX */
     sqlite3_reset (stmt);
     sqlite3_clear_bindings (stmt);
     sqlite3_bind_int (stmt, 1, first->srid);
@@ -513,9 +864,114 @@ insert_epsg_srid (sqlite3 * handle, int srid)
 	  error = 1;
 	  goto stop;
       }
+
+    /* inserting into SPATIAL_REF_SYS_AUX */
+    ok_aux = 0;
+    sqlite3_reset (stmt_aux);
+    sqlite3_clear_bindings (stmt_aux);
+    sqlite3_bind_int (stmt_aux, 1, first->srid);
+    if (first->is_geographic < 0)
+	sqlite3_bind_null (stmt_aux, 2);
+    else
+      {
+	  sqlite3_bind_int (stmt_aux, 2, first->is_geographic);
+	  ok_aux = 1;
+      }
+    if (first->flipped_axes < 0)
+	sqlite3_bind_null (stmt_aux, 3);
+    else
+      {
+	  sqlite3_bind_int (stmt_aux, 3, first->flipped_axes);
+	  ok_aux = 1;
+      }
+    if (first->spheroid == NULL)
+	sqlite3_bind_null (stmt_aux, 4);
+    else
+      {
+	  sqlite3_bind_text (stmt_aux, 4, first->spheroid,
+			     strlen (first->spheroid), SQLITE_STATIC);
+	  ok_aux = 1;
+      }
+    if (first->prime_meridian == NULL)
+	sqlite3_bind_null (stmt_aux, 5);
+    else
+      {
+	  sqlite3_bind_text (stmt_aux, 5, first->prime_meridian,
+			     strlen (first->prime_meridian), SQLITE_STATIC);
+	  ok_aux = 1;
+      }
+    if (first->datum == NULL)
+	sqlite3_bind_null (stmt_aux, 6);
+    else
+      {
+	  sqlite3_bind_text (stmt_aux, 6, first->datum, strlen (first->datum),
+			     SQLITE_STATIC);
+	  ok_aux = 1;
+      }
+    if (first->projection == NULL)
+	sqlite3_bind_null (stmt_aux, 7);
+    else
+      {
+	  sqlite3_bind_text (stmt_aux, 7, first->projection,
+			     strlen (first->projection), SQLITE_STATIC);
+	  ok_aux = 1;
+      }
+    if (first->unit == NULL)
+	sqlite3_bind_null (stmt_aux, 8);
+    else
+      {
+	  sqlite3_bind_text (stmt_aux, 8, first->unit, strlen (first->unit),
+			     SQLITE_STATIC);
+	  ok_aux = 1;
+      }
+    if (first->axis_1 == NULL)
+	sqlite3_bind_null (stmt_aux, 9);
+    else
+      {
+	  sqlite3_bind_text (stmt_aux, 9, first->axis_1, strlen (first->axis_1),
+			     SQLITE_STATIC);
+	  ok_aux = 1;
+      }
+    if (first->orientation_1 == NULL)
+	sqlite3_bind_null (stmt_aux, 10);
+    else
+      {
+	  sqlite3_bind_text (stmt_aux, 10, first->orientation_1,
+			     strlen (first->orientation_1), SQLITE_STATIC);
+	  ok_aux = 1;
+      }
+    if (first->axis_2 == NULL)
+	sqlite3_bind_null (stmt_aux, 11);
+    else
+      {
+	  sqlite3_bind_text (stmt_aux, 11, first->axis_2,
+			     strlen (first->axis_2), SQLITE_STATIC);
+	  ok_aux = 1;
+      }
+    if (first->orientation_2 == NULL)
+	sqlite3_bind_null (stmt_aux, 11);
+    else
+      {
+	  sqlite3_bind_text (stmt_aux, 11, first->orientation_2,
+			     strlen (first->orientation_2), SQLITE_STATIC);
+	  ok_aux = 1;
+      }
+    if (ok_aux)
+      {
+	  ret = sqlite3_step (stmt_aux);
+	  if (ret == SQLITE_DONE || ret == SQLITE_ROW)
+	      ;
+	  else
+	    {
+		spatialite_e ("%s\n", sqlite3_errmsg (handle));
+		goto stop;
+	    }
+      }
   stop:
     if (stmt != NULL)
 	sqlite3_finalize (stmt);
+    if (stmt_aux != NULL)
+	sqlite3_finalize (stmt_aux);
 
 /* freeing the EPSG defs list */
     free_epsg (first);

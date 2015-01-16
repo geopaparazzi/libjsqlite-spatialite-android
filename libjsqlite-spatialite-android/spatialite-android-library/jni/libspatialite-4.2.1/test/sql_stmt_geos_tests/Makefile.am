@@ -73,6 +73,8 @@ EXTRA_DIST = bdmpolyfromtext10.testcase \
 	boundary8.testcase \
 	boundary9.testcase \
 	buffer10.testcase \
+	buffer11.testcase \
+	buffer12.testcase \
 	buffer1.testcase \
 	buffer2.testcase \
 	buffer3.testcase \

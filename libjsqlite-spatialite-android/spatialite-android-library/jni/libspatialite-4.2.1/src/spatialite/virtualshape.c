@@ -1172,6 +1172,17 @@ vshp_rollback (sqlite3_vtab * pVTab)
 }
 
 static int
+vshp_rename (sqlite3_vtab * pVTab, const char *zNew)
+{
+/* BEGIN TRANSACTION */
+    if (pVTab)
+	pVTab = pVTab;		/* unused arg warning suppression */
+    if (zNew)
+	zNew = zNew;		/* unused arg warning suppression */
+    return SQLITE_ERROR;
+}
+
+static int
 spliteVirtualShapeInit (sqlite3 * db)
 {
     int rc = SQLITE_OK;
@@ -1194,6 +1205,7 @@ spliteVirtualShapeInit (sqlite3 * db)
     my_shape_module.xCommit = &vshp_commit;
     my_shape_module.xRollback = &vshp_rollback;
     my_shape_module.xFindFunction = NULL;
+    my_shape_module.xRename = &vshp_rename;
     sqlite3_create_module_v2 (db, "VirtualShape", &my_shape_module, NULL, 0);
     return rc;
 }

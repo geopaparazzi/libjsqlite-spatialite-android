@@ -887,6 +887,17 @@ vdbf_rollback (sqlite3_vtab * pVTab)
 }
 
 static int
+vdbf_rename (sqlite3_vtab * pVTab, const char *zNew)
+{
+/* BEGIN TRANSACTION */
+    if (pVTab)
+	pVTab = pVTab;		/* unused arg warning suppression */
+    if (zNew)
+	zNew = zNew;		/* unused arg warning suppression */
+    return SQLITE_ERROR;
+}
+
+static int
 spliteVirtualDbfInit (sqlite3 * db)
 {
     int rc = SQLITE_OK;
@@ -909,6 +920,7 @@ spliteVirtualDbfInit (sqlite3 * db)
     my_dbf_module.xCommit = &vdbf_commit;
     my_dbf_module.xRollback = &vdbf_rollback;
     my_dbf_module.xFindFunction = NULL;
+    my_dbf_module.xRename = &vdbf_rename;
     sqlite3_create_module_v2 (db, "VirtualDbf", &my_dbf_module, NULL, 0);
     return rc;
 }

@@ -18,7 +18,7 @@ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
 for the specific language governing rights and limitations under the
 License.
 
-The Original Code is the SpatiaLite library
+The Original Code is the RasterLite2 library
 
 The Initial Developer of the Original Code is Alessandro Furieri
  
@@ -45,6 +45,8 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "config.h"
 
 #include "sqlite3.h"
 #include "spatialite.h"
@@ -426,7 +428,7 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_DEFLATE:
+	    case RL2_COMPRESSION_DEFLATE_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -437,7 +439,7 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_LZMA:
+	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -464,7 +466,7 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_DEFLATE:
+	    case RL2_COMPRESSION_DEFLATE_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -475,7 +477,7 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_LZMA:
+	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -502,7 +504,7 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_DEFLATE:
+	    case RL2_COMPRESSION_DEFLATE_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -513,7 +515,7 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_LZMA:
+	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -540,7 +542,7 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_DEFLATE:
+	    case RL2_COMPRESSION_DEFLATE_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -551,7 +553,7 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_LZMA:
+	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -578,7 +580,7 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_DEFLATE:
+	    case RL2_COMPRESSION_DEFLATE_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -589,7 +591,7 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_LZMA:
+	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -616,7 +618,7 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_DEFLATE:
+	    case RL2_COMPRESSION_DEFLATE_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -627,7 +629,7 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_LZMA:
+	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -654,7 +656,7 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_DEFLATE:
+	    case RL2_COMPRESSION_DEFLATE_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -665,7 +667,7 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_LZMA:
+	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -692,7 +694,7 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_DEFLATE:
+	    case RL2_COMPRESSION_DEFLATE_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -703,7 +705,7 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_LZMA:
+	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -754,12 +756,12 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 	  compression_name = "NONE";
 	  qlty = 100;
 	  break;
-      case RL2_COMPRESSION_DEFLATE:
-	  compression_name = "DEFLATE";
+      case RL2_COMPRESSION_DEFLATE_NO:
+	  compression_name = "DEFLATE_NO";
 	  qlty = 100;
 	  break;
-      case RL2_COMPRESSION_LZMA:
-	  compression_name = "LZMA";
+      case RL2_COMPRESSION_LZMA_NO:
+	  compression_name = "LZMA_NO";
 	  qlty = 100;
 	  break;
       };
@@ -774,7 +776,7 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
       };
 
 /* creating the DBMS Coverage */
-    sql = sqlite3_mprintf ("SELECT RL2_CreateCoverage("
+    sql = sqlite3_mprintf ("SELECT RL2_CreateRasterCoverage("
 			   "%Q, %Q, %Q, %d, %Q, %d, %d, %d, %d, %1.8f, %1.8f)",
 			   coverage, sample_name, pixel_name, num_bands,
 			   compression_name, qlty, tile_size, tile_size, 3003,
@@ -783,7 +785,7 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
     sqlite3_free (sql);
     if (ret != SQLITE_OK)
       {
-	  fprintf (stderr, "CreateCoverage \"%s\" error: %s\n", coverage,
+	  fprintf (stderr, "CreateRasterCoverage \"%s\" error: %s\n", coverage,
 		   err_msg);
 	  sqlite3_free (err_msg);
 	  *retcode += -1;
@@ -795,6 +797,7 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 	sqlite3_mprintf
 	("SELECT RL2_LoadRastersFromDir(%Q, %Q, %Q, 0, 3003, 1)", coverage,
 	 "map_samples/ascii", ".asc");
+    fprintf (stderr, "AAAAAAAAA %s\n", sql);
     ret = execute_check (sqlite, sql);
     sqlite3_free (sql);
     if (ret != SQLITE_OK)
@@ -885,7 +888,7 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
     if (!test_statistics (sqlite, coverage, retcode))
 	return 0;
 
-    if (compression == RL2_COMPRESSION_DEFLATE)
+    if (compression == RL2_COMPRESSION_DEFLATE_NO)
       {
 	  /* testing a Monolithic Pyramid */
 	  sql =
@@ -933,7 +936,7 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_DEFLATE:
+	    case RL2_COMPRESSION_DEFLATE_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -944,7 +947,7 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_LZMA:
+	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -971,7 +974,7 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_DEFLATE:
+	    case RL2_COMPRESSION_DEFLATE_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -982,7 +985,7 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_LZMA:
+	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -1009,7 +1012,7 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_DEFLATE:
+	    case RL2_COMPRESSION_DEFLATE_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -1020,7 +1023,7 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_LZMA:
+	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -1047,7 +1050,7 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_DEFLATE:
+	    case RL2_COMPRESSION_DEFLATE_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -1058,7 +1061,7 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_LZMA:
+	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -1085,7 +1088,7 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_DEFLATE:
+	    case RL2_COMPRESSION_DEFLATE_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -1096,7 +1099,7 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_LZMA:
+	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -1123,7 +1126,7 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_DEFLATE:
+	    case RL2_COMPRESSION_DEFLATE_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -1134,7 +1137,7 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_LZMA:
+	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -1161,7 +1164,7 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_DEFLATE:
+	    case RL2_COMPRESSION_DEFLATE_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -1172,7 +1175,7 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_LZMA:
+	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -1199,7 +1202,7 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_DEFLATE:
+	    case RL2_COMPRESSION_DEFLATE_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -1210,7 +1213,7 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
-	    case RL2_COMPRESSION_LZMA:
+	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
 		  case TILE_256:
@@ -1226,12 +1229,12 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
       };
 
 /* dropping the DBMS Coverage */
-    sql = sqlite3_mprintf ("SELECT RL2_DropCoverage(%Q, 1)", coverage);
+    sql = sqlite3_mprintf ("SELECT RL2_DropRasterCoverage(%Q, 1)", coverage);
     ret = execute_check (sqlite, sql);
     sqlite3_free (sql);
     if (ret != SQLITE_OK)
       {
-	  fprintf (stderr, "DropCoverage \"%s\" error: %s\n", coverage,
+	  fprintf (stderr, "DropRasterCoverage \"%s\" error: %s\n", coverage,
 		   err_msg);
 	  sqlite3_free (err_msg);
 	  *retcode += -1;
@@ -1306,7 +1309,8 @@ main (int argc, char *argv[])
 	return ret;
     ret = -120;
     if (!test_coverage
-	(db_handle, RL2_SAMPLE_INT8, RL2_COMPRESSION_DEFLATE, TILE_1024, &ret))
+	(db_handle, RL2_SAMPLE_INT8, RL2_COMPRESSION_DEFLATE_NO, TILE_1024,
+	 &ret))
 	return ret;
     ret = -150;
     if (!test_coverage
@@ -1314,11 +1318,13 @@ main (int argc, char *argv[])
 	return ret;
     ret = -170;
     if (!test_coverage
-	(db_handle, RL2_SAMPLE_UINT8, RL2_COMPRESSION_DEFLATE, TILE_1024, &ret))
+	(db_handle, RL2_SAMPLE_UINT8, RL2_COMPRESSION_DEFLATE_NO, TILE_1024,
+	 &ret))
 	return ret;
     ret = -200;
     if (!test_coverage
-	(db_handle, RL2_SAMPLE_INT16, RL2_COMPRESSION_DEFLATE, TILE_256, &ret))
+	(db_handle, RL2_SAMPLE_INT16, RL2_COMPRESSION_DEFLATE_NO, TILE_256,
+	 &ret))
 	return ret;
     ret = -220;
     if (!test_coverage
@@ -1326,23 +1332,31 @@ main (int argc, char *argv[])
 	return ret;
     ret = -250;
     if (!test_coverage
-	(db_handle, RL2_SAMPLE_UINT16, RL2_COMPRESSION_DEFLATE, TILE_256, &ret))
+	(db_handle, RL2_SAMPLE_UINT16, RL2_COMPRESSION_DEFLATE_NO, TILE_256,
+	 &ret))
 	return ret;
+
+#ifndef OMIT_LZMA		/* only if LZMA is enabled */
     ret = -270;
     if (!test_coverage
-	(db_handle, RL2_SAMPLE_UINT16, RL2_COMPRESSION_LZMA, TILE_1024, &ret))
+	(db_handle, RL2_SAMPLE_UINT16, RL2_COMPRESSION_LZMA_NO, TILE_1024,
+	 &ret))
 	return ret;
+#endif
+
     ret = -300;
     if (!test_coverage
 	(db_handle, RL2_SAMPLE_INT32, RL2_COMPRESSION_NONE, TILE_256, &ret))
 	return ret;
     ret = -320;
     if (!test_coverage
-	(db_handle, RL2_SAMPLE_INT32, RL2_COMPRESSION_DEFLATE, TILE_1024, &ret))
+	(db_handle, RL2_SAMPLE_INT32, RL2_COMPRESSION_DEFLATE_NO, TILE_1024,
+	 &ret))
 	return ret;
     ret = -350;
     if (!test_coverage
-	(db_handle, RL2_SAMPLE_UINT32, RL2_COMPRESSION_DEFLATE, TILE_256, &ret))
+	(db_handle, RL2_SAMPLE_UINT32, RL2_COMPRESSION_DEFLATE_NO, TILE_256,
+	 &ret))
 	return ret;
     ret = -370;
     if (!test_coverage
@@ -1350,15 +1364,21 @@ main (int argc, char *argv[])
 	return ret;
     ret = -400;
     if (!test_coverage
-	(db_handle, RL2_SAMPLE_FLOAT, RL2_COMPRESSION_DEFLATE, TILE_256, &ret))
+	(db_handle, RL2_SAMPLE_FLOAT, RL2_COMPRESSION_DEFLATE_NO, TILE_256,
+	 &ret))
 	return ret;
+
+#ifndef OMIT_LZMA		/* only if LZMA is enabled */
     ret = -420;
     if (!test_coverage
-	(db_handle, RL2_SAMPLE_FLOAT, RL2_COMPRESSION_LZMA, TILE_1024, &ret))
+	(db_handle, RL2_SAMPLE_FLOAT, RL2_COMPRESSION_LZMA_NO, TILE_1024, &ret))
 	return ret;
+#endif
+
     ret = -450;
     if (!test_coverage
-	(db_handle, RL2_SAMPLE_DOUBLE, RL2_COMPRESSION_DEFLATE, TILE_256, &ret))
+	(db_handle, RL2_SAMPLE_DOUBLE, RL2_COMPRESSION_DEFLATE_NO, TILE_256,
+	 &ret))
 	return ret;
     ret = -470;
     if (!test_coverage
@@ -1372,7 +1392,8 @@ main (int argc, char *argv[])
 	return ret;
     ret = -130;
     if (!drop_coverage
-	(db_handle, RL2_SAMPLE_INT8, RL2_COMPRESSION_DEFLATE, TILE_1024, &ret))
+	(db_handle, RL2_SAMPLE_INT8, RL2_COMPRESSION_DEFLATE_NO, TILE_1024,
+	 &ret))
 	return ret;
     ret = -160;
     if (!drop_coverage
@@ -1380,11 +1401,13 @@ main (int argc, char *argv[])
 	return ret;
     ret = -180;
     if (!drop_coverage
-	(db_handle, RL2_SAMPLE_UINT8, RL2_COMPRESSION_DEFLATE, TILE_1024, &ret))
+	(db_handle, RL2_SAMPLE_UINT8, RL2_COMPRESSION_DEFLATE_NO, TILE_1024,
+	 &ret))
 	return ret;
     ret = -210;
     if (!drop_coverage
-	(db_handle, RL2_SAMPLE_INT16, RL2_COMPRESSION_DEFLATE, TILE_256, &ret))
+	(db_handle, RL2_SAMPLE_INT16, RL2_COMPRESSION_DEFLATE_NO, TILE_256,
+	 &ret))
 	return ret;
     ret = -230;
     if (!drop_coverage
@@ -1392,23 +1415,31 @@ main (int argc, char *argv[])
 	return ret;
     ret = -260;
     if (!drop_coverage
-	(db_handle, RL2_SAMPLE_UINT16, RL2_COMPRESSION_DEFLATE, TILE_256, &ret))
+	(db_handle, RL2_SAMPLE_UINT16, RL2_COMPRESSION_DEFLATE_NO, TILE_256,
+	 &ret))
 	return ret;
+
+#ifndef OMIT_LZMA		/* only if LZMA is enabled */
     ret = -280;
     if (!drop_coverage
-	(db_handle, RL2_SAMPLE_UINT16, RL2_COMPRESSION_LZMA, TILE_1024, &ret))
+	(db_handle, RL2_SAMPLE_UINT16, RL2_COMPRESSION_LZMA_NO, TILE_1024,
+	 &ret))
 	return ret;
+#endif
+
     ret = -310;
     if (!drop_coverage
 	(db_handle, RL2_SAMPLE_INT32, RL2_COMPRESSION_NONE, TILE_256, &ret))
 	return ret;
     ret = -330;
     if (!drop_coverage
-	(db_handle, RL2_SAMPLE_INT32, RL2_COMPRESSION_DEFLATE, TILE_1024, &ret))
+	(db_handle, RL2_SAMPLE_INT32, RL2_COMPRESSION_DEFLATE_NO, TILE_1024,
+	 &ret))
 	return ret;
     ret = -360;
     if (!drop_coverage
-	(db_handle, RL2_SAMPLE_UINT32, RL2_COMPRESSION_DEFLATE, TILE_256, &ret))
+	(db_handle, RL2_SAMPLE_UINT32, RL2_COMPRESSION_DEFLATE_NO, TILE_256,
+	 &ret))
 	return ret;
     ret = -380;
     if (!drop_coverage
@@ -1416,15 +1447,21 @@ main (int argc, char *argv[])
 	return ret;
     ret = -410;
     if (!drop_coverage
-	(db_handle, RL2_SAMPLE_FLOAT, RL2_COMPRESSION_DEFLATE, TILE_256, &ret))
+	(db_handle, RL2_SAMPLE_FLOAT, RL2_COMPRESSION_DEFLATE_NO, TILE_256,
+	 &ret))
 	return ret;
+
+#ifndef OMIT_LZMA		/* only if LZMA is enabled */
     ret = -430;
     if (!drop_coverage
-	(db_handle, RL2_SAMPLE_FLOAT, RL2_COMPRESSION_LZMA, TILE_1024, &ret))
+	(db_handle, RL2_SAMPLE_FLOAT, RL2_COMPRESSION_LZMA_NO, TILE_1024, &ret))
 	return ret;
+#endif
+
     ret = -460;
     if (!drop_coverage
-	(db_handle, RL2_SAMPLE_DOUBLE, RL2_COMPRESSION_DEFLATE, TILE_256, &ret))
+	(db_handle, RL2_SAMPLE_DOUBLE, RL2_COMPRESSION_DEFLATE_NO, TILE_256,
+	 &ret))
 	return ret;
     ret = -480;
     if (!drop_coverage

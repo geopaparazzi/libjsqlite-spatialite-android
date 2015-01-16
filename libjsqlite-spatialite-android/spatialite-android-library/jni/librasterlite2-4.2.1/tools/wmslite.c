@@ -145,7 +145,7 @@ struct wms_layer
     char *title;
     char *abstract;
     int srid;
-    int is_geographic;
+    int has_flipped_axes;
     double minx;
     double miny;
     double maxx;
@@ -193,7 +193,7 @@ struct wms_group
     char *title;
     char *abstract;
     int srid;
-    int is_geographic;
+    int has_flipped_axes;
     double minx;
     double miny;
     double maxx;
@@ -360,7 +360,7 @@ destroy_wms_style (struct wms_style *style)
 
 static struct wms_layer *
 alloc_wms_layer (const char *layer, const char *title, const char *abstract,
-		 int srid, int is_geographic, double minx, double miny,
+		 int srid, int has_flipped_axes, double minx, double miny,
 		 double maxx, double maxy, unsigned char sample,
 		 unsigned char pixel, unsigned char num_bands)
 {
@@ -378,7 +378,7 @@ alloc_wms_layer (const char *layer, const char *title, const char *abstract,
     lyr->abstract = malloc (len + 1);
     strcpy (lyr->abstract, abstract);
     lyr->srid = srid;
-    lyr->is_geographic = is_geographic;
+    lyr->has_flipped_axes = has_flipped_axes;
     lyr->minx = minx;
     lyr->miny = miny;
     lyr->maxx = maxx;
@@ -753,7 +753,7 @@ connection_init (struct read_connection *conn, const char *path)
 
 /* creating the GetMap SQL statement */
     sql =
-	"SELECT RL2_GetMapImage(?, BuildMbr(?, ?, ?, ?), ?, ?, ?, ?, ?, ?, ?)";
+	"SELECT RL2_GetMapImageFromRaster(?, BuildMbr(?, ?, ?, ?), ?, ?, ?, ?, ?, ?, ?)";
     ret = sqlite3_prepare_v2 (db_handle, sql, strlen (sql), &stmt, NULL);
     if (ret != SQLITE_OK)
       {
@@ -1584,7 +1584,7 @@ exists_layer (struct wms_list *list, const char *layer, int srid,
 	    {
 		if (lyr->srid != srid)
 		    return WMS_MISMATCHING_SRID;
-		if (wms_version == WMS_VERSION_130 && lyr->is_geographic)
+		if (wms_version == WMS_VERSION_130 && lyr->has_flipped_axes)
 		    *swap_xy = 1;
 		else
 		    *swap_xy = 0;
@@ -1625,7 +1625,7 @@ exists_layer (struct wms_list *list, const char *layer, int srid,
 		    return WMS_INVALID_GROUP;
 		if (grp->srid != srid)
 		    return WMS_MISMATCHING_SRID;
-		if (wms_version == WMS_VERSION_130 && grp->is_geographic)
+		if (wms_version == WMS_VERSION_130 && grp->has_flipped_axes)
 		    *swap_xy = 1;
 		else
 		    *swap_xy = 0;
@@ -2239,7 +2239,8 @@ build_http_error (int http_status, gaiaOutBufferPtr xml_response, int port_no)
 }
 
 static void
-build_get_capabilities (struct wms_list *list, char **cached, int *cached_len)
+build_get_capabilities (struct wms_list *list, char **cached, int *cached_len,
+			int port_no)
 {
 /* preparing the WMS GetCapabilities XML document */
     struct wms_layer *lyr;
@@ -2264,8 +2265,12 @@ build_get_capabilities (struct wms_list *list, char **cached, int *cached_len)
 			   "<Abstract>A simple light-weight WMS server for testing RasterLite2 Coverages.</Abstract>\r\n");
     gaiaAppendToOutBuffer (&xml_text,
 			   "<KeywordList>\r\n<Keyword>maps</Keyword>\r\n</KeywordList>\r\n");
-    gaiaAppendToOutBuffer (&xml_text,
-			   "<OnlineResource xlink:href=\"http://127.0.0.1:8080/wmslite?\" ");
+    dummy =
+	sqlite3_mprintf
+	("<OnlineResource xlink:href=\"http://127.0.0.1:%d/wmslite?\" ",
+	 port_no);
+    gaiaAppendToOutBuffer (&xml_text, dummy);
+    sqlite3_free (dummy);
     gaiaAppendToOutBuffer (&xml_text,
 			   "xlink:type=\"simple\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"/>\r\n");
     gaiaAppendToOutBuffer (&xml_text,
@@ -2299,8 +2304,12 @@ build_get_capabilities (struct wms_list *list, char **cached, int *cached_len)
 			   "<Capability>\r\n<Request>\r\n<GetCapabilities>\r\n");
     gaiaAppendToOutBuffer (&xml_text,
 			   "<Format>text/xml</Format>\r\n<DCPType>\r\n<HTTP>\r\n");
-    gaiaAppendToOutBuffer (&xml_text,
-			   "<Get><OnlineResource xlink:href=\"http://127.0.0.1:8080/wmslite?\" ");
+    dummy =
+	sqlite3_mprintf
+	("<Get><OnlineResource xlink:href=\"http://127.0.0.1:%d/wmslite?\" ",
+	 port_no);
+    gaiaAppendToOutBuffer (&xml_text, dummy);
+    sqlite3_free (dummy);
     gaiaAppendToOutBuffer (&xml_text,
 			   "xlink:type=\"simple\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"/></Get>\r\n");
     gaiaAppendToOutBuffer (&xml_text,
@@ -2311,8 +2320,12 @@ build_get_capabilities (struct wms_list *list, char **cached, int *cached_len)
     gaiaAppendToOutBuffer (&xml_text, "<Format>application/x-pdf</Format>\r\n");
     gaiaAppendToOutBuffer (&xml_text, "<Format>image/tiff</Format>\r\n");
     gaiaAppendToOutBuffer (&xml_text, "<DCPType>\r\n<HTTP>\r\n<Get>");
-    gaiaAppendToOutBuffer (&xml_text,
-			   "<OnlineResource xlink:href=\"http://127.0.0.1:8080/wmslite?\" ");
+    dummy =
+	sqlite3_mprintf
+	("<OnlineResource xlink:href=\"http://127.0.0.1:%d/wmslite?\" ",
+	 port_no);
+    gaiaAppendToOutBuffer (&xml_text, dummy);
+    sqlite3_free (dummy);
     gaiaAppendToOutBuffer (&xml_text,
 			   "xlink:type=\"simple\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"/></Get>\r\n");
     gaiaAppendToOutBuffer (&xml_text,
@@ -2378,7 +2391,7 @@ build_get_capabilities (struct wms_list *list, char **cached, int *cached_len)
 	  gaiaAppendToOutBuffer (&xml_text, dummy);
 	  sqlite3_free (dummy);
 	  gaiaAppendToOutBuffer (&xml_text, "</EX_GeographicBoundingBox>\r\n");
-	  if (lyr->is_geographic)
+	  if (lyr->has_flipped_axes)
 	      dummy = sqlite3_mprintf ("<BoundingBox CRS=\"EPSG:%d\" "
 				       "minx=\"%1.6f\" miny=\"%1.6f\" maxx=\"%1.6f\" maxy=\"%1.6f\"/>\r\n",
 				       lyr->srid, lyr->miny, lyr->minx,
@@ -2473,7 +2486,7 @@ build_get_capabilities (struct wms_list *list, char **cached, int *cached_len)
 	  gaiaAppendToOutBuffer (&xml_text, dummy);
 	  sqlite3_free (dummy);
 	  gaiaAppendToOutBuffer (&xml_text, "</EX_GeographicBoundingBox>\r\n");
-	  if (grp->is_geographic)
+	  if (grp->has_flipped_axes)
 	      dummy = sqlite3_mprintf ("<BoundingBox CRS=\"EPSG:%d\" "
 				       "minx=\"%1.6f\" miny=\"%1.6f\" maxx=\"%1.6f\" maxy=\"%1.6f\"/>\r\n",
 				       grp->srid, grp->miny, grp->minx,
@@ -2571,7 +2584,7 @@ build_get_capabilities (struct wms_list *list, char **cached, int *cached_len)
 		sqlite3_free (dummy);
 		gaiaAppendToOutBuffer (&xml_text,
 				       "</EX_GeographicBoundingBox>\r\n");
-		if (lyr->is_geographic)
+		if (lyr->has_flipped_axes)
 		    dummy = sqlite3_mprintf ("<BoundingBox CRS=\"EPSG:%d\" "
 					     "minx=\"%1.6f\" miny=\"%1.6f\" maxx=\"%1.6f\" maxy=\"%1.6f\"/>\r\n",
 					     lyr->srid, lyr->miny, lyr->minx,
@@ -3499,7 +3512,7 @@ compute_geographic_extents (sqlite3 * handle, struct wms_list *list)
 		      if (ref == grp->first_child)
 			{
 			    grp->srid = l->srid;
-			    grp->is_geographic = l->is_geographic;
+			    grp->has_flipped_axes = l->has_flipped_axes;
 			    if (l->minx < minx)
 				minx = l->minx;
 			    if (l->maxx > maxx)
@@ -3600,30 +3613,29 @@ compute_geographic_extents (sqlite3 * handle, struct wms_list *list)
 }
 
 static int
-check_geographic_srid (sqlite3 * handle, int srid)
+unsupported_codec (const char *compression)
 {
-/* testing if some SRID is of the Geographic type */
-    int ret;
-    char *sql;
-    char **results;
-    int rows;
-    int columns;
-    int i;
-    int geo = -1;
-
-    sql = sqlite3_mprintf ("SELECT Count(*) FROM spatial_ref_sys "
-			   "WHERE srid = %d AND proj4text LIKE '%%+proj=longlat%%'",
-			   srid);
-    ret = sqlite3_get_table (handle, sql, &results, &rows, &columns, NULL);
-    sqlite3_free (sql);
-    if (ret != SQLITE_OK)
-	goto skip;
-
-    for (i = 1; i <= rows; i++)
-	geo = atoi (results[(i * columns) + 0]);
-    sqlite3_free_table (results);
-  skip:
-    if (geo > 0)
+/* testing for unsupported optional codecs */
+    if (strcasecmp (compression, "LZMA") == 0
+	&& rl2_is_supported_codec (RL2_COMPRESSION_LZMA) != 1)
+	return 1;
+    if (strcasecmp (compression, "LZMA_NO") == 0
+	&& rl2_is_supported_codec (RL2_COMPRESSION_LZMA_NO) != 1)
+	return 1;
+    if (strcasecmp (compression, "CHARLS") == 0
+	&& rl2_is_supported_codec (RL2_COMPRESSION_CHARLS) != 1)
+	return 1;
+    if (strcasecmp (compression, "WEBP") == 0
+	&& rl2_is_supported_codec (RL2_COMPRESSION_LOSSY_WEBP) != 1)
+	return 1;
+    if (strcasecmp (compression, "LL_WEBP") == 0
+	&& rl2_is_supported_codec (RL2_COMPRESSION_LOSSLESS_WEBP) != 1)
+	return 1;
+    if (strcasecmp (compression, "JP2") == 0
+	&& rl2_is_supported_codec (RL2_COMPRESSION_LOSSY_JP2) != 1)
+	return 1;
+    if (strcasecmp (compression, "LL_JP2") == 0
+	&& rl2_is_supported_codec (RL2_COMPRESSION_LOSSLESS_JP2) != 1)
 	return 1;
     return 0;
 }
@@ -3644,116 +3656,121 @@ load_layer (sqlite3 * handle, sqlite3_stmt * stmt)
     double miny = sqlite3_column_double (stmt, 8);
     double maxx = sqlite3_column_double (stmt, 9);
     double maxy = sqlite3_column_double (stmt, 10);
-    int is_geographic = check_geographic_srid (handle, srid);
+    const char *compression = (const char *) sqlite3_column_text (stmt, 11);
+    int has_flipped_axes = 0;
+    if (unsupported_codec (compression))
+	return NULL;
+    if (!srid_has_flipped_axes (handle, srid, &has_flipped_axes))
+	has_flipped_axes = 0;
     if (strcmp (sample_type, "1-BIT") == 0
 	&& strcmp (pixel_type, "MONOCHROME") == 0 && num_bands == 1)
 	lyr =
 	    alloc_wms_layer (coverage_name, title, abstract, srid,
-			     is_geographic, minx, miny, maxx, maxy,
+			     has_flipped_axes, minx, miny, maxx, maxy,
 			     RL2_SAMPLE_1_BIT, RL2_PIXEL_MONOCHROME, 1);
     if (strcmp (sample_type, "1-BIT") == 0
 	&& strcmp (pixel_type, "PALETTE") == 0 && num_bands == 1)
 	lyr =
 	    alloc_wms_layer (coverage_name, title, abstract, srid,
-			     is_geographic, minx, miny, maxx, maxy,
+			     has_flipped_axes, minx, miny, maxx, maxy,
 			     RL2_SAMPLE_1_BIT, RL2_PIXEL_PALETTE, 1);
     if (strcmp (sample_type, "2-BIT") == 0
 	&& strcmp (pixel_type, "PALETTE") == 0 && num_bands == 1)
 	lyr =
 	    alloc_wms_layer (coverage_name, title, abstract, srid,
-			     is_geographic, minx, miny, maxx, maxy,
+			     has_flipped_axes, minx, miny, maxx, maxy,
 			     RL2_SAMPLE_2_BIT, RL2_PIXEL_PALETTE, 1);
     if (strcmp (sample_type, "4-BIT") == 0
 	&& strcmp (pixel_type, "PALETTE") == 0 && num_bands == 1)
 	lyr =
 	    alloc_wms_layer (coverage_name, title, abstract, srid,
-			     is_geographic, minx, miny, maxx, maxy,
+			     has_flipped_axes, minx, miny, maxx, maxy,
 			     RL2_SAMPLE_4_BIT, RL2_PIXEL_PALETTE, 1);
     if (strcmp (sample_type, "UINT8") == 0
 	&& strcmp (pixel_type, "PALETTE") == 0 && num_bands == 1)
 	lyr =
 	    alloc_wms_layer (coverage_name, title, abstract, srid,
-			     is_geographic, minx, miny, maxx, maxy,
+			     has_flipped_axes, minx, miny, maxx, maxy,
 			     RL2_SAMPLE_UINT8, RL2_PIXEL_PALETTE, 1);
     if (strcmp (sample_type, "UINT8") == 0
 	&& strcmp (pixel_type, "GRAYSCALE") == 0 && num_bands == 1)
 	lyr =
 	    alloc_wms_layer (coverage_name, title, abstract, srid,
-			     is_geographic, minx, miny, maxx, maxy,
+			     has_flipped_axes, minx, miny, maxx, maxy,
 			     RL2_SAMPLE_UINT8, RL2_PIXEL_GRAYSCALE, 1);
     if (strcmp (sample_type, "UINT8") == 0
 	&& strcmp (pixel_type, "RGB") == 0 && num_bands == 3)
 	lyr =
 	    alloc_wms_layer (coverage_name, title, abstract, srid,
-			     is_geographic, minx, miny, maxx, maxy,
+			     has_flipped_axes, minx, miny, maxx, maxy,
 			     RL2_SAMPLE_UINT8, RL2_PIXEL_RGB, 3);
     if (strcmp (sample_type, "UINT16") == 0
 	&& strcmp (pixel_type, "RGB") == 0 && num_bands == 3)
 	lyr =
 	    alloc_wms_layer (coverage_name, title, abstract, srid,
-			     is_geographic, minx, miny, maxx, maxy,
+			     has_flipped_axes, minx, miny, maxx, maxy,
 			     RL2_SAMPLE_UINT16, RL2_PIXEL_RGB, 3);
     if (strcmp (sample_type, "UINT8") == 0
 	&& strcmp (pixel_type, "MULTIBAND") == 0 && num_bands >= 2
 	&& num_bands < 255)
 	lyr =
 	    alloc_wms_layer (coverage_name, title, abstract, srid,
-			     is_geographic, minx, miny, maxx, maxy,
+			     has_flipped_axes, minx, miny, maxx, maxy,
 			     RL2_SAMPLE_UINT8, RL2_PIXEL_MULTIBAND, num_bands);
     if (strcmp (sample_type, "UINT16") == 0
 	&& strcmp (pixel_type, "MULTIBAND") == 0 && num_bands >= 2
 	&& num_bands < 255)
 	lyr =
 	    alloc_wms_layer (coverage_name, title, abstract, srid,
-			     is_geographic, minx, miny, maxx, maxy,
+			     has_flipped_axes, minx, miny, maxx, maxy,
 			     RL2_SAMPLE_UINT16, RL2_PIXEL_MULTIBAND, num_bands);
     if (strcmp (sample_type, "INT8") == 0
 	&& strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
 	lyr =
 	    alloc_wms_layer (coverage_name, title, abstract, srid,
-			     is_geographic, minx, miny, maxx, maxy,
+			     has_flipped_axes, minx, miny, maxx, maxy,
 			     RL2_SAMPLE_INT8, RL2_PIXEL_DATAGRID, 1);
     if (strcmp (sample_type, "UINT8") == 0
 	&& strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
 	lyr =
 	    alloc_wms_layer (coverage_name, title, abstract, srid,
-			     is_geographic, minx, miny, maxx, maxy,
+			     has_flipped_axes, minx, miny, maxx, maxy,
 			     RL2_SAMPLE_UINT8, RL2_PIXEL_DATAGRID, 1);
     if (strcmp (sample_type, "INT16") == 0
 	&& strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
 	lyr =
 	    alloc_wms_layer (coverage_name, title, abstract, srid,
-			     is_geographic, minx, miny, maxx, maxy,
+			     has_flipped_axes, minx, miny, maxx, maxy,
 			     RL2_SAMPLE_INT16, RL2_PIXEL_DATAGRID, 1);
     if (strcmp (sample_type, "UINT16") == 0
 	&& strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
 	lyr =
 	    alloc_wms_layer (coverage_name, title, abstract, srid,
-			     is_geographic, minx, miny, maxx, maxy,
+			     has_flipped_axes, minx, miny, maxx, maxy,
 			     RL2_SAMPLE_UINT16, RL2_PIXEL_DATAGRID, 1);
     if (strcmp (sample_type, "INT32") == 0
 	&& strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
 	lyr =
 	    alloc_wms_layer (coverage_name, title, abstract, srid,
-			     is_geographic, minx, miny, maxx, maxy,
+			     has_flipped_axes, minx, miny, maxx, maxy,
 			     RL2_SAMPLE_INT32, RL2_PIXEL_DATAGRID, 1);
     if (strcmp (sample_type, "UINT32") == 0
 	&& strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
 	lyr =
 	    alloc_wms_layer (coverage_name, title, abstract, srid,
-			     is_geographic, minx, miny, maxx, maxy,
+			     has_flipped_axes, minx, miny, maxx, maxy,
 			     RL2_SAMPLE_UINT32, RL2_PIXEL_DATAGRID, 1);
     if (strcmp (sample_type, "FLOAT") == 0
 	&& strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
 	lyr =
 	    alloc_wms_layer (coverage_name, title, abstract, srid,
-			     is_geographic, minx, miny, maxx, maxy,
+			     has_flipped_axes, minx, miny, maxx, maxy,
 			     RL2_SAMPLE_FLOAT, RL2_PIXEL_DATAGRID, 1);
     if (strcmp (sample_type, "DOUBLE") == 0
 	&& strcmp (pixel_type, "DATAGRID") == 0 && num_bands == 1)
 	lyr =
 	    alloc_wms_layer (coverage_name, title, abstract, srid,
-			     is_geographic, minx, miny, maxx, maxy,
+			     has_flipped_axes, minx, miny, maxx, maxy,
 			     RL2_SAMPLE_DOUBLE, RL2_PIXEL_DATAGRID, 1);
     return lyr;
 }
@@ -3769,7 +3786,8 @@ get_raster_coverages (sqlite3 * handle)
 
 /* loading all layers */
     sql = "SELECT coverage_name, title, abstract, sample_type, "
-	"pixel_type, num_bands, srid, extent_minx, extent_miny, extent_maxx, extent_maxy "
+	"pixel_type, num_bands, srid, extent_minx, extent_miny, "
+	"extent_maxx, extent_maxy, compression "
 	"FROM raster_coverages "
 	"WHERE extent_minx IS NOT NULL AND extent_miny IS NOT NULL "
 	"AND extent_maxx IS NOT NULL AND extent_maxy IS NOT NULL";
@@ -3799,7 +3817,7 @@ get_raster_coverages (sqlite3 * handle)
     sqlite3_finalize (stmt);
 
 /* loading layer groups */
-    sql = "SELECT g.group_name, g.title, g.abstract, c.coverage_name "
+    sql = "SELECT g.group_name, g.title, g.abstract, c.raster_coverage_name "
 	"FROM SE_styled_groups AS g "
 	"LEFT JOIN  SE_styled_group_refs AS c ON (g.group_name = c.group_name) "
 	"ORDER BY c.paint_order";
@@ -4149,7 +4167,7 @@ main (int argc, char *argv[])
     glob.list = list;
     compute_geographic_extents (handle, list);
     build_get_capabilities (list, &cached_capabilities,
-			    &cached_capabilities_len);
+			    &cached_capabilities_len, port_no);
     glob.cached_capabilities = cached_capabilities;
 
 /* creating the read connections pool */

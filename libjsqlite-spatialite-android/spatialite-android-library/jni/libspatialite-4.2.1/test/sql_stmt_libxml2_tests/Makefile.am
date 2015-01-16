@@ -25,6 +25,11 @@ EXTRA_DIST = addfileid1.testcase \
 	createstyling4.testcase \
 	createstyling5.testcase \
 	createstyling6.testcase \
+	createstyling7.testcase \
+	createstyling8.testcase \
+	createstyling9.testcase \
+	createstyling10.testcase \
+	createstyling11.testcase \
 	getIsoMetaId1.testcase \
 	getIsoMetaId2.testcase \
 	getIsoMetaId3.testcase \
@@ -99,41 +104,29 @@ EXTRA_DIST = addfileid1.testcase \
 	registerGraphic7.testcase \
 	registerGraphic8.testcase \
 	registerGraphic9.testcase \
-	registerGroup14.testcase \
-	registerGroup15.testcase \
-	registerGroup16.testcase \
-	registerGroup17.testcase \
-	registerGroup18.testcase \
-	registerGroup1.testcase \
-	registerGroup25.testcase \
-	registerGroup26.testcase \
-	registerGroup27.testcase \
-	registerGroup28.testcase \
-	registerGroup29.testcase \
-	registerGroup2.testcase \
-	registerGroup3.testcase \
-	registerGroup4.testcase \
-	registerGroup5.testcase \
-	registerGroup6.testcase \
-	registerGroup7.testcase \
-	registerGroup8.testcase \
+	registerGroupRaster1.testcase \
+	registerGroupRaster2.testcase \
+	registerGroupRaster3.testcase \
+	registerGroupRaster4.testcase \
+	registerGroupRaster5.testcase \
+	registerGroupRaster6.testcase \
+	registerGroupRaster7.testcase \
+	registerGroupRaster8.testcase \
+	registerGroupRaster9.testcase \
+	registerGroupVector1.testcase \
+	registerGroupVector2.testcase \
+	registerGroupVector3.testcase \
+	registerGroupVector4.testcase \
+	registerGroupVector5.testcase \
+	registerGroupVector6.testcase \
+	registerGroupVector7.testcase \
+	registerGroupVector8.testcase \
+	registerGroupVector9.testcase \
 	registerGroupStyle1.testcase \
 	registerGroupStyle2.testcase \
 	registerGroupStyle3.testcase \
 	registerGroupStyle4.testcase \
 	registerGroupStyle5.testcase \
-	registerGroupStyle6.testcase \
-	registerGroupStyle7.testcase \
-	registerGroupStyle8.testcase \
-	registerGroupStyle9.testcase \
-	registerGroupStyle10.testcase \
-	registerGroupStyle11.testcase \
-	registerGroupStyle12.testcase \
-	registerGroupStyle13.testcase \
-	registerGroupStyle14.testcase \
-	registerGroupStyle15.testcase \
-	registerGroupStyle16.testcase \
-	registerGroupStyle17.testcase \
 	registerIsoMeta10.testcase \
 	registerIsoMeta11.testcase \
 	registerIsoMeta12.testcase \
@@ -148,14 +141,6 @@ EXTRA_DIST = addfileid1.testcase \
 	registerIsoMeta7.testcase \
 	registerIsoMeta8.testcase \
 	registerIsoMeta9.testcase \
-	registerRaster10.testcase \
-	registerRaster11.testcase \
-	registerRaster12.testcase \
-	registerRaster13.testcase \
-	registerRaster14.testcase \
-	registerRaster15.testcase \
-	registerRaster16.testcase \
-	registerRaster17.testcase \
 	registerRaster1.testcase \
 	registerRaster2.testcase \
 	registerRaster3.testcase \
@@ -165,28 +150,93 @@ EXTRA_DIST = addfileid1.testcase \
 	registerRaster7.testcase \
 	registerRaster8.testcase \
 	registerRaster9.testcase \
+	registerRasterStyle1.testcase \
+	registerRasterStyle2.testcase \
+	registerRasterStyle3.testcase \
+	registerRasterStyle4.testcase \
+	registerRasterStyle5.testcase \
+	registerStllGroupStyle1.testcase \
+	registerStllGroupStyle3.testcase \
+	registerStllGroupStyle3.testcase \
+	registerStllGroupStyle4.testcase \
+	registerStllGroupStyle5.testcase \
+	registerStllGroupStyle6.testcase \
+	registerStllGroupStyle7.testcase \
+	registerStllGroupStyle8.testcase \
+	registerStllGroupStyle9.testcase \
+	registerVector1.testcase \
 	registerVector10.testcase \
 	registerVector11.testcase \
 	registerVector12.testcase \
 	registerVector13.testcase \
-	registerVector14.testcase \
-	registerVector15.testcase \
-	registerVector16.testcase \
-	registerVector17.testcase \
-	registerVector18.testcase \
-	registerVector19.testcase \
-	registerVector1.testcase \
-	registerVector20.testcase \
-	registerVector21.testcase \
-	registerVector22.testcase \
 	registerVector2.testcase \
 	registerVector3.testcase \
 	registerVector4.testcase \
-	registerVector5.testcase \
-	registerVector6.testcase \
-	registerVector7.testcase \
-	registerVector8.testcase \
 	registerVector9.testcase \
+	registervectorcvg1.testcase \
+	registervectorcvg2.testcase \
+	registervectorcvg3.testcase \
+	registervectorcvg4.testcase \
+	registervectorcvg5.testcase \
+	registervectorcvg6.testcase \
+	registervectorcvg7.testcase \
+	registervectorcvg8.testcase \
+	registervectorcvg9.testcase \
+	registervectorcvg10.testcase \
+	registervectorcvg11.testcase \
+	registervectorcvg12.testcase \
+	registervectorcvg13.testcase \
+	registervectorcvg14.testcase \
+	registervectorcvg15.testcase \
+	registervectorcvg16.testcase \
+	registervectorcvg17.testcase \
+	registervectorcvg18.testcase \
+	registervectorcvg19.testcase \
+	registervectorcvg20.testcase \
+	registervectorcvg21.testcase \
+	registervectorcvg22.testcase \
+	registervectorsrid1.testcase \
+	registervectorsrid2.testcase \
+	registervectorsrid3.testcase \
+	registervectorsrid4.testcase \
+	registervectorsrid5.testcase \
+	registervectorsrid6.testcase \
+	registervectorsrid7.testcase \
+	registervectorsrid8.testcase \
+	registervectorsrid9.testcase \
+	registerVectorStyle1.testcase \
+	registerVectorStyle2.testcase \
+	registerVectorStyle3.testcase \
+	registerVectorStyle4.testcase \
+	registerVectorStyle5.testcase \
+	reloadGroupStyle1.testcase \
+	reloadGroupStyle2.testcase \
+	reloadGroupStyle3.testcase \
+	reloadGroupStyle4.testcase \
+	reloadGroupStyle5.testcase \
+	reloadGroupStyle6.testcase \
+	reloadGroupStyle7.testcase \
+	reloadGroupStyle8.testcase \
+	reloadGroupStyle9.testcase \
+	reloadGroupStyle10.testcase \
+	reloadRasterStyle1.testcase \
+	reloadRasterStyle2.testcase \
+	reloadRasterStyle3.testcase \
+	reloadRasterStyle5.testcase \
+	reloadRasterStyle6.testcase \
+	reloadRasterStyle7.testcase \
+	reloadRasterStyle8.testcase \
+	reloadRasterStyle9.testcase \
+	reloadRasterStyle10.testcase \
+	reloadVectorStyle1.testcase \
+	reloadVectorStyle2.testcase \
+	reloadVectorStyle3.testcase \
+	reloadVectorStyle5.testcase \
+	reloadVectorStyle6.testcase \
+	reloadVectorStyle7.testcase \
+	reloadVectorStyle8.testcase \
+	reloadVectorStyle9.testcase \
+	reloadVectorStyle10.testcase \
 	setfileid1.testcase \
 	setfileid2.testcase \
 	setfileid3.testcase \
@@ -205,11 +255,177 @@ EXTRA_DIST = addfileid1.testcase \
 	setGroupInfos7.testcase \
 	setGroupInfos8.testcase \
 	setGroupInfos9.testcase \
+	setPaintOrder1.testcase \
+	setPaintOrder2.testcase \
+	setPaintOrder3.testcase \
+	setPaintOrder4.testcase \
+	setPaintOrder5.testcase \
+	setPaintOrder6.testcase \
+	setPaintOrder7.testcase \
+	setPaintOrder8.testcase \
+	setRasterPaintOrder1.testcase \
+	setRasterPaintOrder2.testcase \
+	setRasterPaintOrder3.testcase \
+	setRasterPaintOrder4.testcase \
+	setRasterPaintOrder5.testcase \
+	setRasterPaintOrder6.testcase \
+	setRasterPaintOrder7.testcase \
+	setRasterPaintOrder8.testcase \
+	setRasterPaintOrder9.testcase \
+	setRasterPaintOrder10.testcase \
+	setRasterPaintOrder11.testcase \
+	setRasterPaintOrder12.testcase \
+	setRasterPaintOrder13.testcase \
+	setVectorPaintOrder1.testcase \
+	setVectorPaintOrder2.testcase \
+	setVectorPaintOrder3.testcase \
+	setVectorPaintOrder4.testcase \
+	setVectorPaintOrder5.testcase \
+	setVectorPaintOrder6.testcase \
+	setVectorPaintOrder7.testcase \
+	setVectorPaintOrder8.testcase \
+	setVectorPaintOrder9.testcase \
+	setVectorPaintOrder10.testcase \
+	setVectorPaintOrder11.testcase \
+	setVectorPaintOrder12.testcase \
+	setVectorPaintOrder13.testcase \
 	setparentid1.testcase \
 	setparentid2.testcase \
 	setparentid3.testcase \
 	setparentid4.testcase \
 	setparentid5.testcase \
+	setvectorinfos1.testcase \
+	setvectorinfos2.testcase \
+	setvectorinfos3.testcase \
+	setvectorinfos4.testcase \
+	setvectorinfos5.testcase \
+	setvectorinfos6.testcase \
+	setvectorinfos7.testcase \
+	setvectorinfos8.testcase \
+	setvectorinfos9.testcase \
+	setvectorinfos10.testcase \
+	setvectorinfos11.testcase \
+	setvectorinfos12.testcase \
+	setvectorinfos13.testcase \
+	unregisterGraphic1.testcase \
+	unregisterGraphic2.testcase \
+	unregisterGraphic3.testcase \
+	unregisterGraphic4.testcase \
+	unregisterGraphic5.testcase \
+	unregisterGroup1.testcase \
+	unregisterGroup2.testcase \
+	unregisterGroup3.testcase \
+	unregisterGroup4.testcase \
+	unregisterGroup5.testcase \
+	unregisterGroupStyle1.testcase \
+	unregisterGroupStyle2.testcase \
+	unregisterGroupStyle3.testcase \
+	unregisterGroupStyle4.testcase \
+	unregisterGroupStyle5.testcase \
+	unregisterGroupStyle6.testcase \
+	unregisterGroupStyle7.testcase \
+	unregisterGroupStyle8.testcase \
+	unregisterGroupStyle9.testcase \
+	unregisterGroupStyle10.testcase \
+	unregisterGroupLayer1.testcase \
+	unregisterGroupLayer2.testcase \
+	unregisterGroupLayer3.testcase \
+	unregisterGroupLayer4.testcase \
+	unregisterGroupLayer5.testcase \
+	unregisterGroupRaster1.testcase \
+	unregisterGroupRaster2.testcase \
+	unregisterGroupRaster3.testcase \
+	unregisterGroupRaster4.testcase \
+	unregisterGroupRaster5.testcase \
+	unregisterGroupRaster6.testcase \
+	unregisterGroupRaster7.testcase \
+	unregisterGroupRaster8.testcase \
+	unregisterGroupRaster9.testcase \
+	unregisterGroupVector1.testcase \
+	unregisterGroupVector2.testcase \
+	unregisterGroupVector3.testcase \
+	unregisterGroupVector4.testcase \
+	unregisterGroupVector5.testcase \
+	unregisterGroupVector6.testcase \
+	unregisterGroupVector7.testcase \
+	unregisterGroupVector8.testcase \
+	unregisterGroupVector9.testcase \
+	unregisterRaster1.testcase \
+	unregisterRaster2.testcase \
+	unregisterRaster3.testcase \
+	unregisterRaster4.testcase \
+	unregisterRaster5.testcase \
+	unregisterRaster6.testcase \
+	unregisterRaster7.testcase \
+	unregisterRaster8.testcase \
+	unregisterRaster9.testcase \
+	unregisterRasterStyle1.testcase \
+	unregisterRasterStyle2.testcase \
+	unregisterRasterStyle3.testcase \
+	unregisterRasterStyle4.testcase \
+	unregisterRasterStyle5.testcase \
+	unregisterRasterStyle6.testcase \
+	unregisterRasterStyle7.testcase \
+	unregisterRasterStyle8.testcase \
+	unregisterRasterStyle9.testcase \
+	unregisterRasterStyle10.testcase \
+	unregisterStllGroupStyle1.testcase \
+	unregisterStllGroupStyle3.testcase \
+	unregisterStllGroupStyle3.testcase \
+	unregisterStllGroupStyle4.testcase \
+	unregisterStllGroupStyle5.testcase \
+	unregisterStllGroupStyle6.testcase \
+	unregisterStllGroupStyle7.testcase \
+	unregisterStllGroupStyle8.testcase \
+	unregisterStllGroupStyle9.testcase \
+	unregisterVector1.testcase \
+	unregisterVector2.testcase \
+	unregisterVector3.testcase \
+	unregisterVector4.testcase \
+	unregisterVector9.testcase \
+	unregisterVector10.testcase \
+	unregisterVector11.testcase \
+	unregisterVector12.testcase \
+	unregisterVector13.testcase \
+	unregistervectorcvg1.testcase \
+	unregistervectorcvg2.testcase \
+	unregistervectorcvg3.testcase \
+	unregistervectorcvg4.testcase \
+	unregistervectorcvg5.testcase \
+	unregistervectorsrid1.testcase \
+	unregistervectorsrid2.testcase \
+	unregistervectorsrid3.testcase \
+	unregistervectorsrid4.testcase \
+	unregistervectorsrid5.testcase \
+	unregistervectorsrid6.testcase \
+	unregistervectorsrid7.testcase \
+	unregistervectorsrid8.testcase \
+	unregistervectorsrid9.testcase \
+	unregisterVectorStyle1.testcase \
+	unregisterVectorStyle2.testcase \
+	unregisterVectorStyle3.testcase \
+	unregisterVectorStyle4.testcase \
+	unregisterVectorStyle5.testcase \
+	unregisterVectorStyle6.testcase \
+	unregisterVectorStyle7.testcase \
+	unregisterVectorStyle8.testcase \
+	unregisterVectorStyle9.testcase \
+	unregisterVectorStyle10.testcase \
+	updatevectorextent1.testcase \
+	updatevectorextent2.testcase \
+	updatevectorextent3.testcase \
+	updatevectorextent4.testcase \
+	updatevectorextent5.testcase \
+	updatevectorextent6.testcase \
+	updatevectorextent7.testcase \
+	updatevectorextent8.testcase \
+	updatevectorextent9.testcase \
+	updatevectorextent10.testcase \
+	updatevectorextent11.testcase \
+	updatevectorextent12.testcase \
+	updatevectorextent13.testcase \
+	updatevectorextent14.testcase \
+	updatevectorextent15.testcase \
 	xmlblobgetabstract1.testcase \
 	xmlblobgetabstract2.testcase \
 	xmlblobgetabstract3.testcase \

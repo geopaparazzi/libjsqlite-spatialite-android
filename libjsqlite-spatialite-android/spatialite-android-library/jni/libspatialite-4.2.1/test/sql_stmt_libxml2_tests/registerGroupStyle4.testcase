@@ -1,8 +1,8 @@
-RegisterGroupStyle - BLOB group
+RegisterGroupStyle - Text Style
 :memory: #use in-memory database
-SELECT RegisterGroupStyle(zeroblob(4), NULL);
+SELECT SE_RegisterGroupStyle('alpha');
 1 # rows (not including the header row)
 1 # columns
-RegisterGroupStyle(zeroblob(4), NULL)
+SE_RegisterGroupStyle('alpha')
 -1
 

@@ -1,7 +1,7 @@
-SetCoevrageInfos - NULL title
+SetRasterCoverageInfos - NULL title
 :memory: #use in-memory database
-SELECT RL2_SetCoverageInfos('coverage', NULL, 'abstract');
+SELECT RL2_SetRasterCoverageInfos('coverage', NULL, 'abstract');
 1 # rows (not including the header row)
 1 # columns
-RL2_SetCoverageInfos('coverage', NULL, 'abstract')
+RL2_SetRasterCoverageInfos('coverage', NULL, 'abstract')
 -1

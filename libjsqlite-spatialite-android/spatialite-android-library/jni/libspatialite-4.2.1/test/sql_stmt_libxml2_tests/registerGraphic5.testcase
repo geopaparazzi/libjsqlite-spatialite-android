@@ -1,8 +1,8 @@
 RegisterExternalGraphic - NULL resource
 :memory: #use in-memory database
-SELECT RegisterExternalGraphic('resource.png', NULL);
+SELECT SE_RegisterExternalGraphic('resource.png', NULL);
 1 # rows (not including the header row)
 1 # columns
-RegisterExternalGraphic('resource.png', NULL);
+SE_RegisterExternalGraphic('resource.png', NULL);
 -1
 

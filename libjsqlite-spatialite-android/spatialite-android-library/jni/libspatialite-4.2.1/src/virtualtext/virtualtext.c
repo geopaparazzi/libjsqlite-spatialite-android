@@ -1150,7 +1150,7 @@ vrttxt_is_integer (const char *value)
 	  p++;
       }
     if (invalids)
-	return 0;		/* invalid chars where found */
+	return 0;		/* invalid chars were found */
     if (signs > 1)
 	return 0;		/* more than a single sign */
     if (signs)
@@ -1200,7 +1200,7 @@ vrttxt_is_double (const char *value, char decimal_separator)
 	  p++;
       }
     if (invalids)
-	return 0;		/* invalid chars where found */
+	return 0;		/* invalid chars were found */
     if (points > 1)
 	return 0;		/* more than a single decimal separator */
     if (signs > 1)
@@ -1237,6 +1237,8 @@ vrttxt_set_column_title (gaiaTextReaderPtr txt, int col_no, const char *name)
     char *utf8text;
     char *str = (char *) name;
     int len = strlen (str);
+    if (len <= 0)
+	return 0;
     if (str[0] == txt->text_separator && str[len - 1] == txt->text_separator)
       {
 	  /* cleaning the enclosing quotes */

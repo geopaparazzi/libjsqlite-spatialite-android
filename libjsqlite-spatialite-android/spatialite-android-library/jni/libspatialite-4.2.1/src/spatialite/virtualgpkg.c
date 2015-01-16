@@ -1041,6 +1041,17 @@ vgpkg_rollback (sqlite3_vtab * pVTab)
 }
 
 static int
+vgpkg_rename (sqlite3_vtab * pVTab, const char *zNew)
+{
+/* BEGIN TRANSACTION */
+    if (pVTab)
+	pVTab = pVTab;		/* unused arg warning suppression */
+    if (zNew)
+	zNew = zNew;		/* unused arg warning suppression */
+    return SQLITE_ERROR;
+}
+
+static int
 spliteVirtualGPKGInit (sqlite3 * db)
 {
     int rc = SQLITE_OK;
@@ -1063,6 +1074,7 @@ spliteVirtualGPKGInit (sqlite3 * db)
     my_gpkg_module.xCommit = &vgpkg_commit;
     my_gpkg_module.xRollback = &vgpkg_rollback;
     my_gpkg_module.xFindFunction = NULL;
+    my_gpkg_module.xRename = &vgpkg_rename;
     sqlite3_create_module_v2 (db, "VirtualGPKG", &my_gpkg_module, NULL, 0);
     return rc;
 }

@@ -68,6 +68,11 @@ static struct sqlite3_module my_net_module;
 #define VNET_DIJKSTRA_ALGORITHM	1
 #define VNET_A_STAR_ALGORITHM	2
 
+#define VNET_ROUTING_SOLUTION	0xdd
+#define VNET_RANGE_SOLUTION		0xbb
+
+#define VNET_INVALID_SRID	-1234
+
 #ifdef _WIN32
 #define strcasecmp	_stricmp
 #endif /* not WIN32 */
@@ -148,16 +153,32 @@ typedef struct RowSolutionStruct
 } RowSolution;
 typedef RowSolution *RowSolutionPtr;
 
+typedef struct RowNodeSolutionStruct
+{
+/* a row into the "within Cost range" solution */
+    NetworkNodePtr Node;
+    double Cost;
+    int Srid;
+    struct RowNodeSolutionStruct *Next;
+
+} RowNodeSolution;
+typedef RowNodeSolution *RowNodeSolutionPtr;
+
 typedef struct SolutionStruct
 {
 /* the shortest path solution */
+    unsigned char Mode;
     ArcSolutionPtr FirstArc;
     ArcSolutionPtr LastArc;
     NetworkNodePtr From;
     NetworkNodePtr To;
+    double MaxCost;
     RowSolutionPtr First;
     RowSolutionPtr Last;
+    RowNodeSolutionPtr FirstNode;
+    RowNodeSolutionPtr LastNode;
     RowSolutionPtr CurrentRow;
+    RowNodeSolutionPtr CurrentNodeRow;
     sqlite3_int64 CurrentRowId;
     double TotalCost;
     gaiaGeomCollPtr Geometry;
@@ -177,6 +198,7 @@ typedef struct RoutingNode
     NetworkArcPtr *Link;
     int DimTo;
     struct RoutingNode *PreviousNode;
+    NetworkNodePtr Node;
     NetworkArcPtr Arc;
     double Distance;
     double HeuristicDistance;
@@ -194,11 +216,17 @@ typedef struct RoutingNodes
 } RoutingNodes;
 typedef RoutingNodes *RoutingNodesPtr;
 
+typedef struct HeapNode
+{
+    RoutingNodePtr Node;
+    double Distance;
+} HeapNode;
+typedef HeapNode *HeapNodePtr;
+
 typedef struct RoutingHeapStruct
 {
-    RoutingNodePtr *Values;
-    int Head;
-    int Tail;
+    HeapNodePtr Nodes;
+    int Count;
 } RoutingHeap;
 typedef RoutingHeap *RoutingHeapPtr;
 
@@ -271,6 +299,7 @@ routing_init (NetworkPtr graph)
 	  ndn = nd->Nodes + i;
 	  ndn->Id = nn->InternalIndex;
 	  ndn->DimTo = nn->NumArcs;
+	  ndn->Node = nn;
 	  ndn->To = &(nd->NodesBuffer[cnt]);
 	  ndn->Link = &(nd->ArcsBuffer[cnt]);
 	  cnt += nn->NumArcs;
@@ -297,59 +326,101 @@ routing_free (RoutingNodes * e)
 }
 
 static RoutingHeapPtr
-routing_heap_init (int dim)
+routing_heap_init (int n)
 {
-/* allocating the Nodes ordered list */
-    RoutingHeapPtr h;
-    h = malloc (sizeof (RoutingHeap));
-    h->Values = malloc (sizeof (RoutingNodePtr) * dim);
-    h->Head = 0;
-    h->Tail = 0;
-    return (h);
+/* allocating and initializing the Heap (min-priority queue) */
+    RoutingHeapPtr heap = malloc (sizeof (RoutingHeap));
+    heap->Count = 0;
+    heap->Nodes = malloc (sizeof (HeapNode) * (n + 1));
+    return heap;
 }
 
 static void
-routing_heap_free (RoutingHeapPtr h)
+routing_heap_free (RoutingHeapPtr heap)
 {
-/* freeing the Nodes ordered list */
-    free (h->Values);
-    free (h);
+/* freeing the Heap (min-priority queue) */
+    if (heap->Nodes != NULL)
+	free (heap->Nodes);
+    free (heap);
 }
 
 static void
-routing_push (RoutingHeapPtr h, RoutingNodePtr n)
+dijkstra_insert (RoutingNodePtr node, HeapNodePtr heap, int size)
 {
-/* inserting a Node into the list */
-    h->Values[h->Tail] = n;
-    h->Tail++;
+/* inserting a new Node and rearranging the heap */
+    int i;
+    HeapNode tmp;
+    i = size + 1;
+    heap[i].Node = node;
+    heap[i].Distance = node->Distance;
+    if (i / 2 < 1)
+	return;
+    while (heap[i].Distance < heap[i / 2].Distance)
+      {
+	  tmp = heap[i];
+	  heap[i] = heap[i / 2];
+	  heap[i / 2] = tmp;
+	  i /= 2;
+	  if (i / 2 < 1)
+	      break;
+      }
+}
+
+static void
+dijkstra_enqueue (RoutingHeapPtr heap, RoutingNodePtr node)
+{
+/* enqueuing a Node into the heap */
+    dijkstra_insert (node, heap->Nodes, heap->Count);
+    heap->Count += 1;
+}
+
+static void
+dijkstra_shiftdown (HeapNodePtr heap, int size, int i)
+{
+/* rearranging the heap after removing */
+    int c;
+    HeapNode tmp;
+    for (;;)
+      {
+	  c = i * 2;
+	  if (c > size)
+	      break;
+	  if (c < size)
+	    {
+		if (heap[c].Distance > heap[c + 1].Distance)
+		    ++c;
+	    }
+	  if (heap[c].Distance < heap[i].Distance)
+	    {
+		/* swapping two Nodes */
+		tmp = heap[c];
+		heap[c] = heap[i];
+		heap[i] = tmp;
+		i = c;
+	    }
+	  else
+	      break;
+      }
 }
 
 static RoutingNodePtr
-dijkstra_pop (RoutingHeapPtr h)
+dijkstra_remove_min (HeapNodePtr heap, int size)
 {
-/* fetching the minimum value */
-    int i;
-    RoutingNodePtr n;
-    double min = DBL_MAX;
-    int i_min = h->Head;
-    for (i = h->Head; i < h->Tail; i++)
-      {
-	  n = h->Values[i];
-	  if (n->Distance < min)
-	    {
-		min = n->Distance;
-		i_min = i;
-	    }
-      }
-    if (i_min > h->Head)
-      {
-	  n = h->Values[i_min];
-	  h->Values[i_min] = h->Values[h->Head];
-	  h->Values[h->Head] = n;
-      }
-    n = h->Values[h->Head];
-    h->Head++;
-    return (n);
+/* removing the min-priority Node from the heap */
+    RoutingNodePtr node = heap[1].Node;
+    heap[1] = heap[size];
+    --size;
+    dijkstra_shiftdown (heap, size, 1);
+    return node;
+}
+
+static RoutingNodePtr
+routing_dequeue (RoutingHeapPtr heap)
+{
+/* dequeuing a Node from the heap */
+    RoutingNodePtr node = dijkstra_remove_min (heap->Nodes, heap->Count);
+    heap->Count -= 1;
+    return node;
 }
 
 static NetworkArcPtr *
@@ -366,12 +437,12 @@ dijkstra_shortest_path (RoutingNodesPtr e, NetworkNodePtr pfrom,
     NetworkArcPtr p_link;
     int cnt;
     NetworkArcPtr *result;
-    RoutingHeapPtr h;
+    RoutingHeapPtr heap;
 /* setting From/To */
     from = pfrom->InternalIndex;
     to = pto->InternalIndex;
 /* initializing the heap */
-    h = routing_heap_init (e->DimLink);
+    heap = routing_heap_init (e->DimLink);
 /* initializing the graph */
     for (i = 0; i < e->Dim; i++)
       {
@@ -381,13 +452,13 @@ dijkstra_shortest_path (RoutingNodesPtr e, NetworkNodePtr pfrom,
 	  n->Inspected = 0;
 	  n->Distance = DBL_MAX;
       }
-/* pushes the From node into the Nodes list */
+/* queuing the From node into the heap */
     e->Nodes[from].Distance = 0.0;
-    routing_push (h, e->Nodes + from);
-    while (h->Tail != h->Head)
+    dijkstra_enqueue (heap, e->Nodes + from);
+    while (heap->Count > 0)
       {
 	  /* Dijsktra loop */
-	  n = dijkstra_pop (h);
+	  n = routing_dequeue (heap);
 	  if (n->Id == to)
 	    {
 		/* destination reached */
@@ -402,11 +473,11 @@ dijkstra_shortest_path (RoutingNodesPtr e, NetworkNodePtr pfrom,
 		  {
 		      if (p_to->Distance == DBL_MAX)
 			{
-			    /* inserting a new node into the list */
+			    /* queuing a new node into the heap */
 			    p_to->Distance = n->Distance + p_link->Cost;
 			    p_to->PreviousNode = n;
 			    p_to->Arc = p_link;
-			    routing_push (h, p_to);
+			    dijkstra_enqueue (heap, p_to);
 			}
 		      else if (p_to->Distance > n->Distance + p_link->Cost)
 			{
@@ -418,7 +489,7 @@ dijkstra_shortest_path (RoutingNodesPtr e, NetworkNodePtr pfrom,
 		  }
 	    }
       }
-    routing_heap_free (h);
+    routing_heap_free (heap);
     cnt = 0;
     n = e->Nodes + to;
     while (n->PreviousNode != NULL)
@@ -444,42 +515,128 @@ dijkstra_shortest_path (RoutingNodesPtr e, NetworkNodePtr pfrom,
 
 /* END of Luigi Costalli Dijkstra Shortest Path implementation */
 
+static RoutingNodePtr *
+dijkstra_range_analysis (RoutingNodesPtr e, NetworkNodePtr pfrom,
+			 double max_cost, int *ll)
+{
+/* identifying all Nodes within a given Cost range - Dijkstra's algorithm */
+    int from;
+    int i;
+    RoutingNodePtr p_to;
+    RoutingNodePtr n;
+    NetworkArcPtr p_link;
+    int cnt;
+    RoutingNodePtr *result;
+    RoutingHeapPtr heap;
+/* setting From */
+    from = pfrom->InternalIndex;
+/* initializing the heap */
+    heap = routing_heap_init (e->DimLink);
+/* initializing the graph */
+    for (i = 0; i < e->Dim; i++)
+      {
+	  n = e->Nodes + i;
+	  n->PreviousNode = NULL;
+	  n->Arc = NULL;
+	  n->Inspected = 0;
+	  n->Distance = DBL_MAX;
+      }
+/* queuing the From node into the heap */
+    e->Nodes[from].Distance = 0.0;
+    dijkstra_enqueue (heap, e->Nodes + from);
+    while (heap->Count > 0)
+      {
+	  /* Dijsktra loop */
+	  n = routing_dequeue (heap);
+	  n->Inspected = 1;
+	  for (i = 0; i < n->DimTo; i++)
+	    {
+		p_to = *(n->To + i);
+		p_link = *(n->Link + i);
+		if (p_to->Inspected == 0)
+		  {
+		      if (p_to->Distance == DBL_MAX)
+			{
+			    /* queuing a new node into the heap */
+			    if (n->Distance + p_link->Cost <= max_cost)
+			      {
+				  p_to->Distance = n->Distance + p_link->Cost;
+				  p_to->PreviousNode = n;
+				  p_to->Arc = p_link;
+				  dijkstra_enqueue (heap, p_to);
+			      }
+			}
+		      else if (p_to->Distance > n->Distance + p_link->Cost)
+			{
+			    /* updating an already inserted node */
+			    p_to->Distance = n->Distance + p_link->Cost;
+			    p_to->PreviousNode = n;
+			    p_to->Arc = p_link;
+			}
+		  }
+	    }
+      }
+    routing_heap_free (heap);
+    cnt = 0;
+    for (i = 0; i < e->Dim; i++)
+      {
+	  /* counting how many traversed Nodes */
+	  n = e->Nodes + i;
+	  if (n->Inspected)
+	      cnt++;
+      }
+/* allocating the solution */
+    result = malloc (sizeof (NetworkNodePtr) * cnt);
+    cnt = 0;
+    for (i = 0; i < e->Dim; i++)
+      {
+	  /* populating the resultset */
+	  n = e->Nodes + i;
+	  if (n->Inspected)
+	      result[cnt++] = n;
+      }
+    *ll = cnt;
+    return (result);
+}
+
 /*
 /
 /  implementation of the A* Shortest Path algorithm
 /
 */
 
-static RoutingNodePtr
-a_star_pop (RoutingHeapPtr h)
+static void
+astar_insert (RoutingNodePtr node, HeapNodePtr heap, int size)
 {
-/* fetching the minimum value */
+/* inserting a new Node and rearranging the heap */
     int i;
-    RoutingNodePtr n;
-    double min = DBL_MAX;
-    int i_min = h->Head;
-    for (i = h->Head; i < h->Tail; i++)
+    HeapNode tmp;
+    i = size + 1;
+    heap[i].Node = node;
+    heap[i].Distance = node->HeuristicDistance;
+    if (i / 2 < 1)
+	return;
+    while (heap[i].Distance < heap[i / 2].Distance)
       {
-	  n = h->Values[i];
-	  if (n->HeuristicDistance < min)
-	    {
-		min = n->HeuristicDistance;
-		i_min = i;
-	    }
+	  tmp = heap[i];
+	  heap[i] = heap[i / 2];
+	  heap[i / 2] = tmp;
+	  i /= 2;
+	  if (i / 2 < 1)
+	      break;
       }
-    if (i_min > h->Head)
-      {
-	  n = h->Values[i_min];
-	  h->Values[i_min] = h->Values[h->Head];
-	  h->Values[h->Head] = n;
-      }
-    n = h->Values[h->Head];
-    h->Head++;
-    return (n);
+}
+
+static void
+astar_enqueue (RoutingHeapPtr heap, RoutingNodePtr node)
+{
+/* enqueuing a Node into the heap */
+    astar_insert (node, heap->Nodes, heap->Count);
+    heap->Count += 1;
 }
 
 static double
-a_star_heuristic_distance (NetworkNodePtr n1, NetworkNodePtr n2, double coeff)
+astar_heuristic_distance (NetworkNodePtr n1, NetworkNodePtr n2, double coeff)
 {
 /* computing the euclidean distance intercurring between two nodes */
     double dx = n1->CoordX - n2->CoordX;
@@ -489,9 +646,9 @@ a_star_heuristic_distance (NetworkNodePtr n1, NetworkNodePtr n2, double coeff)
 }
 
 static NetworkArcPtr *
-a_star_shortest_path (RoutingNodesPtr e, NetworkNodePtr nodes,
-		      NetworkNodePtr pfrom, NetworkNodePtr pto,
-		      double heuristic_coeff, int *ll)
+astar_shortest_path (RoutingNodesPtr e, NetworkNodePtr nodes,
+		     NetworkNodePtr pfrom, NetworkNodePtr pto,
+		     double heuristic_coeff, int *ll)
 {
 /* identifying the Shortest Path - A* algorithm */
     int from;
@@ -506,7 +663,7 @@ a_star_shortest_path (RoutingNodesPtr e, NetworkNodePtr nodes,
     NetworkArcPtr p_link;
     int cnt;
     NetworkArcPtr *result;
-    RoutingHeapPtr h;
+    RoutingHeapPtr heap;
 /* setting From/To */
     from = pfrom->InternalIndex;
     to = pto->InternalIndex;
@@ -515,7 +672,7 @@ a_star_shortest_path (RoutingNodesPtr e, NetworkNodePtr nodes,
     pAux = e->Nodes + to;
     pDest = nodes + pAux->Id;
 /* initializing the heap */
-    h = routing_heap_init (e->DimLink);
+    heap = routing_heap_init (e->DimLink);
 /* initializing the graph */
     for (i = 0; i < e->Dim; i++)
       {
@@ -526,15 +683,15 @@ a_star_shortest_path (RoutingNodesPtr e, NetworkNodePtr nodes,
 	  n->Distance = DBL_MAX;
 	  n->HeuristicDistance = DBL_MAX;
       }
-/* pushes the From node into the Nodes list */
+/* queuing the From node into the heap */
     e->Nodes[from].Distance = 0.0;
     e->Nodes[from].HeuristicDistance =
-	a_star_heuristic_distance (pOrg, pDest, heuristic_coeff);
-    routing_push (h, e->Nodes + from);
-    while (h->Tail != h->Head)
+	astar_heuristic_distance (pOrg, pDest, heuristic_coeff);
+    astar_enqueue (heap, e->Nodes + from);
+    while (heap->Count > 0)
       {
 	  /* A* loop */
-	  n = a_star_pop (h);
+	  n = routing_dequeue (heap);
 	  if (n->Id == to)
 	    {
 		/* destination reached */
@@ -549,16 +706,16 @@ a_star_shortest_path (RoutingNodesPtr e, NetworkNodePtr nodes,
 		  {
 		      if (p_to->Distance == DBL_MAX)
 			{
-			    /* inserting a new node into the list */
+			    /* queuing a new node into the heap */
 			    p_to->Distance = n->Distance + p_link->Cost;
 			    pOrg = nodes + p_to->Id;
 			    p_to->HeuristicDistance =
 				p_to->Distance +
-				a_star_heuristic_distance (pOrg, pDest,
-							   heuristic_coeff);
+				astar_heuristic_distance (pOrg, pDest,
+							  heuristic_coeff);
 			    p_to->PreviousNode = n;
 			    p_to->Arc = p_link;
-			    routing_push (h, p_to);
+			    astar_enqueue (heap, p_to);
 			}
 		      else if (p_to->Distance > n->Distance + p_link->Cost)
 			{
@@ -567,15 +724,15 @@ a_star_shortest_path (RoutingNodesPtr e, NetworkNodePtr nodes,
 			    pOrg = nodes + p_to->Id;
 			    p_to->HeuristicDistance =
 				p_to->Distance +
-				a_star_heuristic_distance (pOrg, pDest,
-							   heuristic_coeff);
+				astar_heuristic_distance (pOrg, pDest,
+							  heuristic_coeff);
 			    p_to->PreviousNode = n;
 			    p_to->Arc = p_link;
 			}
 		  }
 	    }
       }
-    routing_heap_free (h);
+    routing_heap_free (heap);
     cnt = 0;
     n = e->Nodes + to;
     while (n->PreviousNode != NULL)
@@ -657,6 +814,8 @@ delete_solution (SolutionPtr solution)
     ArcSolutionPtr pAn;
     RowSolutionPtr pR;
     RowSolutionPtr pRn;
+    RowNodeSolutionPtr pN;
+    RowNodeSolutionPtr pNn;
     if (!solution)
 	return;
     pA = solution->FirstArc;
@@ -683,6 +842,13 @@ delete_solution (SolutionPtr solution)
 	  free (pR);
 	  pR = pRn;
       }
+    pN = solution->FirstNode;
+    while (pN)
+      {
+	  pNn = pN->Next;
+	  free (pN);
+	  pN = pNn;
+      }
     if (solution->Geometry)
 	gaiaFreeGeomColl (solution->Geometry);
     free (solution);
@@ -696,6 +862,8 @@ reset_solution (SolutionPtr solution)
     ArcSolutionPtr pAn;
     RowSolutionPtr pR;
     RowSolutionPtr pRn;
+    RowNodeSolutionPtr pN;
+    RowNodeSolutionPtr pNn;
     if (!solution)
 	return;
     pA = solution->FirstArc;
@@ -720,15 +888,24 @@ reset_solution (SolutionPtr solution)
 	  free (pR);
 	  pR = pRn;
       }
+    pN = solution->FirstNode;
+    while (pN)
+      {
+	  pNn = pN->Next;
+	  free (pN);
+	  pN = pNn;
+      }
     if (solution->Geometry)
 	gaiaFreeGeomColl (solution->Geometry);
     solution->FirstArc = NULL;
     solution->LastArc = NULL;
     solution->From = NULL;
     solution->To = NULL;
+    solution->MaxCost = 0.0;
     solution->First = NULL;
     solution->Last = NULL;
     solution->CurrentRow = NULL;
+    solution->CurrentNodeRow = NULL;
     solution->CurrentRowId = 0;
     solution->TotalCost = 0.0;
     solution->Geometry = NULL;
@@ -743,9 +920,13 @@ alloc_solution (void)
     p->LastArc = NULL;
     p->From = NULL;
     p->To = NULL;
+    p->MaxCost = 0.0;
     p->First = NULL;
     p->Last = NULL;
+    p->FirstNode = NULL;
+    p->LastNode = NULL;
     p->CurrentRow = NULL;
+    p->CurrentNodeRow = NULL;
     p->CurrentRowId = 0;
     p->TotalCost = 0.0;
     p->Geometry = NULL;
@@ -766,6 +947,43 @@ add_arc_to_solution (SolutionPtr solution, NetworkArcPtr arc)
     if (solution->Last)
 	solution->Last->Next = p;
     solution->Last = p;
+}
+
+static void
+add_node_to_solution (SolutionPtr solution, RoutingNodePtr node, int srid)
+{
+/* inserts a Node into the "within Cost range" solution */
+    RowNodeSolutionPtr p = malloc (sizeof (RowNodeSolution));
+    p->Node = node->Node;
+    p->Cost = node->Distance;
+    p->Srid = srid;
+    p->Next = NULL;
+    if (!(solution->FirstNode))
+	solution->FirstNode = p;
+    if (solution->LastNode)
+	solution->LastNode->Next = p;
+    solution->LastNode = p;
+}
+
+static void
+set_arc_name_into_solution (SolutionPtr solution, sqlite3_int64 arc_id,
+			    const char *name)
+{
+/* sets the Name identifyin an Arc into the Solution */
+    RowSolutionPtr row = solution->First;
+    while (row != NULL)
+      {
+	  if (row->Arc->ArcRowid == arc_id)
+	    {
+		int len = strlen (name);
+		if (row->Name != NULL)
+		    free (row->Name);
+		row->Name = malloc (len + 1);
+		strcpy (row->Name, name);
+		return;
+	    }
+	  row = row->Next;
+      }
 }
 
 static void
@@ -852,6 +1070,13 @@ build_solution (sqlite3 * handle, NetworkPtr graph, SolutionPtr solution,
 		add_arc_to_solution (solution, shortest_path[i]);
 	    }
       }
+
+    if (graph->GeometryColumn == NULL && graph->NameColumn == NULL)
+      {
+	  /* completely skipping Geometry */
+	  return;
+      }
+
     tbd = cnt;
     while (tbd > 0)
       {
@@ -865,20 +1090,38 @@ build_solution (sqlite3 * handle, NetworkPtr graph, SolutionPtr solution,
 	  if (graph->NameColumn)
 	    {
 		/* a Name column is defined */
-		xfrom = gaiaDoubleQuotedSql (graph->FromColumn);
-		xto = gaiaDoubleQuotedSql (graph->ToColumn);
-		xgeom = gaiaDoubleQuotedSql (graph->GeometryColumn);
-		xname = gaiaDoubleQuotedSql (graph->NameColumn);
-		xtable = gaiaDoubleQuotedSql (graph->TableName);
-		sql =
-		    sqlite3_mprintf
-		    ("SELECT ROWID, \"%s\", \"%s\", \"%s\", \"%s\" FROM \"%s\" WHERE ROWID IN (",
-		     xfrom, xto, xgeom, xname, xtable);
-		free (xfrom);
-		free (xto);
-		free (xgeom);
-		free (xname);
-		free (xtable);
+		if (graph->GeometryColumn == NULL)
+		  {
+		      xfrom = gaiaDoubleQuotedSql (graph->FromColumn);
+		      xto = gaiaDoubleQuotedSql (graph->ToColumn);
+		      xname = gaiaDoubleQuotedSql (graph->NameColumn);
+		      xtable = gaiaDoubleQuotedSql (graph->TableName);
+		      sql =
+			  sqlite3_mprintf
+			  ("SELECT ROWID, \"%s\", \"%s\", NULL, \"%s\" FROM \"%s\" WHERE ROWID IN (",
+			   xfrom, xto, xname, xtable);
+		      free (xfrom);
+		      free (xto);
+		      free (xname);
+		      free (xtable);
+		  }
+		else
+		  {
+		      xfrom = gaiaDoubleQuotedSql (graph->FromColumn);
+		      xto = gaiaDoubleQuotedSql (graph->ToColumn);
+		      xgeom = gaiaDoubleQuotedSql (graph->GeometryColumn);
+		      xname = gaiaDoubleQuotedSql (graph->NameColumn);
+		      xtable = gaiaDoubleQuotedSql (graph->TableName);
+		      sql =
+			  sqlite3_mprintf
+			  ("SELECT ROWID, \"%s\", \"%s\", \"%s\", \"%s\" FROM \"%s\" WHERE ROWID IN (",
+			   xfrom, xto, xgeom, xname, xtable);
+		      free (xfrom);
+		      free (xto);
+		      free (xgeom);
+		      free (xname);
+		      free (xtable);
+		  }
 		gaiaAppendToOutBuffer (&sql_statement, sql);
 		sqlite3_free (sql);
 	    }
@@ -979,15 +1222,18 @@ build_solution (sqlite3 * handle, NetworkPtr graph, SolutionPtr solution,
 			    else
 				err = 1;
 			}
-		      if (sqlite3_column_type (stmt, 3) == SQLITE_BLOB)
+		      if (graph->GeometryColumn != NULL)
 			{
-			    blob =
-				(const unsigned char *)
-				sqlite3_column_blob (stmt, 3);
-			    size = sqlite3_column_bytes (stmt, 3);
+			    if (sqlite3_column_type (stmt, 3) == SQLITE_BLOB)
+			      {
+				  blob =
+				      (const unsigned char *)
+				      sqlite3_column_blob (stmt, 3);
+				  size = sqlite3_column_bytes (stmt, 3);
+			      }
+			    else
+				err = 1;
 			}
-		      else
-			  err = 1;
 		      if (graph->NameColumn)
 			{
 			    if (sqlite3_column_type (stmt, 4) == SQLITE_TEXT)
@@ -995,7 +1241,7 @@ build_solution (sqlite3 * handle, NetworkPtr graph, SolutionPtr solution,
 			}
 		      if (err)
 			  error = 1;
-		      else
+		      else if (graph->GeometryColumn != NULL)
 			{
 			    /* saving the Arc geometry into the temporary struct */
 			    gaiaGeomCollPtr geom =
@@ -1021,8 +1267,9 @@ build_solution (sqlite3 * handle, NetworkPtr graph, SolutionPtr solution,
 					      double x;
 					      double y;
 					      gaiaGetPoint
-						  (geom->FirstLinestring->
-						   Coords, iv, &x, &y);
+						  (geom->
+						   FirstLinestring->Coords, iv,
+						   &x, &y);
 					      *(coords + ((iv * 2) + 0)) = x;
 					      *(coords + ((iv * 2) + 1)) = y;
 					  }
@@ -1038,8 +1285,7 @@ build_solution (sqlite3 * handle, NetworkPtr graph, SolutionPtr solution,
 								      to_id,
 								      points,
 								      coords,
-								      geom->
-								      Srid,
+								      geom->Srid,
 								      name);
 				    }
 				  else
@@ -1049,6 +1295,8 @@ build_solution (sqlite3 * handle, NetworkPtr graph, SolutionPtr solution,
 			    else
 				error = 1;
 			}
+		      else if (name != NULL)
+			  set_arc_name_into_solution (solution, arc_id, name);
 		  }
 	    }
 	  sqlite3_finalize (stmt);
@@ -1058,7 +1306,7 @@ build_solution (sqlite3 * handle, NetworkPtr graph, SolutionPtr solution,
   abort:
     if (shortest_path)
 	free (shortest_path);
-    if (!error)
+    if (!error && graph->GeometryColumn != NULL)
       {
 	  /* building the Geometry representing the Shortest Path Solution */
 	  gaiaLinestringPtr ln;
@@ -1179,6 +1427,54 @@ build_solution (sqlite3 * handle, NetworkPtr graph, SolutionPtr solution,
       }
 }
 
+static int
+find_srid (sqlite3 * handle, NetworkPtr graph)
+{
+/* attempting to retrieve the appropriate Srid */
+    sqlite3_stmt *stmt;
+    int ret;
+    int srid = VNET_INVALID_SRID;
+    char *sql;
+
+    if (graph->GeometryColumn == NULL)
+	return srid;
+
+    sql = sqlite3_mprintf ("SELECT srid FROM geometry_columns WHERE "
+			   "Lower(f_table_name) = Lower(%Q) AND Lower(f_geometry_column) = Lower(%Q)",
+			   graph->TableName, graph->GeometryColumn);
+    ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
+    if (ret != SQLITE_OK)
+	return srid;
+    while (1)
+      {
+	  ret = sqlite3_step (stmt);
+	  if (ret == SQLITE_DONE)
+	      break;
+	  if (ret == SQLITE_ROW)
+	      srid = sqlite3_column_int (stmt, 0);
+      }
+    sqlite3_finalize (stmt);
+    return srid;
+}
+
+static void
+build_range_solution (SolutionPtr solution,
+		      RoutingNodePtr * range_nodes, int cnt, int srid)
+{
+/* formatting the "within Cost range" solution */
+    int i;
+    if (cnt > 0)
+      {
+	  /* building the solution */
+	  for (i = 0; i < cnt; i++)
+	    {
+		add_node_to_solution (solution, range_nodes[i], srid);
+	    }
+      }
+    if (range_nodes)
+	free (range_nodes);
+}
+
 static void
 dijkstra_solve (sqlite3 * handle, NetworkPtr graph, RoutingNodesPtr routing,
 		SolutionPtr solution)
@@ -1191,15 +1487,27 @@ dijkstra_solve (sqlite3 * handle, NetworkPtr graph, RoutingNodesPtr routing,
 }
 
 static void
-a_star_solve (sqlite3 * handle, NetworkPtr graph, RoutingNodesPtr routing,
-	      SolutionPtr solution)
+astar_solve (sqlite3 * handle, NetworkPtr graph, RoutingNodesPtr routing,
+	     SolutionPtr solution)
 {
 /* computing an A* Shortest Path solution */
     int cnt;
     NetworkArcPtr *shortest_path =
-	a_star_shortest_path (routing, graph->Nodes, solution->From,
-			      solution->To, graph->AStarHeuristicCoeff, &cnt);
+	astar_shortest_path (routing, graph->Nodes, solution->From,
+			     solution->To, graph->AStarHeuristicCoeff, &cnt);
     build_solution (handle, graph, solution, shortest_path, cnt);
+}
+
+static void
+dijkstra_within_cost_range (RoutingNodesPtr routing, SolutionPtr solution,
+			    int srid)
+{
+/* computing a Dijkstra "within cost range" solution */
+    int cnt;
+    RoutingNodePtr *range_nodes =
+	dijkstra_range_analysis (routing, solution->From, solution->MaxCost,
+				 &cnt);
+    build_range_solution (solution, range_nodes, cnt, srid);
 }
 
 static void
@@ -1344,8 +1652,13 @@ network_init (const unsigned char *blob, int size)
     graph->ToColumn = malloc (len + 1);
     strcpy (graph->ToColumn, to);
     len = strlen (geom);
-    graph->GeometryColumn = malloc (len + 1);
-    strcpy (graph->GeometryColumn, geom);
+    if (len <= 1)
+	graph->GeometryColumn = NULL;
+    else
+      {
+	  graph->GeometryColumn = malloc (len + 1);
+	  strcpy (graph->GeometryColumn, geom);
+      }
     if (!net64)
       {
 	  /* Name column is not supported */
@@ -1771,8 +2084,10 @@ vnet_best_index (sqlite3_vtab * pVTab, sqlite3_index_info * pIdxInfo)
     int err = 1;
     int from = 0;
     int to = 0;
+    int cost = 0;
     int i_from = -1;
     int i_to = -1;
+    int i_cost = -1;
     if (pVTab)
 	pVTab = pVTab;		/* unused arg warning suppression */
     for (i = 0; i < pIdxInfo->nConstraint; i++)
@@ -1791,6 +2106,11 @@ vnet_best_index (sqlite3_vtab * pVTab, sqlite3_index_info * pIdxInfo)
 		      to++;
 		      i_to = i;
 		  }
+		else if (p->iColumn == 4 && p->op == SQLITE_INDEX_CONSTRAINT_LE)
+		  {
+		      cost++;
+		      i_cost = i;
+		  }
 		else
 		    errors++;
 	    }
@@ -1802,6 +2122,24 @@ vnet_best_index (sqlite3_vtab * pVTab, sqlite3_index_info * pIdxInfo)
 	      pIdxInfo->idxNum = 1;	/* first arg is FROM */
 	  else
 	      pIdxInfo->idxNum = 2;	/* first arg is TO */
+	  pIdxInfo->estimatedCost = 1.0;
+	  for (i = 0; i < pIdxInfo->nConstraint; i++)
+	    {
+		if (pIdxInfo->aConstraint[i].usable)
+		  {
+		      pIdxInfo->aConstraintUsage[i].argvIndex = i + 1;
+		      pIdxInfo->aConstraintUsage[i].omit = 1;
+		  }
+	    }
+	  err = 0;
+      }
+    if (from == 1 && cost == 1 && errors == 0)
+      {
+	  /* this one is a valid "within cost" query */
+	  if (i_from < i_cost)
+	      pIdxInfo->idxNum = 3;	/* first arg is FROM */
+	  else
+	      pIdxInfo->idxNum = 4;	/* first arg is COST */
 	  pIdxInfo->estimatedCost = 1.0;
 	  for (i = 0; i < pIdxInfo->nConstraint; i++)
 	    {
@@ -1845,10 +2183,20 @@ static void
 vnet_read_row (VirtualNetworkCursorPtr cursor)
 {
 /* trying to read a "row" from Shortest Path solution */
-    if (cursor->solution->CurrentRow == NULL)
-	cursor->eof = 1;
+    if (cursor->solution->Mode == VNET_RANGE_SOLUTION)
+      {
+	  if (cursor->solution->CurrentNodeRow == NULL)
+	      cursor->eof = 1;
+	  else
+	      cursor->eof = 0;
+      }
     else
-	cursor->eof = 0;
+      {
+	  if (cursor->solution->CurrentRow == NULL)
+	      cursor->eof = 1;
+	  else
+	      cursor->eof = 0;
+      }
     return;
 }
 
@@ -1951,18 +2299,89 @@ vnet_filter (sqlite3_vtab_cursor * pCursor, int idxNum, const char *idxStr,
 					 sqlite3_value_int (argv[1]));
 	    }
       }
+    if (idxNum == 3 && argc == 2)
+      {
+	  /* retrieving the From and Cost param */
+	  if (node_code)
+	    {
+		/* Nodes are identified by TEXT Codes */
+		if (sqlite3_value_type (argv[0]) == SQLITE_TEXT)
+		    cursor->solution->From =
+			find_node_by_code (net->graph,
+					   (char *)
+					   sqlite3_value_text (argv[0]));
+	    }
+	  else
+	    {
+		/* Nodes are identified by INT Ids */
+		if (sqlite3_value_type (argv[0]) == SQLITE_INTEGER)
+		    cursor->solution->From =
+			find_node_by_id (net->graph,
+					 sqlite3_value_int (argv[0]));
+	    }
+	  if (sqlite3_value_type (argv[1]) == SQLITE_INTEGER)
+	    {
+		int cost = sqlite3_value_int (argv[1]);
+		cursor->solution->MaxCost = cost;
+	    }
+	  else if (sqlite3_value_type (argv[1]) == SQLITE_FLOAT)
+	      cursor->solution->MaxCost = sqlite3_value_double (argv[1]);
+      }
+    if (idxNum == 4 && argc == 2)
+      {
+	  /* retrieving the From and Cost param */
+	  if (node_code)
+	    {
+		/* Nodes are identified by TEXT Codes */
+		if (sqlite3_value_type (argv[1]) == SQLITE_TEXT)
+		    cursor->solution->From =
+			find_node_by_code (net->graph,
+					   (char *)
+					   sqlite3_value_text (argv[1]));
+	    }
+	  else
+	    {
+		/* Nodes are identified by INT Ids */
+		if (sqlite3_value_type (argv[1]) == SQLITE_INTEGER)
+		    cursor->solution->From =
+			find_node_by_id (net->graph,
+					 sqlite3_value_int (argv[1]));
+	    }
+	  if (sqlite3_value_type (argv[0]) == SQLITE_INTEGER)
+	    {
+		int cost = sqlite3_value_int (argv[0]);
+		cursor->solution->MaxCost = cost;
+	    }
+	  else if (sqlite3_value_type (argv[0]) == SQLITE_FLOAT)
+	      cursor->solution->MaxCost = sqlite3_value_double (argv[0]);
+      }
     if (cursor->solution->From && cursor->solution->To)
       {
 	  cursor->eof = 0;
+	  cursor->solution->Mode = VNET_ROUTING_SOLUTION;
 	  if (net->currentAlgorithm == VNET_A_STAR_ALGORITHM)
-	      a_star_solve (net->db, net->graph, net->routing,
-			    cursor->solution);
+	      astar_solve (net->db, net->graph, net->routing, cursor->solution);
 	  else
 	      dijkstra_solve (net->db, net->graph, net->routing,
 			      cursor->solution);
 	  return SQLITE_OK;
       }
+    if (cursor->solution->From && cursor->solution->MaxCost > 0.0)
+      {
+	  int srid = find_srid (net->db, net->graph);
+	  cursor->eof = 0;
+	  cursor->solution->Mode = VNET_RANGE_SOLUTION;
+	  if (net->currentAlgorithm == VNET_DIJKSTRA_ALGORITHM)
+	    {
+		dijkstra_within_cost_range (net->routing, cursor->solution,
+					    srid);
+		cursor->solution->CurrentRowId = 0;
+		cursor->solution->CurrentNodeRow = cursor->solution->FirstNode;
+	    }
+	  return SQLITE_OK;
+      }
     cursor->eof = 0;
+    cursor->solution->Mode = VNET_ROUTING_SOLUTION;
     return SQLITE_OK;
 }
 
@@ -1971,14 +2390,27 @@ vnet_next (sqlite3_vtab_cursor * pCursor)
 {
 /* fetching a next row from cursor */
     VirtualNetworkCursorPtr cursor = (VirtualNetworkCursorPtr) pCursor;
-    if (cursor->solution->CurrentRowId == 0)
-	cursor->solution->CurrentRow = cursor->solution->First;
-    else
-	cursor->solution->CurrentRow = cursor->solution->CurrentRow->Next;
-    if (!(cursor->solution->CurrentRow))
+    if (cursor->solution->Mode == VNET_RANGE_SOLUTION)
       {
-	  cursor->eof = 1;
-	  return SQLITE_OK;
+	  cursor->solution->CurrentNodeRow =
+	      cursor->solution->CurrentNodeRow->Next;
+	  if (!(cursor->solution->CurrentNodeRow))
+	    {
+		cursor->eof = 1;
+		return SQLITE_OK;
+	    }
+      }
+    else
+      {
+	  if (cursor->solution->CurrentRowId == 0)
+	      cursor->solution->CurrentRow = cursor->solution->First;
+	  else
+	      cursor->solution->CurrentRow = cursor->solution->CurrentRow->Next;
+	  if (!(cursor->solution->CurrentRow))
+	    {
+		cursor->eof = 1;
+		return SQLITE_OK;
+	    }
       }
     (cursor->solution->CurrentRowId)++;
     vnet_read_row (cursor);
@@ -1999,30 +2431,22 @@ vnet_column (sqlite3_vtab_cursor * pCursor, sqlite3_context * pContext,
 {
 /* fetching value for the Nth column */
     RowSolutionPtr row;
+    RowNodeSolutionPtr row_node;
     int node_code = 0;
     const char *algorithm;
     VirtualNetworkCursorPtr cursor = (VirtualNetworkCursorPtr) pCursor;
     VirtualNetworkPtr net = (VirtualNetworkPtr) cursor->pVtab;
     node_code = net->graph->NodeCode;
-    if (cursor->solution->CurrentRow == 0)
+    if (cursor->solution->Mode == VNET_RANGE_SOLUTION)
       {
-	  /* special case: this one is the solution summary */
+	  /* processing "within Cost range" solution */
+	  row_node = cursor->solution->CurrentNodeRow;
 	  if (column == 0)
 	    {
 		/* the currently used Algorithm */
-		if (net->currentAlgorithm == VNET_A_STAR_ALGORITHM)
-		    algorithm = "A*";
-		else
-		    algorithm = "Dijkstra";
+		algorithm = "Dijkstra";
 		sqlite3_result_text (pContext, algorithm, strlen (algorithm),
 				     SQLITE_STATIC);
-	    }
-	  if (cursor->solution->From == NULL || cursor->solution->To == NULL)
-	    {
-		/* empty [uninitialized] solution */
-		if (column > 0)
-		    sqlite3_result_null (pContext);
-		return SQLITE_OK;
 	    }
 	  if (column == 1)
 	    {
@@ -2043,30 +2467,33 @@ vnet_column (sqlite3_vtab_cursor * pCursor, sqlite3_context * pContext,
 	    {
 		/* the NodeTo column */
 		if (node_code)
-		    sqlite3_result_text (pContext, cursor->solution->To->Code,
-					 strlen (cursor->solution->To->Code),
+		    sqlite3_result_text (pContext, row_node->Node->Code,
+					 strlen (row_node->Node->Code),
 					 SQLITE_STATIC);
 		else
-		    sqlite3_result_int64 (pContext, cursor->solution->To->Id);
+		    sqlite3_result_int64 (pContext, row_node->Node->Id);
 	    }
 	  if (column == 4)
 	    {
 		/* the Cost column */
-		sqlite3_result_double (pContext, cursor->solution->TotalCost);
+		sqlite3_result_double (pContext, row_node->Cost);
 	    }
 	  if (column == 5)
 	    {
 		/* the Geometry column */
-		if (!(cursor->solution->Geometry))
+		if (row_node->Srid == VNET_INVALID_SRID)
 		    sqlite3_result_null (pContext);
 		else
 		  {
-		      /* builds the BLOB geometry to be returned */
 		      int len;
 		      unsigned char *p_result = NULL;
-		      gaiaToSpatiaLiteBlobWkb (cursor->solution->Geometry,
-					       &p_result, &len);
+		      gaiaGeomCollPtr geom = gaiaAllocGeomColl ();
+		      geom->Srid = row_node->Srid;
+		      gaiaAddPointToGeomColl (geom, row_node->Node->CoordX,
+					      row_node->Node->CoordY);
+		      gaiaToSpatiaLiteBlobWkb (geom, &p_result, &len);
 		      sqlite3_result_blob (pContext, p_result, len, free);
+		      gaiaFreeGeomColl (geom);
 		  }
 	    }
 	  if (column == 6)
@@ -2077,61 +2504,145 @@ vnet_column (sqlite3_vtab_cursor * pCursor, sqlite3_context * pContext,
       }
     else
       {
-	  /* ordinary case: this one is an Arc used by the solution */
-	  row = cursor->solution->CurrentRow;
-	  if (column == 0)
+	  /* processing an ordinary Routing (Shortest Path) solution */
+	  if (cursor->solution->CurrentRow == 0)
 	    {
-		/* the currently used Algorithm */
-		if (net->currentAlgorithm == VNET_A_STAR_ALGORITHM)
-		    algorithm = "A*";
-		else
-		    algorithm = "Dijkstra";
-		sqlite3_result_text (pContext, algorithm, strlen (algorithm),
-				     SQLITE_STATIC);
+		/* special case: this one is the solution summary */
+		if (column == 0)
+		  {
+		      /* the currently used Algorithm */
+		      if (net->currentAlgorithm == VNET_A_STAR_ALGORITHM)
+			  algorithm = "A*";
+		      else
+			  algorithm = "Dijkstra";
+		      sqlite3_result_text (pContext, algorithm,
+					   strlen (algorithm), SQLITE_STATIC);
+		  }
+		if (cursor->solution->From == NULL
+		    || cursor->solution->To == NULL)
+		  {
+		      /* empty [uninitialized] solution */
+		      if (column > 0)
+			  sqlite3_result_null (pContext);
+		      return SQLITE_OK;
+		  }
+		if (column == 1)
+		  {
+		      /* the ArcRowId column */
+		      sqlite3_result_null (pContext);
+		  }
+		if (column == 2)
+		  {
+		      /* the NodeFrom column */
+		      if (node_code)
+			  sqlite3_result_text (pContext,
+					       cursor->solution->From->Code,
+					       strlen (cursor->solution->From->
+						       Code), SQLITE_STATIC);
+		      else
+			  sqlite3_result_int64 (pContext,
+						cursor->solution->From->Id);
+		  }
+		if (column == 3)
+		  {
+		      /* the NodeTo column */
+		      if (node_code)
+			  sqlite3_result_text (pContext,
+					       cursor->solution->To->Code,
+					       strlen (cursor->solution->To->
+						       Code), SQLITE_STATIC);
+		      else
+			  sqlite3_result_int64 (pContext,
+						cursor->solution->To->Id);
+		  }
+		if (column == 4)
+		  {
+		      /* the Cost column */
+		      sqlite3_result_double (pContext,
+					     cursor->solution->TotalCost);
+		  }
+		if (column == 5)
+		  {
+		      /* the Geometry column */
+		      if (!(cursor->solution->Geometry))
+			  sqlite3_result_null (pContext);
+		      else
+			{
+			    /* builds the BLOB geometry to be returned */
+			    int len;
+			    unsigned char *p_result = NULL;
+			    gaiaToSpatiaLiteBlobWkb (cursor->solution->Geometry,
+						     &p_result, &len);
+			    sqlite3_result_blob (pContext, p_result, len, free);
+			}
+		  }
+		if (column == 6)
+		  {
+		      /* the [optional] Name column */
+		      sqlite3_result_null (pContext);
+		  }
 	    }
-	  if (column == 1)
+	  else
 	    {
-		/* the ArcRowId column */
-		sqlite3_result_int64 (pContext, row->Arc->ArcRowid);
-	    }
-	  if (column == 2)
-	    {
-		/* the NodeFrom column */
-		if (node_code)
-		    sqlite3_result_text (pContext, row->Arc->NodeFrom->Code,
-					 strlen (row->Arc->NodeFrom->Code),
-					 SQLITE_STATIC);
-		else
-		    sqlite3_result_int64 (pContext, row->Arc->NodeFrom->Id);
-	    }
-	  if (column == 3)
-	    {
-		/* the NodeTo column */
-		if (node_code)
-		    sqlite3_result_text (pContext, row->Arc->NodeTo->Code,
-					 strlen (row->Arc->NodeTo->Code),
-					 SQLITE_STATIC);
-		else
-		    sqlite3_result_int64 (pContext, row->Arc->NodeTo->Id);
-	    }
-	  if (column == 4)
-	    {
-		/* the Cost column */
-		sqlite3_result_double (pContext, row->Arc->Cost);
-	    }
-	  if (column == 5)
-	    {
-		/* the Geometry column */
-		sqlite3_result_null (pContext);
-	    }
-	  if (column == 6)
-	    {
-		/* the [optional] Name column */
-		if (row->Name)
-		    sqlite3_result_text (pContext, row->Name,
-					 strlen (row->Name), SQLITE_STATIC);
-		else
-		    sqlite3_result_null (pContext);
+		/* ordinary case: this one is an Arc used by the solution */
+		row = cursor->solution->CurrentRow;
+		if (column == 0)
+		  {
+		      /* the currently used Algorithm */
+		      if (net->currentAlgorithm == VNET_A_STAR_ALGORITHM)
+			  algorithm = "A*";
+		      else
+			  algorithm = "Dijkstra";
+		      sqlite3_result_text (pContext, algorithm,
+					   strlen (algorithm), SQLITE_STATIC);
+		  }
+		if (column == 1)
+		  {
+		      /* the ArcRowId column */
+		      sqlite3_result_int64 (pContext, row->Arc->ArcRowid);
+		  }
+		if (column == 2)
+		  {
+		      /* the NodeFrom column */
+		      if (node_code)
+			  sqlite3_result_text (pContext,
+					       row->Arc->NodeFrom->Code,
+					       strlen (row->Arc->NodeFrom->
+						       Code), SQLITE_STATIC);
+		      else
+			  sqlite3_result_int64 (pContext,
+						row->Arc->NodeFrom->Id);
+		  }
+		if (column == 3)
+		  {
+		      /* the NodeTo column */
+		      if (node_code)
+			  sqlite3_result_text (pContext, row->Arc->NodeTo->Code,
+					       strlen (row->Arc->NodeTo->Code),
+					       SQLITE_STATIC);
+		      else
+			  sqlite3_result_int64 (pContext, row->Arc->NodeTo->Id);
+		  }
+		if (column == 4)
+		  {
+		      /* the Cost column */
+		      sqlite3_result_double (pContext, row->Arc->Cost);
+		  }
+		if (column == 5)
+		  {
+		      /* the Geometry column */
+		      sqlite3_result_null (pContext);
+		  }
+		if (column == 6)
+		  {
+		      /* the [optional] Name column */
+		      if (row->Name)
+			  sqlite3_result_text (pContext, row->Name,
+					       strlen (row->Name),
+					       SQLITE_STATIC);
+		      else
+			  sqlite3_result_null (pContext);
+		  }
 	    }
       }
     return SQLITE_OK;
@@ -2229,6 +2740,17 @@ vnet_rollback (sqlite3_vtab * pVTab)
 }
 
 static int
+vnet_rename (sqlite3_vtab * pVTab, const char *zNew)
+{
+/* BEGIN TRANSACTION */
+    if (pVTab)
+	pVTab = pVTab;		/* unused arg warning suppression */
+    if (zNew)
+	zNew = zNew;		/* unused arg warning suppression */
+    return SQLITE_ERROR;
+}
+
+static int
 spliteVirtualNetworkInit (sqlite3 * db)
 {
     int rc = SQLITE_OK;
@@ -2251,6 +2773,7 @@ spliteVirtualNetworkInit (sqlite3 * db)
     my_net_module.xCommit = &vnet_commit;
     my_net_module.xRollback = &vnet_rollback;
     my_net_module.xFindFunction = NULL;
+    my_net_module.xRename = &vnet_rename;
     sqlite3_create_module_v2 (db, "VirtualNetwork", &my_net_module, NULL, 0);
     return rc;
 }

@@ -18,7 +18,7 @@ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
 for the specific language governing rights and limitations under the
 License.
 
-The Original Code is the SpatiaLite library
+The Original Code is the RasterLite2 library
 
 The Initial Developer of the Original Code is Alessandro Furieri
  
@@ -156,7 +156,7 @@ test_GetCapabilities_tuscany (rl2WmsCachePtr cache)
 	    }
       }
     count = get_wms_layer_crs_count (layer);
-    if (count != 5)
+    if (count != 8)
       {
 	  fprintf (stderr, "GetWmsLayerCrsCount: unexpected result %d\n",
 		   count);
@@ -273,7 +273,7 @@ test_GetCapabilities_tuscany (rl2WmsCachePtr cache)
 	    }
       }
     count = get_wms_layer_crs_count (child);
-    if (count != 6)
+    if (count != 9)
       {
 	  fprintf (stderr,
 		   "GetWmsLayerCrsCount (Child): unexpected result %d\n",
@@ -281,9 +281,10 @@ test_GetCapabilities_tuscany (rl2WmsCachePtr cache)
 	  return -30;
       }
     str = get_wms_layer_crs (child, 3);
-    if (strcmp (str, "EPSG:4326") != 0)
+    if (strcmp (str, "EPSG:3003") != 0)
       {
-	  fprintf (stderr, "GetWmsLayerCRS (Child): unexpected result \"%s\"\n",
+	  fprintf (stderr,
+		   "GetWmsLayerCRS (Child) #1: unexpected result \"%s\"\n",
 		   str);
 	  return -31;
       }
@@ -712,7 +713,8 @@ test_GetCapabilities_arizona (rl2WmsCachePtr cache)
     str = get_wms_layer_crs (child, 3);
     if (strcmp (str, "EPSG:3857") != 0)
       {
-	  fprintf (stderr, "GetWmsLayerCRS (Child): unexpected result \"%s\"\n",
+	  fprintf (stderr,
+		   "GetWmsLayerCRS (Child) #2: unexpected result \"%s\"\n",
 		   str);
 	  return -131;
       }
@@ -1126,7 +1128,8 @@ test_GetCapabilities_rer (rl2WmsCachePtr cache)
     str = get_wms_layer_crs (child, 3);
     if (strcmp (str, "EPSG:3857") != 0)
       {
-	  fprintf (stderr, "GetWmsLayerCRS (Child): unexpected result \"%s\"\n",
+	  fprintf (stderr,
+		   "GetWmsLayerCRS (Child) #3: unexpected result \"%s\"\n",
 		   str);
 	  return -131;
       }
@@ -1790,7 +1793,7 @@ main (int argc, char *argv[])
 	  return -91;
       }
     val = get_wms_cache_current_size (cache);
-    if (val != 4526)
+    if (val != 3395)
       {
 	  fprintf (stderr, "GetWmsCacheCurrentSize: unexpected result %d\n",
 		   val);
@@ -1816,7 +1819,7 @@ main (int argc, char *argv[])
 	  return -95;
       }
     dblval = get_wms_total_download_size (cache);
-    if (dblval != 50030.00)
+    if (dblval != 53668.00)
       {
 	  fprintf (stderr, "GetWmsTotalDownloadSize: unexpected result %1.2f\n",
 		   dblval);

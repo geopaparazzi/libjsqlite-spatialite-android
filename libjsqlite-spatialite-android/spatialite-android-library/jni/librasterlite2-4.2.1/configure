@@ -791,6 +791,10 @@ with_gnu_ld
 with_sysroot
 enable_libtool_lock
 enable_gcov
+enable_openjpeg
+enable_webp
+enable_lzma
+enable_charls
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1455,6 +1459,10 @@ Optional Features:
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --enable-gcov           turn on code coverage analysis tools
+  --enable-openjpeg       enables OpenJpeg inclusion [default=yes]
+  --enable-webp           enables WebP inclusion [default=yes]
+  --enable-lzma           enables LZMA inclusion [default=yes]
+  --enable-charls         enables CharLS inclusion [default=yes]
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -2505,7 +2513,7 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
 
-am__api_version='1.13'
+am__api_version='1.14'
 
 # Find a good install program.  We prefer a C program (faster),
 # so one script is as good as another.  But avoid the broken or
@@ -3042,6 +3050,47 @@ am__tar='$${TAR-tar} chof - "$$tardir"' am__untar='$${TAR-tar} xf -'
 
 
 
+# POSIX will say in a future version that running "rm -f" with no argument
+# is OK; and we want to be able to make that assumption in our Makefile
+# recipes.  So use an aggressive probe to check that the usage we want is
+# actually supported "in the wild" to an acceptable degree.
+# See automake bug#10828.
+# To make any issue more visible, cause the running configure to be aborted
+# by default if the 'rm' program in use doesn't match our expectations; the
+# user can still override this though.
+if rm -f && rm -fr && rm -rf; then : OK; else
+  cat >&2 <<'END'
+Oops!
+
+Your 'rm' program seems unable to run without file operands specified
+on the command line, even when the '-f' option is present.  This is contrary
+to the behaviour of most rm programs out there, and not conforming with
+the upcoming POSIX standard: <http://austingroupbugs.net/view.php?id=542>
+
+Please tell bug-automake@gnu.org about your system, including the value
+of your $PATH and any error possibly output before this message.  This
+can help us improve future automake versions.
+
+END
+  if test x"$ACCEPT_INFERIOR_RM_PROGRAM" = x"yes"; then
+    echo 'Configuration will proceed anyway, since you have set the' >&2
+    echo 'ACCEPT_INFERIOR_RM_PROGRAM variable to "yes"' >&2
+    echo >&2
+  else
+    cat >&2 <<'END'
+Aborting the configuration process, to ensure you take notice of the issue.
+
+You can download and install GNU coreutils to get an 'rm' implementation
+that behaves properly: <http://www.gnu.org/software/coreutils/>.
+
+If you want to complete the configuration process using your problematic
+'rm' anyway, export the environment variable ACCEPT_INFERIOR_RM_PROGRAM
+to "yes", and re-run configure.
+
+END
+    as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
+  fi
+fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable maintainer-specific portions of Makefiles" >&5
 $as_echo_n "checking whether to enable maintainer-specific portions of Makefiles... " >&6; }
@@ -3082,6 +3131,11 @@ $as_echo "#define _LARGEFILE_SOURCE 1" >>confdefs.h
 # disablibg debug support
 
 $as_echo "#define NDEBUG 1" >>confdefs.h
+
+
+
+
+# config depending options
 
 
 
@@ -3940,6 +3994,65 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CC understands -c and -o together" >&5
+$as_echo_n "checking whether $CC understands -c and -o together... " >&6; }
+if ${am_cv_prog_cc_c_o+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+  # Make sure it works both with $CC and with simple cc.
+  # Following AC_PROG_CC_C_O, we do the test twice because some
+  # compilers refuse to overwrite an existing .o file with -o,
+  # though they will create one.
+  am_cv_prog_cc_c_o=yes
+  for am_i in 1 2; do
+    if { echo "$as_me:$LINENO: $CC -c conftest.$ac_ext -o conftest2.$ac_objext" >&5
+   ($CC -c conftest.$ac_ext -o conftest2.$ac_objext) >&5 2>&5
+   ac_status=$?
+   echo "$as_me:$LINENO: \$? = $ac_status" >&5
+   (exit $ac_status); } \
+         && test -f conftest2.$ac_objext; then
+      : OK
+    else
+      am_cv_prog_cc_c_o=no
+      break
+    fi
+  done
+  rm -f core conftest*
+  unset am_i
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $am_cv_prog_cc_c_o" >&5
+$as_echo "$am_cv_prog_cc_c_o" >&6; }
+if test "$am_cv_prog_cc_c_o" != yes; then
+   # Losing compiler, so override with the script.
+   # FIXME: It is wrong to rewrite CC.
+   # But if we don't then we get into trouble of one sort or another.
+   # A longer-term fix would be to have automake use am__CC in this case,
+   # and then we could set am__CC="\$(top_srcdir)/compile \$(CC)"
+   CC="$am_aux_dir/compile $CC"
+fi
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
 depcc="$CC"   am_compiler_list=
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking dependency style of $depcc" >&5
@@ -4564,20 +4677,6 @@ fi
 
 done
 
-for ac_header in CharLS/interface.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "CharLS/interface.h" "ac_cv_header_CharLS_interface_h" "$ac_includes_default"
-if test "x$ac_cv_header_CharLS_interface_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_CHARLS_INTERFACE_H 1
-_ACEOF
-
-else
-  as_fn_error $? "cannot find CharLS/interface.h, bailing out" "$LINENO" 5
-fi
-
-done
-
 for ac_header in jerror.h
 do :
   ac_fn_c_check_header_mongrel "$LINENO" "jerror.h" "ac_cv_header_jerror_h" "$ac_includes_default"
@@ -4662,55 +4761,7 @@ fi
 
 done
 
-for ac_header in lzma.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "lzma.h" "ac_cv_header_lzma_h" "$ac_includes_default"
-if test "x$ac_cv_header_lzma_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LZMA_H 1
-_ACEOF
 
-else
-  as_fn_error $? "cannot find lzma.h, bailing out" "$LINENO" 5
-fi
-
-done
-
-
-#
-# testing OpenJpeg-2 headers
-# they could be either on -/include/openjpeg-2.0
-#                   or on -/include/openjpeg-2.1
-#
-for ac_header in openjpeg-2.0/openjpeg.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "openjpeg-2.0/openjpeg.h" "ac_cv_header_openjpeg_2_0_openjpeg_h" "$ac_includes_default"
-if test "x$ac_cv_header_openjpeg_2_0_openjpeg_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_OPENJPEG_2_0_OPENJPEG_H 1
-_ACEOF
-
-fi
-
-done
-
-for ac_header in openjpeg-2.1/openjpeg.h
-do :
-  ac_fn_c_check_header_mongrel "$LINENO" "openjpeg-2.1/openjpeg.h" "ac_cv_header_openjpeg_2_1_openjpeg_h" "$ac_includes_default"
-if test "x$ac_cv_header_openjpeg_2_1_openjpeg_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_OPENJPEG_2_1_OPENJPEG_H 1
-_ACEOF
-
-fi
-
-done
-
-if test x"$ac_cv_header_openjpeg_2_0_openjpeg_h" != x"yes" &&
-    test x"$ac_cv_header_openjpeg_2_1_openjpeg_h" != x"yes";
-then
-    as_fn_error $? "'OpenJpeg-2' is required but the header (openjpeg.h) doesn't seem to be installed on this system" "$LINENO" 5
-fi
 
 #
 # testing GeoTiff headers
@@ -5689,6 +5740,65 @@ ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $CC understands -c and -o together" >&5
+$as_echo_n "checking whether $CC understands -c and -o together... " >&6; }
+if ${am_cv_prog_cc_c_o+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+  # Make sure it works both with $CC and with simple cc.
+  # Following AC_PROG_CC_C_O, we do the test twice because some
+  # compilers refuse to overwrite an existing .o file with -o,
+  # though they will create one.
+  am_cv_prog_cc_c_o=yes
+  for am_i in 1 2; do
+    if { echo "$as_me:$LINENO: $CC -c conftest.$ac_ext -o conftest2.$ac_objext" >&5
+   ($CC -c conftest.$ac_ext -o conftest2.$ac_objext) >&5 2>&5
+   ac_status=$?
+   echo "$as_me:$LINENO: \$? = $ac_status" >&5
+   (exit $ac_status); } \
+         && test -f conftest2.$ac_objext; then
+      : OK
+    else
+      am_cv_prog_cc_c_o=no
+      break
+    fi
+  done
+  rm -f core conftest*
+  unset am_i
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $am_cv_prog_cc_c_o" >&5
+$as_echo "$am_cv_prog_cc_c_o" >&6; }
+if test "$am_cv_prog_cc_c_o" != yes; then
+   # Losing compiler, so override with the script.
+   # FIXME: It is wrong to rewrite CC.
+   # But if we don't then we get into trouble of one sort or another.
+   # A longer-term fix would be to have automake use am__CC in this case,
+   # and then we could set am__CC="\$(top_srcdir)/compile \$(CC)"
+   CC="$am_aux_dir/compile $CC"
+fi
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
 
 depcc="$CC"   am_compiler_list=
 
@@ -17241,7 +17351,7 @@ if test "x$enable_gcov" = "xyes"; then
     GCOV_FLAGS="-lgcov"
 fi
 
-ac_config_files="$ac_config_files Makefile headers/Makefile src/Makefile test/Makefile test/sql_stmt_tests/Makefile test/sql_stmt_security_tests/Makefile tools/Makefile examples/Makefile Doxyfile rasterlite2.pc"
+ac_config_files="$ac_config_files Makefile headers/Makefile src/Makefile test/Makefile test/sql_stmt_tests/Makefile test/sql_stmt_security_tests/Makefile tools/Makefile Doxyfile rasterlite2.pc"
 
 
 # exporting the TARGET_CPU string
@@ -17393,53 +17503,6 @@ else
   as_fn_error $? "'libjpeg' is required but it doesn't seems to be installed on this system." "$LINENO" 5
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for JpegLsEncode in -lCharLS" >&5
-$as_echo_n "checking for JpegLsEncode in -lCharLS... " >&6; }
-if ${ac_cv_lib_CharLS_JpegLsEncode+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lCharLS -lm $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char JpegLsEncode ();
-int
-main ()
-{
-return JpegLsEncode ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_CharLS_JpegLsEncode=yes
-else
-  ac_cv_lib_CharLS_JpegLsEncode=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_CharLS_JpegLsEncode" >&5
-$as_echo "$ac_cv_lib_CharLS_JpegLsEncode" >&6; }
-if test "x$ac_cv_lib_CharLS_JpegLsEncode" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBCHARLS 1
-_ACEOF
-
-  LIBS="-lCharLS $LIBS"
-
-else
-  as_fn_error $? "'libCharLS' is required but it doesn't seems to be installed on this system." "$LINENO" 5
-fi
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for DGifSlurp in -lgif" >&5
 $as_echo_n "checking for DGifSlurp in -lgif... " >&6; }
 if ${ac_cv_lib_gif_DGifSlurp+:} false; then :
@@ -17484,7 +17547,7 @@ _ACEOF
   LIBS="-lgif $LIBS"
 
 else
-  as_fn_error $? "'libpng' is required but it doesn't seems to be installed on this system." "$LINENO" 5
+  as_fn_error $? "'libgif' is required but it doesn't seems to be installed on this system." "$LINENO" 5
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for TIFFClientOpen in -ltiff" >&5
@@ -17581,84 +17644,6 @@ else
   as_fn_error $? "'libgeotiff' >= v.1.2.5 is required but it doesn't seems to be installed on this system." "$LINENO" 5
 fi
 
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for opj_create_decompress in -lopenjp2" >&5
-$as_echo_n "checking for opj_create_decompress in -lopenjp2... " >&6; }
-if ${ac_cv_lib_openjp2_opj_create_decompress+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lopenjp2 -lm $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char opj_create_decompress ();
-int
-main ()
-{
-return opj_create_decompress ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_openjp2_opj_create_decompress=yes
-else
-  ac_cv_lib_openjp2_opj_create_decompress=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_openjp2_opj_create_decompress" >&5
-$as_echo "$ac_cv_lib_openjp2_opj_create_decompress" >&6; }
-if test "x$ac_cv_lib_openjp2_opj_create_decompress" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBOPENJP2 1
-_ACEOF
-
-  LIBS="-lopenjp2 $LIBS"
-
-else
-  as_fn_error $? "'libopenjp2' is required but it doesn't seems to be installed on this system." "$LINENO" 5
-fi
-
-
-# testing for OpenJpeg 2.0 or 2.1
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#ifdef HAVE_OPENJPEG_2_1_OPENJPEG_H
-                                       #include <openjpeg-2.1/openjpeg.h>
-                                       #else
-                                       #include <openjpeg-2.0/openjpeg.h>
-                                       #endif
-int
-main ()
-{
-void *d; opj_stream_t *s; opj_stream_set_user_data (s, &d, NULL);
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-
-                      { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; }
-                      $as_echo "#define OPENJPEG_2_1 1" >>confdefs.h
-
-
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
 
 
 
@@ -17854,6 +17839,144 @@ fi
 
 
 
+#-----------------------------------------------------------------------
+#   --enable-openjpeg
+#
+# Check whether --enable-openjpeg was given.
+if test "${enable_openjpeg+set}" = set; then :
+  enableval=$enable_openjpeg;
+else
+  enable_openjpeg=yes
+fi
+
+    if test x"$enable_openjpeg" != "xno"; then
+    #
+    # testing OpenJpeg-2 headers
+    # they could be either on -/include/openjpeg-2.0
+    #                   or on -/include/openjpeg-2.1
+    #
+    for ac_header in openjpeg-2.0/openjpeg.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "openjpeg-2.0/openjpeg.h" "ac_cv_header_openjpeg_2_0_openjpeg_h" "$ac_includes_default"
+if test "x$ac_cv_header_openjpeg_2_0_openjpeg_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_OPENJPEG_2_0_OPENJPEG_H 1
+_ACEOF
+
+fi
+
+done
+
+    for ac_header in openjpeg-2.1/openjpeg.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "openjpeg-2.1/openjpeg.h" "ac_cv_header_openjpeg_2_1_openjpeg_h" "$ac_includes_default"
+if test "x$ac_cv_header_openjpeg_2_1_openjpeg_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_OPENJPEG_2_1_OPENJPEG_H 1
+_ACEOF
+
+fi
+
+done
+
+    if test x"$ac_cv_header_openjpeg_2_0_openjpeg_h" != x"yes" &&
+        test x"$ac_cv_header_openjpeg_2_1_openjpeg_h" != x"yes";
+    then
+        as_fn_error $? "'OpenJpeg-2' is required but the header (openjpeg.h) doesn't seem to be installed on this system" "$LINENO" 5
+    fi
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for opj_create_decompress in -lopenjp2" >&5
+$as_echo_n "checking for opj_create_decompress in -lopenjp2... " >&6; }
+if ${ac_cv_lib_openjp2_opj_create_decompress+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lopenjp2 -lm $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char opj_create_decompress ();
+int
+main ()
+{
+return opj_create_decompress ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_openjp2_opj_create_decompress=yes
+else
+  ac_cv_lib_openjp2_opj_create_decompress=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_openjp2_opj_create_decompress" >&5
+$as_echo "$ac_cv_lib_openjp2_opj_create_decompress" >&6; }
+if test "x$ac_cv_lib_openjp2_opj_create_decompress" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBOPENJP2 1
+_ACEOF
+
+  LIBS="-lopenjp2 $LIBS"
+
+else
+  as_fn_error $? "'libopenjp2' is required but it doesn't seems to be installed on this system." "$LINENO" 5
+fi
+
+    # testing for OpenJpeg 2.0 or 2.1
+    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#ifdef HAVE_OPENJPEG_2_1_OPENJPEG_H
+                                       #include <openjpeg-2.1/openjpeg.h>
+                                       #else
+                                       #include <openjpeg-2.0/openjpeg.h>
+                                       #endif
+int
+main ()
+{
+void *d; opj_stream_t *s; opj_stream_set_user_data (s, &d, NULL);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+
+                      { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+                      $as_echo "#define OPENJPEG_2_1 1" >>confdefs.h
+
+
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+else
+  $as_echo "#define OMIT_OPENJPEG 1" >>confdefs.h
+
+fi
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+#   --enable-webp
+#
+# Check whether --enable-webp was given.
+if test "${enable_webp+set}" = set; then :
+  enableval=$enable_webp;
+else
+  enable_webp=yes
+fi
+
+if test x"$enable_webp" != "xno"; then
 
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LIBWEBP" >&5
@@ -17927,7 +18050,23 @@ $as_echo "yes" >&6; }
 fi
 
 
+else
+  $as_echo "#define OMIT_WEBP 1" >>confdefs.h
 
+fi
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+#   --enable-lzma
+#
+# Check whether --enable-lzma was given.
+if test "${enable_lzma+set}" = set; then :
+  enableval=$enable_lzma;
+else
+  enable_lzma=yes
+fi
+
+if test x"$enable_lzma" != "xno"; then
 
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for LIBLZMA" >&5
@@ -18001,6 +18140,89 @@ $as_echo "yes" >&6; }
 fi
 
 
+else
+  $as_echo "#define OMIT_LZMA 1" >>confdefs.h
+
+fi
+#-----------------------------------------------------------------------
+
+#-----------------------------------------------------------------------
+#   --enable-charls
+#
+# Check whether --enable-charls was given.
+if test "${enable_charls+set}" = set; then :
+  enableval=$enable_charls;
+else
+  enable_charls=yes
+fi
+
+if test x"$enable_charls" != "xno"; then
+    for ac_header in CharLS/interface.h
+do :
+  ac_fn_c_check_header_mongrel "$LINENO" "CharLS/interface.h" "ac_cv_header_CharLS_interface_h" "$ac_includes_default"
+if test "x$ac_cv_header_CharLS_interface_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_CHARLS_INTERFACE_H 1
+_ACEOF
+
+else
+  as_fn_error $? "cannot find CharLS/interface.h, bailing out" "$LINENO" 5
+fi
+
+done
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for JpegLsEncode in -lCharLS" >&5
+$as_echo_n "checking for JpegLsEncode in -lCharLS... " >&6; }
+if ${ac_cv_lib_CharLS_JpegLsEncode+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lCharLS -lm $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char JpegLsEncode ();
+int
+main ()
+{
+return JpegLsEncode ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_CharLS_JpegLsEncode=yes
+else
+  ac_cv_lib_CharLS_JpegLsEncode=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_CharLS_JpegLsEncode" >&5
+$as_echo "$ac_cv_lib_CharLS_JpegLsEncode" >&6; }
+if test "x$ac_cv_lib_CharLS_JpegLsEncode" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBCHARLS 1
+_ACEOF
+
+  LIBS="-lCharLS $LIBS"
+
+else
+  as_fn_error $? "'libCharLS' is required but it doesn't seems to be installed on this system." "$LINENO" 5
+fi
+
+else
+  $as_echo "#define OMIT_CHARLS 1" >>confdefs.h
+
+fi
+#-----------------------------------------------------------------------
 
 
 pkg_failed=no
@@ -19435,7 +19657,6 @@ do
     "test/sql_stmt_tests/Makefile") CONFIG_FILES="$CONFIG_FILES test/sql_stmt_tests/Makefile" ;;
     "test/sql_stmt_security_tests/Makefile") CONFIG_FILES="$CONFIG_FILES test/sql_stmt_security_tests/Makefile" ;;
     "tools/Makefile") CONFIG_FILES="$CONFIG_FILES tools/Makefile" ;;
-    "examples/Makefile") CONFIG_FILES="$CONFIG_FILES examples/Makefile" ;;
     "Doxyfile") CONFIG_FILES="$CONFIG_FILES Doxyfile" ;;
     "rasterlite2.pc") CONFIG_FILES="$CONFIG_FILES rasterlite2.pc" ;;
 

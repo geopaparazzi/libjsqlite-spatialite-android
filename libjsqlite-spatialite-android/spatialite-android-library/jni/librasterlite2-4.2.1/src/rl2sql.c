@@ -87,6 +87,214 @@ fnct_rl2_version (sqlite3_context * context, int argc, sqlite3_value ** argv)
 }
 
 static void
+fnct_rl2_has_codec_none (sqlite3_context * context, int argc,
+			 sqlite3_value ** argv)
+{
+/* SQL function:
+/ rl2_has_codec_none()
+/
+/ will always return 1 (TRUE)
+*/
+    int ret = rl2_is_supported_codec (RL2_COMPRESSION_NONE);
+    RL2_UNUSED ();		/* LCOV_EXCL_LINE */
+    if (ret < 0)
+	ret = 0;
+    sqlite3_result_int (context, ret);
+}
+
+static void
+fnct_rl2_has_codec_deflate (sqlite3_context * context, int argc,
+			    sqlite3_value ** argv)
+{
+/* SQL function:
+/ rl2_has_codec_deflate()
+/
+/ will always return 1 (TRUE)
+*/
+    int ret = rl2_is_supported_codec (RL2_COMPRESSION_DEFLATE);
+    RL2_UNUSED ();		/* LCOV_EXCL_LINE */
+    if (ret < 0)
+	ret = 0;
+    sqlite3_result_int (context, ret);
+}
+
+static void
+fnct_rl2_has_codec_deflate_no (sqlite3_context * context, int argc,
+			       sqlite3_value ** argv)
+{
+/* SQL function:
+/ rl2_has_codec_deflate_no()
+/
+/ will always return 1 (TRUE)
+*/
+    int ret = rl2_is_supported_codec (RL2_COMPRESSION_DEFLATE_NO);
+    RL2_UNUSED ();		/* LCOV_EXCL_LINE */
+    if (ret < 0)
+	ret = 0;
+    sqlite3_result_int (context, ret);
+}
+
+static void
+fnct_rl2_has_codec_png (sqlite3_context * context, int argc,
+			sqlite3_value ** argv)
+{
+/* SQL function:
+/ rl2_has_codec_png()
+/
+/ will always return 1 (TRUE)
+*/
+    int ret = rl2_is_supported_codec (RL2_COMPRESSION_PNG);
+    RL2_UNUSED ();		/* LCOV_EXCL_LINE */
+    if (ret < 0)
+	ret = 0;
+    sqlite3_result_int (context, ret);
+}
+
+static void
+fnct_rl2_has_codec_jpeg (sqlite3_context * context, int argc,
+			 sqlite3_value ** argv)
+{
+/* SQL function:
+/ rl2_has_codec_jpeg()
+/
+/ will always return 1 (TRUE)
+*/
+    int ret = rl2_is_supported_codec (RL2_COMPRESSION_JPEG);
+    RL2_UNUSED ();		/* LCOV_EXCL_LINE */
+    if (ret < 0)
+	ret = 0;
+    sqlite3_result_int (context, ret);
+}
+
+static void
+fnct_rl2_has_codec_fax4 (sqlite3_context * context, int argc,
+			 sqlite3_value ** argv)
+{
+/* SQL function:
+/ rl2_has_codec_fax4()
+/
+/ will always return 1 (TRUE)
+*/
+    int ret = rl2_is_supported_codec (RL2_COMPRESSION_CCITTFAX4);
+    RL2_UNUSED ();		/* LCOV_EXCL_LINE */
+    if (ret < 0)
+	ret = 0;
+    sqlite3_result_int (context, ret);
+}
+
+static void
+fnct_rl2_has_codec_lzma (sqlite3_context * context, int argc,
+			 sqlite3_value ** argv)
+{
+/* SQL function:
+/ rl2_has_codec_lzma()
+/
+/ will return 1 (TRUE) or 0 (FALSE) depending of OMIT_LZMA
+*/
+    int ret = rl2_is_supported_codec (RL2_COMPRESSION_LZMA);
+    RL2_UNUSED ();		/* LCOV_EXCL_LINE */
+    if (ret < 0)
+	ret = 0;
+    sqlite3_result_int (context, ret);
+}
+
+static void
+fnct_rl2_has_codec_lzma_no (sqlite3_context * context, int argc,
+			    sqlite3_value ** argv)
+{
+/* SQL function:
+/ rl2_has_codec_lzma_no()
+/
+/ will return 1 (TRUE) or 0 (FALSE) depending of OMIT_LZMA
+*/
+    int ret = rl2_is_supported_codec (RL2_COMPRESSION_LZMA_NO);
+    RL2_UNUSED ();		/* LCOV_EXCL_LINE */
+    if (ret < 0)
+	ret = 0;
+    sqlite3_result_int (context, ret);
+}
+
+static void
+fnct_rl2_has_codec_charls (sqlite3_context * context, int argc,
+			   sqlite3_value ** argv)
+{
+/* SQL function:
+/ rl2_has_codec_charls()
+/
+/ will return 1 (TRUE) or 0 (FALSE) depending of OMIT_CHARLS
+*/
+    int ret = rl2_is_supported_codec (RL2_COMPRESSION_CHARLS);
+    RL2_UNUSED ();		/* LCOV_EXCL_LINE */
+    if (ret < 0)
+	ret = 0;
+    sqlite3_result_int (context, ret);
+}
+
+static void
+fnct_rl2_has_codec_webp (sqlite3_context * context, int argc,
+			 sqlite3_value ** argv)
+{
+/* SQL function:
+/ rl2_has_codec_webp()
+/
+/ will return 1 (TRUE) or 0 (FALSE) depending of OMIT_WEBP
+*/
+    int ret = rl2_is_supported_codec (RL2_COMPRESSION_LOSSY_WEBP);
+    RL2_UNUSED ();		/* LCOV_EXCL_LINE */
+    if (ret < 0)
+	ret = 0;
+    sqlite3_result_int (context, ret);
+}
+
+static void
+fnct_rl2_has_codec_ll_webp (sqlite3_context * context, int argc,
+			    sqlite3_value ** argv)
+{
+/* SQL function:
+/ rl2_has_codec_ll_webp()
+/
+/ will return 1 (TRUE) or 0 (FALSE) depending of OMIT_WEBP
+*/
+    int ret = rl2_is_supported_codec (RL2_COMPRESSION_LOSSLESS_WEBP);
+    RL2_UNUSED ();		/* LCOV_EXCL_LINE */
+    if (ret < 0)
+	ret = 0;
+    sqlite3_result_int (context, ret);
+}
+
+static void
+fnct_rl2_has_codec_jp2 (sqlite3_context * context, int argc,
+			sqlite3_value ** argv)
+{
+/* SQL function:
+/ rl2_has_codec_jp2()
+/
+/ will return 1 (TRUE) or 0 (FALSE) depending of OMIT_OPENJPEG
+*/
+    int ret = rl2_is_supported_codec (RL2_COMPRESSION_LOSSY_JP2);
+    RL2_UNUSED ();		/* LCOV_EXCL_LINE */
+    if (ret < 0)
+	ret = 0;
+    sqlite3_result_int (context, ret);
+}
+
+static void
+fnct_rl2_has_codec_ll_jp2 (sqlite3_context * context, int argc,
+			   sqlite3_value ** argv)
+{
+/* SQL function:
+/ rl2_has_codec_ll_jp2()
+/
+/ will return 1 (TRUE) or 0 (FALSE) depending of OMIT_OPENJPEG
+*/
+    int ret = rl2_is_supported_codec (RL2_COMPRESSION_LOSSLESS_JP2);
+    RL2_UNUSED ();		/* LCOV_EXCL_LINE */
+    if (ret < 0)
+	ret = 0;
+    sqlite3_result_int (context, ret);
+}
+
+static void
 fnct_rl2_target_cpu (sqlite3_context * context, int argc, sqlite3_value ** argv)
 {
 /* SQL function:
@@ -1864,28 +2072,29 @@ fnct_GetBandHistogramFromImage (sqlite3_context * context, int argc,
 }
 
 static void
-fnct_CreateCoverage (sqlite3_context * context, int argc, sqlite3_value ** argv)
+fnct_CreateRasterCoverage (sqlite3_context * context, int argc,
+			   sqlite3_value ** argv)
 {
 /* SQL function:
-/ CreateCoverage(text coverage, text sample_type, text pixel_type,
-/                int num_bands, text compression, int quality,
-/                int tile_width, int tile_height, int srid,
-/                double res)
-/ CreateCoverage(text coverage, text sample_type, text pixel_type,
-/                int num_bands, text compression, int quality,
-/                int tile_width, int tile_height, int srid,
-/                double horz_res, double vert_res)
-/ CreateCoverage(text coverage, text sample_type, text pixel_type,
-/                int num_bands, text compression, int quality,
-/                int tile_width, int tile_height, int srid,
-/                double horz_res, double vert_res, BLOB no_data)
-/ CreateCoverage(text coverage, text sample_type, text pixel_type,
-/                int num_bands, text compression, int quality,
-/                int tile_width, int tile_height, int srid,
-/                double horz_res, double vert_res, BLOB no_data,
-/                int strict_resolution, int mixed_resolutions,
-/                int section_paths, int section_md5,
-/                int section_summary)
+/ CreateRasterCoverage(text coverage, text sample_type, text pixel_type,
+/                      int num_bands, text compression, int quality,
+/                      int tile_width, int tile_height, int srid,
+/                      double res)
+/ CreateRasterCoverage(text coverage, text sample_type, text pixel_type,
+/                      int num_bands, text compression, int quality,
+/                      int tile_width, int tile_height, int srid,
+/                      double horz_res, double vert_res)
+/ CreateRasterCoverage(text coverage, text sample_type, text pixel_type,
+/                      int num_bands, text compression, int quality,
+/                      int tile_width, int tile_height, int srid,
+/                      double horz_res, double vert_res, BLOB no_data)
+/ CreateRasterCoverage(text coverage, text sample_type, text pixel_type,
+/                      int num_bands, text compression, int quality,
+/                      int tile_width, int tile_height, int srid,
+/                      double horz_res, double vert_res, BLOB no_data,
+/                      int strict_resolution, int mixed_resolutions,
+/                      int section_paths, int section_md5,
+/                      int section_summary)
 /
 / will return 1 (TRUE, success) or 0 (FALSE, failure)
 / or -1 (INVALID ARGS)
@@ -2087,10 +2296,12 @@ fnct_CreateCoverage (sqlite3_context * context, int argc, sqlite3_value ** argv)
 	compr = RL2_COMPRESSION_NONE;
     if (strcasecmp (compression, "DEFLATE") == 0)
 	compr = RL2_COMPRESSION_DEFLATE;
-    if (strcasecmp (compression, "LZO") == 0)
-	compr = RL2_COMPRESSION_DEFLATE;
+    if (strcasecmp (compression, "DEFLATE_NO") == 0)
+	compr = RL2_COMPRESSION_DEFLATE_NO;
     if (strcasecmp (compression, "LZMA") == 0)
 	compr = RL2_COMPRESSION_LZMA;
+    if (strcasecmp (compression, "LZMA_NO") == 0)
+	compr = RL2_COMPRESSION_LZMA_NO;
     if (strcasecmp (compression, "PNG") == 0)
 	compr = RL2_COMPRESSION_PNG;
     if (strcasecmp (compression, "GIF") == 0)
@@ -2152,11 +2363,11 @@ fnct_CreateCoverage (sqlite3_context * context, int argc, sqlite3_value ** argv)
 }
 
 static void
-fnct_SetCoverageInfos (sqlite3_context * context, int argc,
-		       sqlite3_value ** argv)
+fnct_SetRasterCoverageInfos (sqlite3_context * context, int argc,
+			     sqlite3_value ** argv)
 {
 /* SQL function:
-/ SetCoverageInfos(String coverage_name, String title, 
+/ SetRasterCoverageInfos(String coverage_name, String title, 
 /		   String abstract)
 /
 / inserts or updates the descriptive infos supporting a Raster Coverage
@@ -2269,11 +2480,12 @@ fnct_DeleteSection (sqlite3_context * context, int argc, sqlite3_value ** argv)
 }
 
 static void
-fnct_DropCoverage (sqlite3_context * context, int argc, sqlite3_value ** argv)
+fnct_DropRasterCoverage (sqlite3_context * context, int argc,
+			 sqlite3_value ** argv)
 {
 /* SQL function:
-/ DropCoverage(text coverage)
-/ DropCoverage(text coverage, int transaction)
+/ DropRasterCoverage(text coverage)
+/ DropRasterCoverage(text coverage, int transaction)
 /
 / will return 1 (TRUE, success) or 0 (FALSE, failure)
 / or -1 (INVALID ARGS)
@@ -6358,26 +6570,28 @@ fnct_WriteSectionAsciiGrid (sqlite3_context * context, int argc,
 }
 
 static void
-fnct_GetMapImage (sqlite3_context * context, int argc, sqlite3_value ** argv)
+fnct_GetMapImageFromRaster (sqlite3_context * context, int argc,
+			    sqlite3_value ** argv)
 {
 /* SQL function:
-/ GetMapImage(text coverage, BLOB geom, int width, int height)
-/ GetMapImage(text coverage, BLOB geom, int width, int height,
-/             text style)
-/ GetMapImage(text coverage, BLOB geom, int width, int height,
-/             text style, text format)
-/ GetMapImage(text coverage, BLOB geom, int width, int height,
-/             text style, text format, text bg_color)
-/ GetMapImage(text coverage, BLOB geom, int width, int height,
-/             text style, text format, text bg_color, int transparent)
-/ GetMapImage(text coverage, BLOB geom, int width, int height,
-/             text style, text format, text bg_color, int transparent,
-/             int quality)
-/ GetMapImage(text coverage, BLOB geom, int width, int height,
-/             text style, text format, text bg_color, int transparent,
-/             int quality, int reaspect)
+/ GetMapImageFromRaster(text coverage, BLOB geom, int width, int height)
+/ GetMapImageFromRaster(text coverage, BLOB geom, int width, int height,
+/                       text style)
+/ GetMapImageFromRaster(text coverage, BLOB geom, int width, int height,
+/                       text style, text format)
+/ GetMapImageFromRaster(text coverage, BLOB geom, int width, int height,
+/                       text style, text format, text bg_color)
+/ GetMapImageFromRaster(text coverage, BLOB geom, int width, int height,
+/                       text style, text format, text bg_color,
+/                       int transparent)
+/ GetMapImageFromRaster(text coverage, BLOB geom, int width, int height,
+/                       text style, text format, text bg_color,
+/                       int transparent, int quality)
+/ GetMapImageFromRaster(text coverage, BLOB geom, int width, int height,
+/                       text style, text format, text bg_color,
+/                       int transparent, int quality, int reaspect)
 /
-/ will return a BLOB containing the Image payload
+/ will return a BLOB containing the Image payload from a Raster Coverage
 / or NULL (INVALID ARGS)
 /
 */
@@ -6435,6 +6649,8 @@ fnct_GetMapImage (sqlite3_context * context, int argc, sqlite3_value ** argv)
     int by_section = 0;
     RL2_UNUSED ();		/* LCOV_EXCL_LINE */
 
+/* testing arguments for validity */
+    err = 0;
     if (sqlite3_value_type (argv[0]) != SQLITE_TEXT)
 	err = 1;
     if (sqlite3_value_type (argv[1]) != SQLITE_BLOB)
@@ -6455,7 +6671,7 @@ fnct_GetMapImage (sqlite3_context * context, int argc, sqlite3_value ** argv)
 	err = 1;
     if (argc > 9 && sqlite3_value_type (argv[9]) != SQLITE_INTEGER)
 	err = 1;
-    if (err)
+    if (err != 0)
       {
 	  sqlite3_result_null (context);
 	  return;
@@ -8213,6 +8429,32 @@ register_rl2_sql_functions (void *p_db)
 			     fnct_rl2_version, 0, 0);
     sqlite3_create_function (db, "rl2_target_cpu", 0, SQLITE_ANY, 0,
 			     fnct_rl2_target_cpu, 0, 0);
+    sqlite3_create_function (db, "rl2_has_codec_none", 0, SQLITE_ANY, 0,
+			     fnct_rl2_has_codec_none, 0, 0);
+    sqlite3_create_function (db, "rl2_has_codec_deflate", 0, SQLITE_ANY, 0,
+			     fnct_rl2_has_codec_deflate, 0, 0);
+    sqlite3_create_function (db, "rl2_has_codec_deflate_no", 0, SQLITE_ANY, 0,
+			     fnct_rl2_has_codec_deflate_no, 0, 0);
+    sqlite3_create_function (db, "rl2_has_codec_lzma", 0, SQLITE_ANY, 0,
+			     fnct_rl2_has_codec_lzma, 0, 0);
+    sqlite3_create_function (db, "rl2_has_codec_lzma_no", 0, SQLITE_ANY, 0,
+			     fnct_rl2_has_codec_lzma_no, 0, 0);
+    sqlite3_create_function (db, "rl2_has_codec_jpeg", 0, SQLITE_ANY, 0,
+			     fnct_rl2_has_codec_jpeg, 0, 0);
+    sqlite3_create_function (db, "rl2_has_codec_png", 0, SQLITE_ANY, 0,
+			     fnct_rl2_has_codec_png, 0, 0);
+    sqlite3_create_function (db, "rl2_has_codec_fax4", 0, SQLITE_ANY, 0,
+			     fnct_rl2_has_codec_fax4, 0, 0);
+    sqlite3_create_function (db, "rl2_has_codec_charls", 0, SQLITE_ANY, 0,
+			     fnct_rl2_has_codec_charls, 0, 0);
+    sqlite3_create_function (db, "rl2_has_codec_webp", 0, SQLITE_ANY, 0,
+			     fnct_rl2_has_codec_webp, 0, 0);
+    sqlite3_create_function (db, "rl2_has_codec_ll_webp", 0, SQLITE_ANY, 0,
+			     fnct_rl2_has_codec_ll_webp, 0, 0);
+    sqlite3_create_function (db, "rl2_has_codec_jp2", 0, SQLITE_ANY, 0,
+			     fnct_rl2_has_codec_jp2, 0, 0);
+    sqlite3_create_function (db, "rl2_has_codec_ll_jp2", 0, SQLITE_ANY, 0,
+			     fnct_rl2_has_codec_ll_jp2, 0, 0);
     sqlite3_create_function (db, "IsValidPixel", 3, SQLITE_ANY, 0,
 			     fnct_IsValidPixel, 0, 0);
     sqlite3_create_function (db, "RL2_IsValidPixel", 3, SQLITE_ANY, 0,
@@ -8233,22 +8475,22 @@ register_rl2_sql_functions (void *p_db)
 			     fnct_IsValidRasterTile, 0, 0);
     sqlite3_create_function (db, "RL2_IsValidRasterTile", 4, SQLITE_ANY, 0,
 			     fnct_IsValidRasterTile, 0, 0);
-    sqlite3_create_function (db, "CreateCoverage", 10, SQLITE_ANY, 0,
-			     fnct_CreateCoverage, 0, 0);
-    sqlite3_create_function (db, "CreateCoverage", 11, SQLITE_ANY, 0,
-			     fnct_CreateCoverage, 0, 0);
-    sqlite3_create_function (db, "CreateCoverage", 12, SQLITE_ANY, 0,
-			     fnct_CreateCoverage, 0, 0);
-    sqlite3_create_function (db, "CreateCoverage", 17, SQLITE_ANY, 0,
-			     fnct_CreateCoverage, 0, 0);
-    sqlite3_create_function (db, "RL2_CreateCoverage", 10, SQLITE_ANY, 0,
-			     fnct_CreateCoverage, 0, 0);
-    sqlite3_create_function (db, "RL2_CreateCoverage", 11, SQLITE_ANY, 0,
-			     fnct_CreateCoverage, 0, 0);
-    sqlite3_create_function (db, "RL2_CreateCoverage", 12, SQLITE_ANY, 0,
-			     fnct_CreateCoverage, 0, 0);
-    sqlite3_create_function (db, "RL2_CreateCoverage", 17, SQLITE_ANY, 0,
-			     fnct_CreateCoverage, 0, 0);
+    sqlite3_create_function (db, "CreateRasterCoverage", 10, SQLITE_ANY, 0,
+			     fnct_CreateRasterCoverage, 0, 0);
+    sqlite3_create_function (db, "CreateRasterCoverage", 11, SQLITE_ANY, 0,
+			     fnct_CreateRasterCoverage, 0, 0);
+    sqlite3_create_function (db, "CreateRasterCoverage", 12, SQLITE_ANY, 0,
+			     fnct_CreateRasterCoverage, 0, 0);
+    sqlite3_create_function (db, "CreateRasterCoverage", 17, SQLITE_ANY, 0,
+			     fnct_CreateRasterCoverage, 0, 0);
+    sqlite3_create_function (db, "RL2_CreateRasterCoverage", 10, SQLITE_ANY, 0,
+			     fnct_CreateRasterCoverage, 0, 0);
+    sqlite3_create_function (db, "RL2_CreateRasterCoverage", 11, SQLITE_ANY, 0,
+			     fnct_CreateRasterCoverage, 0, 0);
+    sqlite3_create_function (db, "RL2_CreateRasterCoverage", 12, SQLITE_ANY, 0,
+			     fnct_CreateRasterCoverage, 0, 0);
+    sqlite3_create_function (db, "RL2_CreateRasterCoverage", 17, SQLITE_ANY, 0,
+			     fnct_CreateRasterCoverage, 0, 0);
     sqlite3_create_function (db, "DeleteSection", 2, SQLITE_ANY, 0,
 			     fnct_DeleteSection, 0, 0);
     sqlite3_create_function (db, "RL2_DeleteSection", 2, SQLITE_ANY, 0,
@@ -8257,18 +8499,18 @@ register_rl2_sql_functions (void *p_db)
 			     fnct_DeleteSection, 0, 0);
     sqlite3_create_function (db, "RL2_DeleteSection", 3, SQLITE_ANY, 0,
 			     fnct_DeleteSection, 0, 0);
-    sqlite3_create_function (db, "DropCoverage", 1, SQLITE_ANY, 0,
-			     fnct_DropCoverage, 0, 0);
-    sqlite3_create_function (db, "RL2_DropCoverage", 1, SQLITE_ANY, 0,
-			     fnct_DropCoverage, 0, 0);
-    sqlite3_create_function (db, "DropCoverage", 2, SQLITE_ANY, 0,
-			     fnct_DropCoverage, 0, 0);
-    sqlite3_create_function (db, "RL2_DropCoverage", 2, SQLITE_ANY, 0,
-			     fnct_DropCoverage, 0, 0);
-    sqlite3_create_function (db, "SetCoverageInfos", 3, SQLITE_ANY, 0,
-			     fnct_SetCoverageInfos, 0, 0);
-    sqlite3_create_function (db, "RL2_SetCoverageInfos", 3, SQLITE_ANY, 0,
-			     fnct_SetCoverageInfos, 0, 0);
+    sqlite3_create_function (db, "DropRasterCoverage", 1, SQLITE_ANY, 0,
+			     fnct_DropRasterCoverage, 0, 0);
+    sqlite3_create_function (db, "RL2_DropRasterCoverage", 1, SQLITE_ANY, 0,
+			     fnct_DropRasterCoverage, 0, 0);
+    sqlite3_create_function (db, "DropRasterCoverage", 2, SQLITE_ANY, 0,
+			     fnct_DropRasterCoverage, 0, 0);
+    sqlite3_create_function (db, "RL2_DropRasterCoverage", 2, SQLITE_ANY, 0,
+			     fnct_DropRasterCoverage, 0, 0);
+    sqlite3_create_function (db, "SetRasterCoverageInfos", 3, SQLITE_ANY, 0,
+			     fnct_SetRasterCoverageInfos, 0, 0);
+    sqlite3_create_function (db, "RL2_SetRasterCoverageInfos", 3, SQLITE_ANY, 0,
+			     fnct_SetRasterCoverageInfos, 0, 0);
     sqlite3_create_function (db, "GetPaletteNumEntries", 1, SQLITE_ANY, 0,
 			     fnct_GetPaletteNumEntries, 0, 0);
     sqlite3_create_function (db, "RL2_GetPaletteNumEntries", 1, SQLITE_ANY, 0,
@@ -8423,34 +8665,38 @@ register_rl2_sql_functions (void *p_db)
 			     fnct_DePyramidize, 0, 0);
     sqlite3_create_function (db, "RL2_DePyramidize", 3, SQLITE_ANY, 0,
 			     fnct_DePyramidize, 0, 0);
-    sqlite3_create_function (db, "GetMapImage", 4, SQLITE_ANY, 0,
-			     fnct_GetMapImage, 0, 0);
-    sqlite3_create_function (db, "RL2_GetMapImage", 4, SQLITE_ANY, 0,
-			     fnct_GetMapImage, 0, 0);
-    sqlite3_create_function (db, "GetMapImage", 5, SQLITE_ANY, 0,
-			     fnct_GetMapImage, 0, 0);
-    sqlite3_create_function (db, "RL2_GetMapImage", 5, SQLITE_ANY, 0,
-			     fnct_GetMapImage, 0, 0);
-    sqlite3_create_function (db, "GetMapImage", 6, SQLITE_ANY, 0,
-			     fnct_GetMapImage, 0, 0);
-    sqlite3_create_function (db, "RL2_GetMapImage", 6, SQLITE_ANY, 0,
-			     fnct_GetMapImage, 0, 0);
-    sqlite3_create_function (db, "GetMapImage", 7, SQLITE_ANY, 0,
-			     fnct_GetMapImage, 0, 0);
-    sqlite3_create_function (db, "RL2_GetMapImage", 7, SQLITE_ANY, 0,
-			     fnct_GetMapImage, 0, 0);
-    sqlite3_create_function (db, "GetMapImage", 8, SQLITE_ANY, 0,
-			     fnct_GetMapImage, 0, 0);
-    sqlite3_create_function (db, "RL2_GetMapImage", 8, SQLITE_ANY, 0,
-			     fnct_GetMapImage, 0, 0);
-    sqlite3_create_function (db, "GetMapImage", 9, SQLITE_ANY, 0,
-			     fnct_GetMapImage, 0, 0);
-    sqlite3_create_function (db, "RL2_GetMapImage", 9, SQLITE_ANY, 0,
-			     fnct_GetMapImage, 0, 0);
-    sqlite3_create_function (db, "GetMapImage", 10, SQLITE_ANY, 0,
-			     fnct_GetMapImage, 0, 0);
-    sqlite3_create_function (db, "RL2_GetMapImage", 10, SQLITE_ANY, 0,
-			     fnct_GetMapImage, 0, 0);
+    sqlite3_create_function (db, "GetMapImageFromRaster", 4, SQLITE_ANY, 0,
+			     fnct_GetMapImageFromRaster, 0, 0);
+    sqlite3_create_function (db, "RL2_GetMapImageFromRaster", 4, SQLITE_ANY, 0,
+			     fnct_GetMapImageFromRaster, 0, 0);
+    sqlite3_create_function (db, "GetMapImageFromRaster", 5, SQLITE_ANY, 0,
+			     fnct_GetMapImageFromRaster, 0, 0);
+    sqlite3_create_function (db, "RL2_GetMapImageFromRaster", 5, SQLITE_ANY, 0,
+			     fnct_GetMapImageFromRaster, 0, 0);
+    sqlite3_create_function (db, "GetMapImageFromRaster", 6, SQLITE_ANY, 0,
+			     fnct_GetMapImageFromRaster, 0, 0);
+    sqlite3_create_function (db, "RL2_GetMapImageFromRaster", 6, SQLITE_ANY, 0,
+			     fnct_GetMapImageFromRaster, 0, 0);
+    sqlite3_create_function (db, "GetMapImageFromRaster", 7, SQLITE_ANY, 0,
+			     fnct_GetMapImageFromRaster, 0, 0);
+    sqlite3_create_function (db, "RL2_GetMapImageFromRaster", 7, SQLITE_ANY, 0,
+			     fnct_GetMapImageFromRaster, 0, 0);
+    sqlite3_create_function (db, "GetMapImageFromRaster", 8, SQLITE_ANY, 0,
+			     fnct_GetMapImageFromRaster, 0, 0);
+    sqlite3_create_function (db, "RL2_GetMapImageFromRaster", 8, SQLITE_ANY, 0,
+			     fnct_GetMapImageFromRaster, 0, 0);
+    sqlite3_create_function (db, "GetMapImageFromRaster", 9, SQLITE_ANY, 0,
+			     fnct_GetMapImageFromRaster, 0, 0);
+    sqlite3_create_function (db, "RL2_GetMapImageFromRaster", 9, SQLITE_ANY, 0,
+			     fnct_GetMapImageFromRaster, 0, 0);
+    sqlite3_create_function (db, "GetMapImageFromRaster", 10, SQLITE_ANY, 0,
+			     fnct_GetMapImageFromRaster, 0, 0);
+    sqlite3_create_function (db, "RL2_GetMapImageFromRaster", 10, SQLITE_ANY, 0,
+			     fnct_GetMapImageFromRaster, 0, 0);
+    sqlite3_create_function (db, "GetMapImageFromRaster", 11, SQLITE_ANY, 0,
+			     fnct_GetMapImageFromRaster, 0, 0);
+    sqlite3_create_function (db, "RL2_GetMapImageFromRaster", 11, SQLITE_ANY, 0,
+			     fnct_GetMapImageFromRaster, 0, 0);
     sqlite3_create_function (db, "GetTileImage", 2, SQLITE_ANY, 0,
 			     fnct_GetTileImage, 0, 0);
     sqlite3_create_function (db, "RL2_GetTileImage", 2, SQLITE_ANY, 0,

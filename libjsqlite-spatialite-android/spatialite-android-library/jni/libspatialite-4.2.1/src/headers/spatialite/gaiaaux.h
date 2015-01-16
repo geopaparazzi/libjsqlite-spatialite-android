@@ -285,7 +285,7 @@ extern "C"
  \param sqlite handle of the current DB connection
  \param sqllog_pk the Primary Key identifying the corresponding Log event.
  \n expected to be exactely the same returned by the most recent call to gaiaInsertIntoSqlLog()
- \param success expected to be TRUE if the SQL statement was succesfully executed.
+ \param success expected to be TRUE if the SQL statement was successfully executed.
  \param errMsg expected to be the error message returned by SQLite on failure, NULL on success.
 
  \sa gaiaInsertIntoSqlLog

@@ -183,7 +183,7 @@
 #define PACKAGE_NAME "libspatialite"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "libspatialite 4.2.1-rc0"
+#define PACKAGE_STRING "libspatialite 4.2.1-rc2"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "libspatialite"
@@ -192,7 +192,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "4.2.1-rc0"
+#define PACKAGE_VERSION "4.2.1-rc2"
 
 /* Should be defined when linking liblwgeom from PostGIS 2.1 (or later). */
 /* #undef POSTGIS_2_1 */
@@ -201,9 +201,7 @@
 #define STDC_HEADERS 1
 
 /* Should contain a text-string describing the intended target CPU */
-/*
 #define TARGET_CPU "x86_64-linux-gnu"
-*/
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #define TIME_WITH_SYS_TIME 1
@@ -212,7 +210,7 @@
 /* #undef TM_IN_SYS_TIME */
 
 /* Version number of package */
-#define VERSION "4.2.1-rc0"
+#define VERSION "4.2.1-rc2"
 
 /* Must be =64 in order to enable huge-file support. */
 #define _FILE_OFFSET_BITS 64

@@ -10,6 +10,8 @@ SPATIALITE_COMMON_SOURCES = mbrcache.c \
 	metatables.c \
 	statistics.c \
 	extra_tables.c \
+	se_helpers.c \
+	srid_aux.c \
 	table_cloner.c \
 	virtualdbf.c \
 	virtualXL.c \

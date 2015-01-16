@@ -407,15 +407,12 @@ check_extended (void *cache, const char *path, int mode)
 	  /* not ISO Metadata */
 	  if (strcmp (path, "stazioni_se.xml") == 0)
 	    {
-		if (strcmp (title, "SLD test - Point [Railway Stations]") != 0)
+		if (strcmp (title, "Railway Stations - blue star") != 0)
 		  {
 		      fprintf (stderr, "unexpected Title in \"%s\"\n", path);
 		      return 0;
 		  }
-		if (strcmp
-		    (abstract,
-		     "an SLD complex variable style [depending on actual scale]")
-		    != 0)
+		if (strcmp (abstract, "a simple SE Point Symbolizer") != 0)
 		  {
 		      fprintf (stderr, "unexpected Abstract in \"%s\"\n", path);
 		      return 0;

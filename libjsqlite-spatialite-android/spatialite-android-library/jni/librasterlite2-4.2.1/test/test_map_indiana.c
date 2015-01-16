@@ -18,7 +18,7 @@ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
 for the specific language governing rights and limitations under the
 License.
 
-The Original Code is the SpatiaLite library
+The Original Code is the RasterLite2 library
 
 The Initial Developer of the Original Code is Alessandro Furieri
  
@@ -45,6 +45,8 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "config.h"
 
 #include "sqlite3.h"
 #include "spatialite.h"
@@ -399,7 +401,7 @@ do_export_image (sqlite3 * sqlite, const char *coverage, gaiaGeomCollPtr geom,
     path = sqlite3_mprintf ("./%s_%1.0f%s", coverage, radius, suffix);
 
     sql =
-	"SELECT RL2_GetMapImage(?, ST_Buffer(?, ?), 512, 512, 'default', ?, '#ffffff', 1, 80)";
+	"SELECT RL2_GetMapImageFromRaster(?, ST_Buffer(?, ?), 512, 512, 'default', ?, '#ffffff', 1, 80)";
     ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
     if (ret != SQLITE_OK)
 	return 0;
@@ -506,6 +508,34 @@ test_coverage (sqlite3 * sqlite, unsigned char pixel, unsigned char compression,
 		      break;
 		  };
 		break;
+	    case RL2_COMPRESSION_DEFLATE:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "plt_deflate_256";
+		      break;
+		  case TILE_512:
+		      coverage = "plt_deflate_512";
+		      break;
+		  case TILE_1024:
+		      coverage = "plt_deflate_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_LZMA:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "plt_lzma_256";
+		      break;
+		  case TILE_512:
+		      coverage = "plt_lzma_512";
+		      break;
+		  case TILE_1024:
+		      coverage = "plt_lzma_1024";
+		      break;
+		  };
+		break;
 	    };
 	  break;
       };
@@ -524,6 +554,14 @@ test_coverage (sqlite3 * sqlite, unsigned char pixel, unsigned char compression,
 	  compression_name = "PNG";
 	  qlty = 100;
 	  break;
+      case RL2_COMPRESSION_DEFLATE:
+	  compression_name = "DEFLATE";
+	  qlty = 100;
+	  break;
+      case RL2_COMPRESSION_LZMA:
+	  compression_name = "LZMA";
+	  qlty = 100;
+	  break;
       };
     switch (tile_sz)
       {
@@ -539,7 +577,7 @@ test_coverage (sqlite3 * sqlite, unsigned char pixel, unsigned char compression,
       };
 
 /* creating the DBMS Coverage */
-    sql = sqlite3_mprintf ("SELECT RL2_CreateCoverage("
+    sql = sqlite3_mprintf ("SELECT RL2_CreateRasterCoverage("
 			   "%Q, %Q, %Q, %d, %Q, %d, %d, %d, %d, %1.4f, %1.4f, "
 			   "RL2_SetPixelValue(RL2_CreatePixel(%Q, %Q, 1), 0, 0))",
 			   coverage, sample_name, pixel_name, num_bands,
@@ -549,7 +587,7 @@ test_coverage (sqlite3 * sqlite, unsigned char pixel, unsigned char compression,
     sqlite3_free (sql);
     if (ret != SQLITE_OK)
       {
-	  fprintf (stderr, "CreateCoverage \"%s\" error: %s\n", coverage,
+	  fprintf (stderr, "CreateRasterCoverage \"%s\" error: %s\n", coverage,
 		   err_msg);
 	  sqlite3_free (err_msg);
 	  *retcode += -1;
@@ -785,17 +823,45 @@ drop_coverage (sqlite3 * sqlite, unsigned char pixel, unsigned char compression,
 		      break;
 		  };
 		break;
+	    case RL2_COMPRESSION_DEFLATE:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "plt_deflate_256";
+		      break;
+		  case TILE_512:
+		      coverage = "plt_deflate_512";
+		      break;
+		  case TILE_1024:
+		      coverage = "plt_deflate_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_LZMA:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "plt_lzma_256";
+		      break;
+		  case TILE_512:
+		      coverage = "plt_lzma_512";
+		      break;
+		  case TILE_1024:
+		      coverage = "plt_lzma_1024";
+		      break;
+		  };
+		break;
 	    };
 	  break;
       };
 
 /* dropping the DBMS Coverage */
-    sql = sqlite3_mprintf ("SELECT RL2_DropCoverage(%Q, 1)", coverage);
+    sql = sqlite3_mprintf ("SELECT RL2_DropRasterCoverage(%Q, 1)", coverage);
     ret = execute_check (sqlite, sql);
     sqlite3_free (sql);
     if (ret != SQLITE_OK)
       {
-	  fprintf (stderr, "DropCoverage \"%s\" error: %s\n", coverage,
+	  fprintf (stderr, "DropRasterCoverage \"%s\" error: %s\n", coverage,
 		   err_msg);
 	  sqlite3_free (err_msg);
 	  *retcode += -1;
@@ -880,6 +946,34 @@ main (int argc, char *argv[])
     if (!test_coverage
 	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_PNG, TILE_1024, &ret))
 	return ret;
+    ret = -260;
+    if (!test_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_DEFLATE, TILE_256, &ret))
+	return ret;
+    ret = -280;
+    if (!test_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_DEFLATE, TILE_512, &ret))
+	return ret;
+    ret = -300;
+    if (!test_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_DEFLATE, TILE_1024,
+	 &ret))
+	return ret;
+
+#ifndef OMIT_LZMA		/* only if LZMA is enabled */
+    ret = -320;
+    if (!test_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_LZMA, TILE_256, &ret))
+	return ret;
+    ret = -340;
+    if (!test_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_LZMA, TILE_512, &ret))
+	return ret;
+    ret = -360;
+    if (!test_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_LZMA, TILE_1024, &ret))
+	return ret;
+#endif /* end LZMA conditional */
 
 /* dropping all PALETTE Coverages */
     ret = -170;
@@ -906,6 +1000,34 @@ main (int argc, char *argv[])
     if (!drop_coverage
 	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_PNG, TILE_1024, &ret))
 	return ret;
+    ret = -300;
+    if (!drop_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_DEFLATE, TILE_256, &ret))
+	return ret;
+    ret = -310;
+    if (!drop_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_DEFLATE, TILE_512, &ret))
+	return ret;
+    ret = -320;
+    if (!drop_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_DEFLATE, TILE_1024,
+	 &ret))
+	return ret;
+
+#ifndef OMIT_LZMA		/* only if LZMA is enabled */
+    ret = -330;
+    if (!drop_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_LZMA, TILE_256, &ret))
+	return ret;
+    ret = -340;
+    if (!drop_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_LZMA, TILE_512, &ret))
+	return ret;
+    ret = -350;
+    if (!drop_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_LZMA, TILE_1024, &ret))
+	return ret;
+#endif /* end LZMA conditional */
 
 /* closing the DB */
     sqlite3_close (db_handle);

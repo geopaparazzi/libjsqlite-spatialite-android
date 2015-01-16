@@ -1,8 +1,7 @@
-RegisterRasterStyledLayer - TEXT style
+RegisterRasterStyledLayer - TEXT style_name
 :memory: #use in-memory database
-SELECT RegisterRasterStyledLayer('alpha', 'beta');
+SELECT SE_RegisterRasterStyledLayer('alpha', 'beta');
 1 # rows (not including the header row)
 1 # columns
-RegisterRasterStyledLayer('alpha', 'beta')
--1
-
+SE_RegisterRasterStyledLayer('alpha', 'beta')
+0

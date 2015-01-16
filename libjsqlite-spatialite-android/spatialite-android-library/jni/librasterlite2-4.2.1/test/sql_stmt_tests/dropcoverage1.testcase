@@ -1,7 +1,7 @@
-DropCoverage - NULL coverage
+DropRasterCoverage - NULL coverage
 :memory: #use in-memory database
-SELECT RL2_DropCoverage(NULL);
+SELECT RL2_DropRasterCoverage(NULL);
 1 # rows (not including the header row)
 1 # columns
-RL2_DropCoverage(NULL)
+RL2_DropRasterCoverage(NULL)
 -1

@@ -969,12 +969,13 @@ create_raster_coverages (sqlite3 * sqlite)
     sql = "CREATE TRIGGER raster_coverages_compression_insert\n"
 	"BEFORE INSERT ON 'raster_coverages'\nFOR EACH ROW BEGIN\n"
 	"SELECT RAISE(ABORT,'insert on raster_coverages violates constraint: "
-	"compression must be one of ''NONE'' | ''DEFLATE'' | ''LZMA'' | "
-	"''PNG'' | ''JPEG'' | ''LOSSY_WEBP'' | ''LOSSLESS_WEBP'' | "
-	"''CCITTFAX4'' | ''CHARLS'' | ''LOSSY_JP2'' | ''LOSSLESS_JP2''')\n"
-	"WHERE NEW.compression NOT IN ('NONE', 'DEFLATE', 'LZMA', "
-	"'PNG', 'JPEG', 'LOSSY_WEBP', 'LOSSLESS_WEBP', 'CCITTFAX4', "
-	"'CHARLS', 'LOSSY_JP2', 'LOSSLESS_JP2');\nEND";
+	"compression must be one of ''NONE'' | ''DEFLATE'' | ''DEFLATE_NO'' | "
+	"''LZMA'' | ''LZMA_NO'' | ''PNG'' | ''JPEG'' | ''LOSSY_WEBP'' | "
+	"''LOSSLESS_WEBP'' | ''CCITTFAX4'' | ''CHARLS'' | ''LOSSY_JP2'' | "
+	"''LOSSLESS_JP2''')\n"
+	"WHERE NEW.compression NOT IN ('NONE', 'DEFLATE',  'DEFLATE_NO', "
+	"'LZMA', 'LZMA_NO', 'PNG', 'JPEG', 'LOSSY_WEBP', 'LOSSLESS_WEBP', "
+	"'CCITTFAX4', 'CHARLS', 'LOSSY_JP2', 'LOSSLESS_JP2');\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -986,12 +987,13 @@ create_raster_coverages (sqlite3 * sqlite)
 	"BEFORE UPDATE OF 'compression' ON 'raster_coverages'"
 	"\nFOR EACH ROW BEGIN\n"
 	"SELECT RAISE(ABORT, 'update on raster_coverages violates constraint: "
-	"compression must be one of ''NONE'' | ''DEFLATE'' | ''LZMA'' | "
-	"''PNG'' | ''JPEG'' | ''LOSSY_WEBP'' | ''LOSSLESS_WEBP'' | "
-	"''CCITTFAX4'' | ''CHARLS'' | ''LOSSY_JP2'' | ''LOSSLESS_JP2''')\n"
-	"WHERE NEW.compression NOT IN ('NONE', 'DEFLATE', 'LZMA', "
-	"'PNG', 'JPEG', 'LOSSY_WEBP', 'LOSSLESS_WEBP', 'CCITTFAX4', "
-	"'CHARLS', 'LOSSY_JP2', 'LOSSLESS_JP2');\nEND";
+	"compression must be one of ''NONE'' | ''DEFLATE'' | ''DEFLATE_NO'' | "
+	"''LZMA'' | ''LZMA_NO'' | ''PNG'' | ''JPEG'' | ''LOSSY_WEBP'' | "
+	"''LOSSLESS_WEBP'' | ''CCITTFAX4'' | ''CHARLS'' | ''LOSSY_JP2'' | "
+	"''LOSSLESS_JP2''')\n"
+	"WHERE NEW.compression NOT IN ('NONE', 'DEFLATE', 'DEFLATE_NO', "
+	"'LZMA', 'LZMA_NO', 'PNG', 'JPEG', 'LOSSY_WEBP', 'LOSSLESS_WEBP', "
+	"'CCITTFAX4', 'CHARLS', 'LOSSY_JP2', 'LOSSLESS_JP2');\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -1237,7 +1239,8 @@ create_raster_coverages (sqlite3 * sqlite)
 	"BEFORE INSERT ON 'raster_coverages'\nFOR EACH ROW BEGIN\n"
 	"SELECT RAISE(ABORT,'insert on raster_coverages violates constraint: "
 	"inconsistent MONOCHROME compression')\nWHERE NEW.pixel_type = 'MONOCHROME' "
-	"AND NEW.compression NOT IN ('NONE', 'PNG', 'CCITTFAX4');\nEND";
+	"AND NEW.compression NOT IN ('NONE', 'DEFLATE', 'DEFLATE_NO', 'LZMA', "
+	"'LZMA_NO', 'PNG', 'CCITTFAX4');\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -1249,7 +1252,8 @@ create_raster_coverages (sqlite3 * sqlite)
 	"BEFORE UPDATE ON 'raster_coverages'\nFOR EACH ROW BEGIN\n"
 	"SELECT RAISE(ABORT, 'update on raster_coverages violates constraint: "
 	"inconsistent MONOCHROME compression')\nWHERE NEW.pixel_type = 'MONOCHROME' "
-	"AND NEW.compression NOT IN ('NONE', 'PNG', 'CCITTFAX4');\nEND";
+	"AND NEW.compression NOT IN ('NONE', 'DEFLATE', 'DEFLATE_NO', 'LZMA', "
+	"'LZMA_NO', 'PNG', 'CCITTFAX4');\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -1309,7 +1313,8 @@ create_raster_coverages (sqlite3 * sqlite)
 	"BEFORE INSERT ON 'raster_coverages'\nFOR EACH ROW BEGIN\n"
 	"SELECT RAISE(ABORT,'insert on raster_coverages violates constraint: "
 	"inconsistent PALETTE compression')\nWHERE NEW.pixel_type = 'PALETTE' "
-	"AND NEW.compression NOT IN ('NONE', 'PNG');\nEND";
+	"AND NEW.compression NOT IN ('NONE', 'DEFLATE', 'DEFLATE_NO', 'LZMA', "
+	"'LZMA_NO', 'PNG');\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -1321,7 +1326,8 @@ create_raster_coverages (sqlite3 * sqlite)
 	"BEFORE UPDATE ON 'raster_coverages'\nFOR EACH ROW BEGIN\n"
 	"SELECT RAISE(ABORT, 'update on raster_coverages violates constraint: "
 	"inconsistent PALETTE compression')\nWHERE NEW.pixel_type = 'PALETTE' "
-	"AND NEW.compression NOT IN ('NONE', 'PNG');\nEND";
+	"AND NEW.compression NOT IN ('NONE', 'DEFLATE', 'DEFLATE_NO', 'LZMA', "
+	"'LZMA_NO', 'PNG');\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -1405,9 +1411,9 @@ create_raster_coverages (sqlite3 * sqlite)
 	"BEFORE INSERT ON 'raster_coverages'\nFOR EACH ROW BEGIN\n"
 	"SELECT RAISE(ABORT,'insert on raster_coverages violates constraint: "
 	"inconsistent GRAYSCALE compression')\nWHERE NEW.pixel_type = "
-	"'GRAYSCALE' AND NEW.compression NOT IN ('NONE', 'DEFLATE', 'LZMA', "
-	"'PNG', 'JPEG', 'LOSSY_WEBP', 'LOSSLESS_WEBP', 'CHARLS', 'LOSSY_JP2', "
-	"'LOSSLESS_JP2');\nEND";
+	"'GRAYSCALE' AND NEW.compression NOT IN ('NONE', 'DEFLATE', 'DEFLATE_NO', "
+	"'LZMA', 'LZMA_NO', 'PNG', 'JPEG', 'LOSSY_WEBP', 'LOSSLESS_WEBP', 'CHARLS', "
+	"'LOSSY_JP2', 'LOSSLESS_JP2');\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -1419,9 +1425,9 @@ create_raster_coverages (sqlite3 * sqlite)
 	"BEFORE UPDATE ON 'raster_coverages'\nFOR EACH ROW BEGIN\n"
 	"SELECT RAISE(ABORT, 'update on raster_coverages violates constraint: "
 	"inconsistent GRAYSCALE compression')\nWHERE NEW.pixel_type = "
-	"'GRAYSCALE' AND NEW.compression NOT IN ('NONE', 'DEFLATE', 'LZMA', "
-	"'PNG', 'JPEG', 'LOSSY_WEBP', 'LOSSLESS_WEBP', 'CHARLS', 'LOSSY_JP2', "
-	"'LOSSLESS_JP2');\nEND";
+	"'GRAYSCALE' AND NEW.compression NOT IN ('NONE', 'DEFLATE', 'DEFLATE_NO', "
+	"'LZMA', 'LZMA_NO', 'PNG', 'JPEG', 'LOSSY_WEBP', 'LOSSLESS_WEBP', 'CHARLS', "
+	"'LOSSY_JP2', 'LOSSLESS_JP2');\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -1458,11 +1464,11 @@ create_raster_coverages (sqlite3 * sqlite)
 	"SELECT RAISE(ABORT,'insert on raster_coverages violates constraint: "
 	"inconsistent RGB compression')\nWHERE NEW.pixel_type = 'RGB' "
 	"AND ((NEW.sample_type = 'UINT8' AND NEW.compression NOT IN ("
-	"'NONE', 'DEFLATE', 'LZMA', 'PNG', 'JPEG', 'LOSSY_WEBP', "
-	"'LOSSLESS_WEBP', 'CHARLS', 'LOSSY_JP2', 'LOSSLESS_JP2') OR "
-	"(NEW.sample_type = 'UINT16' AND NEW.compression NOT IN "
-	"('NONE', 'DEFLATE', 'LZMA', 'PNG', 'CHARLS', 'LOSSY_JP2', "
-	"'LOSSLESS_JP2'))));\nEND";
+	"'NONE', 'DEFLATE', 'DEFLATE_NO', 'LZMA', 'LZMA_NO', 'PNG', 'JPEG', "
+	"'LOSSY_WEBP', 'LOSSLESS_WEBP', 'CHARLS', 'LOSSY_JP2', 'LOSSLESS_JP2') "
+	"OR (NEW.sample_type = 'UINT16' AND NEW.compression NOT IN "
+	"('NONE', 'DEFLATE', 'DEFLATE_NO', 'LZMA', 'LZMA_NO', 'PNG', 'CHARLS', "
+	"'LOSSY_JP2', 'LOSSLESS_JP2'))));\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -1475,11 +1481,11 @@ create_raster_coverages (sqlite3 * sqlite)
 	"SELECT RAISE(ABORT, 'update on raster_coverages violates constraint: "
 	"inconsistent RGB compression')\nWHERE NEW.pixel_type = 'RGB' "
 	"AND ((NEW.sample_type = 'UINT8' AND NEW.compression NOT IN ("
-	"'NONE', 'DEFLATE', 'LZMA', 'PNG', 'JPEG', 'LOSSY_WEBP', "
-	"'LOSSLESS_WEBP', 'CHARLS', 'LOSSY_JP2', 'LOSSLESS_JP2') OR "
-	"(NEW.sample_type = 'UINT16' AND NEW.compression NOT IN "
-	"('NONE', 'DEFLATE', 'LZMA', 'PNG', 'CHARLS', 'LOSSY_JP2', "
-	"'LOSSLESS_JP2'))));\nEND";
+	"'NONE', 'DEFLATE', 'DEFLATE_NO', 'LZMA', 'LZMA_NO', 'PNG', 'JPEG', "
+	"'LOSSY_WEBP', 'LOSSLESS_WEBP', 'CHARLS', 'LOSSY_JP2', 'LOSSLESS_JP2') "
+	"OR (NEW.sample_type = 'UINT16' AND NEW.compression NOT IN "
+	"('NONE', 'DEFLATE', 'DEFLATE_NO', 'LZMA', 'LZMA_NO', 'PNG', 'CHARLS', "
+	"'LOSSY_JP2', 'LOSSLESS_JP2'))));\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -1540,14 +1546,15 @@ create_raster_coverages (sqlite3 * sqlite)
 	"SELECT RAISE(ABORT,'insert on raster_coverages violates constraint: "
 	"inconsistent MULTIBAND compression')\nWHERE NEW.pixel_type = "
 	"'MULTIBAND' AND ((NEW.num_bands NOT IN (3, 4) AND "
-	"NEW.compression NOT IN ('NONE', 'DEFLATE', 'LZMA')) OR	"
+	"NEW.compression NOT IN ('NONE', 'DEFLATE', 'DEFLATE_NO', 'LZMA', "
+	"'LZMA_NO')) OR	"
 	"(NEW.sample_type <> 'UINT16' AND NEW.num_bands IN (3, 4) AND "
-	"NEW.compression NOT IN ('NONE', 'DEFLATE', 'LZMA', 'PNG', "
-	"'CHARLS', 'LOSSY_WEBP', 'LOSSLESS_WEBP', 'LOSSY_JP2', "
-	"'LOSSLESS_JP2')) OR (NEW.sample_type = 'UINT16' AND "
+	"NEW.compression NOT IN ('NONE', 'DEFLATE', 'DEFLATE_NO', 'LZMA', "
+	"'LZMA_NO', 'PNG', 'CHARLS', 'LOSSY_WEBP', 'LOSSLESS_WEBP', "
+	"'LOSSY_JP2', 'LOSSLESS_JP2')) OR (NEW.sample_type = 'UINT16' AND "
 	"NEW.num_bands IN (3, 4) AND NEW.compression NOT IN "
-	"('NONE', 'DEFLATE', 'LZMA', 'PNG', 'CHARLS', 'LOSSY_JP2', "
-	"'LOSSLESS_JP2')));\nEND";
+	"('NONE', 'DEFLATE', 'DEFLATE_NO', 'LZMA', 'LZMA_NO', 'PNG', "
+	"'CHARLS', 'LOSSY_JP2', 'LOSSLESS_JP2')));\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -1560,14 +1567,15 @@ create_raster_coverages (sqlite3 * sqlite)
 	"SELECT RAISE(ABORT, 'update on raster_coverages violates constraint: "
 	"inconsistent MULTIBAND compression')\nWHERE NEW.pixel_type = "
 	"'MULTIBAND' AND ((NEW.num_bands NOT IN (3, 4) AND "
-	"NEW.compression NOT IN ('NONE', 'DEFLATE', 'LZMA')) OR	"
+	"NEW.compression NOT IN ('NONE', 'DEFLATE', 'DEFLATE_NO', 'LZMA', "
+	"'LZMA_NO')) OR	"
 	"(NEW.sample_type <> 'UINT16' AND NEW.num_bands IN (3, 4) AND "
-	"NEW.compression NOT IN ('NONE', 'DEFLATE', 'LZMA', 'PNG', "
-	"'CHARLS', 'LOSSY_WEBP', 'LOSSLESS_WEBP', 'LOSSY_JP2', "
-	"'LOSSLESS_JP2')) OR (NEW.sample_type = 'UINT16' AND "
+	"NEW.compression NOT IN ('NONE', 'DEFLATE', 'DEFLATE_NO', 'LZMA', "
+	"'LZMA_NO', 'PNG', 'CHARLS', 'LOSSY_WEBP', 'LOSSLESS_WEBP', "
+	"'LOSSY_JP2', 'LOSSLESS_JP2')) OR (NEW.sample_type = 'UINT16' AND "
 	"NEW.num_bands IN (3, 4) AND NEW.compression NOT IN "
-	"('NONE', 'DEFLATE', 'LZMA', 'PNG', 'CHARLS', 'LOSSY_JP2', "
-	"'LOSSLESS_JP2')));\nEND";
+	"('NONE', 'DEFLATE', 'DEFLATE_NO', 'LZMA', 'LZMA_NO', 'PNG', "
+	"'CHARLS', 'LOSSY_JP2', 'LOSSLESS_JP2')));\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -1630,9 +1638,10 @@ create_raster_coverages (sqlite3 * sqlite)
 	"SELECT RAISE(ABORT,'insert on raster_coverages violates constraint: "
 	"inconsistent DATAGRID compression')\nWHERE NEW.pixel_type = 'DATAGRID' "
 	"AND (((NEW.sample_type NOT IN ('UINT8', 'UINT16')) AND NEW.compression "
-	"NOT IN ('NONE', 'DEFLATE', 'LZMA')) OR ((NEW.sample_type IN ('UINT8', "
-	"'UINT16')) AND NEW.compression NOT IN ('NONE', 'DEFLATE', 'LZMA', "
-	"'PNG', 'CHARLS', 'LOSSY_JP2', 'LOSSLESS_JP2')));\nEND";
+	"NOT IN ('NONE', 'DEFLATE', 'DEFLATE_NO', 'LZMA', 'LZMA_NO')) OR "
+	"((NEW.sample_type IN ('UINT8', 'UINT16')) AND NEW.compression NOT IN "
+	"('NONE', 'DEFLATE', 'DEFLATE_NO', 'LZMA', 'LZMA_NO', 'PNG', 'CHARLS', "
+	"'LOSSY_JP2', 'LOSSLESS_JP2')));\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -1645,9 +1654,10 @@ create_raster_coverages (sqlite3 * sqlite)
 	"SELECT RAISE(ABORT, 'update on raster_coverages violates constraint: "
 	"inconsistent DATAGRID compression')\nWHERE NEW.pixel_type = 'DATAGRID' "
 	"AND (((NEW.sample_type NOT IN ('UINT8', 'UINT16')) AND NEW.compression "
-	"NOT IN ('NONE', 'DEFLATE', 'LZMA')) OR ((NEW.sample_type IN ('UINT8', "
-	"'UINT16')) AND NEW.compression NOT IN ('NONE', 'DEFLATE', 'LZMA', "
-	"'PNG', 'CHARLS', 'LOSSY_JP2', 'LOSSLESS_JP2')));\nEND";
+	"NOT IN ('NONE', 'DEFLATE', 'DEFLATE_NO', 'LZMA', 'LZMA_NO')) OR "
+	"((NEW.sample_type IN ('UINT8', 'UINT16')) AND NEW.compression NOT IN "
+	"('NONE', 'DEFLATE', 'DEFLATE_NO', 'LZMA', 'LZMA_NO', 'PNG', 'CHARLS', "
+	"'LOSSY_JP2', 'LOSSLESS_JP2')));\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -1871,6 +1881,304 @@ checkPopulatedCoverage (void *p_sqlite, const char *coverage_name)
     return is_populated;
 }
 
+static int
+check_vector_coverages (sqlite3 * sqlite)
+{
+/* checking if the "vector_coverages" table already exists */
+    int exists = 0;
+    char *sql_statement;
+    char *errMsg = NULL;
+    int ret;
+    char **results;
+    int rows;
+    int columns;
+    int i;
+    sql_statement = "SELECT name FROM sqlite_master WHERE type = 'table' "
+	"AND Upper(name) = Upper('vector_coverages')";
+    ret =
+	sqlite3_get_table (sqlite, sql_statement, &results, &rows, &columns,
+			   &errMsg);
+    if (ret != SQLITE_OK)
+      {
+	  sqlite3_free (errMsg);
+	  return 0;
+      }
+    for (i = 1; i <= rows; i++)
+	exists = 1;
+    sqlite3_free_table (results);
+    return exists;
+}
+
+static int
+check_vector_coverages_srid (sqlite3 * sqlite)
+{
+/* checking if the "vector_coverages_srid" table already exists */
+    int exists = 0;
+    char *sql_statement;
+    char *errMsg = NULL;
+    int ret;
+    char **results;
+    int rows;
+    int columns;
+    int i;
+    sql_statement = "SELECT name FROM sqlite_master WHERE type = 'table' "
+	"AND Upper(name) = Upper('vector_coverages_srid')";
+    ret =
+	sqlite3_get_table (sqlite, sql_statement, &results, &rows, &columns,
+			   &errMsg);
+    if (ret != SQLITE_OK)
+      {
+	  sqlite3_free (errMsg);
+	  return 0;
+      }
+    for (i = 1; i <= rows; i++)
+	exists = 1;
+    sqlite3_free_table (results);
+    return exists;
+}
+
+static int
+check_vector_coverages_ref_sys (sqlite3 * sqlite)
+{
+/* checking if the "vector_coverages_ref_sys" view already exists */
+    int exists = 0;
+    char *sql_statement;
+    char *errMsg = NULL;
+    int ret;
+    char **results;
+    int rows;
+    int columns;
+    int i;
+    sql_statement = "SELECT name FROM sqlite_master WHERE type = 'view' "
+	"AND Upper(name) = Upper('vector_coverages_ref_sys')";
+    ret =
+	sqlite3_get_table (sqlite, sql_statement, &results, &rows, &columns,
+			   &errMsg);
+    if (ret != SQLITE_OK)
+      {
+	  sqlite3_free (errMsg);
+	  return 0;
+      }
+    for (i = 1; i <= rows; i++)
+	exists = 1;
+    sqlite3_free_table (results);
+    return exists;
+}
+
+static int
+create_vector_coverages (sqlite3 * sqlite)
+{
+/* creating the "vector_coverages" table */
+    char *sql;
+    int ret;
+    char *err_msg = NULL;
+    sql = "CREATE TABLE vector_coverages (\n"
+	"coverage_name TEXT NOT NULL PRIMARY KEY,\n"
+	"f_table_name TEXT NOT NULL,\n"
+	"f_geometry_column TEXT NOT NULL,\n"
+	"geo_minx DOUBLE,\n"
+	"geo_miny DOUBLE,\n"
+	"geo_maxx DOUBLE,\n"
+	"geo_maxy DOUBLE,\n"
+	"extent_minx DOUBLE,\n"
+	"extent_miny DOUBLE,\n"
+	"extent_maxx DOUBLE,\n"
+	"extent_maxy DOUBLE,\n"
+	"title TEXT NOT NULL DEFAULT '*** missing Title ***',\n"
+	"abstract TEXT NOT NULL DEFAULT '*** missing Abstract ***',\n"
+	"CONSTRAINT fk_vector_coverages FOREIGN KEY (f_table_name, f_geometry_column) "
+	"REFERENCES geometry_columns (f_table_name, f_geometry_column) "
+	"ON DELETE CASCADE)";
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("CREATE TABLE 'vector_coverages' error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+/* creating the VectorLayers index */
+    sql = "CREATE UNIQUE INDEX idx_vector_coverages ON vector_coverages "
+	"(f_table_name, f_geometry_column)";
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("CREATE INDEX 'idx_vector_coverages' error: %s\n",
+			err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+/* creating the vector_coverages triggers */
+    sql = "CREATE TRIGGER vector_coverages_name_insert\n"
+	"BEFORE INSERT ON 'vector_coverages'\nFOR EACH ROW BEGIN\n"
+	"SELECT RAISE(ABORT,'insert on vector_coverages violates constraint: "
+	"coverage_name value must not contain a single quote')\n"
+	"WHERE NEW.coverage_name LIKE ('%''%');\n"
+	"SELECT RAISE(ABORT,'insert on vector_coverages violates constraint: "
+	"coverage_name value must not contain a double quote')\n"
+	"WHERE NEW.coverage_name LIKE ('%\"%');\n"
+	"SELECT RAISE(ABORT,'insert on layer_vectors violates constraint: "
+	"coverage_name value must be lower case')\n"
+	"WHERE NEW.coverage_name <> lower(NEW.coverage_name);\nEND";
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+    sql = "CREATE TRIGGER vector_coverages_name_update\n"
+	"BEFORE UPDATE OF 'coverage_name' ON 'vector_coverages'\nFOR EACH ROW BEGIN\n"
+	"SELECT RAISE(ABORT,'update on vector_coverages violates constraint: "
+	"coverage_name value must not contain a single quote')\n"
+	"WHERE NEW.coverage_name LIKE ('%''%');\n"
+	"SELECT RAISE(ABORT,'update on vector_coverages violates constraint: "
+	"coverage_name value must not contain a double quote')\n"
+	"WHERE NEW.coverage_name LIKE ('%\"%');\n"
+	"SELECT RAISE(ABORT,'update on vector_coverages violates constraint: "
+	"coverage_name value must be lower case')\n"
+	"WHERE NEW.coverage_name <> lower(NEW.coverage_name);\nEND";
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+
+/* creating the vector_coverages_srid table */
+    sql = "CREATE TABLE vector_coverages_srid (\n"
+	"coverage_name TEXT NOT NULL,\n"
+	"srid INTEGER NOT NULL,\n"
+	"extent_minx DOUBLE,\n"
+	"extent_miny DOUBLE,\n"
+	"extent_maxx DOUBLE,\n"
+	"extent_maxy DOUBLE,\n"
+	"CONSTRAINT pk_vector_coverages_srid PRIMARY KEY (coverage_name, srid),\n"
+	"CONSTRAINT fk_vector_coverages_srid FOREIGN KEY (coverage_name) "
+	"REFERENCES vector_coverages (coverage_name) ON DELETE CASCADE,\n"
+	"CONSTRAINT fk_vector_srid FOREIGN KEY (srid) "
+	"REFERENCES spatial_ref_sys (srid))";
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("CREATE TABLE 'vector_coverages_srid' error: %s\n",
+			err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+/* creating the vector_coverages_srid triggers */
+    sql = "CREATE TRIGGER vector_coverages_srid_name_insert\n"
+	"BEFORE INSERT ON 'vector_coverages_srid'\nFOR EACH ROW BEGIN\n"
+	"SELECT RAISE(ABORT,'insert on vector_coverages_srid violates constraint: "
+	"coverage_name value must not contain a single quote')\n"
+	"WHERE NEW.coverage_name LIKE ('%''%');\n"
+	"SELECT RAISE(ABORT,'insert on vector_coverages_srid violates constraint: "
+	"coverage_name value must not contain a double quote')\n"
+	"WHERE NEW.coverage_name LIKE ('%\"%');\n"
+	"SELECT RAISE(ABORT,'insert on layer_vectors_srid violates constraint: "
+	"coverage_name value must be lower case')\n"
+	"WHERE NEW.coverage_name <> lower(NEW.coverage_name);\nEND";
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+    sql = "CREATE TRIGGER vector_coverages_srid_name_update\n"
+	"BEFORE UPDATE OF 'coverage_name' ON 'vector_coverages_srid'\nFOR EACH ROW BEGIN\n"
+	"SELECT RAISE(ABORT,'update on vector_coverages violates constraint: "
+	"coverage_name value must not contain a single quote')\n"
+	"WHERE NEW.coverage_name LIKE ('%''%');\n"
+	"SELECT RAISE(ABORT,'update on vector_coverages_srid violates constraint: "
+	"coverage_name value must not contain a double quote')\n"
+	"WHERE NEW.coverage_name LIKE ('%\"%');\n"
+	"SELECT RAISE(ABORT,'update on vector_coverages_srid violates constraint: "
+	"coverage_name value must be lower case')\n"
+	"WHERE NEW.coverage_name <> lower(NEW.coverage_name);\nEND";
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+
+/* creating the vector_coverages_ref_sys view */
+    sql = "CREATE VIEW vector_coverages_ref_sys AS\n"
+	"SELECT v.coverage_name AS coverage_name, v.title AS title, "
+	"v.abstract AS abstract, v.geo_minx AS geo_minx, "
+	"v.geo_miny AS geo_miny, v.geo_maxx AS geo_maxx, "
+	"v.geo_maxy AS geo_may, v.extent_minx AS extent_minx, "
+	"v.extent_miny AS extent_miny, v.extent_maxx AS extent_maxx, "
+	"v.extent_maxy AS extent_maxy, s.srid AS srid, 1 AS native_srid, "
+	"s.auth_name AS auth_name, s.auth_srid AS auth_srid, "
+	"s.ref_sys_name AS ref_sys_name, s.proj4text AS proj4text\n"
+	"FROM vector_coverages AS v\n"
+	"JOIN geometry_columns AS x ON (v.f_table_name = x.f_table_name "
+	"AND v.f_geometry_column = x.f_geometry_column)\n"
+	"LEFT JOIN spatial_ref_sys AS s ON (x.srid = s.srid)\n"
+	"UNION\nSELECT v.coverage_name AS coverage_name, v.title AS title, "
+	"v.abstract AS abstract, v.geo_minx AS geo_minx, "
+	"v.geo_miny AS geo_miny, v.geo_maxx AS geo_maxx, "
+	"v.geo_maxy AS geo_may, x.extent_minx AS extent_minx, "
+	"x.extent_miny AS extent_miny, x.extent_maxx AS extent_maxx, "
+	"x.extent_maxy AS extent_maxy, s.srid AS srid, 0 AS native_srid, "
+	"s.auth_name AS auth_name, s.auth_srid AS auth_srid, "
+	"s.ref_sys_name AS ref_sys_name, s.proj4text AS proj4text\n"
+	"FROM vector_coverages AS v\n"
+	"JOIN vector_coverages_srid AS x ON (v.coverage_name = x.coverage_name)\n"
+	"LEFT JOIN spatial_ref_sys AS s ON (x.srid = s.srid)";
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("CREATE VIEW 'vector_coverages_ref_sys' error: %s\n",
+			err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+    return 1;
+}
+
+SPATIALITE_PRIVATE int
+createVectorCoveragesTable (void *p_sqlite)
+{
+/* Creating the main VectorCoverages table */
+    int ok_table;
+    sqlite3 *sqlite = p_sqlite;
+
+/* checking if already defined */
+    ok_table = check_vector_coverages (sqlite);
+    if (ok_table)
+      {
+	  spatialite_e
+	      ("CreateVectorCoveragesTable() error: table 'vector_coverages' already exists\n");
+	  goto error;
+      }
+    ok_table = check_vector_coverages_srid (sqlite);
+    if (ok_table)
+      {
+	  spatialite_e
+	      ("CreateVectorCoveragesTable() error: table 'vector_coverages_srid' already exists\n");
+	  goto error;
+      }
+    ok_table = check_vector_coverages_ref_sys (sqlite);
+    if (ok_table)
+      {
+	  spatialite_e
+	      ("CreateVectorCoveragesTable() error: view 'vector_coverages_ref_sys' already exists\n");
+	  goto error;
+      }
+
+/* creating the main VectorCoverages table */
+    if (!create_vector_coverages (sqlite))
+	goto error;
+    return 1;
+
+  error:
+    return 0;
+}
+
 #ifdef ENABLE_LIBXML2		/* including LIBXML2 */
 
 static int
@@ -1959,132 +2267,52 @@ create_external_graphics (sqlite3 * sqlite)
 }
 
 static int
-create_vector_styled_layers (sqlite3 * sqlite, int relaxed)
+create_vector_styles (sqlite3 * sqlite, int relaxed)
 {
-/* creating the SE_vector_styled_layers table */
+/* creating the SE_vector_styles table */
     char *sql;
     int ret;
     char *err_msg = NULL;
-    sql = "CREATE TABLE SE_vector_styled_layers (\n"
-	"f_table_name TEXT NOT NULL,\n"
-	"f_geometry_column TEXT NOT NULL,\n"
-	"style_id INTEGER NOT NULL,\n"
-	"style_name TEXT NOT NULL DEFAULT 'missing_name',\n"
-	"style BLOB NOT NULL,\n"
-	"CONSTRAINT pk_sevstl PRIMARY KEY "
-	"(f_table_name, f_geometry_column, style_id),\n"
-	"CONSTRAINT fk_sevstl FOREIGN KEY (f_table_name, f_geometry_column) "
-	"REFERENCES geometry_columns (f_table_name, f_geometry_column) "
-	"ON DELETE CASCADE)";
+    sql = "CREATE TABLE SE_vector_styles (\n"
+	"style_id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+	"style_name TEXT NOT NULL DEFAULT 'missing_name' UNIQUE,\n"
+	"style BLOB NOT NULL)";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
-	  spatialite_e ("CREATE TABLE 'SE_vector_styled_layers' error: %s\n",
+	  spatialite_e ("CREATE TABLE 'SE_vector_styles' error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+/* creating the style Name index */
+    sql = "CREATE INDEX idx_vector_styles ON SE_vector_styles (style_name)";
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("CREATE INDEX 'idx_vector_styles' error: %s\n",
 			err_msg);
 	  sqlite3_free (err_msg);
 	  return 0;
       }
-/* creating the layer-style UNIQUE index */
-    sql = "CREATE UNIQUE INDEX idx_vector_style ON SE_vector_styled_layers "
-	"(f_table_name, f_geometry_column, style_name)";
-    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("CREATE INDEX 'idx_vector_style' error: %s\n", err_msg);
-	  sqlite3_free (err_msg);
-	  return 0;
-      }
-/* creating the SE_vector_styled_layers triggers */
-    sql = "CREATE TRIGGER sevstl_f_table_name_insert\n"
-	"BEFORE INSERT ON 'SE_vector_styled_layers'\nFOR EACH ROW BEGIN\n"
-	"SELECT RAISE(ABORT,'insert on SE_vector_styled_layers violates constraint: "
-	"f_table_name value must not contain a single quote')\n"
-	"WHERE NEW.f_table_name LIKE ('%''%');\n"
-	"SELECT RAISE(ABORT,'insert on SE_vector_styled_layers violates constraint: "
-	"f_table_name value must not contain a double quote')\n"
-	"WHERE NEW.f_table_name LIKE ('%\"%');\n"
-	"SELECT RAISE(ABORT,'insert on SE_vector_styled_layers violates constraint: "
-	"f_table_name value must be lower case')\n"
-	"WHERE NEW.f_table_name <> lower(NEW.f_table_name);\nEND";
-    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("SQL error: %s\n", err_msg);
-	  sqlite3_free (err_msg);
-	  return 0;
-      }
-    sql = "CREATE TRIGGER sevstl_f_table_name_update\n"
-	"BEFORE UPDATE OF 'f_table_name' ON 'SE_vector_styled_layers'\nFOR EACH ROW BEGIN\n"
-	"SELECT RAISE(ABORT,'update on SE_vector_styled_layers violates constraint: "
-	"f_table_name value must not contain a single quote')\n"
-	"WHERE NEW.f_table_name LIKE ('%''%');\n"
-	"SELECT RAISE(ABORT,'update on SE_vector_styled_layers violates constraint: "
-	"f_table_name value must not contain a double quote')\n"
-	"WHERE NEW.f_table_name LIKE ('%\"%');\n"
-	"SELECT RAISE(ABORT,'update on SE_vector_styled_layers violates constraint: "
-	"f_table_name value must be lower case')\n"
-	"WHERE NEW.f_table_name <> lower(NEW.f_table_name);\nEND";
-    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("SQL error: %s\n", err_msg);
-	  sqlite3_free (err_msg);
-	  return 0;
-      }
-    sql = "CREATE TRIGGER sevstl_f_geometry_column_insert\n"
-	"BEFORE INSERT ON 'SE_vector_styled_layers'\nFOR EACH ROW BEGIN\n"
-	"SELECT RAISE(ABORT,'insert on SE_vector_styled_layers violates constraint: "
-	"f_geometry_column value must not contain a single quote')\n"
-	"WHERE NEW.f_geometry_column LIKE ('%''%');\n"
-	"SELECT RAISE(ABORT,'insert on SE_vector_styled_layers violates constraint: "
-	"f_geometry_column value must not contain a double quote')\n"
-	"WHERE NEW.f_geometry_column LIKE ('%\"%');\n"
-	"SELECT RAISE(ABORT,'insert on SE_vector_styled_layers violates constraint: "
-	"f_geometry_column value must be lower case')\n"
-	"WHERE NEW.f_geometry_column <> lower(NEW.f_geometry_column);\nEND";
-    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("SQL error: %s\n", err_msg);
-	  sqlite3_free (err_msg);
-	  return 0;
-      }
-    sql = "CREATE TRIGGER sevstl_f_geometry_column_update\n"
-	"BEFORE UPDATE OF 'f_geometry_column' ON 'SE_vector_styled_layers'\nFOR EACH ROW BEGIN\n"
-	"SELECT RAISE(ABORT,'update on SE_vector_styled_layers violates constraint: "
-	"f_geometry_column value must not contain a single quote')\n"
-	"WHERE NEW.f_geometry_column LIKE ('%''%');\n"
-	"SELECT RAISE(ABORT,'update on SE_vector_styled_layers violates constraint: "
-	"f_geometry_column value must not contain a double quote')\n"
-	"WHERE NEW.f_geometry_column LIKE ('%\"%');\n"
-	"SELECT RAISE(ABORT,'update on SE_vector_styled_layers violates constraint: "
-	"f_geometry_column value must be lower case')\n"
-	"WHERE NEW.f_geometry_column <> lower(NEW.f_geometry_column);\nEND";
-    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("SQL error: %s\n", err_msg);
-	  sqlite3_free (err_msg);
-	  return 0;
-      }
+/* creating the SE_vector_styles triggers */
     if (relaxed == 0)
       {
 	  /* strong trigger - imposing XML schema validation */
-	  sql = "CREATE TRIGGER sevstl_style_insert\n"
-	      "BEFORE INSERT ON 'SE_vector_styled_layers'\nFOR EACH ROW BEGIN\n"
-	      "SELECT RAISE(ABORT,'insert on SE_vector_styled_layers violates constraint: "
+	  sql = "CREATE TRIGGER sevector_style_insert\n"
+	      "BEFORE INSERT ON 'SE_vector_styles'\nFOR EACH ROW BEGIN\n"
+	      "SELECT RAISE(ABORT,'insert on SE_vector_styles violates constraint: "
 	      "not a valid SLD/SE Vector Style')\n"
 	      "WHERE XB_IsSldSeVectorStyle(NEW.style) <> 1;\n"
-	      "SELECT RAISE(ABORT,'insert on SE_vector_styled_layers violates constraint: "
+	      "SELECT RAISE(ABORT,'insert on SE_vector_styles violates constraint: "
 	      "not an XML Schema Validated SLD/SE Vector Style')\n"
 	      "WHERE XB_IsSchemaValidated(NEW.style) <> 1;\nEND";
       }
     else
       {
 	  /* relaxed trigger - not imposing XML schema validation */
-	  sql = "CREATE TRIGGER sevstl_style_insert\n"
-	      "BEFORE INSERT ON 'SE_vector_styled_layers'\nFOR EACH ROW BEGIN\n"
-	      "SELECT RAISE(ABORT,'insert on SE_vector_styled_layers violates constraint: "
+	  sql = "CREATE TRIGGER sevector_style_insert\n"
+	      "BEFORE INSERT ON 'SE_vector_styles'\nFOR EACH ROW BEGIN\n"
+	      "SELECT RAISE(ABORT,'insert on SE_vector_styles violates constraint: "
 	      "not a valid SLD/SE Vector Style')\n"
 	      "WHERE XB_IsSldSeVectorStyle(NEW.style) <> 1;\nEND";
       }
@@ -2098,21 +2326,21 @@ create_vector_styled_layers (sqlite3 * sqlite, int relaxed)
     if (relaxed == 0)
       {
 	  /* strong trigger - imposing XML schema validation */
-	  sql = "CREATE TRIGGER sevstl_style_update\n"
-	      "BEFORE UPDATE ON 'SE_vector_styled_layers'\nFOR EACH ROW BEGIN\n"
-	      "SELECT RAISE(ABORT,'update on SE_vector_styled_layers violates constraint: "
+	  sql = "CREATE TRIGGER sevector_style_update\n"
+	      "BEFORE UPDATE ON 'SE_vector_styles'\nFOR EACH ROW BEGIN\n"
+	      "SELECT RAISE(ABORT,'update on SE_vector_styles violates constraint: "
 	      "not a valid SLD/SE Vector Style')\n"
 	      "WHERE XB_IsSldSeVectorStyle(NEW.style) <> 1;\n"
-	      "SELECT RAISE(ABORT,'update on SE_vector_styled_layers violates constraint: "
+	      "SELECT RAISE(ABORT,'update on SE_vector_styles violates constraint: "
 	      "not an XML Schema Validated SLD/SE Vector Style')\n"
 	      "WHERE XB_IsSchemaValidated(NEW.style) <> 1;\nEND";
       }
     else
       {
 	  /* relaxed trigger - not imposing XML schema validation */
-	  sql = "CREATE TRIGGER sevstl_style_update\n"
-	      "BEFORE UPDATE ON 'SE_vector_styled_layers'\nFOR EACH ROW BEGIN\n"
-	      "SELECT RAISE(ABORT,'update on SE_vector_styled_layers violates constraint: "
+	  sql = "CREATE TRIGGER sevector_style_update\n"
+	      "BEFORE UPDATE ON 'SE_vector_styles'\nFOR EACH ROW BEGIN\n"
+	      "SELECT RAISE(ABORT,'update on SE_vector_styles violates constraint: "
 	      "not a valid SLD/SE Vector Style')\n"
 	      "WHERE XB_IsSldSeVectorStyle(NEW.style) <> 1;\nEND";
       }
@@ -2124,13 +2352,11 @@ create_vector_styled_layers (sqlite3 * sqlite, int relaxed)
 	  return 0;
       }
 /* automatically setting the style_name after inserting */
-    sql = "CREATE TRIGGER sevstl_style_name_ins\n"
-	"AFTER INSERT ON 'SE_vector_styled_layers'\nFOR EACH ROW BEGIN\n"
-	"UPDATE SE_vector_styled_layers "
+    sql = "CREATE TRIGGER sevector_style_name_ins\n"
+	"AFTER INSERT ON 'SE_vector_styles'\nFOR EACH ROW BEGIN\n"
+	"UPDATE SE_vector_styles "
 	"SET style_name = XB_GetName(NEW.style) "
-	"WHERE f_table_name = NEW.f_table_name "
-	"AND f_geometry_column = NEW.f_geometry_column "
-	"AND style_id = NEW.style_id;\nEND";
+	"WHERE style_id = NEW.style_id;\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -2139,14 +2365,12 @@ create_vector_styled_layers (sqlite3 * sqlite, int relaxed)
 	  return 0;
       }
 /* automatically setting the style_name after updating */
-    sql = "CREATE TRIGGER sevstl_style_name_upd\n"
+    sql = "CREATE TRIGGER sevector_style_name_upd\n"
 	"AFTER UPDATE OF style ON "
-	"'SE_vector_styled_layers'\nFOR EACH ROW BEGIN\n"
-	"UPDATE SE_vector_styled_layers "
+	"'SE_vector_styles'\nFOR EACH ROW BEGIN\n"
+	"UPDATE SE_vector_styles "
 	"SET style_name = XB_GetName(NEW.style) "
-	"WHERE f_table_name = NEW.f_table_name "
-	"AND f_geometry_column = NEW.f_geometry_column "
-	"AND style_id = NEW.style_id;\nEND";
+	"WHERE style_id = NEW.style_id;\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -2158,7 +2382,195 @@ create_vector_styled_layers (sqlite3 * sqlite, int relaxed)
 }
 
 static int
-create_raster_styled_layers (sqlite3 * sqlite, int relaxed)
+create_vector_styled_layers (sqlite3 * sqlite)
+{
+/* creating the SE_vector_styled_layers table */
+    char *sql;
+    int ret;
+    char *err_msg = NULL;
+    sql = "CREATE TABLE SE_vector_styled_layers (\n"
+	"coverage_name TEXT NOT NULL,\n"
+	"style_id INTEGER NOT NULL,\n"
+	"CONSTRAINT pk_sevstl PRIMARY KEY "
+	"(coverage_name, style_id),\n"
+	"CONSTRAINT fk_sevstl_cvg FOREIGN KEY (coverage_name) "
+	"REFERENCES vector_coverages (coverage_name) ON DELETE CASCADE,\n"
+	"CONSTRAINT fk_sevstl_stl FOREIGN KEY (style_id) "
+	"REFERENCES SE_vector_styles (style_id) ON DELETE CASCADE)";
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("CREATE TABLE 'SE_vector_styled_layers' error: %s\n",
+			err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+/* creating the style_id index */
+    sql = "CREATE INDEX idx_sevstl_style ON SE_vector_styled_layers (style_id)";
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("CREATE INDEX 'idx_svstl_style' error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+/* creating the SE_vector_styled_layers triggers */
+    sql = "CREATE TRIGGER sevstl_coverage_name_insert\n"
+	"BEFORE INSERT ON 'SE_vector_styled_layers'\nFOR EACH ROW BEGIN\n"
+	"SELECT RAISE(ABORT,'insert on SE_vector_styled_layers violates constraint: "
+	"coverage_name value must not contain a single quote')\n"
+	"WHERE NEW.coverage_name LIKE ('%''%');\n"
+	"SELECT RAISE(ABORT,'insert on SE_vector_styled_layers violates constraint: "
+	"coverage_name value must not contain a double quote')\n"
+	"WHERE NEW.coverage_name LIKE ('%\"%');\n"
+	"SELECT RAISE(ABORT,'insert on SE_vector_styled_layers violates constraint: "
+	"coverage_name value must be lower case')\n"
+	"WHERE NEW.coverage_name <> lower(NEW.coverage_name);\nEND";
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+    sql = "CREATE TRIGGER sevstl_coverage_name_update\n"
+	"BEFORE UPDATE OF 'coverage_name' ON 'SE_vector_styled_layers'\nFOR EACH ROW BEGIN\n"
+	"SELECT RAISE(ABORT,'update on SE_vector_styled_layers violates constraint: "
+	"coverage_name value must not contain a single quote')\n"
+	"WHERE NEW.coverage_name LIKE ('%''%');\n"
+	"SELECT RAISE(ABORT,'update on SE_vector_styled_layers violates constraint: "
+	"coverage_name value must not contain a double quote')\n"
+	"WHERE NEW.coverage_name LIKE ('%\"%');\n"
+	"SELECT RAISE(ABORT,'update on SE_vector_styled_layers violates constraint: "
+	"coverage_name value must be lower case')\n"
+	"WHERE NEW.coverage_name <> lower(NEW.coverage_name);\nEND";
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+    return 1;
+}
+
+static int
+create_raster_styles (sqlite3 * sqlite, int relaxed)
+{
+/* creating the SE_raster_styles table */
+    char *sql;
+    int ret;
+    char *err_msg = NULL;
+    sql = "CREATE TABLE SE_raster_styles (\n"
+	"style_id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+	"style_name TEXT NOT NULL DEFAULT 'missing_name' UNIQUE,\n"
+	"style BLOB NOT NULL)";
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("CREATE TABLE 'SE_raster_styles' error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+/* creating the style Name index */
+    sql = "CREATE INDEX idx_raster_styles ON SE_raster_styles (style_name)";
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("CREATE INDEX 'idx_raster_styles' error: %s\n",
+			err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+/* creating the SE_raster_styles triggers */
+    if (relaxed == 0)
+      {
+	  /* strong trigger - imposing XML schema validation */
+	  sql = "CREATE TRIGGER seraster_style_insert\n"
+	      "BEFORE INSERT ON 'SE_raster_styles'\nFOR EACH ROW BEGIN\n"
+	      "SELECT RAISE(ABORT,'insert on SE_raster_styles violates constraint: "
+	      "not a valid SLD/SE Raster Style')\n"
+	      "WHERE XB_IsSldSeRasterStyle(NEW.style) <> 1;\n"
+	      "SELECT RAISE(ABORT,'insert on SE_raster_styles violates constraint: "
+	      "not an XML Schema Validated SLD/SE Raster Style')\n"
+	      "WHERE XB_IsSchemaValidated(NEW.style) <> 1;\nEND";
+      }
+    else
+      {
+	  /* relaxed trigger - not imposing XML schema validation */
+	  sql = "CREATE TRIGGER seraster_style_insert\n"
+	      "BEFORE INSERT ON 'SE_raster_styles'\nFOR EACH ROW BEGIN\n"
+	      "SELECT RAISE(ABORT,'insert on SE_raster_styles violates constraint: "
+	      "not a valid SLD/SE Raster Style')\n"
+	      "WHERE XB_IsSldSeRasterStyle(NEW.style) <> 1;\nEND";
+      }
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+    if (relaxed == 0)
+      {
+	  /* strong trigger - imposing XML schema validation */
+	  sql = "CREATE TRIGGER seraster_style_update\n"
+	      "BEFORE UPDATE ON 'SE_raster_styles'\nFOR EACH ROW BEGIN\n"
+	      "SELECT RAISE(ABORT,'update on SE_raster_styles violates constraint: "
+	      "not a valid SLD/SE Raster Style')\n"
+	      "WHERE XB_IsSldSeRasterStyle(NEW.style) <> 1;\n"
+	      "SELECT RAISE(ABORT,'update on SE_raster_styles violates constraint: "
+	      "not an XML Schema Validated SLD/SE Raster Style')\n"
+	      "WHERE XB_IsSchemaValidated(NEW.style) <> 1;\nEND";
+      }
+    else
+      {
+	  /* relaxed trigger - not imposing XML schema validation */
+	  sql = "CREATE TRIGGER seraster_style_update\n"
+	      "BEFORE UPDATE ON 'SE_raster_styles'\nFOR EACH ROW BEGIN\n"
+	      "SELECT RAISE(ABORT,'update on SE_raster_styles violates constraint: "
+	      "not a valid SLD/SE Raster Style')\n"
+	      "WHERE XB_IsSldSeRasterStyle(NEW.style) <> 1;\nEND";
+      }
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+/* automatically setting the style_name after inserting */
+    sql = "CREATE TRIGGER seraster_style_name_ins\n"
+	"AFTER INSERT ON 'SE_raster_styles'\nFOR EACH ROW BEGIN\n"
+	"UPDATE SE_raster_styles "
+	"SET style_name = XB_GetName(NEW.style) "
+	"WHERE style_id = NEW.style_id;\nEND";
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+/* automatically setting the style_name after updating */
+    sql = "CREATE TRIGGER seraster_style_name_upd\n"
+	"AFTER UPDATE OF style ON "
+	"'SE_raster_styles'\nFOR EACH ROW BEGIN\n"
+	"UPDATE SE_raster_styles "
+	"SET style_name = XB_GetName(NEW.style) "
+	"WHERE style_id = NEW.style_id;\nEND";
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+    return 1;
+}
+
+static int
+create_raster_styled_layers (sqlite3 * sqlite)
 {
 /* creating the SE_raster_styled_layers table */
     char *sql;
@@ -2167,11 +2579,11 @@ create_raster_styled_layers (sqlite3 * sqlite, int relaxed)
     sql = "CREATE TABLE SE_raster_styled_layers (\n"
 	"coverage_name TEXT NOT NULL,\n"
 	"style_id INTEGER NOT NULL,\n"
-	"style_name TEXT NOT NULL DEFAULT 'missing_name',\n"
-	"style BLOB NOT NULL,\n"
-	"CONSTRAINT pk_serstl PRIMARY KEY " "(coverage_name, style_id),\n"
-	"CONSTRAINT fk_serstl FOREIGN KEY (coverage_name) "
-	"REFERENCES raster_coverages (coverage_name) " "ON DELETE CASCADE)";
+	"CONSTRAINT pk_serstl PRIMARY KEY (coverage_name, style_id),\n"
+	"CONSTRAINT fk_serstl_cov FOREIGN KEY (coverage_name) "
+	"REFERENCES raster_coverages (coverage_name) ON DELETE CASCADE,\n"
+	"CONSTRAINT fk_serstl_stl FOREIGN KEY (style_id) "
+	"REFERENCES SE_raster_styles (style_id) ON DELETE CASCADE)";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -2180,13 +2592,12 @@ create_raster_styled_layers (sqlite3 * sqlite, int relaxed)
 	  sqlite3_free (err_msg);
 	  return 0;
       }
-/* creating the layer-style UNIQUE index */
-    sql = "CREATE UNIQUE INDEX idx_raster_style ON SE_raster_styled_layers "
-	"(coverage_name, style_name)";
+/* creating the style_id index */
+    sql = "CREATE INDEX idx_serstl_style ON SE_raster_styled_layers (style_id)";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
-	  spatialite_e ("CREATE INDEX 'idx_raster_style' error: %s\n", err_msg);
+	  spatialite_e ("CREATE INDEX 'idx_serstl_style' error: %s\n", err_msg);
 	  sqlite3_free (err_msg);
 	  return 0;
       }
@@ -2227,26 +2638,48 @@ create_raster_styled_layers (sqlite3 * sqlite, int relaxed)
 	  sqlite3_free (err_msg);
 	  return 0;
       }
+    return 1;
+}
+
+static int
+create_group_styles (sqlite3 * sqlite, int relaxed)
+{
+/* creating the SE_group_styles table */
+    char *sql;
+    int ret;
+    char *err_msg = NULL;
+    sql = "CREATE TABLE SE_group_styles (\n"
+	"style_id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+	"style_name TEXT NOT NULL DEFAULT 'missing_name' UNIQUE,\n"
+	"style BLOB NOT NULL)";
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("CREATE TABLE 'SE_group_styles' error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+/* creating the SE_group_styles triggers */
     if (relaxed == 0)
       {
 	  /* strong trigger - imposing XML schema validation */
-	  sql = "CREATE TRIGGER serstl_style_insert\n"
-	      "BEFORE INSERT ON 'SE_raster_styled_layers'\nFOR EACH ROW BEGIN\n"
-	      "SELECT RAISE(ABORT,'insert on SE_raster_styled_layers violates constraint: "
-	      "not a valid SLD/SE Raster Style')\n"
-	      "WHERE XB_IsSldSeRasterStyle(NEW.style) <> 1;\n"
-	      "SELECT RAISE(ABORT,'insert on SE_raster_styled_layers violates constraint: "
-	      "not an XML Schema Validated SLD/SE Raster Style')\n"
+	  sql = "CREATE TRIGGER segroup_style_insert\n"
+	      "BEFORE INSERT ON 'SE_group_styles'\nFOR EACH ROW BEGIN\n"
+	      "SELECT RAISE(ABORT,'insert on SE_group_styles violates constraint: "
+	      "not a valid SLD Style')\n"
+	      "WHERE XB_IsSldStyle(NEW.style) <> 1;\n"
+	      "SELECT RAISE(ABORT,'insert on SE_group_styles violates constraint: "
+	      "not an XML Schema Validated SLD Style')\n"
 	      "WHERE XB_IsSchemaValidated(NEW.style) <> 1;\nEND";
       }
     else
       {
 	  /* relaxed trigger - not imposing XML schema validation */
-	  sql = "CREATE TRIGGER serstl_style_insert\n"
-	      "BEFORE INSERT ON 'SE_raster_styled_layers'\nFOR EACH ROW BEGIN\n"
-	      "SELECT RAISE(ABORT,'insert on SE_raster_styled_layers violates constraint: "
-	      "not a valid SLD/SE Raster Style')\n"
-	      "WHERE XB_IsSldSeRasterStyle(NEW.style) <> 1;\nEND";
+	  sql = "CREATE TRIGGER segroup_style_insert\n"
+	      "BEFORE INSERT ON 'SE_group_styles'\nFOR EACH ROW BEGIN\n"
+	      "SELECT RAISE(ABORT,'insert on SE_group_styles violates constraint: "
+	      "not a valid SLD Style')\n"
+	      "WHERE XB_IsSldStyle(NEW.style) <> 1;\nEND";
       }
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
@@ -2258,23 +2691,23 @@ create_raster_styled_layers (sqlite3 * sqlite, int relaxed)
     if (relaxed == 0)
       {
 	  /* strong trigger - imposing XML schema validation */
-	  sql = "CREATE TRIGGER serstl_style_update\n"
-	      "BEFORE UPDATE ON 'SE_raster_styled_layers'\nFOR EACH ROW BEGIN\n"
-	      "SELECT RAISE(ABORT,'update on SE_raster_styled_layers violates constraint: "
-	      "not a valid SLD/SE Raster Style')\n"
-	      "WHERE XB_IsSldSeRasterStyle(NEW.style) <> 1;\n"
-	      "SELECT RAISE(ABORT,'update on SE_raster_styled_layers violates constraint: "
-	      "not an XML Schema Validated SLD/SE Raster Style')\n"
+	  sql = "CREATE TRIGGER segroup_style_update\n"
+	      "BEFORE UPDATE ON 'SE_group_styles'\nFOR EACH ROW BEGIN\n"
+	      "SELECT RAISE(ABORT,'update on SE_group_styles violates constraint: "
+	      "not a valid SLD Style')\n"
+	      "WHERE XB_IsSldStyle(NEW.style) <> 1;\n"
+	      "SELECT RAISE(ABORT,'update on SE_group_styles violates constraint: "
+	      "not an XML Schema Validated SLD Style')\n"
 	      "WHERE XB_IsSchemaValidated(NEW.style) <> 1;\nEND";
       }
     else
       {
 	  /* relaxed trigger - not imposing XML schema validation */
-	  sql = "CREATE TRIGGER serstl_style_update\n"
-	      "BEFORE UPDATE ON 'SE_raster_styled_layers'\nFOR EACH ROW BEGIN\n"
-	      "SELECT RAISE(ABORT,'update on SE_raster_styled_layers violates constraint: "
-	      "not a valid SLD/SE Raster Style')\n"
-	      "WHERE XB_IsSldSeRasterStyle(NEW.style) <> 1;\nEND";
+	  sql = "CREATE TRIGGER segroup_style_update\n"
+	      "BEFORE UPDATE ON 'SE_group_styles'\nFOR EACH ROW BEGIN\n"
+	      "SELECT RAISE(ABORT,'update on SE_group_styles violates constraint: "
+	      "not a valid SLD Raster Style')\n"
+	      "WHERE XB_IsSldStyle(NEW.style) <> 1;\nEND";
       }
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
@@ -2284,12 +2717,11 @@ create_raster_styled_layers (sqlite3 * sqlite, int relaxed)
 	  return 0;
       }
 /* automatically setting the style_name after inserting */
-    sql = "CREATE TRIGGER serstl_style_name_ins\n"
-	"AFTER INSERT ON 'SE_raster_styled_layers'\nFOR EACH ROW BEGIN\n"
-	"UPDATE SE_raster_styled_layers "
+    sql = "CREATE TRIGGER segroup_style_name_ins\n"
+	"AFTER INSERT ON 'SE_group_styles'\nFOR EACH ROW BEGIN\n"
+	"UPDATE SE_group_styles "
 	"SET style_name = XB_GetName(NEW.style) "
-	"WHERE coverage_name = NEW.coverage_name "
-	"AND style_id = NEW.style_id;\nEND";
+	"WHERE style_id = NEW.style_id;\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -2298,13 +2730,12 @@ create_raster_styled_layers (sqlite3 * sqlite, int relaxed)
 	  return 0;
       }
 /* automatically setting the style_name after updating */
-    sql = "CREATE TRIGGER serstl_style_name_upd\n"
+    sql = "CREATE TRIGGER segroup_style_name_upd\n"
 	"AFTER UPDATE OF style ON "
-	"'SE_raster_styled_layers'\nFOR EACH ROW BEGIN\n"
-	"UPDATE SE_raster_styled_layers "
+	"'SE_group_styles'\nFOR EACH ROW BEGIN\n"
+	"UPDATE SE_group_styles "
 	"SET style_name = XB_GetName(NEW.style) "
-	"WHERE coverage_name = NEW.coverage_name "
-	"AND style_id = NEW.style_id;\nEND";
+	"WHERE style_id = NEW.style_id;\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -2384,20 +2815,17 @@ create_styled_group_refs (sqlite3 * sqlite)
 	"id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
 	"group_name TEXT NOT NULL,\n"
 	"paint_order INTEGER NOT NULL,\n"
-	"f_table_name TEXT,\n"
-	"f_geometry_column TEXT,\n"
-	"coverage_name TEXT,\n"
+	"vector_coverage_name TEXT,\n"
+	"raster_coverage_name TEXT,\n"
 	"CONSTRAINT fk_se_refs FOREIGN KEY (group_name) "
 	"REFERENCES SE_styled_groups (group_name) "
 	"ON DELETE CASCADE,\n"
-	"CONSTRAINT fk_se_group_vector FOREIGN KEY "
-	"(f_table_name, f_geometry_column) "
-	"REFERENCES geometry_columns "
-	"(f_table_name, f_geometry_column) "
-	"ON DELETE CASCADE,\n"
+	"CONSTRAINT fk_se_group_vector "
+	"FOREIGN KEY (vector_coverage_name) "
+	"REFERENCES vector_coverages (coverage_name) ON DELETE CASCADE,\n"
 	"CONSTRAINT fk_se_group_raster "
-	"FOREIGN KEY (coverage_name) "
-	"REFERENCES raster_coverages (coverage_name) " "ON DELETE CASCADE)";
+	"FOREIGN KEY (raster_coverage_name) "
+	"REFERENCES raster_coverages (coverage_name) ON DELETE CASCADE)";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -2443,17 +2871,17 @@ create_styled_group_refs (sqlite3 * sqlite)
 	  sqlite3_free (err_msg);
 	  return 0;
       }
-    sql = "CREATE TRIGGER segrrefs_f_table_name_insert\n"
+    sql = "CREATE TRIGGER segrrefs_vector_coverage_name_insert\n"
 	"BEFORE INSERT ON 'SE_styled_group_refs'\nFOR EACH ROW BEGIN\n"
 	"SELECT RAISE(ABORT,'insert on SE_styled_group_refs violates constraint: "
-	"f_table_name value must not contain a single quote')\n"
-	"WHERE NEW.f_table_name LIKE ('%''%');\n"
+	"vector_coverage_name value must not contain a single quote')\n"
+	"WHERE NEW.vector_coverage_name LIKE ('%''%');\n"
 	"SELECT RAISE(ABORT,'insert on SE_styled_group_refs violates constraint: "
-	"f_table_name value must not contain a double quote')\n"
-	"WHERE NEW.f_table_name LIKE ('%\"%');\n"
+	"vector_coverage_name value must not contain a double quote')\n"
+	"WHERE NEW.vector_coverage_name LIKE ('%\"%');\n"
 	"SELECT RAISE(ABORT,'insert on SE_styled_group_refs violates constraint: "
-	"f_table_name value must be lower case')\n"
-	"WHERE NEW.f_table_name <> lower(NEW.f_table_name);\nEND";
+	"vector_coverage_name value must be lower case')\n"
+	"WHERE NEW.vector_coverage_name <> lower(NEW.vector_coverage_name);\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -2461,17 +2889,17 @@ create_styled_group_refs (sqlite3 * sqlite)
 	  sqlite3_free (err_msg);
 	  return 0;
       }
-    sql = "CREATE TRIGGER segrrefs_f_table_name_update\n"
-	"BEFORE UPDATE OF 'f_table_name' ON 'SE_styled_group_refs'\nFOR EACH ROW BEGIN\n"
+    sql = "CREATE TRIGGER segrrefs_vector_coverage_name_update\n"
+	"BEFORE UPDATE OF 'vector_coverage_name' ON 'SE_styled_group_refs'\nFOR EACH ROW BEGIN\n"
 	"SELECT RAISE(ABORT,'update on SE_styled_group_refs violates constraint: "
-	"f_table_name value must not contain a single quote')\n"
-	"WHERE NEW.f_table_name LIKE ('%''%');\n"
+	"rastrer_coverage_name value must not contain a single quote')\n"
+	"WHERE NEW.vector_coverage_name LIKE ('%''%');\n"
 	"SELECT RAISE(ABORT,'update on SE_styled_group_refs violates constraint: "
-	"f_table_name value must not contain a double quote')\n"
-	"WHERE NEW.f_table_name LIKE ('%\"%');\n"
+	"vector_coverage_name value must not contain a double quote')\n"
+	"WHERE NEW.vector_coverage_name LIKE ('%\"%');\n"
 	"SELECT RAISE(ABORT,'update on SE_styled_group_refs violates constraint: "
-	"f_table_name value must be lower case')\n"
-	"WHERE NEW.f_table_name <> lower(NEW.f_table_name);\nEND";
+	"vector_coverage_name value must be lower case')\n"
+	"WHERE NEW.vector_coverage_name <> lower(NEW.vector_coverage_name);\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -2479,17 +2907,18 @@ create_styled_group_refs (sqlite3 * sqlite)
 	  sqlite3_free (err_msg);
 	  return 0;
       }
-    sql = "CREATE TRIGGER segrrefs_f_geometry_column_insert\n"
+
+    sql = "CREATE TRIGGER segrrefs_raster_coverage_name_insert\n"
 	"BEFORE INSERT ON 'SE_styled_group_refs'\nFOR EACH ROW BEGIN\n"
 	"SELECT RAISE(ABORT,'insert on SE_styled_group_refs violates constraint: "
-	"f_geometry_column value must not contain a single quote')\n"
-	"WHERE NEW.f_geometry_column LIKE ('%''%');\n"
+	"raster_coverage_name value must not contain a single quote')\n"
+	"WHERE NEW.raster_coverage_name LIKE ('%''%');\n"
 	"SELECT RAISE(ABORT,'insert on SE_styled_group_refs violates constraint: "
-	"f_geometry_column value must not contain a double quote')\n"
-	"WHERE NEW.f_geometry_column LIKE ('%\"%');\n"
+	"raster_coverage_name value must not contain a double quote')\n"
+	"WHERE NEW.raster_coverage_name LIKE ('%\"%');\n"
 	"SELECT RAISE(ABORT,'insert on SE_styled_group_refs violates constraint: "
-	"f_geometry_column value must be lower case')\n"
-	"WHERE NEW.f_geometry_column <> lower(NEW.f_geometry_column);\nEND";
+	"raster_coverage_name value must be lower case')\n"
+	"WHERE NEW.raster_coverage_name <> lower(NEW.raster_coverage_name);\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -2497,17 +2926,17 @@ create_styled_group_refs (sqlite3 * sqlite)
 	  sqlite3_free (err_msg);
 	  return 0;
       }
-    sql = "CREATE TRIGGER segrrefs_f_geometry_column_update\n"
-	"BEFORE UPDATE OF 'f_geometry_column' ON 'SE_styled_group_refs'\nFOR EACH ROW BEGIN\n"
+    sql = "CREATE TRIGGER segrrefs_raster_coverage_name_update\n"
+	"BEFORE UPDATE OF 'raster_coverage_name' ON 'SE_styled_group_refs'\nFOR EACH ROW BEGIN\n"
 	"SELECT RAISE(ABORT,'update on SE_styled_group_refs violates constraint: "
-	"f_geometry_column value must not contain a single quote')\n"
-	"WHERE NEW.f_geometry_column LIKE ('%''%');\n"
+	"rastrer_coverage_name value must not contain a single quote')\n"
+	"WHERE NEW.raster_coverage_name LIKE ('%''%');\n"
 	"SELECT RAISE(ABORT,'update on SE_styled_group_refs violates constraint: "
-	"f_geometry_column value must not contain a double quote')\n"
-	"WHERE NEW.f_geometry_column LIKE ('%\"%');\n"
+	"raster_coverage_name value must not contain a double quote')\n"
+	"WHERE NEW.raster_coverage_name LIKE ('%\"%');\n"
 	"SELECT RAISE(ABORT,'update on SE_styled_group_refs violates constraint: "
-	"f_geometry_column value must be lower case')\n"
-	"WHERE NEW.f_geometry_column <> lower(NEW.f_geometry_column);\nEND";
+	"raster_coverage_name value must be lower case')\n"
+	"WHERE NEW.raster_coverage_name <> lower(NEW.raster_coverage_name);\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -2515,48 +2944,12 @@ create_styled_group_refs (sqlite3 * sqlite)
 	  sqlite3_free (err_msg);
 	  return 0;
       }
-    sql = "CREATE TRIGGER segrrefs_coverage_name_insert\n"
-	"BEFORE INSERT ON 'SE_styled_group_refs'\nFOR EACH ROW BEGIN\n"
-	"SELECT RAISE(ABORT,'insert on SE_styled_group_refs violates constraint: "
-	"coverage_name value must not contain a single quote')\n"
-	"WHERE NEW.coverage_name LIKE ('%''%');\n"
-	"SELECT RAISE(ABORT,'insert on SE_styled_group_refs violates constraint: "
-	"coverage_name value must not contain a double quote')\n"
-	"WHERE NEW.coverage_name LIKE ('%\"%');\n"
-	"SELECT RAISE(ABORT,'insert on SE_styled_group_refs violates constraint: "
-	"coverage_name value must be lower case')\n"
-	"WHERE NEW.coverage_name <> lower(NEW.coverage_name);\nEND";
-    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("SQL error: %s\n", err_msg);
-	  sqlite3_free (err_msg);
-	  return 0;
-      }
-    sql = "CREATE TRIGGER segrrefs_coverage_name_update\n"
-	"BEFORE UPDATE OF 'coverage_name' ON 'SE_styled_group_refs'\nFOR EACH ROW BEGIN\n"
-	"SELECT RAISE(ABORT,'update on SE_styled_group_refs violates constraint: "
-	"coverage_name value must not contain a single quote')\n"
-	"WHERE NEW.coverage_name LIKE ('%''%');\n"
-	"SELECT RAISE(ABORT,'update on SE_styled_group_refs violates constraint: "
-	"coverage_name value must not contain a double quote')\n"
-	"WHERE NEW.coverage_name LIKE ('%\"%');\n"
-	"SELECT RAISE(ABORT,'update on SE_styled_group_refs violates constraint: "
-	"coverage_name value must be lower case')\n"
-	"WHERE NEW.coverage_name <> lower(NEW.coverage_name);\nEND";
-    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("SQL error: %s\n", err_msg);
-	  sqlite3_free (err_msg);
-	  return 0;
-      }
-    sql = "CREATE TRIGGER segrrefs_insert\n"
+    sql = "CREATE TRIGGER segrrefs_insert_1\n"
 	"BEFORE INSERT ON 'SE_styled_group_refs'\nFOR EACH ROW BEGIN\n"
 	"SELECT RAISE(ABORT,'insert on SE_styled_group_refs violates constraint: "
 	"cannot reference both Vector and Raster at the same time')\n"
-	"WHERE (NEW.f_table_name IS NOT NULL OR NEW.f_geometry_column IS NOT NULL) "
-	"AND NEW.coverage_name IS NOT NULL;\nEND";
+	"WHERE NEW.vector_coverage_name IS NOT NULL "
+	"AND NEW.raster_coverage_name IS NOT NULL;\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -2564,12 +2957,38 @@ create_styled_group_refs (sqlite3 * sqlite)
 	  sqlite3_free (err_msg);
 	  return 0;
       }
-    sql = "CREATE TRIGGER segrrefs_update\n"
+    sql = "CREATE TRIGGER segrrefs_update_1\n"
 	"BEFORE UPDATE ON 'SE_styled_group_refs'\nFOR EACH ROW BEGIN\n"
 	"SELECT RAISE(ABORT,'update on SE_styled_group_refs violates constraint: "
 	"cannot reference both Vector and Raster at the same time')\n"
-	"WHERE (NEW.f_table_name IS NOT NULL OR NEW.f_geometry_column IS NOT NULL) "
-	"AND NEW.coverage_name IS NOT NULL;\nEND";
+	"WHERE NEW.vector_coverage_name IS NOT NULL "
+	"AND NEW.raster_coverage_name IS NOT NULL;\nEND";
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+    sql = "CREATE TRIGGER segrrefs_insert_2\n"
+	"BEFORE INSERT ON 'SE_styled_group_refs'\nFOR EACH ROW BEGIN\n"
+	"SELECT RAISE(ABORT,'insert on SE_styled_group_refs violates constraint: "
+	"either Vector or Raster must be referenced')\n"
+	"WHERE NEW.vector_coverage_name IS NULL "
+	"AND NEW.raster_coverage_name IS NULL;\nEND";
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+    sql = "CREATE TRIGGER segrrefs_update_2\n"
+	"BEFORE UPDATE ON 'SE_styled_group_refs'\nFOR EACH ROW BEGIN\n"
+	"SELECT RAISE(ABORT,'update on SE_styled_group_refs violates constraint: "
+	"either Vector or Raster must be referenced')\n"
+	"WHERE NEW.vector_coverage_name IS NULL "
+	"AND NEW.raster_coverage_name IS NULL;\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -2579,7 +2998,7 @@ create_styled_group_refs (sqlite3 * sqlite)
       }
 /* creating any Index on SE_styled_group_refs */
     sql = "CREATE INDEX idx_SE_styled_vgroups ON "
-	"SE_styled_group_refs " "(f_table_name, f_geometry_column)";
+	"SE_styled_group_refs " "(vector_coverage_name)";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -2589,7 +3008,7 @@ create_styled_group_refs (sqlite3 * sqlite)
 	  return 0;
       }
     sql = "CREATE INDEX idx_SE_styled_rgroups ON "
-	"SE_styled_group_refs " "(coverage_name)";
+	"SE_styled_group_refs " "(raster_coverage_name)";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -2613,47 +3032,39 @@ create_styled_group_refs (sqlite3 * sqlite)
 }
 
 static int
-create_group_styles (sqlite3 * sqlite, int relaxed)
+create_styled_group_styles (sqlite3 * sqlite)
 {
-/* creating the SE_group_styles table */
+/* creating the SE_styled_group_styles table */
     char *sql;
     int ret;
     char *err_msg = NULL;
-    sql = "CREATE TABLE SE_group_styles (\n"
+    sql = "CREATE TABLE SE_styled_group_styles (\n"
+	"id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
 	"group_name TEXT NOT NULL,\n"
 	"style_id INTEGER NOT NULL,\n"
-	"style_name TEXT NOT NULL DEFAULT 'missing_name',\n"
-	"style BLOB NOT NULL,\n"
-	"CONSTRAINT pk_segrpstl PRIMARY KEY " "(group_name, style_id),\n"
-	"CONSTRAINT fk_segrpstl FOREIGN KEY (group_name) "
-	"REFERENCES SE_styled_groups (group_name) " "ON DELETE CASCADE)";
+	"CONSTRAINT fk_se_grpstl FOREIGN KEY (group_name) "
+	"REFERENCES SE_styled_groups (group_name) "
+	"ON DELETE CASCADE,\n"
+	"CONSTRAINT fk_se_group_style FOREIGN KEY (style_id) "
+	"REFERENCES group_styles (style_id) ON DELETE CASCADE)";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
-	  spatialite_e ("CREATE TABLE 'SE_group_styles' error: %s\n", err_msg);
+	  spatialite_e
+	      ("CREATE TABLE 'SE_styled_group_styles' error: %s\n", err_msg);
 	  sqlite3_free (err_msg);
 	  return 0;
       }
-/* creating the layer-style UNIQUE index */
-    sql = "CREATE UNIQUE INDEX idx_group_style ON SE_group_styles "
-	"(group_name, style_name)";
-    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("CREATE INDEX 'idx_group_style' error: %s\n", err_msg);
-	  sqlite3_free (err_msg);
-	  return 0;
-      }
-/* creating the SE_group_styles triggers */
+/* creating the SE_styled_group_styles triggers */
     sql = "CREATE TRIGGER segrpstl_group_name_insert\n"
-	"BEFORE INSERT ON 'SE_group_styles'\nFOR EACH ROW BEGIN\n"
-	"SELECT RAISE(ABORT,'insert on SE_group_styles violates constraint: "
+	"BEFORE INSERT ON 'SE_styled_group_styles'\nFOR EACH ROW BEGIN\n"
+	"SELECT RAISE(ABORT,'insert on SE_styled_group_styles violates constraint: "
 	"group_name value must not contain a single quote')\n"
 	"WHERE NEW.group_name LIKE ('%''%');\n"
-	"SELECT RAISE(ABORT,'insert on SE_group_styles violates constraint: "
+	"SELECT RAISE(ABORT,'insert on SE_styled_group_styles violates constraint: "
 	"group_name value must not contain a double quote')\n"
 	"WHERE NEW.group_name LIKE ('%\"%');\n"
-	"SELECT RAISE(ABORT,'insert on SE_group_styles violates constraint: "
+	"SELECT RAISE(ABORT,'insert on SE_styled_group_styles violates constraint: "
 	"group_name value must be lower case')\n"
 	"WHERE NEW.group_name <> lower(NEW.group_name);\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
@@ -2664,101 +3075,16 @@ create_group_styles (sqlite3 * sqlite, int relaxed)
 	  return 0;
       }
     sql = "CREATE TRIGGER segrpstl_group_name_update\n"
-	"BEFORE UPDATE OF 'group_name' ON 'SE_group_styles'\nFOR EACH ROW BEGIN\n"
-	"SELECT RAISE(ABORT,'update on SE_group_styles violates constraint: "
+	"BEFORE UPDATE OF 'group_name' ON 'SE_styled_group_styles'\nFOR EACH ROW BEGIN\n"
+	"SELECT RAISE(ABORT,'update on SE_styled_group_styles violates constraint: "
 	"group_name value must not contain a single quote')\n"
 	"WHERE NEW.group_name LIKE ('%''%');\n"
-	"SELECT RAISE(ABORT,'update on SE_group_styles violates constraint: "
+	"SELECT RAISE(ABORT,'update on SE_styled_group_styles violates constraint: "
 	"group_name value must not contain a double quote')\n"
 	"WHERE NEW.group_name LIKE ('%\"%');\n"
-	"SELECT RAISE(ABORT,'update on SE_group_styles violates constraint: "
+	"SELECT RAISE(ABORT,'update on SE_styled_group_styles violates constraint: "
 	"group_name value must be lower case')\n"
 	"WHERE NEW.group_name <> lower(NEW.group_name);\nEND";
-    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("SQL error: %s\n", err_msg);
-	  sqlite3_free (err_msg);
-	  return 0;
-      }
-    if (relaxed == 0)
-      {
-	  /* strong trigger - imposing XML schema validation */
-	  sql = "CREATE TRIGGER segrpstl_style_insert\n"
-	      "BEFORE INSERT ON 'SE_group_styles'\nFOR EACH ROW BEGIN\n"
-	      "SELECT RAISE(ABORT,'insert on SE_group_styles violates constraint: "
-	      "not a valid SLD Style')\n"
-	      "WHERE XB_IsSldStyle(NEW.style) <> 1;\n"
-	      "SELECT RAISE(ABORT,'insert on SE_group_styles violates constraint: "
-	      "not an XML Schema Validated SLD Style')\n"
-	      "WHERE XB_IsSchemaValidated(NEW.style) <> 1;\nEND";
-      }
-    else
-      {
-	  /* relaxed trigger - not imposing XML schema validation */
-	  sql = "CREATE TRIGGER segrpstl_style_insert\n"
-	      "BEFORE INSERT ON 'SE_group_styles'\nFOR EACH ROW BEGIN\n"
-	      "SELECT RAISE(ABORT,'insert on SE_group_styles violates constraint: "
-	      "not a valid SLD Style')\n"
-	      "WHERE XB_IsSldStyle(NEW.style) <> 1;\nEND";
-      }
-    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("SQL error: %s\n", err_msg);
-	  sqlite3_free (err_msg);
-	  return 0;
-      }
-    if (relaxed == 0)
-      {
-	  /* strong trigger - imposing XML schema validation */
-	  sql = "CREATE TRIGGER segrpstl_style_update\n"
-	      "BEFORE UPDATE ON 'SE_group_styles'\nFOR EACH ROW BEGIN\n"
-	      "SELECT RAISE(ABORT,'update on SE_group_styles violates constraint: "
-	      "not a valid SLD Style')\n"
-	      "WHERE XB_IsSldStyle(NEW.style) <> 1;\n"
-	      "SELECT RAISE(ABORT,'update on SE_group_styles violates constraint: "
-	      "not an XML Schema Validated SLD Style')\n"
-	      "WHERE XB_IsSchemaValidated(NEW.style) <> 1;\nEND";
-      }
-    else
-      {
-	  /* relaxed trigger - not imposing XML schema validation */
-	  sql = "CREATE TRIGGER segrpstl_style_update\n"
-	      "BEFORE UPDATE ON 'SE_group_styles'\nFOR EACH ROW BEGIN\n"
-	      "SELECT RAISE(ABORT,'update on SE_group_styles violates constraint: "
-	      "not a valid SLD Raster Style')\n"
-	      "WHERE XB_IsSldStyle(NEW.style) <> 1;\nEND";
-      }
-    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("SQL error: %s\n", err_msg);
-	  sqlite3_free (err_msg);
-	  return 0;
-      }
-/* automatically setting the style_name after inserting */
-    sql = "CREATE TRIGGER segrpstl_style_name_ins\n"
-	"AFTER INSERT ON 'SE_group_styles'\nFOR EACH ROW BEGIN\n"
-	"UPDATE SE_group_styles "
-	"SET style_name = XB_GetName(NEW.style) "
-	"WHERE group_name = NEW.group_name "
-	"AND style_id = NEW.style_id;\nEND";
-    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("SQL error: %s\n", err_msg);
-	  sqlite3_free (err_msg);
-	  return 0;
-      }
-/* automatically setting the style_name after updating */
-    sql = "CREATE TRIGGER segrpstl_style_name_upd\n"
-	"AFTER UPDATE OF style ON "
-	"'SE_group_styles'\nFOR EACH ROW BEGIN\n"
-	"UPDATE SE_group_styles "
-	"SET style_name = XB_GetName(NEW.style) "
-	"WHERE group_name = NEW.group_name "
-	"AND style_id = NEW.style_id;\nEND";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -2804,12 +3130,15 @@ create_vector_styled_layers_view (sqlite3 * sqlite)
     char *err_msg = NULL;
     sql_statement =
 	sqlite3_mprintf ("CREATE VIEW SE_vector_styled_layers_view AS \n"
-			 "SELECT f_table_name AS f_table_name, f_geometry_column AS f_geometry_column, "
-			 "style_id AS style_id, style_name AS name, XB_GetTitle(style) AS title, "
-			 "XB_GetAbstract(style) AS abstract, style AS style, "
-			 "XB_IsSchemaValidated(style) AS schema_validated, "
-			 "XB_GetSchemaURI(style) AS schema_uri\n"
-			 "FROM SE_vector_styled_layers");
+			 "SELECT l.coverage_name AS coverage_name, v.f_table_name AS f_table_name, "
+			 "v.f_geometry_column AS f_geometry_column, l.style_id AS style_id, "
+			 "s.style_name AS name, XB_GetTitle(s.style) AS title, "
+			 "XB_GetAbstract(s.style) AS abstract, s.style AS style, "
+			 "XB_IsSchemaValidated(s.style) AS schema_validated, "
+			 "XB_GetSchemaURI(s.style) AS schema_uri\n"
+			 "FROM SE_vector_styled_layers AS l\n"
+			 "JOIN vector_coverages AS v ON (l.coverage_name = v.coverage_name) "
+			 "JOIN SE_vector_styles AS s ON (l.style_id = s.style_id)");
     ret = sqlite3_exec (sqlite, sql_statement, NULL, NULL, &err_msg);
     sqlite3_free (sql_statement);
     if (ret != SQLITE_OK)
@@ -2832,12 +3161,13 @@ create_raster_styled_layers_view (sqlite3 * sqlite)
     char *err_msg = NULL;
     sql_statement =
 	sqlite3_mprintf ("CREATE VIEW SE_raster_styled_layers_view AS \n"
-			 "SELECT coverage_name AS coverage_name, style_id AS style_id, "
-			 "style_name AS name, XB_GetTitle(style) AS title, "
-			 "XB_GetAbstract(style) AS abstract, style AS style, "
-			 "XB_IsSchemaValidated(style) AS schema_validated, "
-			 "XB_GetSchemaURI(style) AS schema_uri\n"
-			 "FROM SE_raster_styled_layers");
+			 "SELECT l.coverage_name AS coverage_name, l.style_id AS style_id, "
+			 "s.style_name AS name, XB_GetTitle(s.style) AS title, "
+			 "XB_GetAbstract(s.style) AS abstract, s.style AS style, "
+			 "XB_IsSchemaValidated(s.style) AS schema_validated, "
+			 "XB_GetSchemaURI(s.style) AS schema_uri\n"
+			 "FROM SE_raster_styled_layers AS l\n"
+			 "JOIN SE_raster_styles AS s ON (l.style_id = s.style_id)");
     ret = sqlite3_exec (sqlite, sql_statement, NULL, NULL, &err_msg);
     sqlite3_free (sql_statement);
     if (ret != SQLITE_OK)
@@ -2861,20 +3191,20 @@ create_styled_groups_view (sqlite3 * sqlite)
     sql = "CREATE VIEW SE_styled_groups_view AS "
 	"SELECT g.group_name AS group_name, g.title AS group_title, "
 	"g.abstract AS group_abstract, gr.paint_order AS paint_order, "
-	"'vector' AS type, v.f_table_name AS layer_name, "
-	"v.f_geometry_column AS geometry_column, "
-	"v.geometry_type AS geometry_type, v.coord_dimension AS coord_dimension, "
-	"v.srid AS srid FROM SE_styled_groups AS g "
+	"'vector' AS type, gr.vector_coverage_name AS coverage_name, "
+	"c.f_table_name AS f_table_name, c.f_geometry_column AS f_geometry_column, "
+	"c.srid AS srid FROM SE_styled_groups AS g "
 	"JOIN SE_styled_group_refs AS gr ON (g.group_name = gr.group_name) "
-	"JOIN geometry_columns AS v ON (gr.f_table_name = v.f_table_name "
-	"AND gr.f_geometry_column = v.f_geometry_column) UNION "
-	"SELECT g.group_name AS group_name, g.title AS group_title, "
+	"JOIN vector_coverages AS v ON (gr.vector_coverage_name = v.coverage_name) "
+	"JOIN geometry_columns AS c ON (v.f_table_name = c.f_table_name "
+	"AND v.f_geometry_column = c.f_geometry_column) "
+	"UNION SELECT g.group_name AS group_name, g.title AS group_title, "
 	"g.abstract AS group_abstract, gr.paint_order AS paint_order, "
-	"'raster' AS type, r.coverage_name AS layer_name, NULL AS geometry_column, "
-	"NULL AS geometry_type, NULL AS coord_dimension, r.srid AS srid "
-	"FROM SE_styled_groups AS g "
+	"'raster' AS type, gr.raster_coverage_name AS coverage_name, "
+	"NULL AS f_table_name, NULL AS f_geometry_column, "
+	"r.srid AS srid FROM SE_styled_groups AS g "
 	"JOIN SE_styled_group_refs AS gr ON (g.group_name = gr.group_name) "
-	"JOIN raster_coverages AS r ON (gr.coverage_name = r.coverage_name)";
+	"JOIN raster_coverages AS r ON (gr.raster_coverage_name = r.coverage_name)";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -2895,12 +3225,15 @@ create_group_styles_view (sqlite3 * sqlite)
     char *err_msg = NULL;
     sql_statement =
 	sqlite3_mprintf ("CREATE VIEW SE_group_styles_view AS \n"
-			 "SELECT group_name AS group_name, style_id AS style_id, "
-			 "style_name AS name, XB_GetTitle(style) AS title, "
-			 "XB_GetAbstract(style) AS abstract, style AS style, "
-			 "XB_IsSchemaValidated(style) AS schema_validated, "
-			 "XB_GetSchemaURI(style) AS schema_uri\n"
-			 "FROM SE_group_styles");
+			 "SELECT g.group_name AS group_name, b.title AS group_title, "
+			 "b.abstract AS group_abstract, s.style_id AS style_id, "
+			 "s.style_name AS name, XB_GetTitle(s.style) AS title, "
+			 "XB_GetAbstract(s.style) AS abstract, s.style AS style, "
+			 "XB_IsSchemaValidated(s.style) AS schema_validated, "
+			 "XB_GetSchemaURI(s.style) AS schema_uri\n"
+			 "FROM SE_styled_group_styles AS g\n"
+			 "JOIN SE_styled_groups AS b ON (g.group_name = b.group_name)\n"
+			 "JOIN SE_group_styles AS s ON (g.style_id = s.style_id)");
     ret = sqlite3_exec (sqlite, sql_statement, NULL, NULL, &err_msg);
     sqlite3_free (sql_statement);
     if (ret != SQLITE_OK)
@@ -2914,40 +3247,55 @@ create_group_styles_view (sqlite3 * sqlite)
 }
 
 SPATIALITE_PRIVATE int
-createStylingTables (void *p_sqlite, int relaxed)
+createStylingTables_ex (void *p_sqlite, int relaxed, int transaction)
 {
 /* Creating the SE Styling tables */
-    const char *tables[12];
-    int views[11];
+    const char *tables[15];
+    int views[14];
     const char **p_tbl;
     int *p_view;
     int ok_table;
     sqlite3 *sqlite = p_sqlite;
+    int ret;
+
+    if (transaction)
+      {
+	  /* starting a Transaction */
+	  ret = sqlite3_exec (p_sqlite, "BEGIN", NULL, NULL, NULL);
+	  if (ret != SQLITE_OK)
+	      goto error;
+      }
 
 /* checking SLD/SE Styling tables */
     tables[0] = "SE_external_graphics";
-    tables[1] = "SE_vector_styled_layers";
-    tables[2] = "SE_raster_styled_layers";
-    tables[3] = "SE_styled_groups";
-    tables[4] = "SE_styled_group_refs";
-    tables[5] = "SE_group_styles";
-    tables[6] = "SE_external_graphics_view";
-    tables[7] = "SE_vector_styled_layers_view";
-    tables[8] = "SE_raster_styled_layers_view";
-    tables[9] = "SE_styled_groups_view";
-    tables[10] = "SE_group_styles_view";
-    tables[11] = NULL;
+    tables[1] = "SE_vector_styles";
+    tables[2] = "SE_raster_styles";
+    tables[3] = "SE_group_styles";
+    tables[4] = "SE_vector_styled_layers";
+    tables[5] = "SE_raster_styled_layers";
+    tables[6] = "SE_styled_groups";
+    tables[7] = "SE_styled_group_refs";
+    tables[8] = "SE_styled_group_styles";
+    tables[9] = "SE_external_graphics_view";
+    tables[10] = "SE_vector_styled_layers_view";
+    tables[11] = "SE_raster_styled_layers_view";
+    tables[12] = "SE_styled_groups_view";
+    tables[13] = "SE_group_styles_view";
+    tables[14] = NULL;
     views[0] = 0;
     views[1] = 0;
     views[2] = 0;
     views[3] = 0;
     views[4] = 0;
     views[5] = 0;
-    views[6] = 1;
-    views[7] = 1;
-    views[8] = 1;
+    views[6] = 0;
+    views[7] = 0;
+    views[8] = 0;
     views[9] = 1;
     views[10] = 1;
+    views[11] = 1;
+    views[12] = 1;
+    views[13] = 1;
     p_tbl = tables;
     p_view = views;
     while (*p_tbl != NULL)
@@ -2971,17 +3319,29 @@ createStylingTables (void *p_sqlite, int relaxed)
 	  if (!create_raster_coverages (sqlite))
 	      goto error;
       }
+    if (!check_vector_coverages (sqlite))
+      {
+	  /* creating the main VectorCoverages table as well */
+	  if (!create_vector_coverages (sqlite))
+	      goto error;
+      }
     if (!create_external_graphics (sqlite))
 	goto error;
-    if (!create_vector_styled_layers (sqlite, relaxed))
+    if (!create_vector_styles (sqlite, relaxed))
 	goto error;
-    if (!create_raster_styled_layers (sqlite, relaxed))
+    if (!create_raster_styles (sqlite, relaxed))
+	goto error;
+    if (!create_group_styles (sqlite, relaxed))
+	goto error;
+    if (!create_vector_styled_layers (sqlite))
+	goto error;
+    if (!create_raster_styled_layers (sqlite))
 	goto error;
     if (!create_styled_groups (sqlite))
 	goto error;
     if (!create_styled_group_refs (sqlite))
 	goto error;
-    if (!create_group_styles (sqlite, relaxed))
+    if (!create_styled_group_styles (sqlite))
 	goto error;
     if (!create_external_graphics_view (sqlite))
 	goto error;
@@ -2993,10 +3353,25 @@ createStylingTables (void *p_sqlite, int relaxed)
 	goto error;
     if (!create_group_styles_view (sqlite))
 	goto error;
+
+    if (transaction)
+      {
+	  /* confirming the still pending Transaction */
+	  ret = sqlite3_exec (sqlite, "COMMIT", NULL, NULL, NULL);
+	  if (ret != SQLITE_OK)
+	      goto error;
+      }
     return 1;
 
   error:
     return 0;
+}
+
+SPATIALITE_PRIVATE int
+createStylingTables (void *p_sqlite, int relaxed)
+{
+/* Creating the SE Styling tables */
+    return createStylingTables_ex (p_sqlite, relaxed, 0);
 }
 
 static int
@@ -3475,992 +3850,6 @@ createIsoMetadataTables (void *p_sqlite, int relaxed)
     return 1;
 
   error:
-    return 0;
-}
-
-SPATIALITE_PRIVATE int
-register_external_graphic (void *p_sqlite, const char *xlink_href,
-			   const unsigned char *p_blob, int n_bytes,
-			   const char *title, const char *abstract,
-			   const char *file_name)
-{
-/* auxiliary function: inserts or updates an ExternalGraphic Resource */
-    sqlite3 *sqlite = (sqlite3 *) p_sqlite;
-    int ret;
-    const char *sql;
-    sqlite3_stmt *stmt;
-    int exists = 0;
-    int extras = 0;
-    int retval = 0;
-
-/* checking if already exists */
-    sql = "SELECT xlink_href FROM SE_external_graphics WHERE xlink_href = ?";
-    ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("registerExternalGraphic: \"%s\"\n",
-			sqlite3_errmsg (sqlite));
-	  goto stop;
-      }
-    sqlite3_reset (stmt);
-    sqlite3_clear_bindings (stmt);
-    sqlite3_bind_text (stmt, 1, xlink_href, strlen (xlink_href), SQLITE_STATIC);
-    while (1)
-      {
-	  /* scrolling the result set rows */
-	  ret = sqlite3_step (stmt);
-	  if (ret == SQLITE_DONE)
-	      break;		/* end of result set */
-	  if (ret == SQLITE_ROW)
-	      exists = 1;
-      }
-    sqlite3_finalize (stmt);
-
-    if (title != NULL && abstract != NULL && file_name != NULL)
-	extras = 1;
-    if (exists)
-      {
-	  /* update */
-	  if (extras)
-	    {
-		/* full infos */
-		sql = "UPDATE SE_external_graphics "
-		    "SET resource = ?, title = ?, abstract = ?, file_name = ? "
-		    "WHERE xlink_href = ?";
-	    }
-	  else
-	    {
-		/* limited basic infos */
-		sql = "UPDATE SE_external_graphics "
-		    "SET resource = ? WHERE xlink_href = ?";
-	    }
-      }
-    else
-      {
-	  /* insert */
-	  if (extras)
-	    {
-		/* full infos */
-		sql = "INSERT INTO SE_external_graphics "
-		    "(xlink_href, resource, title, abstract, file_name) "
-		    "VALUES (?, ?, ?, ?, ?)";
-	    }
-	  else
-	    {
-		/* limited basic infos */
-		sql = "INSERT INTO SE_external_graphics "
-		    "(xlink_href, resource) VALUES (?, ?)";
-	    }
-      }
-    ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("registerExternalGraphic: \"%s\"\n",
-			sqlite3_errmsg (sqlite));
-	  goto stop;
-      }
-    sqlite3_reset (stmt);
-    sqlite3_clear_bindings (stmt);
-    if (exists)
-      {
-	  /* update */
-	  if (extras)
-	    {
-		/* full infos */
-		sqlite3_bind_blob (stmt, 1, p_blob, n_bytes, SQLITE_STATIC);
-		sqlite3_bind_text (stmt, 2, title, strlen (title),
-				   SQLITE_STATIC);
-		sqlite3_bind_text (stmt, 3, abstract, strlen (abstract),
-				   SQLITE_STATIC);
-		sqlite3_bind_text (stmt, 4, file_name, strlen (file_name),
-				   SQLITE_STATIC);
-		sqlite3_bind_text (stmt, 5, xlink_href, strlen (xlink_href),
-				   SQLITE_STATIC);
-	    }
-	  else
-	    {
-		/* limited basic infos */
-		sqlite3_bind_blob (stmt, 1, p_blob, n_bytes, SQLITE_STATIC);
-		sqlite3_bind_text (stmt, 2, xlink_href, strlen (xlink_href),
-				   SQLITE_STATIC);
-	    }
-      }
-    else
-      {
-	  /* insert */
-	  if (extras)
-	    {
-		/* full infos */
-		sqlite3_bind_text (stmt, 1, xlink_href, strlen (xlink_href),
-				   SQLITE_STATIC);
-		sqlite3_bind_blob (stmt, 2, p_blob, n_bytes, SQLITE_STATIC);
-		sqlite3_bind_text (stmt, 3, title, strlen (title),
-				   SQLITE_STATIC);
-		sqlite3_bind_text (stmt, 4, abstract, strlen (abstract),
-				   SQLITE_STATIC);
-		sqlite3_bind_text (stmt, 5, file_name, strlen (file_name),
-				   SQLITE_STATIC);
-	    }
-	  else
-	    {
-		/* limited basic infos */
-		sqlite3_bind_text (stmt, 1, xlink_href, strlen (xlink_href),
-				   SQLITE_STATIC);
-		sqlite3_bind_blob (stmt, 2, p_blob, n_bytes, SQLITE_STATIC);
-	    }
-      }
-    ret = sqlite3_step (stmt);
-    if (ret == SQLITE_DONE || ret == SQLITE_ROW)
-	retval = 1;
-    else
-	spatialite_e ("registerExternalGraphic() error: \"%s\"\n",
-		      sqlite3_errmsg (sqlite));
-    sqlite3_finalize (stmt);
-    return retval;
-  stop:
-    return 0;
-}
-
-SPATIALITE_PRIVATE int
-register_vector_styled_layer (void *p_sqlite, const char *f_table_name,
-			      const char *f_geometry_column, int style_id,
-			      const unsigned char *p_blob, int n_bytes)
-{
-/* auxiliary function: inserts or updates a Vector Styled Layer */
-    sqlite3 *sqlite = (sqlite3 *) p_sqlite;
-    int ret;
-    const char *sql;
-    sqlite3_stmt *stmt;
-    int exists = 0;
-    int retval = 0;
-
-    if (style_id >= 0)
-      {
-	  /* checking if already exists */
-	  sql = "SELECT style_id FROM SE_vector_styled_layers "
-	      "WHERE f_table_name = Lower(?) AND f_geometry_column = Lower(?) "
-	      "AND style_id = ?";
-	  ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-	  if (ret != SQLITE_OK)
-	    {
-		spatialite_e ("registerVectorStyledLayer: \"%s\"\n",
-			      sqlite3_errmsg (sqlite));
-		goto stop;
-	    }
-	  sqlite3_reset (stmt);
-	  sqlite3_clear_bindings (stmt);
-	  sqlite3_bind_text (stmt, 1, f_table_name, strlen (f_table_name),
-			     SQLITE_STATIC);
-	  sqlite3_bind_text (stmt, 2, f_geometry_column,
-			     strlen (f_geometry_column), SQLITE_STATIC);
-	  sqlite3_bind_int (stmt, 3, style_id);
-	  while (1)
-	    {
-		/* scrolling the result set rows */
-		ret = sqlite3_step (stmt);
-		if (ret == SQLITE_DONE)
-		    break;	/* end of result set */
-		if (ret == SQLITE_ROW)
-		    exists = 1;
-	    }
-	  sqlite3_finalize (stmt);
-      }
-    else
-      {
-	  /* assigning the next style_id value */
-	  style_id = 0;
-	  sql = "SELECT Max(style_id) FROM SE_vector_styled_layers "
-	      "WHERE f_table_name = Lower(?) AND f_geometry_column = Lower(?) ";
-	  ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-	  if (ret != SQLITE_OK)
-	    {
-		spatialite_e ("registerVectorStyledLayer: \"%s\"\n",
-			      sqlite3_errmsg (sqlite));
-		goto stop;
-	    }
-	  sqlite3_reset (stmt);
-	  sqlite3_clear_bindings (stmt);
-	  sqlite3_bind_text (stmt, 1, f_table_name, strlen (f_table_name),
-			     SQLITE_STATIC);
-	  sqlite3_bind_text (stmt, 2, f_geometry_column,
-			     strlen (f_geometry_column), SQLITE_STATIC);
-	  while (1)
-	    {
-		/* scrolling the result set rows */
-		ret = sqlite3_step (stmt);
-		if (ret == SQLITE_DONE)
-		    break;	/* end of result set */
-		if (ret == SQLITE_ROW)
-		  {
-		      if (sqlite3_column_type (stmt, 0) == SQLITE_INTEGER)
-			  style_id = sqlite3_column_int (stmt, 0) + 1;
-		  }
-	    }
-	  sqlite3_finalize (stmt);
-      }
-
-    if (exists)
-      {
-	  /* update */
-	  sql = "UPDATE SE_vector_styled_layers SET style = ? "
-	      "WHERE f_table_name = Lower(?) AND f_geometry_column = Lower(?) "
-	      "AND style_id = ?";
-      }
-    else
-      {
-	  /* insert */
-	  sql = "INSERT INTO SE_vector_styled_layers "
-	      "(f_table_name, f_geometry_column, style_id, style) VALUES "
-	      "(?, ?, ?, ?)";
-      }
-    ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("registerVectorStyledLayer: \"%s\"\n",
-			sqlite3_errmsg (sqlite));
-	  goto stop;
-      }
-    sqlite3_reset (stmt);
-    sqlite3_clear_bindings (stmt);
-    if (exists)
-      {
-	  /* update */
-	  sqlite3_bind_blob (stmt, 1, p_blob, n_bytes, SQLITE_STATIC);
-	  sqlite3_bind_text (stmt, 2, f_table_name, strlen (f_table_name),
-			     SQLITE_STATIC);
-	  sqlite3_bind_text (stmt, 3, f_geometry_column,
-			     strlen (f_geometry_column), SQLITE_STATIC);
-	  sqlite3_bind_int (stmt, 4, style_id);
-      }
-    else
-      {
-	  /* insert */
-	  sqlite3_bind_text (stmt, 1, f_table_name, strlen (f_table_name),
-			     SQLITE_STATIC);
-	  sqlite3_bind_text (stmt, 2, f_geometry_column,
-			     strlen (f_geometry_column), SQLITE_STATIC);
-	  sqlite3_bind_int (stmt, 3, style_id);
-	  sqlite3_bind_blob (stmt, 4, p_blob, n_bytes, SQLITE_STATIC);
-      }
-    ret = sqlite3_step (stmt);
-    if (ret == SQLITE_DONE || ret == SQLITE_ROW)
-	retval = 1;
-    else
-	spatialite_e ("registerVectorStyledLayer() error: \"%s\"\n",
-		      sqlite3_errmsg (sqlite));
-    sqlite3_finalize (stmt);
-    return retval;
-  stop:
-    return 0;
-}
-
-SPATIALITE_PRIVATE int
-register_raster_styled_layer (void *p_sqlite, const char *coverage_name,
-			      int style_id, const unsigned char *p_blob,
-			      int n_bytes)
-{
-/* auxiliary function: inserts or updates a Raster Styled Layer */
-    sqlite3 *sqlite = (sqlite3 *) p_sqlite;
-    int ret;
-    const char *sql;
-    sqlite3_stmt *stmt;
-    int exists = 0;
-    int retval = 0;
-
-    if (style_id >= 0)
-      {
-	  /* checking if already exists */
-	  sql = "SELECT style_id FROM SE_raster_styled_layers "
-	      "WHERE coverage_name = Lower(?) AND style_id = ?";
-	  ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-	  if (ret != SQLITE_OK)
-	    {
-		spatialite_e ("registerRasterStyledLayer: \"%s\"\n",
-			      sqlite3_errmsg (sqlite));
-		goto stop;
-	    }
-	  sqlite3_reset (stmt);
-	  sqlite3_clear_bindings (stmt);
-	  sqlite3_bind_text (stmt, 1, coverage_name, strlen (coverage_name),
-			     SQLITE_STATIC);
-	  sqlite3_bind_int (stmt, 2, style_id);
-	  while (1)
-	    {
-		/* scrolling the result set rows */
-		ret = sqlite3_step (stmt);
-		if (ret == SQLITE_DONE)
-		    break;	/* end of result set */
-		if (ret == SQLITE_ROW)
-		    exists = 1;
-	    }
-	  sqlite3_finalize (stmt);
-      }
-    else
-      {
-	  /* assigning the next style_id value */
-	  style_id = 0;
-	  sql = "SELECT Max(style_id) FROM SE_raster_styled_layers "
-	      "WHERE coverage_name = Lower(?) ";
-	  ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-	  if (ret != SQLITE_OK)
-	    {
-		spatialite_e ("registerVectorStyledLayer: \"%s\"\n",
-			      sqlite3_errmsg (sqlite));
-		goto stop;
-	    }
-	  sqlite3_reset (stmt);
-	  sqlite3_clear_bindings (stmt);
-	  sqlite3_bind_text (stmt, 1, coverage_name, strlen (coverage_name),
-			     SQLITE_STATIC);
-	  while (1)
-	    {
-		/* scrolling the result set rows */
-		ret = sqlite3_step (stmt);
-		if (ret == SQLITE_DONE)
-		    break;	/* end of result set */
-		if (ret == SQLITE_ROW)
-		  {
-		      if (sqlite3_column_type (stmt, 0) == SQLITE_INTEGER)
-			  style_id = sqlite3_column_int (stmt, 0) + 1;
-		  }
-	    }
-	  sqlite3_finalize (stmt);
-      }
-
-    if (exists)
-      {
-	  /* update */
-	  sql = "UPDATE SE_raster_styled_layers SET style = ? "
-	      "WHERE coverage_name = Lower(?) AND style_id = ?";
-      }
-    else
-      {
-	  /* insert */
-	  sql = "INSERT INTO SE_raster_styled_layers "
-	      "(coverage_name, style_id, style) VALUES (?, ?, ?)";
-      }
-    ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("registerRasterStyledLayer: \"%s\"\n",
-			sqlite3_errmsg (sqlite));
-	  goto stop;
-      }
-    sqlite3_reset (stmt);
-    sqlite3_clear_bindings (stmt);
-    if (exists)
-      {
-	  /* update */
-	  sqlite3_bind_blob (stmt, 1, p_blob, n_bytes, SQLITE_STATIC);
-	  sqlite3_bind_text (stmt, 2, coverage_name, strlen (coverage_name),
-			     SQLITE_STATIC);
-	  sqlite3_bind_int (stmt, 3, style_id);
-      }
-    else
-      {
-	  /* insert */
-	  sqlite3_bind_text (stmt, 1, coverage_name, strlen (coverage_name),
-			     SQLITE_STATIC);
-	  sqlite3_bind_int (stmt, 2, style_id);
-	  sqlite3_bind_blob (stmt, 3, p_blob, n_bytes, SQLITE_STATIC);
-      }
-    ret = sqlite3_step (stmt);
-    if (ret == SQLITE_DONE || ret == SQLITE_ROW)
-	retval = 1;
-    else
-	spatialite_e ("registerRasterStyledLayer() error: \"%s\"\n",
-		      sqlite3_errmsg (sqlite));
-    sqlite3_finalize (stmt);
-    return retval;
-  stop:
-    return 0;
-}
-
-SPATIALITE_PRIVATE int
-register_styled_group (void *p_sqlite, const char *group_name,
-		       const char *f_table_name,
-		       const char *f_geometry_column,
-		       const char *coverage_name, int paint_order)
-{
-/* auxiliary function: inserts or updates a Styled Group Item */
-    sqlite3 *sqlite = (sqlite3 *) p_sqlite;
-    int ret;
-    const char *sql;
-    sqlite3_stmt *stmt;
-    int exists_group = 0;
-    int exists = 0;
-    int retval = 0;
-    sqlite3_int64 id;
-
-    /* checking if the Group already exists */
-    sql = "SELECT group_name FROM SE_styled_groups "
-	"WHERE group_name = Lower(?)";
-    ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("registerStyledGroupsRefs: \"%s\"\n",
-			sqlite3_errmsg (sqlite));
-	  goto stop;
-      }
-    sqlite3_reset (stmt);
-    sqlite3_clear_bindings (stmt);
-    sqlite3_bind_text (stmt, 1, group_name, strlen (group_name), SQLITE_STATIC);
-    while (1)
-      {
-	  /* scrolling the result set rows */
-	  ret = sqlite3_step (stmt);
-	  if (ret == SQLITE_DONE)
-	      break;		/* end of result set */
-	  if (ret == SQLITE_ROW)
-	      exists_group = 1;
-      }
-    sqlite3_finalize (stmt);
-
-    if (!exists_group)
-      {
-	  /* insert group */
-	  sql = "INSERT INTO SE_styled_groups (group_name) VALUES (?)";
-	  ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-	  if (ret != SQLITE_OK)
-	    {
-		spatialite_e ("registerStyledGroupsRefs: \"%s\"\n",
-			      sqlite3_errmsg (sqlite));
-		goto stop;
-	    }
-	  sqlite3_reset (stmt);
-	  sqlite3_clear_bindings (stmt);
-	  sqlite3_bind_text (stmt, 1, group_name, strlen (group_name),
-			     SQLITE_STATIC);
-	  ret = sqlite3_step (stmt);
-	  if (ret == SQLITE_DONE || ret == SQLITE_ROW)
-	      retval = 1;
-	  else
-	      spatialite_e ("registerStyledGroupsRefs() error: \"%s\"\n",
-			    sqlite3_errmsg (sqlite));
-	  sqlite3_finalize (stmt);
-	  if (retval == 0)
-	      goto stop;
-	  retval = 0;
-      }
-
-    if (paint_order >= 0)
-      {
-	  /* checking if the group-item already exists */
-	  sql = "SELECT id FROM SE_styled_group_refs "
-	      "WHERE group_name = Lower(?) AND paint_order = ?";
-	  ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-	  if (ret != SQLITE_OK)
-	    {
-		spatialite_e ("registerStyledGroupsRefs: \"%s\"\n",
-			      sqlite3_errmsg (sqlite));
-		goto stop;
-	    }
-	  sqlite3_reset (stmt);
-	  sqlite3_clear_bindings (stmt);
-	  sqlite3_bind_text (stmt, 1, group_name, strlen (group_name),
-			     SQLITE_STATIC);
-	  sqlite3_bind_int (stmt, 2, paint_order);
-	  while (1)
-	    {
-		/* scrolling the result set rows */
-		ret = sqlite3_step (stmt);
-		if (ret == SQLITE_DONE)
-		    break;	/* end of result set */
-		if (ret == SQLITE_ROW)
-		  {
-		      id = sqlite3_column_int64 (stmt, 0);
-		      exists++;
-		  }
-	    }
-	  sqlite3_finalize (stmt);
-	  if (exists != 1)
-	      goto stop;
-      }
-
-    if (paint_order < 0)
-      {
-	  /* assigning the next paint_order value */
-	  paint_order = 0;
-	  sql = "SELECT Max(paint_order) FROM SE_styled_group_refs "
-	      "WHERE group_name = Lower(?) ";
-	  ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-	  if (ret != SQLITE_OK)
-	    {
-		spatialite_e ("registerStyledGroupsRefs: \"%s\"\n",
-			      sqlite3_errmsg (sqlite));
-		goto stop;
-	    }
-	  sqlite3_reset (stmt);
-	  sqlite3_clear_bindings (stmt);
-	  sqlite3_bind_text (stmt, 1, group_name, strlen (group_name),
-			     SQLITE_STATIC);
-	  while (1)
-	    {
-		/* scrolling the result set rows */
-		ret = sqlite3_step (stmt);
-		if (ret == SQLITE_DONE)
-		    break;	/* end of result set */
-		if (ret == SQLITE_ROW)
-		  {
-		      if (sqlite3_column_type (stmt, 0) == SQLITE_INTEGER)
-			  paint_order = sqlite3_column_int (stmt, 0) + 1;
-		  }
-	    }
-	  sqlite3_finalize (stmt);
-      }
-
-    if (exists)
-      {
-	  /* update */
-	  sql = "UPDATE SE_styled_group_refs SET paint_order = ? "
-	      "WHERE id = ?";
-      }
-    else
-      {
-	  /* insert */
-	  if (coverage_name == NULL)
-	    {
-		/* vector styled layer */
-		sql = "INSERT INTO SE_styled_group_refs "
-		    "(id, group_name, f_table_name, f_geometry_column, paint_order) "
-		    "VALUES (NULL, ?, ?, ?, ?)";
-	    }
-	  else
-	    {
-		/* raster styled layer */
-		sql = "INSERT INTO SE_styled_group_refs "
-		    "(id, group_name, coverage_name, paint_order) "
-		    "VALUES (NULL, ?, ?, ?)";
-	    }
-      }
-    ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("registerStyledGroupsRefs: \"%s\"\n",
-			sqlite3_errmsg (sqlite));
-	  goto stop;
-      }
-    sqlite3_reset (stmt);
-    sqlite3_clear_bindings (stmt);
-    if (exists)
-      {
-	  /* update */
-	  sqlite3_bind_int (stmt, 1, paint_order);
-	  sqlite3_bind_int64 (stmt, 2, id);
-      }
-    else
-      {
-	  /* insert */
-	  sqlite3_bind_text (stmt, 1, group_name, strlen (group_name),
-			     SQLITE_STATIC);
-	  if (coverage_name == NULL)
-	    {
-		/* vector styled layer */
-		sqlite3_bind_text (stmt, 2, f_table_name,
-				   strlen (f_table_name), SQLITE_STATIC);
-		sqlite3_bind_text (stmt, 3, f_geometry_column,
-				   strlen (f_geometry_column), SQLITE_STATIC);
-		sqlite3_bind_int (stmt, 4, paint_order);
-	    }
-	  else
-	    {
-		/* raster styled layer */
-		sqlite3_bind_text (stmt, 2, coverage_name,
-				   strlen (coverage_name), SQLITE_STATIC);
-		sqlite3_bind_int (stmt, 3, paint_order);
-	    }
-      }
-    ret = sqlite3_step (stmt);
-    if (ret == SQLITE_DONE || ret == SQLITE_ROW)
-	retval = 1;
-    else
-	spatialite_e ("registerStyledGroupsRefs() error: \"%s\"\n",
-		      sqlite3_errmsg (sqlite));
-    sqlite3_finalize (stmt);
-    return retval;
-  stop:
-    return 0;
-}
-
-SPATIALITE_PRIVATE int
-styled_group_set_infos (void *p_sqlite, const char *group_name,
-			const char *title, const char *abstract)
-{
-/* auxiliary function: inserts or updates the Styled Group descriptive infos */
-    sqlite3 *sqlite = (sqlite3 *) p_sqlite;
-    int ret;
-    const char *sql;
-    sqlite3_stmt *stmt;
-    int exists = 0;
-    int retval = 0;
-
-    /* checking if the Group already exists */
-    sql = "SELECT group_name FROM SE_styled_groups "
-	"WHERE group_name = Lower(?)";
-    ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("styledGroupSetInfos: \"%s\"\n",
-			sqlite3_errmsg (sqlite));
-	  goto stop;
-      }
-    sqlite3_reset (stmt);
-    sqlite3_clear_bindings (stmt);
-    sqlite3_bind_text (stmt, 1, group_name, strlen (group_name), SQLITE_STATIC);
-    while (1)
-      {
-	  /* scrolling the result set rows */
-	  ret = sqlite3_step (stmt);
-	  if (ret == SQLITE_DONE)
-	      break;		/* end of result set */
-	  if (ret == SQLITE_ROW)
-	      exists = 1;
-      }
-    sqlite3_finalize (stmt);
-
-    if (!exists)
-      {
-	  /* insert group */
-	  sql =
-	      "INSERT INTO SE_styled_groups (group_name, title, abstract) VALUES (?, ?, ?)";
-	  ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-	  if (ret != SQLITE_OK)
-	    {
-		spatialite_e ("styledGroupSetInfos: \"%s\"\n",
-			      sqlite3_errmsg (sqlite));
-		goto stop;
-	    }
-	  sqlite3_reset (stmt);
-	  sqlite3_clear_bindings (stmt);
-	  sqlite3_bind_text (stmt, 1, group_name, strlen (group_name),
-			     SQLITE_STATIC);
-	  sqlite3_bind_text (stmt, 2, title, strlen (title), SQLITE_STATIC);
-	  sqlite3_bind_text (stmt, 3, abstract, strlen (abstract),
-			     SQLITE_STATIC);
-	  ret = sqlite3_step (stmt);
-	  if (ret == SQLITE_DONE || ret == SQLITE_ROW)
-	      retval = 1;
-	  else
-	      spatialite_e ("styledGroupSetInfos() error: \"%s\"\n",
-			    sqlite3_errmsg (sqlite));
-	  sqlite3_finalize (stmt);
-      }
-    else
-      {
-	  /* update group */
-	  sql =
-	      "UPDATE SE_styled_groups SET title = ?, abstract = ? WHERE group_name = ?";
-	  ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-	  if (ret != SQLITE_OK)
-	    {
-		spatialite_e ("styledGroupSetInfos: \"%s\"\n",
-			      sqlite3_errmsg (sqlite));
-		goto stop;
-	    }
-	  sqlite3_reset (stmt);
-	  sqlite3_clear_bindings (stmt);
-	  sqlite3_bind_text (stmt, 1, title, strlen (title), SQLITE_STATIC);
-	  sqlite3_bind_text (stmt, 2, abstract, strlen (abstract),
-			     SQLITE_STATIC);
-	  sqlite3_bind_text (stmt, 3, group_name, strlen (group_name),
-			     SQLITE_STATIC);
-	  ret = sqlite3_step (stmt);
-	  if (ret == SQLITE_DONE || ret == SQLITE_ROW)
-	      retval = 1;
-	  else
-	      spatialite_e ("styledGroupSetInfos() error: \"%s\"\n",
-			    sqlite3_errmsg (sqlite));
-	  sqlite3_finalize (stmt);
-      }
-    return retval;
-  stop:
-    return 0;
-}
-
-SPATIALITE_PRIVATE int
-register_group_style (void *p_sqlite, const char *group_name, int style_id,
-		      const unsigned char *p_blob, int n_bytes)
-{
-/* auxiliary function: inserts or updates a Group Style */
-    sqlite3 *sqlite = (sqlite3 *) p_sqlite;
-    int ret;
-    const char *sql;
-    sqlite3_stmt *stmt;
-    int exists = 0;
-    int retval = 0;
-
-    if (style_id >= 0)
-      {
-	  /* checking if already exists */
-	  sql = "SELECT style_id FROM SE_group_styles "
-	      "WHERE group_name = Lower(?) AND style_id = ?";
-	  ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-	  if (ret != SQLITE_OK)
-	    {
-		spatialite_e ("registerGroupStyle: \"%s\"\n",
-			      sqlite3_errmsg (sqlite));
-		goto stop;
-	    }
-	  sqlite3_reset (stmt);
-	  sqlite3_clear_bindings (stmt);
-	  sqlite3_bind_text (stmt, 1, group_name, strlen (group_name),
-			     SQLITE_STATIC);
-	  sqlite3_bind_int (stmt, 2, style_id);
-	  while (1)
-	    {
-		/* scrolling the result set rows */
-		ret = sqlite3_step (stmt);
-		if (ret == SQLITE_DONE)
-		    break;	/* end of result set */
-		if (ret == SQLITE_ROW)
-		    exists = 1;
-	    }
-	  sqlite3_finalize (stmt);
-      }
-    else
-      {
-	  /* assigning the next style_id value */
-	  style_id = 0;
-	  sql = "SELECT Max(style_id) FROM SE_group_styles "
-	      "WHERE group_name = Lower(?) ";
-	  ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-	  if (ret != SQLITE_OK)
-	    {
-		spatialite_e ("registerGroupStyle: \"%s\"\n",
-			      sqlite3_errmsg (sqlite));
-		goto stop;
-	    }
-	  sqlite3_reset (stmt);
-	  sqlite3_clear_bindings (stmt);
-	  sqlite3_bind_text (stmt, 1, group_name, strlen (group_name),
-			     SQLITE_STATIC);
-	  while (1)
-	    {
-		/* scrolling the result set rows */
-		ret = sqlite3_step (stmt);
-		if (ret == SQLITE_DONE)
-		    break;	/* end of result set */
-		if (ret == SQLITE_ROW)
-		  {
-		      if (sqlite3_column_type (stmt, 0) == SQLITE_INTEGER)
-			  style_id = sqlite3_column_int (stmt, 0) + 1;
-		  }
-	    }
-	  sqlite3_finalize (stmt);
-      }
-
-    if (exists)
-      {
-	  /* update */
-	  sql = "UPDATE SE_group_styles SET style = ? "
-	      "WHERE group_name = Lower(?) AND style_id = ?";
-      }
-    else
-      {
-	  /* insert */
-	  sql = "INSERT INTO SE_group_styles "
-	      "(group_name, style_id, style) VALUES (?, ?, ?)";
-      }
-    ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("registerGroupStyle: \"%s\"\n",
-			sqlite3_errmsg (sqlite));
-	  goto stop;
-      }
-    sqlite3_reset (stmt);
-    sqlite3_clear_bindings (stmt);
-    if (exists)
-      {
-	  /* update */
-	  sqlite3_bind_blob (stmt, 1, p_blob, n_bytes, SQLITE_STATIC);
-	  sqlite3_bind_text (stmt, 2, group_name, strlen (group_name),
-			     SQLITE_STATIC);
-	  sqlite3_bind_int (stmt, 3, style_id);
-      }
-    else
-      {
-	  /* insert */
-	  sqlite3_bind_text (stmt, 1, group_name, strlen (group_name),
-			     SQLITE_STATIC);
-	  sqlite3_bind_int (stmt, 2, style_id);
-	  sqlite3_bind_blob (stmt, 3, p_blob, n_bytes, SQLITE_STATIC);
-      }
-    ret = sqlite3_step (stmt);
-    if (ret == SQLITE_DONE || ret == SQLITE_ROW)
-	retval = 1;
-    else
-	spatialite_e ("registerGroupStyled() error: \"%s\"\n",
-		      sqlite3_errmsg (sqlite));
-    sqlite3_finalize (stmt);
-    return retval;
-  stop:
-    return 0;
-}
-
-SPATIALITE_PRIVATE int
-get_iso_metadata_id (void *p_sqlite, const char *fileIdentifier, void *p_id)
-{
-/* auxiliary function: return the ID of the row corresponding to "fileIdentifier" */
-    sqlite3 *sqlite = (sqlite3 *) p_sqlite;
-    sqlite3_int64 *p64 = (sqlite3_int64 *) p_id;
-    sqlite3_int64 id;
-    int ret;
-    const char *sql;
-    sqlite3_stmt *stmt;
-    int ok = 0;
-
-    sql = "SELECT id FROM ISO_metadata WHERE fileId = ?";
-    ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("getIsoMetadataId: \"%s\"\n", sqlite3_errmsg (sqlite));
-	  goto stop;
-      }
-    sqlite3_reset (stmt);
-    sqlite3_clear_bindings (stmt);
-    sqlite3_bind_text (stmt, 1, fileIdentifier, strlen (fileIdentifier),
-		       SQLITE_STATIC);
-    while (1)
-      {
-	  /* scrolling the result set rows */
-	  ret = sqlite3_step (stmt);
-	  if (ret == SQLITE_DONE)
-	      break;		/* end of result set */
-	  if (ret == SQLITE_ROW)
-	    {
-		ok++;
-		id = sqlite3_column_int64 (stmt, 0);
-	    }
-      }
-    sqlite3_finalize (stmt);
-
-    if (ok == 1)
-      {
-	  *p64 = id;
-	  return 1;
-      }
-  stop:
-    return 0;
-}
-
-SPATIALITE_PRIVATE int
-register_iso_metadata (void *p_sqlite, const char *scope,
-		       const unsigned char *p_blob, int n_bytes, void *p_id,
-		       const char *fileIdentifier)
-{
-/* auxiliary function: inserts or updates an ISO Metadata */
-    sqlite3 *sqlite = (sqlite3 *) p_sqlite;
-    sqlite3_int64 *p64 = (sqlite3_int64 *) p_id;
-    sqlite3_int64 id = *p64;
-    int ret;
-    const char *sql;
-    sqlite3_stmt *stmt;
-    int exists = 0;
-    int retval = 0;
-
-    if (id >= 0)
-      {
-	  /* checking if already exists - by ID */
-	  sql = "SELECT id FROM ISO_metadata WHERE id = ?";
-	  ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-	  if (ret != SQLITE_OK)
-	    {
-		spatialite_e ("registerIsoMetadata: \"%s\"\n",
-			      sqlite3_errmsg (sqlite));
-		goto stop;
-	    }
-	  sqlite3_reset (stmt);
-	  sqlite3_clear_bindings (stmt);
-	  sqlite3_bind_int64 (stmt, 1, id);
-	  while (1)
-	    {
-		/* scrolling the result set rows */
-		ret = sqlite3_step (stmt);
-		if (ret == SQLITE_DONE)
-		    break;	/* end of result set */
-		if (ret == SQLITE_ROW)
-		    exists = 1;
-	    }
-	  sqlite3_finalize (stmt);
-      }
-    if (fileIdentifier != NULL)
-      {
-	  /* checking if already exists - by fileIdentifier */
-	  sql = "SELECT id FROM ISO_metadata WHERE fileId = ?";
-	  ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-	  if (ret != SQLITE_OK)
-	    {
-		spatialite_e ("registerIsoMetadata: \"%s\"\n",
-			      sqlite3_errmsg (sqlite));
-		goto stop;
-	    }
-	  sqlite3_reset (stmt);
-	  sqlite3_clear_bindings (stmt);
-	  sqlite3_bind_text (stmt, 1, fileIdentifier, strlen (fileIdentifier),
-			     SQLITE_STATIC);
-	  while (1)
-	    {
-		/* scrolling the result set rows */
-		ret = sqlite3_step (stmt);
-		if (ret == SQLITE_DONE)
-		    break;	/* end of result set */
-		if (ret == SQLITE_ROW)
-		  {
-		      exists = 1;
-		      id = sqlite3_column_int64 (stmt, 0);
-		  }
-	    }
-	  sqlite3_finalize (stmt);
-      }
-
-    if (exists)
-      {
-	  /* update */
-	  sql = "UPDATE ISO_metadata SET md_scope = ?, metadata = ? "
-	      "WHERE id = ?";
-      }
-    else
-      {
-	  /* insert */
-	  sql = "INSERT INTO ISO_metadata "
-	      "(id, md_scope, metadata) VALUES (?, ?, ?)";
-      }
-    ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("registerIsoMetadata: \"%s\"\n",
-			sqlite3_errmsg (sqlite));
-	  goto stop;
-      }
-    sqlite3_reset (stmt);
-    sqlite3_clear_bindings (stmt);
-    if (exists)
-      {
-	  /* update */
-	  sqlite3_bind_text (stmt, 1, scope, strlen (scope), SQLITE_STATIC);
-	  sqlite3_bind_blob (stmt, 2, p_blob, n_bytes, SQLITE_STATIC);
-	  sqlite3_bind_int (stmt, 3, id);
-      }
-    else
-      {
-	  /* insert */
-	  if (id < 0)
-	      sqlite3_bind_null (stmt, 1);
-	  else
-	      sqlite3_bind_int64 (stmt, 1, id);
-	  sqlite3_bind_text (stmt, 2, scope, strlen (scope), SQLITE_STATIC);
-	  sqlite3_bind_blob (stmt, 3, p_blob, n_bytes, SQLITE_STATIC);
-      }
-    ret = sqlite3_step (stmt);
-    if (ret == SQLITE_DONE || ret == SQLITE_ROW)
-	retval = 1;
-    else
-	spatialite_e ("registerIsoMetadata() error: \"%s\"\n",
-		      sqlite3_errmsg (sqlite));
-    sqlite3_finalize (stmt);
-    return retval;
-  stop:
     return 0;
 }
 

@@ -161,8 +161,14 @@ insert_into_raster_coverages (sqlite3 * handle, const char *coverage,
       case RL2_COMPRESSION_DEFLATE:
 	  xcompression = "DEFLATE";
 	  break;
+      case RL2_COMPRESSION_DEFLATE_NO:
+	  xcompression = "DEFLATE_NO";
+	  break;
       case RL2_COMPRESSION_LZMA:
 	  xcompression = "LZMA";
+	  break;
+      case RL2_COMPRESSION_LZMA_NO:
+	  xcompression = "LZMA_NO";
 	  break;
       case RL2_COMPRESSION_PNG:
 	  xcompression = "PNG";
@@ -1898,10 +1904,20 @@ rl2_create_coverage_from_dbms (sqlite3 * handle, const char *coverage)
 			    ok_compression = 1;
 			    compression = RL2_COMPRESSION_DEFLATE;
 			}
+		      if (strcasecmp (value, "DEFLATE_NO") == 0)
+			{
+			    ok_compression = 1;
+			    compression = RL2_COMPRESSION_DEFLATE_NO;
+			}
 		      if (strcasecmp (value, "LZMA") == 0)
 			{
 			    ok_compression = 1;
 			    compression = RL2_COMPRESSION_LZMA;
+			}
+		      if (strcasecmp (value, "LZMA_NO") == 0)
+			{
+			    ok_compression = 1;
+			    compression = RL2_COMPRESSION_LZMA_NO;
 			}
 		      if (strcasecmp (value, "PNG") == 0)
 			{
@@ -2053,6 +2069,90 @@ rl2_create_coverage_from_dbms (sqlite3 * handle, const char *coverage)
 	  return NULL;
       }
     return cvg;
+}
+
+RL2_DECLARE rl2VectorLayerPtr
+rl2_create_vector_layer_from_dbms (sqlite3 * handle, const char *f_table_name,
+				   const char *f_geometry_column)
+{
+/* attempting to create a Vector Layer Object from the DBMS definition */
+    char *sql;
+    int ret;
+    sqlite3_stmt *stmt;
+    int geometry_type;
+    int srid;
+    int spatial_index;
+    int ok = 0;
+    rl2VectorLayerPtr vector;
+
+/* querying the Vector Layer metadata defs */
+    sql =
+	"SELECT geometry_type, srid, spatial_index "
+	"FROM geometry_columns WHERE Lower(f_table_name) = Lower(?) "
+	"AND Lower(f_geometry_column) = Lower(?)";
+    ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr, "SQL error: %s\n%s\n", sql, sqlite3_errmsg (handle));
+	  return NULL;
+      }
+    sqlite3_reset (stmt);
+    sqlite3_clear_bindings (stmt);
+    sqlite3_bind_text (stmt, 1, f_table_name, strlen (f_table_name),
+		       SQLITE_STATIC);
+    sqlite3_bind_text (stmt, 1, f_geometry_column, strlen (f_geometry_column),
+		       SQLITE_STATIC);
+    while (1)
+      {
+	  /* scrolling the result set rows */
+	  ret = sqlite3_step (stmt);
+	  if (ret == SQLITE_DONE)
+	      break;		/* end of result set */
+	  if (ret == SQLITE_ROW)
+	    {
+		int ok_type = 0;
+		int ok_srid = 0;
+		int ok_index = 0;
+		if (sqlite3_column_type (stmt, 0) == SQLITE_INTEGER)
+		  {
+		      geometry_type = sqlite3_column_int (stmt, 0);
+		      ok_type = 1;
+		  }
+		if (sqlite3_column_type (stmt, 1) == SQLITE_INTEGER)
+		  {
+		      srid = sqlite3_column_int (stmt, 1);
+		      ok_srid = 1;
+		  }
+		if (sqlite3_column_type (stmt, 2) == SQLITE_INTEGER)
+		  {
+		      spatial_index = sqlite3_column_int (stmt, 2);
+		      ok_index = 1;
+		  }
+		if (ok_type && ok_srid && ok_index)
+		    ok = 1;
+	    }
+      }
+    sqlite3_finalize (stmt);
+
+    if (!ok)
+      {
+	  fprintf (stderr,
+		   "ERROR: unable to find a Vector Layer named \"%s\".\"%s\"\n",
+		   f_table_name, f_geometry_column);
+	  return NULL;
+      }
+
+    vector =
+	rl2_create_vector_layer (f_table_name, f_geometry_column, geometry_type,
+				 srid, spatial_index);
+    if (vector == NULL)
+      {
+	  fprintf (stderr,
+		   "ERROR: unable to create a Vector Layer Object supporting \"%s\".\"%s\"\n",
+		   f_table_name, f_geometry_column);
+	  return NULL;
+      }
+    return vector;
 }
 
 static void
@@ -5330,10 +5430,13 @@ rl2_create_raster_style_from_dbms (sqlite3 * handle, const char *coverage,
     char *title = NULL;
     char *abstract = NULL;
     unsigned char *xml = NULL;
+    int done = 0;
 
-    sql = "SELECT style_name, XB_GetTitle(style), XB_GetAbstract(style), "
-	"XB_GetDocument(style) FROM SE_raster_styled_layers "
-	"WHERE Lower(coverage_name) = Lower(?) AND Lower(style_name) = Lower(?)";
+    sql = "SELECT s.style_name, XB_GetTitle(s.style), XB_GetAbstract(s.style), "
+	"XB_GetDocument(s.style) FROM SE_raster_styled_layers AS r "
+	"JOIN SE_raster_styles AS s ON (r.style_id = s.style_id) "
+	"WHERE Lower(r.coverage_name) = Lower(?) AND "
+	"Lower(s.style_name) = Lower(?)";
     ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
     if (ret != SQLITE_OK)
       {
@@ -5355,33 +5458,38 @@ rl2_create_raster_style_from_dbms (sqlite3 * handle, const char *coverage,
 		int len;
 		const char *str;
 		const unsigned char *ustr;
-		if (sqlite3_column_type (stmt, 0) == SQLITE_TEXT)
+		if (!done)
 		  {
-		      str = (const char *) sqlite3_column_text (stmt, 0);
-		      len = strlen (str);
-		      name = malloc (len + 1);
-		      strcpy (name, str);
-		  }
-		if (sqlite3_column_type (stmt, 1) == SQLITE_TEXT)
-		  {
-		      str = (const char *) sqlite3_column_text (stmt, 1);
-		      len = strlen (str);
-		      title = malloc (len + 1);
-		      strcpy (title, str);
-		  }
-		if (sqlite3_column_type (stmt, 2) == SQLITE_TEXT)
-		  {
-		      str = (const char *) sqlite3_column_text (stmt, 2);
-		      len = strlen (str);
-		      abstract = malloc (len + 1);
-		      strcpy (abstract, str);
-		  }
-		if (sqlite3_column_type (stmt, 3) == SQLITE_TEXT)
-		  {
-		      ustr = sqlite3_column_text (stmt, 3);
-		      len = strlen ((const char *) ustr);
-		      xml = malloc (len + 1);
-		      strcpy ((char *) xml, (const char *) ustr);
+		      /* reteiving just the first reference in case of duplicates */
+		      done = 1;
+		      if (sqlite3_column_type (stmt, 0) == SQLITE_TEXT)
+			{
+			    str = (const char *) sqlite3_column_text (stmt, 0);
+			    len = strlen (str);
+			    name = malloc (len + 1);
+			    strcpy (name, str);
+			}
+		      if (sqlite3_column_type (stmt, 1) == SQLITE_TEXT)
+			{
+			    str = (const char *) sqlite3_column_text (stmt, 1);
+			    len = strlen (str);
+			    title = malloc (len + 1);
+			    strcpy (title, str);
+			}
+		      if (sqlite3_column_type (stmt, 2) == SQLITE_TEXT)
+			{
+			    str = (const char *) sqlite3_column_text (stmt, 2);
+			    len = strlen (str);
+			    abstract = malloc (len + 1);
+			    strcpy (abstract, str);
+			}
+		      if (sqlite3_column_type (stmt, 3) == SQLITE_TEXT)
+			{
+			    ustr = sqlite3_column_text (stmt, 3);
+			    len = strlen ((const char *) ustr);
+			    xml = malloc (len + 1);
+			    strcpy ((char *) xml, (const char *) ustr);
+			}
 		  }
 	    }
 	  else
@@ -5419,6 +5527,116 @@ rl2_create_raster_style_from_dbms (sqlite3 * handle, const char *coverage,
     return NULL;
 }
 
+RL2_DECLARE rl2VectorStylePtr
+rl2_create_vector_style_from_dbms (sqlite3 * handle, const char *coverage,
+				   const char *style)
+{
+/* attempting to load and parse a VectorSymbolizer style */
+    const char *sql;
+    int ret;
+    sqlite3_stmt *stmt = NULL;
+    rl2VectorStylePtr stl = NULL;
+    char *name = NULL;
+    char *title = NULL;
+    char *abstract = NULL;
+    unsigned char *xml = NULL;
+    int done = 0;
+
+    sql = "SELECT s.style_name, XB_GetTitle(s.style), XB_GetAbstract(s.style), "
+	"XB_GetDocument(s.style) FROM SE_vector_styled_layers AS v "
+	"JOIN SE_vector_styles AS s ON (v.style_id = s.style_id) "
+	"WHERE Lower(v.coverage_name) = Lower(?) "
+	"AND Lower(s.style_name) = Lower(?)";
+    ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr, "SQL error: %s\n%s\n", sql, sqlite3_errmsg (handle));
+	  goto error;
+      }
+    sqlite3_reset (stmt);
+    sqlite3_clear_bindings (stmt);
+    sqlite3_bind_text (stmt, 1, coverage, strlen (coverage), SQLITE_STATIC);
+    sqlite3_bind_text (stmt, 2, style, strlen (style), SQLITE_STATIC);
+    while (1)
+      {
+	  /* scrolling the result set rows */
+	  ret = sqlite3_step (stmt);
+	  if (ret == SQLITE_DONE)
+	      break;		/* end of result set */
+	  if (ret == SQLITE_ROW)
+	    {
+		int len;
+		const char *str;
+		const unsigned char *ustr;
+		if (!done)
+		  {
+		      /* reteiving just the first reference in case of duplicates */
+		      done = 1;
+		      if (sqlite3_column_type (stmt, 0) == SQLITE_TEXT)
+			{
+			    str = (const char *) sqlite3_column_text (stmt, 0);
+			    len = strlen (str);
+			    name = malloc (len + 1);
+			    strcpy (name, str);
+			}
+		      if (sqlite3_column_type (stmt, 1) == SQLITE_TEXT)
+			{
+			    str = (const char *) sqlite3_column_text (stmt, 1);
+			    len = strlen (str);
+			    title = malloc (len + 1);
+			    strcpy (title, str);
+			}
+		      if (sqlite3_column_type (stmt, 2) == SQLITE_TEXT)
+			{
+			    str = (const char *) sqlite3_column_text (stmt, 2);
+			    len = strlen (str);
+			    abstract = malloc (len + 1);
+			    strcpy (abstract, str);
+			}
+		      if (sqlite3_column_type (stmt, 3) == SQLITE_TEXT)
+			{
+			    ustr = sqlite3_column_text (stmt, 3);
+			    len = strlen ((const char *) ustr);
+			    xml = malloc (len + 1);
+			    strcpy ((char *) xml, (const char *) ustr);
+			}
+		  }
+	    }
+	  else
+	    {
+		fprintf (stderr, "SQL error: %s\n%s\n", sql,
+			 sqlite3_errmsg (handle));
+		goto error;
+	    }
+      }
+    sqlite3_finalize (stmt);
+    stmt = NULL;
+
+    if (name == NULL || xml == NULL)
+      {
+	  if (name != NULL)
+	      free (name);
+	  if (title != NULL)
+	      free (title);
+	  if (abstract != NULL)
+	      free (abstract);
+	  if (xml != NULL)
+	      free (xml);
+	  goto error;
+      }
+    stl = vector_style_from_sld_se_xml (name, title, abstract, xml);
+    if (stl == NULL)
+	goto error;
+    return stl;
+
+  error:
+    if (stmt != NULL)
+	sqlite3_finalize (stmt);
+    if (stl != NULL)
+	rl2_destroy_vector_style (stl);
+    return NULL;
+}
+
 static int
 test_named_layer (sqlite3 * handle, const char *groupName,
 		  const char *namedLayer)
@@ -5446,10 +5664,11 @@ test_named_layer (sqlite3 * handle, const char *groupName,
 
     ok = 0;
 /* testing if the Raster Coverage belong to the Layer Group */
-    sql = sqlite3_mprintf ("SELECT coverage_name FROM SE_styled_group_refs "
-			   "WHERE Lower(group_name) = Lower(%Q) AND "
-			   "Lower(coverage_name) = Lower(%Q)", groupName,
-			   namedLayer);
+    sql =
+	sqlite3_mprintf
+	("SELECT raster_coverage_name FROM SE_styled_group_refs "
+	 "WHERE Lower(group_name) = Lower(%Q) AND "
+	 "Lower(raster_coverage_name) = Lower(%Q)", groupName, namedLayer);
     ret = sqlite3_get_table (handle, sql, &results, &rows, &columns, NULL);
     sqlite3_free (sql);
     if (ret != SQLITE_OK)
@@ -5473,9 +5692,10 @@ test_named_style (sqlite3 * handle, const char *namedLayer,
     int ok = 0;
 /* testing if the Layer Style exists */
     char *sql =
-	sqlite3_mprintf ("SELECT style_name FROM SE_raster_styled_layers "
-			 "WHERE Lower(coverage_name) = Lower(%Q) AND "
-			 "Lower(style_name) = Lower(%Q)", namedLayer,
+	sqlite3_mprintf ("SELECT style_name FROM SE_raster_styled_layers AS r "
+			 "JOIN SE_raster_styles AS s ON (r.style_id = s.style_id) "
+			 "WHERE Lower(r.coverage_name) = Lower(%Q) AND "
+			 "Lower(s.style_name) = Lower(%Q)", namedLayer,
 			 namedStyle);
     ret = sqlite3_get_table (handle, sql, &results, &rows, &columns, NULL);
     sqlite3_free (sql);
@@ -5502,10 +5722,12 @@ rl2_create_group_style_from_dbms (sqlite3 * handle, const char *group,
     unsigned char *xml = NULL;
     rl2PrivGroupStylePtr grp_stl;
     rl2PrivChildStylePtr child;
+    int done = 0;
 
-    sql = "SELECT style_name, XB_GetTitle(style), XB_GetAbstract(style), "
-	"XB_GetDocument(style) FROM SE_group_styles "
-	"WHERE Lower(group_name) = Lower(?) AND Lower(style_name) = Lower(?)";
+    sql = "SELECT s.style_name, XB_GetTitle(s.style), XB_GetAbstract(s.style), "
+	"XB_GetDocument(s.style) FROM SE_styled_group_styles AS g "
+	"JOIN SE_group_styles AS s ON (g.style_id = s.style_id) "
+	"WHERE Lower(g.group_name) = Lower(?) AND Lower(s.style_name) = Lower(?)";
     ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
     if (ret != SQLITE_OK)
       {
@@ -5527,33 +5749,38 @@ rl2_create_group_style_from_dbms (sqlite3 * handle, const char *group,
 		int len;
 		const char *str;
 		const unsigned char *ustr;
-		if (sqlite3_column_type (stmt, 0) == SQLITE_TEXT)
+		if (!done)
 		  {
-		      str = (const char *) sqlite3_column_text (stmt, 0);
-		      len = strlen (str);
-		      name = malloc (len + 1);
-		      strcpy (name, str);
-		  }
-		if (sqlite3_column_type (stmt, 1) == SQLITE_TEXT)
-		  {
-		      str = (const char *) sqlite3_column_text (stmt, 1);
-		      len = strlen (str);
-		      title = malloc (len + 1);
-		      strcpy (title, str);
-		  }
-		if (sqlite3_column_type (stmt, 2) == SQLITE_TEXT)
-		  {
-		      str = (const char *) sqlite3_column_text (stmt, 2);
-		      len = strlen (str);
-		      abstract = malloc (len + 1);
-		      strcpy (abstract, str);
-		  }
-		if (sqlite3_column_type (stmt, 3) == SQLITE_TEXT)
-		  {
-		      ustr = sqlite3_column_text (stmt, 3);
-		      len = strlen ((const char *) ustr);
-		      xml = malloc (len + 1);
-		      strcpy ((char *) xml, (const char *) ustr);
+		      /* retrieving just the first reference in case of duplicates */
+		      done = 1;
+		      if (sqlite3_column_type (stmt, 0) == SQLITE_TEXT)
+			{
+			    str = (const char *) sqlite3_column_text (stmt, 0);
+			    len = strlen (str);
+			    name = malloc (len + 1);
+			    strcpy (name, str);
+			}
+		      if (sqlite3_column_type (stmt, 1) == SQLITE_TEXT)
+			{
+			    str = (const char *) sqlite3_column_text (stmt, 1);
+			    len = strlen (str);
+			    title = malloc (len + 1);
+			    strcpy (title, str);
+			}
+		      if (sqlite3_column_type (stmt, 2) == SQLITE_TEXT)
+			{
+			    str = (const char *) sqlite3_column_text (stmt, 2);
+			    len = strlen (str);
+			    abstract = malloc (len + 1);
+			    strcpy (abstract, str);
+			}
+		      if (sqlite3_column_type (stmt, 3) == SQLITE_TEXT)
+			{
+			    ustr = sqlite3_column_text (stmt, 3);
+			    len = strlen ((const char *) ustr);
+			    xml = malloc (len + 1);
+			    strcpy ((char *) xml, (const char *) ustr);
+			}
 		  }
 	    }
 	  else

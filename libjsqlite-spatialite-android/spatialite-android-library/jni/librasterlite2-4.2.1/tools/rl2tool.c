@@ -1487,9 +1487,17 @@ exec_catalog (sqlite3 * handle)
 		if (strcmp (compression, "NONE") == 0)
 		    printf ("          Compression: NONE (uncompressed)\n");
 		else if (strcmp (compression, "DEFLATE") == 0)
-		    printf ("          Compression: DEFLATE (zip, lossless)\n");
+		    printf
+			("          Compression: DEFLATE DeltaFilter (zip, lossless)\n");
+		else if (strcmp (compression, "DEFLATE_NO") == 0)
+		    printf
+			("          Compression: DEFLATE noDelta (zip, lossless)\n");
 		else if (strcmp (compression, "LZMA") == 0)
-		    printf ("          Compression: LZMA (7-zip, lossless)\n");
+		    printf
+			("          Compression: LZMA DeltaFilter (7-zip, lossless)\n");
+		else if (strcmp (compression, "LZMA_NO") == 0)
+		    printf
+			("          Compression: LZMA noDelta (7-zip, lossless)\n");
 		else if (strcmp (compression, "PNG") == 0)
 		    printf ("          Compression: PNG, lossless\n");
 		else if (strcmp (compression, "JPEG") == 0)
@@ -2852,6 +2860,41 @@ check_create_args (const char *db_path, const char *coverage, int sample,
 		fprintf (stderr, "\n");
 	    }
       }
+    if (rl2_is_supported_codec (compression) != 1)
+      {
+	  switch (compression)
+	    {
+	    case RL2_COMPRESSION_LZMA:
+	    case RL2_COMPRESSION_LZMA_NO:
+		fprintf (stderr,
+			 "*** ERROR *** librasterlite2 was built by disabling LZMA support\n");
+		err = 1;
+		break;
+	    case RL2_COMPRESSION_CHARLS:
+		fprintf (stderr,
+			 "*** ERROR *** librasterlite2 was built by disabling CharLS support\n");
+		err = 1;
+		break;
+	    case RL2_COMPRESSION_LOSSY_WEBP:
+	    case RL2_COMPRESSION_LOSSLESS_WEBP:
+		fprintf (stderr,
+			 "*** ERROR *** librasterlite2 was built by disabling WebP support\n");
+		err = 1;
+		break;
+	    case RL2_COMPRESSION_LOSSY_JP2:
+	    case RL2_COMPRESSION_LOSSLESS_JP2:
+		fprintf (stderr,
+			 "*** ERROR *** librasterlite2 was built by disabling OpenJpeg support\n");
+		err = 1;
+		break;
+	    default:
+		fprintf (stderr,
+			 "*** ERROR *** unknown codec (%02x) isn't actually supported\n",
+			 compression);
+		err = 1;
+		break;
+	    };
+      }
     switch (compression)
       {
       case RL2_COMPRESSION_NONE:
@@ -2859,11 +2902,21 @@ check_create_args (const char *db_path, const char *coverage, int sample,
 	  *quality = 100;
 	  break;
       case RL2_COMPRESSION_DEFLATE:
-	  printf ("          Compression: DEFLATE (zip, lossless)\n");
+	  printf
+	      ("          Compression: DEFLATE DeltaFilter (zip, lossless)\n");
+	  *quality = 100;
+	  break;
+      case RL2_COMPRESSION_DEFLATE_NO:
+	  printf ("          Compression: DEFLATE noDelta (zip, lossless)\n");
 	  *quality = 100;
 	  break;
       case RL2_COMPRESSION_LZMA:
-	  printf ("          Compression: LZMA (7-zip, lossless)\n");
+	  printf
+	      ("          Compression: LZMA DeltaFilter (7-zip, lossless)\n");
+	  *quality = 100;
+	  break;
+      case RL2_COMPRESSION_LZMA_NO:
+	  printf ("          Compression: LZMA noDelta (7-zip, lossless)\n");
 	  *quality = 100;
 	  break;
       case RL2_COMPRESSION_GIF:
@@ -4214,7 +4267,7 @@ do_help (int mode)
 	  fprintf (stderr, "Compression Keywords:\n");
 	  fprintf (stderr, "----------------------------------\n");
 	  fprintf (stderr,
-		   "NONE DEFLATE LZMA PNG JPEG WEBP LL_WEBP FAX4 CHARLS JP2 LL_JP2\n\n");
+		   "NONE DEFLATE DEFLATE_NO LZMA LZMA_NO PNG JPEG WEBP LL_WEBP FAX4 CHARLS JP2 LL_JP2\n\n");
 	  fprintf (stderr,
 		   "-strict or --strict-resolution  Enables Strict Resolution\n");
 	  fprintf (stderr,
@@ -4709,8 +4762,12 @@ main (int argc, char *argv[])
 			  compression = RL2_COMPRESSION_NONE;
 		      if (strcasecmp (argv[i], "DEFLATE") == 0)
 			  compression = RL2_COMPRESSION_DEFLATE;
+		      if (strcasecmp (argv[i], "DEFLATE_NO") == 0)
+			  compression = RL2_COMPRESSION_DEFLATE_NO;
 		      if (strcasecmp (argv[i], "LZMA") == 0)
 			  compression = RL2_COMPRESSION_LZMA;
+		      if (strcasecmp (argv[i], "LZMA_NO") == 0)
+			  compression = RL2_COMPRESSION_LZMA_NO;
 		      if (strcasecmp (argv[i], "LZW") == 0)
 			  compression = RL2_COMPRESSION_LZW;
 		      if (strcasecmp (argv[i], "GIF") == 0)

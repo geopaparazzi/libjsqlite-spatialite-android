@@ -133,7 +133,7 @@ extern "C"
  \param xml_len lenght of the XML document (in bytes).
  \param compressed if TRUE the returned XmlBLOB will be zip-compressed.
  \param schemaURI if not NULL the XML document will be assumed to be valid
-  only if it succesfully passes a formal Schema valitadion.
+  only if it successfully passes a formal Schema valitadion.
  \param result on completion will containt a pointer to XmlBLOB:
  NULL on failure.
  \param size on completion this variable will contain the XmlBLOB's size (in bytes)
@@ -191,7 +191,7 @@ extern "C"
  means that the whole XML Document will consist of a single line.
  \param result pointer to the memory buffer containing the XML Document
  \param res_size dimension (in bytes) of the XML Document memory buffer
- (both values will be passed back after succesful completion).
+ (both values will be passed back after successful completion).
 
 
  \sa gaiaXmlToBlob, gaiaXmlTextFromBlob
@@ -342,7 +342,7 @@ extern "C"
 						 int *out_size);
 
 /**
- Checks if a valid XmlBLOB buffer has succesfully passed a formal Schema validation or not
+ Checks if a valid XmlBLOB buffer has successfully passed a formal Schema validation or not
 
  \param blob pointer to the XmlBLOB buffer.
  \param size XmlBLOB's size (in bytes).

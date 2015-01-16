@@ -44,11 +44,6 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#ifdef __ANDROID__		/* Android specific */
-#include <interface.h>
-#else
-#include <CharLS/interface.h>
-#endif
 
 #include "config.h"
 
@@ -58,6 +53,10 @@ the terms of any one of the MPL, the GPL or the LGPL.
 
 #include "rasterlite2/rasterlite2.h"
 #include "rasterlite2_private.h"
+
+#ifndef OMIT_CHARLS		/* only if CharLS is enabled */
+
+#include <CharLS/interface.h>
 
 static int
 endianness ()
@@ -465,3 +464,5 @@ rl2_decode_charls (const unsigned char *charls_buf, int charls_sz,
 	free (out_buffer);
     return RL2_ERROR;
 }
+
+#endif /* end CharLS conditional */

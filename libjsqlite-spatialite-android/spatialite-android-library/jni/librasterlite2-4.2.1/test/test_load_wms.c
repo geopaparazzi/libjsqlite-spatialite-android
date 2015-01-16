@@ -18,7 +18,7 @@ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
 for the specific language governing rights and limitations under the
 License.
 
-The Original Code is the SpatiaLite library
+The Original Code is the RasterLite2 library
 
 The Initial Developer of the Original Code is Alessandro Furieri
  
@@ -263,7 +263,7 @@ main (int argc, char *argv[])
       }
 
 /* creating an RGB DBMS Coverage */
-    sql = sqlite3_mprintf ("SELECT RL2_CreateCoverage("
+    sql = sqlite3_mprintf ("SELECT RL2_CreateRasterCoverage("
 			   "%Q, %Q, %Q, %d, %Q, %d, %d, %d, %d, %1.2f)",
 			   "rgb10k", "UINT8", "RGB", 3, "JPEG", 80,
 			   512, 512, 3003, 0.5);
@@ -271,14 +271,14 @@ main (int argc, char *argv[])
     sqlite3_free (sql);
     if (ret != SQLITE_OK)
       {
-	  fprintf (stderr, "CreateCoverage \"%s\" error: %s\n", "rgb10k",
+	  fprintf (stderr, "CreateRasterCoverage \"%s\" error: %s\n", "rgb10k",
 		   err_msg);
 	  sqlite3_free (err_msg);
 	  return -4;
       }
 
 /* creating a Grayscale DBMS Coverage */
-    sql = sqlite3_mprintf ("SELECT RL2_CreateCoverage("
+    sql = sqlite3_mprintf ("SELECT RL2_CreateRasterCoverage("
 			   "%Q, %Q, %Q, %d, %Q, %d, %d, %d, %d, %1.2f)",
 			   "gray10k", "UINT8", "GRAYSCALE", 1, "JPEG", 80,
 			   512, 512, 3003, 1.0);
@@ -286,14 +286,14 @@ main (int argc, char *argv[])
     sqlite3_free (sql);
     if (ret != SQLITE_OK)
       {
-	  fprintf (stderr, "CreateCoverage \"%s\" error: %s\n", "gray10k",
+	  fprintf (stderr, "CreateRasterCoverage \"%s\" error: %s\n", "gray10k",
 		   err_msg);
 	  sqlite3_free (err_msg);
 	  return -5;
       }
 
 /* creating a Monochrome DBMS Coverage */
-    sql = sqlite3_mprintf ("SELECT RL2_CreateCoverage("
+    sql = sqlite3_mprintf ("SELECT RL2_CreateRasterCoverage("
 			   "%Q, %Q, %Q, %d, %Q, %d, %d, %d, %d, %1.2f, %1.2f, "
 			   "RL2_SetPixelValue(RL2_CreatePixel(%Q, %Q, 1), 0, 0))",
 			   "ctrt10k", "1-BIT", "MONOCHROME", 1, "FAX4", 100,
@@ -302,7 +302,7 @@ main (int argc, char *argv[])
     sqlite3_free (sql);
     if (ret != SQLITE_OK)
       {
-	  fprintf (stderr, "CreateCoverage \"%s\" error: %s\n", "ctrt10k",
+	  fprintf (stderr, "CreateRasterCoverage \"%s\" error: %s\n", "ctrt10k",
 		   err_msg);
 	  sqlite3_free (err_msg);
 	  return -6;

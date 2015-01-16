@@ -1,8 +1,8 @@
-RegisterVectorStyledLayer - NULL f_table_name
+RegisterVectorStyledLayer - NULL coverage_name
 :memory: #use in-memory database
-SELECT RegisterVectorStyledLayer(NULL, NULL, NULL);
+SELECT SE_RegisterVectorStyledLayer(NULL, 1);
 1 # rows (not including the header row)
 1 # columns
-RegisterVectorStyledLayer(NULL, NULL, NULL)
+SE_RegisterVectorStyledLayer(NULL, 1)
 -1
 

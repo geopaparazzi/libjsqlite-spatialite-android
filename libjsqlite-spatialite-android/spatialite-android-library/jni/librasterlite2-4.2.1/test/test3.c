@@ -18,7 +18,7 @@ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
 for the specific language governing rights and limitations under the
 License.
 
-The Original Code is the SpatiaLite library
+The Original Code is the RasterLite2 library
 
 The Initial Developer of the Original Code is Alessandro Furieri
  
@@ -42,6 +42,8 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
+
+#include "config.h"
 
 #include "rasterlite2/rasterlite2.h"
 
@@ -139,14 +141,6 @@ main (int argc, char *argv[])
     int blob_odd_sz_jpeg;
     unsigned char *blob_even_jpeg;
     int blob_even_sz_jpeg;
-    unsigned char *blob_odd_lossy_webp;
-    int blob_odd_sz_lossy_webp;
-    unsigned char *blob_even_lossy_webp;
-    int blob_even_sz_lossy_webp;
-    unsigned char *blob_odd_lossless_webp;
-    int blob_odd_sz_lossless_webp;
-    unsigned char *blob_even_lossless_webp;
-    int blob_even_sz_lossless_webp;
     unsigned char *blob_odd_png;
     int blob_odd_sz_png;
     unsigned char *blob_even_png;
@@ -157,6 +151,18 @@ main (int argc, char *argv[])
     int blob_even_sz_gif;
     unsigned char *blob_stat;
     int blob_stat_size;
+
+#ifndef OMIT_WEBP		/* only if WebP is enabled */
+    unsigned char *blob_odd_lossy_webp;
+    int blob_odd_sz_lossy_webp;
+    unsigned char *blob_even_lossy_webp;
+    int blob_even_sz_lossy_webp;
+    unsigned char *blob_odd_lossless_webp;
+    int blob_odd_sz_lossless_webp;
+    unsigned char *blob_even_lossless_webp;
+    int blob_even_sz_lossless_webp;
+#endif /* end WebP conditional */
+
     int anti_endian = antiEndian ();
 
     if (argc > 1 || argv[0] == NULL)
@@ -250,6 +256,7 @@ main (int argc, char *argv[])
     free (blob_stat);
     rl2_destroy_raster_statistics (stats);
 
+#ifndef OMIT_WEBP		/* only if WebP is defined */
     if (rl2_raster_encode
 	(raster, RL2_COMPRESSION_LOSSY_WEBP, &blob_odd_lossy_webp,
 	 &blob_odd_sz_lossy_webp, &blob_even_lossy_webp,
@@ -275,6 +282,7 @@ main (int argc, char *argv[])
 	free (blob_odd_lossless_webp);
     if (blob_even_lossless_webp != NULL)
 	free (blob_even_lossless_webp);
+#endif /* end WebP conditional */
 
     if (rl2_raster_encode
 	(raster, RL2_COMPRESSION_PNG, &blob_odd_png, &blob_odd_sz_png,

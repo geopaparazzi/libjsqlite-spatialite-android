@@ -2162,6 +2162,17 @@ vfdo_rollback (sqlite3_vtab * pVTab)
 }
 
 static int
+vfdo_rename (sqlite3_vtab * pVTab, const char *zNew)
+{
+/* BEGIN TRANSACTION */
+    if (pVTab)
+	pVTab = pVTab;		/* unused arg warning suppression */
+    if (zNew)
+	zNew = zNew;		/* unused arg warning suppression */
+    return SQLITE_ERROR;
+}
+
+static int
 spliteVirtualFDOInit (sqlite3 * db)
 {
     int rc = SQLITE_OK;
@@ -2184,6 +2195,7 @@ spliteVirtualFDOInit (sqlite3 * db)
     my_fdo_module.xCommit = &vfdo_commit;
     my_fdo_module.xRollback = &vfdo_rollback;
     my_fdo_module.xFindFunction = NULL;
+    my_fdo_module.xRename = &vfdo_rename;
     sqlite3_create_module_v2 (db, "VirtualFDO", &my_fdo_module, NULL, 0);
     return rc;
 }

@@ -1112,6 +1112,17 @@ vxpath_rollback (sqlite3_vtab * pVTab)
 }
 
 static int
+vxpath_rename (sqlite3_vtab * pVTab, const char *zNew)
+{
+/* BEGIN TRANSACTION */
+    if (pVTab)
+	pVTab = pVTab;		/* unused arg warning suppression */
+    if (zNew)
+	zNew = zNew;		/* unused arg warning suppression */
+    return SQLITE_ERROR;
+}
+
+static int
 spliteVirtualXPathInit (sqlite3 * db, void *p_cache)
 {
     int rc = SQLITE_OK;
@@ -1134,6 +1145,7 @@ spliteVirtualXPathInit (sqlite3 * db, void *p_cache)
     my_xpath_module.xCommit = &vxpath_commit;
     my_xpath_module.xRollback = &vxpath_rollback;
     my_xpath_module.xFindFunction = NULL;
+    my_xpath_module.xRename = &vxpath_rename;
     sqlite3_create_module_v2 (db, "VirtualXPath", &my_xpath_module, p_cache, 0);
     return rc;
 }

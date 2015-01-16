@@ -2942,7 +2942,7 @@ gaiaIsCompressedXmlBlob (const unsigned char *blob, int blob_size)
 GAIAGEO_DECLARE int
 gaiaIsSchemaValidatedXmlBlob (const unsigned char *blob, int blob_size)
 {
-/* Checks if a valid XmlBLOB buffer has succesfully passed a formal Schema validation or not */
+/* Checks if a valid XmlBLOB buffer has successfully passed a formal Schema validation or not */
     int validated = 0;
     unsigned char flag;
 

@@ -134,10 +134,14 @@ extern "C"
 #define RL2_COMPRESSION_UNKNOWN		0x20
 /** RasterLite2 constant: Compression None */
 #define RL2_COMPRESSION_NONE		0x21
-/** RasterLite2 constant: Compression Deflate (zip) */
+/** RasterLite2 constant: Compression Deflate Delta (zip) */
 #define RL2_COMPRESSION_DEFLATE		0x22
-/** RasterLite2 constant: Compression LZMA */
+/** RasterLite2 constant: Compression Deflate noDelta (zip) */
+#define RL2_COMPRESSION_DEFLATE_NO	0xd2
+/** RasterLite2 constant: Compression LZMA Delta */
 #define RL2_COMPRESSION_LZMA		0x23
+/** RasterLite2 constant: Compression LZMA noDelta */
+#define RL2_COMPRESSION_LZMA_NO		0xd3
 /** RasterLite2 constant: Compression GIF */
 #define RL2_COMPRESSION_GIF		0x24
 /** RasterLite2 constant: Compression PNG */
@@ -285,6 +289,19 @@ extern "C"
     typedef rl2Coverage *rl2CoveragePtr;
 
 /**
+ Typedef for RL2 Vector Layer object (opaque, hidden)
+
+ \sa rl2VectorLayerPtr
+ */
+    typedef struct rl2_vector_layer rl2VectorLayer;
+/**
+ Typedef for RL2 Vector Layer object pointer (opaque, hidden)
+
+ \sa rl2VectorLayer
+ */
+    typedef rl2VectorLayer *rl2VectorLayerPtr;
+
+/**
  Typedef for RL2 RasterStyle object (opaque, hidden)
 
  \sa rl2RasterStylePtr
@@ -296,6 +313,19 @@ extern "C"
  \sa rl2RasterStyle
  */
     typedef rl2RasterStyle *rl2RasterStylePtr;
+
+/**
+ Typedef for RL2 VectorStyle object (opaque, hidden)
+
+ \sa rl2VectorStylePtr
+ */
+    typedef struct rl2_vector_style rl2VectorStyle;
+/**
+ Typedef for RL2 VectorStyle object pointer (opaque, hidden)
+
+ \sa rl2VectorStyle
+ */
+    typedef rl2VectorStyle *rl2VectorStylePtr;
 
 /**
  Typedef for RL2 GroupStyle object (opaque, hidden)
@@ -441,6 +471,16 @@ extern "C"
  before attempting to call any RasterLite-2 own function.
  */
     RL2_DECLARE void rl2_init (sqlite3 * db_handle, int verbose);
+
+/**
+ Testing if a given codec/compressor is actually supported by the library
+
+ \param compression e.g. RL2_COMPRESSION_NONE or RL2_COMPRESSION_DEFLATE
+ 
+ \return  RL2_TRUE or RL2_FALSE on success: RL2_ERROR on invalid/unknown
+ compriosson.
+ */
+    RL2_DECLARE int rl2_is_supported_codec (unsigned char compression);
 
 /**
  Allocates and initializes a new Pixel object
@@ -1304,6 +1344,109 @@ extern "C"
     RL2_DECLARE int rl2_get_coverage_resolution (rl2CoveragePtr cvg,
 						 double *hResolution,
 						 double *vResolution);
+
+/**
+ Allocates and initializes a new Vector Layer object
+
+ \param f_table_name a text string containing the Table name.
+ \param f_geometry_column a text string containing the Geometry Column name
+ \param geometry_type the numeric ID of some Geometry class; one between 
+  GAIA_POINT, GAIA_LINESTRING, GAIA_POLYGON and alike.
+ \param srid the SRID value
+ \param spatial_index one of GAIA_SPATIAL_INDEX_NONE, GAIA_SPATIAL_INDEX_RTREE
+ or GAIA_SPATIAL_INDEX_MBRCACHE
+ 
+ \return the pointer to newly created Vector Layer Object: NULL on failure.
+ 
+ \sa rl2_destroy_vector_layer, rl2_get_vector_table_name, 
+		rl2_get_vector_geometry_name, rl2_get_vector_geometry_type, 
+		rl2_get_vector_srid, rl2_get_vector_spatial_index
+ 
+ \note you are responsible to destroy (before or after) any allocated 
+ Vector Layer object.
+ */
+    RL2_DECLARE rl2VectorLayerPtr
+	rl2_create_vector_layer (const char *f_table_name,
+				 const char *f_geometry_column,
+				 unsigned short geometry_type, int srid,
+				 unsigned char spatial_index);
+
+/**
+ Destroys a Vector Layer Object
+
+ \param vector pointer to object to be destroyed
+
+ \sa rl2_create_vector_layer
+ */
+    RL2_DECLARE void rl2_destroy_vector_layer (rl2VectorLayerPtr vector);
+
+/**
+ Retrieving the Table name from a Vector Layer Object
+
+ \param vector pointer to the Vector Layer Object.
+ 
+ \return pointer to the Table name text string; NULL if any error is 
+ encountered.
+
+ \sa rl2_create_vector_layer, rl2_get_vector_geometry_name
+ */
+    RL2_DECLARE const char *rl2_get_vector_table_name (rl2VectorLayerPtr
+						       vector);
+
+/**
+ Retrieving the Geometry Column name from a Vector Layer Object
+
+ \param vector pointer to the Vector Layer Object.
+ 
+ \return pointer to the Geometry Column name text string; NULL if any 
+ error is encountered.
+
+ \sa rl2_create_vector_layer, rl2_get_vector_table_name
+ */
+    RL2_DECLARE const char *rl2_get_vector_geometry_name (rl2VectorLayerPtr
+							  vector);
+
+/**
+ Retrieving the Geometry Type from a Vector Layer Object
+
+ \param vector pointer to the Vector Layer Object.
+ \param geometry_type on completion the variable referenced by this
+ pointer will contain the Geometry Type.
+ 
+ \return  RL2_OK on success: RL2_ERROR on failure.
+
+ \sa rl2_create_vector_layer
+ */
+    RL2_DECLARE int rl2_get_vector_geometry_type (rl2VectorLayerPtr vector,
+						  unsigned short
+						  *geometry_type);
+
+/**
+ Retrieving the SRID from a Vector Layer Object
+
+ \param vector pointer to the Vector Layer Object.
+ \param srid on completion the variable referenced by this
+ pointer will contain the SRID.
+ 
+ \return  RL2_OK on success: RL2_ERROR on failure.
+
+ \sa rl2_create_vector_layer
+ */
+    RL2_DECLARE int rl2_get_vector_srid (rl2VectorLayerPtr vector, int *srid);
+
+/**
+ Retrieving the Spatial Index type from a Vector Layer Object
+
+ \param vector pointer to the Vector Layer Object.
+ \param idx on completion the variable referenced by this
+ pointer will contain the Spatial Index type.
+ 
+ \return  RL2_OK on success: RL2_ERROR on failure.
+
+ \sa rl2_create_vector_layer
+ */
+    RL2_DECLARE int rl2_get_vector_spatial_index (rl2VectorLayerPtr vector,
+						  unsigned char *idx);
 
 /**
  Allocates and initializes a new Section object
@@ -3027,6 +3170,11 @@ extern "C"
     RL2_DECLARE rl2CoveragePtr
 	rl2_create_coverage_from_dbms (sqlite3 * handle, const char *coverage);
 
+    RL2_DECLARE rl2VectorLayerPtr
+	rl2_create_vector_layer_from_dbms (sqlite3 * handle,
+					   const char *f_table_name,
+					   const char *f_geometry_column);
+
     RL2_DECLARE int
 	rl2_find_matching_resolution (sqlite3 * handle, rl2CoveragePtr cvg,
 				      int by_section, sqlite3_int64 section_id,
@@ -4033,6 +4181,11 @@ extern "C"
 					   const char *coverage,
 					   const char *style);
 
+    RL2_DECLARE rl2VectorStylePtr
+	rl2_create_vector_style_from_dbms (sqlite3 * handle,
+					   const char *coverage,
+					   const char *style);
+
     RL2_DECLARE rl2RasterStatisticsPtr
 	rl2_create_raster_statistics_from_dbms (sqlite3 * handle,
 						const char *coverage);
@@ -4146,6 +4299,16 @@ extern "C"
     RL2_DECLARE int rl2_get_raster_style_shaded_relief (rl2RasterStylePtr style,
 							int *brightness_only,
 							double *relief_factor);
+
+    RL2_DECLARE void rl2_destroy_vector_style (rl2VectorStylePtr style);
+
+    RL2_DECLARE const char *rl2_get_vector_style_name (rl2VectorStylePtr style);
+
+    RL2_DECLARE const char *rl2_get_vector_style_title (rl2VectorStylePtr
+							style);
+
+    RL2_DECLARE const char *rl2_get_vector_style_abstract (rl2VectorStylePtr
+							   style);
 
     RL2_DECLARE rl2GroupStylePtr
 	rl2_create_group_style_from_dbms (sqlite3 * handle, const char *group,

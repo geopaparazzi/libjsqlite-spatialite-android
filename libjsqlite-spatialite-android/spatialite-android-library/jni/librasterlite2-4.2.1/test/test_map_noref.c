@@ -18,7 +18,7 @@ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
 for the specific language governing rights and limitations under the
 License.
 
-The Original Code is the SpatiaLite library
+The Original Code is the RasterLite2 library
 
 The Initial Developer of the Original Code is Alessandro Furieri
  
@@ -45,6 +45,8 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
+
+#include "config.h"
 
 #include "sqlite3.h"
 #include "spatialite.h"
@@ -215,7 +217,7 @@ do_export_image (sqlite3 * sqlite, const char *coverage, gaiaGeomCollPtr geom,
     path = sqlite3_mprintf ("./%s_%1.0f%s", coverage, radius, suffix);
 
     sql =
-	"SELECT RL2_GetMapImage(?, ST_Buffer(?, ?), 512, 512, 'default', ?, '#ffffff', 1, 80)";
+	"SELECT RL2_GetMapImageFromRaster(?, ST_Buffer(?, ?), 512, 512, 'default', ?, '#ffffff', 1, 80)";
     ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
     if (ret != SQLITE_OK)
 	return 0;
@@ -413,7 +415,7 @@ test_coverage (sqlite3 * sqlite, const char *prefix, unsigned char pixel,
 
 /* creating the DBMS Coverage */
     cov_name = sqlite3_mprintf ("%s_%s", prefix, coverage);
-    sql = sqlite3_mprintf ("SELECT RL2_CreateCoverage("
+    sql = sqlite3_mprintf ("SELECT RL2_CreateRasterCoverage("
 			   "%Q, %Q, %Q, %d, %Q, %d, %d, %d, %d, %1.16f, %1.16f)",
 			   cov_name, sample_name, pixel_name, num_bands,
 			   compression_name, qlty, tile_size, tile_size, -1,
@@ -422,7 +424,7 @@ test_coverage (sqlite3 * sqlite, const char *prefix, unsigned char pixel,
     sqlite3_free (sql);
     if (ret != SQLITE_OK)
       {
-	  fprintf (stderr, "CreateCoverage \"%s\" error: %s\n", cov_name,
+	  fprintf (stderr, "CreateRasterCoverage \"%s\" error: %s\n", cov_name,
 		   err_msg);
 	  sqlite3_free (err_msg);
 	  *retcode += -1;
@@ -610,12 +612,12 @@ drop_coverage (sqlite3 * sqlite, const char *prefix, unsigned char pixel,
 
 /* dropping the DBMS Coverage */
     cov_name = sqlite3_mprintf ("%s_%s", prefix, coverage);
-    sql = sqlite3_mprintf ("SELECT RL2_DropCoverage(%Q, 1)", cov_name);
+    sql = sqlite3_mprintf ("SELECT RL2_DropRasterCoverage(%Q, 1)", cov_name);
     ret = execute_check (sqlite, sql);
     sqlite3_free (sql);
     if (ret != SQLITE_OK)
       {
-	  fprintf (stderr, "DropCoverage \"%s\" error: %s\n", cov_name,
+	  fprintf (stderr, "DropRasterCoverage \"%s\" error: %s\n", cov_name,
 		   err_msg);
 	  sqlite3_free (err_msg);
 	  *retcode += -1;
@@ -690,6 +692,8 @@ main (int argc, char *argv[])
     if (!test_coverage
 	(db_handle, "noref-rgb", RL2_PIXEL_RGB, RL2_COMPRESSION_JPEG, &ret))
 	return ret;
+
+#ifndef OMIT_WEBP		/* only if WebP is enabled */
     ret = -160;
     if (!test_coverage
 	(db_handle, "noref-rgb", RL2_PIXEL_RGB, RL2_COMPRESSION_LOSSY_WEBP,
@@ -700,6 +704,7 @@ main (int argc, char *argv[])
 	(db_handle, "noref-rgb", RL2_PIXEL_RGB, RL2_COMPRESSION_LOSSLESS_WEBP,
 	 &ret))
 	return ret;
+#endif /* end WebP conditional */
 
 /* GRAYSCALE tests */
     ret = -300;
@@ -717,6 +722,8 @@ main (int argc, char *argv[])
 	(db_handle, "noref-gray", RL2_PIXEL_GRAYSCALE, RL2_COMPRESSION_JPEG,
 	 &ret))
 	return ret;
+
+#ifndef OMIT_WEBP		/* only if WebP is enabled */
     ret = -360;
     if (!test_coverage
 	(db_handle, "noref-gray", RL2_PIXEL_GRAYSCALE,
@@ -727,6 +734,7 @@ main (int argc, char *argv[])
 	(db_handle, "noref-gray", RL2_PIXEL_GRAYSCALE,
 	 RL2_COMPRESSION_LOSSLESS_WEBP, &ret))
 	return ret;
+#endif /* end WebP conditional */
 
 /* MONOCHROME tests */
     ret = -500;
@@ -768,6 +776,8 @@ main (int argc, char *argv[])
     if (!drop_coverage
 	(db_handle, "noref-rgb", RL2_PIXEL_RGB, RL2_COMPRESSION_JPEG, &ret))
 	return ret;
+
+#ifndef OMIT_WEBP		/* only if WebP is enabled */
     ret = -230;
     if (!drop_coverage
 	(db_handle, "noref-rgb", RL2_PIXEL_RGB, RL2_COMPRESSION_LOSSY_WEBP,
@@ -778,6 +788,7 @@ main (int argc, char *argv[])
 	(db_handle, "noref-rgb", RL2_PIXEL_RGB, RL2_COMPRESSION_LOSSLESS_WEBP,
 	 &ret))
 	return ret;
+#endif /* end WebP conditional */
 
 /* dropping all GRAYSCALE Coverages */
     ret = -400;
@@ -795,6 +806,8 @@ main (int argc, char *argv[])
 	(db_handle, "noref-gray", RL2_PIXEL_GRAYSCALE, RL2_COMPRESSION_JPEG,
 	 &ret))
 	return ret;
+
+#ifndef OMIT_WEBP		/* only if WebP is enabled */
     ret = -430;
     if (!drop_coverage
 	(db_handle, "noref-gray", RL2_PIXEL_GRAYSCALE,
@@ -805,6 +818,7 @@ main (int argc, char *argv[])
 	(db_handle, "noref-gray", RL2_PIXEL_GRAYSCALE,
 	 RL2_COMPRESSION_LOSSLESS_WEBP, &ret))
 	return ret;
+#endif /* end WebP conditional */
 
 /* dropping all MONOCHROME Coverages */
     ret = -600;

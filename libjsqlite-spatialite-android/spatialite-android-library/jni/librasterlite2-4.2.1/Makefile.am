@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = headers src test tools examples
+SUBDIRS = headers src test tools
 
 EXTRA_DIST = mainpage.doxy Android_R4.2.0.mk rasterlite2-4.2.0.mk \
 	Makefile-static-MinGW

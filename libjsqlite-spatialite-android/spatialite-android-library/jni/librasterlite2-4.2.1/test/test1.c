@@ -18,7 +18,7 @@ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
 for the specific language governing rights and limitations under the
 License.
 
-The Original Code is the SpatiaLite library
+The Original Code is the RasterLite2 library
 
 The Initial Developer of the Original Code is Alessandro Furieri
  
@@ -42,6 +42,8 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
+
+#include "config.h"
 
 #include "rasterlite2/rasterlite2.h"
 
@@ -643,6 +645,7 @@ test_rgb_jpeg (const char *path)
     rl2_destroy_pixel (pxl);
     unlink ("./from_rgb_jpeg.png");
 
+#ifndef OMIT_WEBP		/* only if WebP is enabled */
     if (rl2_section_to_lossy_webp (img, "./from_rgb_jpeg_10.webp", 10) !=
 	RL2_OK)
       {
@@ -657,7 +660,9 @@ test_rgb_jpeg (const char *path)
 	  return 0;
       }
     unlink ("./from_rgb_jpeg.webp");
+#endif /* end WebP conditional */
 
+#ifndef OMIT_OPENJPEG		/* only if OpenJpeg is enabled */
     if (rl2_section_to_lossy_jpeg2000 (img, "./from_rgb_jpeg_10.jp2", 10) !=
 	RL2_OK)
       {
@@ -672,6 +677,7 @@ test_rgb_jpeg (const char *path)
 	  return 0;
       }
     unlink ("./from_rgb_jpeg.jp2");
+#endif /* end OpenJpeg conditional */
 
     rl2_destroy_section (img);
     return 1;
@@ -926,6 +932,7 @@ test_gray_jpeg (const char *path)
     rl2_destroy_pixel (pxl);
     unlink ("./from_gray_jpeg.png");
 
+#ifndef OMIT_WEBP		/* only if WebP is enabled */
     if (rl2_section_to_lossy_webp (img, "./from_gray_jpeg_10.webp", 10) !=
 	RL2_OK)
       {
@@ -940,6 +947,7 @@ test_gray_jpeg (const char *path)
 	  return 0;
       }
     unlink ("./from_gray_jpeg.webp");
+#endif /* end WebP conditional */
 
     rl2_destroy_section (img);
     return 1;
@@ -1323,6 +1331,7 @@ test_palette_png (const char *path)
       }
     unlink ("./from_palette_png.gif");
 
+#ifndef OMIT_WEBP		/* only if WebP is enabled */
     if (rl2_section_to_lossy_webp (img, "./from_palette_png_10.webp", 10) !=
 	RL2_OK)
       {
@@ -1337,6 +1346,7 @@ test_palette_png (const char *path)
 	  return 0;
       }
     unlink ("./from_palette_png.webp");
+#endif /* end WebP conditional */
 
     rl2_destroy_section (img);
     return 1;

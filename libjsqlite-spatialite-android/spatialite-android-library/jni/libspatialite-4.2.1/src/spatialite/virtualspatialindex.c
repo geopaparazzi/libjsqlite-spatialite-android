@@ -895,6 +895,17 @@ vspidx_rollback (sqlite3_vtab * pVTab)
 }
 
 static int
+vspidx_rename (sqlite3_vtab * pVTab, const char *zNew)
+{
+/* BEGIN TRANSACTION */
+    if (pVTab)
+	pVTab = pVTab;		/* unused arg warning suppression */
+    if (zNew)
+	zNew = zNew;		/* unused arg warning suppression */
+    return SQLITE_ERROR;
+}
+
+static int
 spliteVirtualSpatialIndexInit (sqlite3 * db)
 {
     int rc = SQLITE_OK;
@@ -917,6 +928,7 @@ spliteVirtualSpatialIndexInit (sqlite3 * db)
     my_spidx_module.xCommit = &vspidx_commit;
     my_spidx_module.xRollback = &vspidx_rollback;
     my_spidx_module.xFindFunction = NULL;
+    my_spidx_module.xRename = &vspidx_rename;
     sqlite3_create_module_v2 (db, "VirtualSpatialIndex", &my_spidx_module, NULL,
 			      0);
     return rc;

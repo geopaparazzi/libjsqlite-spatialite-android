@@ -1,7 +1,7 @@
-RL2_CreateCoverage - UINT8 GRAYSCALE GIF
+RL2_CreateRasterCoverage - UINT8 GRAYSCALE GIF
 :memory: #use in-memory database
-SELECT RL2_CreateCoverage('uint8_gray_gif', 'UINT8', 'GRAYSCALE', 1, 'GIF', 10, 512, 512, 3003, 1.0, 1.0, NULL);
+SELECT RL2_CreateRasterCoverage('uint8_gray_gif', 'UINT8', 'GRAYSCALE', 1, 'GIF', 10, 512, 512, 3003, 1.0, 1.0, NULL);
 1 # rows (not including the header row)
 1 # columns
-RL2_CreateCoverage('uint8_gray_gif', 'UINT8', 'GRAYSCALE', 1, 'GIF', 10, 512, 512, 3003, 1.0, 1.0, NULL)
+RL2_CreateRasterCoverage('uint8_gray_gif', 'UINT8', 'GRAYSCALE', 1, 'GIF', 10, 512, 512, 3003, 1.0, 1.0, NULL)
 0

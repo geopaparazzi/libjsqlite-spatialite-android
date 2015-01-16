@@ -64,6 +64,10 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #define _SPATIALITE_H
 #endif
 
+#define SPLITE_AXIS_1		0x51
+#define SPLITE_AXIS_2		0x52
+#define SPLITE_AXIS_NAME	0x3e
+#define SPLITE_AXIS_ORIENTATION	0x3f
 
 #ifdef __cplusplus
 extern "C"
@@ -505,6 +509,128 @@ extern "C"
  \return 0 on failure, any other value on success
  */
     SPATIALITE_DECLARE int insert_epsg_srid (sqlite3 * sqlite, int srid);
+
+/**
+ checks a SRID definition from the "spatial_ref_sys" table
+ determining if it is of the geographic type
+
+ \param sqlite handle to current DB connection
+ \param srid the SRID value uniquely identifying the required EPSG definition 
+ \param geographic on successful completion will contain TRUE or FALSE
+
+ \return 0 on failure, any other value on success
+ */
+    SPATIALITE_DECLARE int srid_is_geographic (sqlite3 * sqlite, int srid,
+					       int *geographic);
+
+/**
+ checks a SRID definition from the "spatial_ref_sys" table
+ determining if it is of the projected type
+
+ \param sqlite handle to current DB connection
+ \param srid the SRID value uniquely identifying the required EPSG definition 
+ \param projected on successful completion will contain TRUE or FALSE
+
+ \return 0 on failure, any other value on success
+ */
+    SPATIALITE_DECLARE int srid_is_projected (sqlite3 * sqlite, int srid,
+					      int *projected);
+
+/**
+ checks a SRID definition from the "spatial_ref_sys" table
+ determining if the axes order is X-Y or Y-X
+
+ \param sqlite handle to current DB connection
+ \param srid the SRID value uniquely identifying the required EPSG definition 
+ \param flipped on successful completion will contain 0 (FALSE) if axes order 
+ is X-Y, any other value (TRUE) if axes order is Y-X.
+
+ \return 0 on failure, any other value on success
+ */
+    SPATIALITE_DECLARE int srid_has_flipped_axes (sqlite3 * sqlite, int srid,
+						  int *flipped);
+
+/**
+ checks a SRID definition from the "spatial_ref_sys" table
+ then returning the corresponding Spheroid name
+ 
+ \param sqlite handle to current DB connection
+ \param srid the SRID value uniquely identifying the required EPSG definition 
+
+ \return the Spheroid name on succes, NULL on failure 
+ 
+ \note you are responsible for freeing the returned name.
+ */
+    SPATIALITE_DECLARE char *srid_get_spheroid (sqlite3 * sqlite, int srid);
+
+/**
+ checks a SRID definition from the "spatial_ref_sys" table
+ then returning the corresponding Prime Meridian name
+ 
+ \param sqlite handle to current DB connection
+ \param srid the SRID value uniquely identifying the required EPSG definition 
+
+ \return the Prime Meridian name on succes, NULL on failure 
+ 
+ \note you are responsible for freeing the returned name.
+ */
+    SPATIALITE_DECLARE char *srid_get_prime_meridian (sqlite3 * sqlite,
+						      int srid);
+
+/**
+ checks a SRID definition from the "spatial_ref_sys" table
+ then returning the corresponding Projection name
+ 
+ \param sqlite handle to current DB connection
+ \param srid the SRID value uniquely identifying the required EPSG definition 
+
+ \return the Projection name on succes, NULL on failure 
+ 
+ \note you are responsible for freeing the returned name.
+ */
+    SPATIALITE_DECLARE char *srid_get_projection (sqlite3 * sqlite, int srid);
+
+/**
+ checks a SRID definition from the "spatial_ref_sys" table
+ then returning the corresponding Datum name
+ 
+ \param sqlite handle to current DB connection
+ \param srid the SRID value uniquely identifying the required EPSG definition 
+
+ \return the Datum name on succes, NULL on failure 
+ 
+ \note you are responsible for freeing the returned name.
+ */
+    SPATIALITE_DECLARE char *srid_get_datum (sqlite3 * sqlite, int srid);
+
+/**
+ checks a SRID definition from the "spatial_ref_sys" table
+ then returning the corresponding Unit name
+ 
+ \param sqlite handle to current DB connection
+ \param srid the SRID value uniquely identifying the required EPSG definition 
+
+ \return the Unit name on succes, NULL on failure 
+ 
+ \note you are responsible for freeing the returned name.
+ */
+    SPATIALITE_DECLARE char *srid_get_unit (sqlite3 * sqlite, int srid);
+
+/**
+ checks a SRID definition from the "spatial_ref_sys" table
+ then returning an Axis definition
+ 
+ \param sqlite handle to current DB connection
+ \param srid the SRID value uniquely identifying the required EPSG definition
+ \param axis should be one of SPLITE_AXIS_1 or SPLITE_AXIS_2
+ \param mode should be one of SPLITE_AXIS_NAME or SPLITE_AXIS_ORIENTATION 
+
+ \return the reqested name on succes, NULL on failure 
+ 
+ \note you are responsible for freeing the returned name.
+ */
+    SPATIALITE_DECLARE char *srid_get_axis (sqlite3 * sqlite, int srid,
+					    char axis, char mode);
 
 /**
  Checks if a column is actually defined into the given table

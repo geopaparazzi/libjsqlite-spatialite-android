@@ -18,7 +18,7 @@ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
 for the specific language governing rights and limitations under the
 License.
 
-The Original Code is the SpatiaLite library
+The Original Code is the RasterLite2 library
 
 The Initial Developer of the Original Code is Alessandro Furieri
  
@@ -42,6 +42,8 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
+
+#include "config.h"
 
 #include "rasterlite2/rasterlite2.h"
 
@@ -631,10 +633,6 @@ main (int argc, char *argv[])
     int blob_odd_sz_zip;
     unsigned char *blob_even_zip;
     int blob_even_sz_zip;
-    unsigned char *blob_odd_lzma;
-    int blob_odd_sz_lzma;
-    unsigned char *blob_even_lzma;
-    int blob_even_sz_lzma;
     unsigned char *blob_odd_jpeg;
     int blob_odd_sz_jpeg;
     unsigned char *blob_even_jpeg;
@@ -651,6 +649,14 @@ main (int argc, char *argv[])
     int blob_odd_sz_fax;
     unsigned char *blob_even_fax;
     int blob_even_sz_fax;
+
+#ifndef OMIT_LZMA		/* only if LZMA is enabled */
+    unsigned char *blob_odd_lzma;
+    int blob_odd_sz_lzma;
+    unsigned char *blob_even_lzma;
+    int blob_even_sz_lzma;
+#endif /* end LZMA conditional */
+
     unsigned char *blob_stat;
     int blob_stat_size;
     int endian = naturalEndian ();
@@ -749,19 +755,41 @@ main (int argc, char *argv[])
 
     if (rl2_raster_encode
 	(raster, RL2_COMPRESSION_DEFLATE, &blob_odd_zip, &blob_odd_sz_zip,
-	 &blob_even_zip, &blob_even_sz_zip, 0, endian) != RL2_ERROR)
+	 &blob_even_zip, &blob_even_sz_zip, 0, endian) != RL2_OK)
       {
 	  fprintf (stderr, "Unexpected result - DEFLATE compressed\n");
 	  return -103;
       }
+    free (blob_odd_zip);
 
     if (rl2_raster_encode
+	(raster, RL2_COMPRESSION_DEFLATE_NO, &blob_odd_zip, &blob_odd_sz_zip,
+	 &blob_even_zip, &blob_even_sz_zip, 0, endian) != RL2_OK)
+      {
+	  fprintf (stderr, "Unexpected result - DEFLATE_NO compressed\n");
+	  return -104;
+      }
+    free (blob_odd_zip);
+
+#ifndef OMIT_LZMA		/* only if LZMA is enabled */
+    if (rl2_raster_encode
 	(raster, RL2_COMPRESSION_LZMA, &blob_odd_lzma, &blob_odd_sz_lzma,
-	 &blob_even_lzma, &blob_even_sz_lzma, 0, endian) != RL2_ERROR)
+	 &blob_even_lzma, &blob_even_sz_lzma, 0, endian) != RL2_OK)
       {
 	  fprintf (stderr, "Unexpected result - LZMA compressed\n");
 	  return -10;
       }
+    free (blob_odd_lzma);
+
+    if (rl2_raster_encode
+	(raster, RL2_COMPRESSION_LZMA_NO, &blob_odd_lzma, &blob_odd_sz_lzma,
+	 &blob_even_lzma, &blob_even_sz_lzma, 0, endian) != RL2_OK)
+      {
+	  fprintf (stderr, "Unexpected result - LZMA_NO compressed\n");
+	  return -105;
+      }
+    free (blob_odd_lzma);
+#endif /* end LZMA conditional */
 
     if (rl2_raster_encode
 	(raster, RL2_COMPRESSION_JPEG, &blob_odd_jpeg, &blob_odd_sz_jpeg,
@@ -851,7 +879,6 @@ main (int argc, char *argv[])
 	  fprintf (stderr, "Unexpected result: Decode 1:2 - fax\n");
 	  return -24;
       }
-    free (blob_odd_lzma);
 
     unlink ("./monochrome_1_1_fax.png");
 

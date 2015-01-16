@@ -3,51 +3,60 @@ HOW-TO: UPDATE spatial_ref_sys SELF-INITIALIZING C CODE
 When updating is required: each time a new GDAL version will be released.
 ============================================================================
 
-STEP #1: getting the basic EPSG files
+STEP #0: building the most recent GDAL
 --------
 - download the latest GDAL sources
-- build and install 
-  be sure to set: ./configure --with-python=yes
+- build and install (no special settings are required)
+- CAVEAT: set the LD_LIBRARY_PATH env variable so to be
+  absolutely sure to target this custom built GDAL and
+  not the default system installation
+  
 
-# cd {gdal-sources}/data 
-# rm epsg
-# epsg_tr.py --config OVERRIDE_PROJ_DATUM_WITH_TOWGS84 FALSE \
-#    -proj4 -skip -list gcs.csv > epsg
-# epsg_tr.py --config OVERRIDE_PROJ_DATUM_WITH_TOWGS84 FALSE \
-#    -proj4 -skip -list pcs.csv >> epsg
-# rm wkt
-# epsg_tr.py -wkt -skip -list gcs.csv > wkt
-# epsg_tr.py -wkt -skip -list pcs.csv >> wkt
-
-all right: these "epsg" and "wkt" files will be used as "seeds" into the
-next step:
-- copy both "epsg" and "wkt" files into: 
-  {libspatialite-source}/src/srcinit/epsg_update
-
-
-
-STEP #2: compiling the C generator tool
+STEP #1: compiling the C GDAL utility
 --------
 # cd {libspatialite-source}/src/srsinit/epsg_update
 
 Linux:
-# gcc auto_epsg.c -o auto_epsg
+# gcc epsg_from_gdal.c -o epsg_from_gdal -lgdal
 
 Windows [MinGW]:
-# gcc auto_epsg.c -o auto_epsg.exe
+# gcc -I/usr/local/include epsg_from_gdal.c -o epsg_from_gdal,exe \
+      -L/usr/local/lib -lgdal
 
 
 
-STEP #3: generating the C code [inlined EPSG dataset]
+STEP #2: getting the basic EPSG file
+--------
+# rm epsg
+# epsg_from_gdal >epsg
+
+all right: this "epsg" output file will be used as a "seed" 
+into the next step
+
+
+
+STEP #3: compiling the C generator tool
+--------
+# cd {libspatialite-source}/src/srsinit/epsg_update
+
+Linux:
+# gcc auto_epsg_ext.c -o auto_epsg_ext
+
+Windows [MinGW]:
+# gcc auto_epsg_ext.c -o auto_epsg_ext.exe
+
+
+
+STEP #4: generating the C code [inlined EPSG dataset]
 --------
 # rm epsg_inlined_*.c
-# ./auto_epsg
+# ./auto_epsg_ext
 
 at the end of this step several "epsg_inlined_*.c" files will be generated
 
 
 
-STEP #4: final setup
+STEP #5: final setup
 --------
 - copy the generated file into the parent dir:
   rm ../epsg_inlined*.c

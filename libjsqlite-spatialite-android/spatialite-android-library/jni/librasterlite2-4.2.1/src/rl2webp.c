@@ -45,8 +45,6 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #include <stdio.h>
 #include <string.h>
 
-#include <webp/decode.h>
-#include <webp/encode.h>
 
 #include "config.h"
 
@@ -56,6 +54,11 @@ the terms of any one of the MPL, the GPL or the LGPL.
 
 #include "rasterlite2/rasterlite2.h"
 #include "rasterlite2_private.h"
+
+#ifndef OMIT_WEBP		/* only if WebP is enabled */
+
+#include <webp/decode.h>
+#include <webp/encode.h>
 
 static int
 check_webp_compatibility (unsigned char sample_type, unsigned char pixel_type,
@@ -717,3 +720,5 @@ rl2_decode_webp_scaled (int scale, const unsigned char *webp, int webp_size,
 	free (mask);
     return RL2_ERROR;
 }
+
+#endif /* end WebP conditional */

@@ -2060,7 +2060,6 @@ check_drop_layout (sqlite3 * sqlite, const char *prefix, const char *table,
     int rows;
     int columns;
     char jolly = '%';
-    char *x_name;
     int ret;
     char *sql;
     char *q_prefix = gaiaDoubleQuotedSql (prefix);
@@ -2143,14 +2142,14 @@ check_drop_layout (sqlite3 * sqlite, const char *prefix, const char *table,
 
 /* identifying any possible R*Tree supporting the main target */
     q_prefix = gaiaDoubleQuotedSql (prefix);
-    x_name = sqlite3_mprintf ("idx_%s_%c", table, jolly);
     sql =
 	sqlite3_mprintf
-	("SELECT name FROM \"%s\".sqlite_master WHERE type = 'table' "
-	 "AND name LIKE(%Q) AND sql LIKE('%cvirtual%c') AND sql LIKE('%crtree%c')",
-	 q_prefix, x_name, jolly, jolly, jolly, jolly);
+	("SELECT name FROM \"%s\".sqlite_master WHERE type = 'table' AND "
+	 "name IN (SELECT 'idx_' || f_table_name || '_' || f_geometry_column "
+	 "FROM geometry_columns WHERE Lower(f_table_name) = Lower(%Q)) "
+	 "AND sql LIKE('%cvirtual%c') AND sql LIKE('%crtree%c')",
+	 q_prefix, table, jolly, jolly, jolly, jolly);
     free (q_prefix);
-    sqlite3_free (x_name);
     ret = sqlite3_get_table (sqlite, sql, &results, &rows, &columns, NULL);
     sqlite3_free (sql);
     if (ret != SQLITE_OK)

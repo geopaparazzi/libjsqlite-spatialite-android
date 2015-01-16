@@ -53,6 +53,7 @@ SRSINIT_COMMON_SOURCES = srs_init.c \
 	epsg_inlined_43.c \
 	epsg_inlined_44.c \
 	epsg_inlined_45.c \
+	epsg_inlined_46.c \
 	epsg_inlined_wgs84_00.c \
 	epsg_inlined_wgs84_01.c \
 	epsg_inlined_prussian.c \

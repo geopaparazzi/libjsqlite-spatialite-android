@@ -545,6 +545,8 @@ check_jpeg_origin_compatibility (rl2RasterPtr raster, rl2CoveragePtr coverage,
     return 0;
 }
 
+#ifndef OMIT_OPENJPEG		/* only if OpenJpeg is enabled */
+
 static int
 check_jpeg2000_origin_compatibility (rl2RasterPtr raster,
 				     rl2CoveragePtr coverage,
@@ -662,6 +664,8 @@ check_jpeg2000_origin_compatibility (rl2RasterPtr raster,
       }
     return 0;
 }
+
+#endif /* end OpenJpeg conditional */
 
 RL2_DECLARE char *
 rl2_build_worldfile_path (const char *path, const char *suffix)
@@ -1068,6 +1072,8 @@ do_import_jpeg_image (sqlite3 * handle, const char *src_path,
     return 0;
 }
 
+#ifndef OMIT_OPENJPEG		/* only if OpenJpeg is enabled */
+
 static int
 read_j2w_worldfile (const char *src_path, double *minx, double *maxy,
 		    double *pres_x, double *pres_y)
@@ -1425,6 +1431,8 @@ do_import_jpeg2000_image (sqlite3 * handle, const char *src_path,
     return 0;
 }
 
+#endif /* end of OpenJpeg conditional */
+
 static int
 is_ascii_grid (const char *path)
 {
@@ -1451,6 +1459,8 @@ is_jpeg_image (const char *path)
     return 0;
 }
 
+#ifndef OMIT_OPENJPEG		/* only if OpenJpeg is enabled */
+
 static int
 is_jpeg2000_image (const char *path)
 {
@@ -1463,6 +1473,8 @@ is_jpeg2000_image (const char *path)
       }
     return 0;
 }
+
+#endif /* end OpenJpeg conditional */
 
 static int
 do_import_file (sqlite3 * handle, const char *src_path,
@@ -1531,6 +1543,7 @@ do_import_file (sqlite3 * handle, const char *src_path,
 				     stmt_tils, stmt_sect, stmt_levl,
 				     stmt_upd_sect, verbose, current, total);
 
+#ifndef OMIT_OPENJPEG		/* only if OpenJpeg is enabled */
     if (is_jpeg2000_image (src_path))
 	return do_import_jpeg2000_image (handle, src_path, cvg, section,
 					 force_srid, tile_w, tile_h, pyramidize,
@@ -1538,6 +1551,7 @@ do_import_file (sqlite3 * handle, const char *src_path,
 					 stmt_data, stmt_tils, stmt_sect,
 					 stmt_levl, stmt_upd_sect, verbose,
 					 current, total);
+#endif /* end OpenJpeg conditonal */
 
     time (&start);
     if (rl2_get_coverage_resolution (cvg, &base_res_x, &base_res_y) != RL2_OK)

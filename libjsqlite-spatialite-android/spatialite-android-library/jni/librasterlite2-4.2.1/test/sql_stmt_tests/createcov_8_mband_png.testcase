@@ -1,7 +1,7 @@
-RL2_CreateCoverage - UINT8 MULTIBAND PNG
+RL2_CreateRasterCoverage - UINT8 MULTIBAND PNG
 :memory: #use in-memory database
-SELECT RL2_CreateCoverage('uint8_multiband_png', 'UINT8', 'MULTIBAND', 4, 'PNG', 1000, 512, 512, 3003, 1.0);
+SELECT RL2_CreateRasterCoverage('uint8_multiband_png', 'UINT8', 'MULTIBAND', 4, 'PNG', 1000, 512, 512, 3003, 1.0);
 1 # rows (not including the header row)
 1 # columns
-RL2_CreateCoverage('uint8_multiband_png', 'UINT8', 'MULTIBAND', 4, 'PNG', 1000, 512, 512, 3003, 1.0)
+RL2_CreateRasterCoverage('uint8_multiband_png', 'UINT8', 'MULTIBAND', 4, 'PNG', 1000, 512, 512, 3003, 1.0)
 1

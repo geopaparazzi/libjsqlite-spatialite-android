@@ -18,7 +18,7 @@ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
 for the specific language governing rights and limitations under the
 License.
 
-The Original Code is the SpatiaLite library
+The Original Code is the RasterLite2 library
 
 The Initial Developer of the Original Code is Alessandro Furieri
  
@@ -42,6 +42,8 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
+
+#include "config.h"
 
 #include "rasterlite2/rasterlite2.h"
 
@@ -317,6 +319,7 @@ test_rgb_jpeg (const char *path, const char *mask_path)
       }
     unlink ("./masked_rgb_20.jpg");
 
+#ifndef OMIT_WEBP		/* only if WebP is enabled */
     if (rl2_section_to_lossy_webp (img, "./masked_rgb_20.webp", 20) != RL2_OK)
       {
 	  fprintf (stderr, "Unable to write: masked_rgb_20.webp\n");
@@ -330,6 +333,7 @@ test_rgb_jpeg (const char *path, const char *mask_path)
 	  return 0;
       }
     unlink ("./masked_rgb.webp");
+#endif /* end WebP conditional */
     unlink ("./masked_rgb.jpg");
 
     rl2_destroy_section (img);
@@ -442,6 +446,7 @@ test_gray_jpeg (const char *path, const char *mask_path)
       }
     unlink ("./masked_gray.jpg");
 
+#ifndef OMIT_WEBP		/* only if WebP is enabled */
     if (rl2_section_to_lossy_webp (img, "./masked_gray_20.webp", 20) != RL2_OK)
       {
 	  fprintf (stderr, "Unable to write: masked_gray_20.webp\n");
@@ -455,6 +460,7 @@ test_gray_jpeg (const char *path, const char *mask_path)
 	  return 0;
       }
     unlink ("./masked_gray.webp");
+#endif /* end WebP conditional */
 
     rl2_destroy_section (img);
     return 1;

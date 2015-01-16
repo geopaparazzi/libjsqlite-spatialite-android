@@ -54,6 +54,7 @@
 			<li><a href="#p17">SQL functions for MbrCache-based queries</a></li>
 			<li><a href="#p18">SQL functions for R*Tree-based queries (Geometry Callbacks)</a></li>
 			<li><a href="#xmlBlob">SQL functions supporting XmlBLOB</a></li>
+			<li><a href="#srid">SQL functions supporting SRID inspection</a></li>
 			<li><a href="#advanced">miscellaneous advanced SQL functions</a></li>
 		</ul>
 		<table bgcolor="#e2eae2" border="1" cellpadding="2" cellspacing="2" width="100%">
@@ -155,6 +156,11 @@
 			<tr><td><b>MD5TotalChecksum</b></td>
 				<td>MD5TotalChecksum( BLOB | TEXT ) : <i>Text</i></td>
 				<td colspan="3">returns a cumulative MD5 checksum.<br><b><u>aggregate function</u></b></td></tr>
+			<tr><td><b>eval</b></td>
+				<td>eval( X <i>TEXT</i> [ , Y <i>TEXT</i> ) : <i>Text</i></td>
+				<td colspan="3">Evaluate the SQL text in <b>X</b>.  Return the results, using string <b>Y</b> as the separator.<br>
+				If <b>Y</b> is omitted, use a single space character.<hr>
+                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to effectively enable this function.</td></tr>
 			<tr><td colspan="5" align="center" bgcolor="#f0e0c0">
 				<h3><a name="math">SQL math functions</a></h3></td></tr>
 			<tr><th bgcolor="#d0d0d0">Function</th>
@@ -1789,12 +1795,13 @@ This function only supports Long/Lat coordinates, and will return NULL for any p
 				<td>return a geometric object that is the closure of the set symmetric difference of geom1 and geom2 
 					(logical XOR of space)</td></tr>
 			<tr><td><b>Buffer</b></td>
-				<td>Buffer( geom <i>Geometry</i> , dist <i>Double precision</i> ) : <i>Geometry</i><hr>
-					ST_Buffer( geom <i>Geometry</i> , dist <i>Double precision</i> ) : <i>Geometry</i></td>
+				<td>Buffer( geom <i>Geometry</i> , dist <i>Double precision</i> [ , quadrantsegments <i>Integer</i> ] ) : <i>Geometry</i><hr>
+					ST_Buffer( geom <i>Geometry</i> , dist <i>Double precision</i> [ , quadrantsegments <i>Integer</i> ] ) : <i>Geometry</i></td>
 				<td align="center" bgcolor="#d0f0d0">X</td>
 				<td align="center" bgcolor="#f0d0d0">GEOS</td>
 				<td>return a geometric object defined by buffering a distance d around geom, 
-					where dist is in the distance units for the Spatial Reference of geom</td></tr>
+					where dist is in the distance units for the Spatial Reference of geom.<hr>
+					the optional <b>quadrantsegments</b> argument specifies the number of segments used to approximate a quarter circle (default is 30).</td></tr>
 			<tr><td><b>ConvexHull</b></td>
 				<td>ConvexHull( geom <i>Geometry</i> ) : <i>Geometry</i><hr>
 					ST_ConvexHull( geom <i>Geometry</i> ) : <i>Geometry</i></td>
@@ -2518,6 +2525,12 @@ the return type is Integer, with a return value of 1 for TRUE (success) or 0 for
 				<td align="center" bgcolor="#d0f0d0">base</td>
 				<td>Creates the <b>raster_coverages</b> table required by <b>RasterLite-2</b><hr>
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure)</td></tr>
+		<tr><td><b>CreateVectorCoveragesTables</b></td>
+				<td>CreateVectorCoveragesTables( <i>void</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#d0f0d0">base</td>
+				<td>Creates the <b>vector_coverages</b> and <b>vector_coverages_srid</b> tables required by <b>RasterLite-2</b><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure)</td></tr>
 			<tr><td><b>RebuildGeometryTriggers</b></td>
 				<td>RebuildGeometryTriggers( table_name <i>String</i> , geometry_column_name <i>String</i> ) : <i>integer</i></td>
 				<td></td>
@@ -2574,20 +2587,94 @@ the return type is Integer, with a return value of 1 for TRUE (success) or 0 for
 				<th bgcolor="#d0d0d0">Summary</th></tr>
 		<tr><td><b>CreateStylingTables</b></td>
 				<td>CreateStylingTables() : <i>Integer</i><hr>
-					CreateStylingTables( relaxed <i>Integer</i> ) : <i>Integer</i></td>
+					CreateStylingTables( relaxed <i>Integer</i> ) : <i>Integer</i><hr>
+					CreateStylingTables( relaxed <i>Integer</i> , transaction <i>Integer</i> ) : <i>Integer</i></td>
 				<td></td>
 				<td align="center" bgcolor="#99d099">libxml2</td>
 				<td>Creates a set of tables supporting <b>SLD/SE Styled Layers</b>.
 				<ul>
-					<li>if the <i>optional</i> argument <b>relaxed</b> is specified (any value), then
-					a <i>relaxed</i> version of the validating Triggers will be installed.</li>
+					<li>if the <i>optional</i> argument <b>relaxed</b> is explicitly set as <b>TRUE</b> then
+					a <i>relaxed</i> version of the validating Triggers will be installed (not checking for strict <i><u>XSD schema validation</u></i>).</li>
+					<li>if the <i>optional</i> argument <b>transaction</b> is explicitly set as <b>TRUE</b> then 
+					the whole operation will be atomically confined within a monolithic SQL transaction</li>
 				</ul><hr>
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
 				returned on invalid arguments.<hr>
 <i>Please note</i>: will implicitly invoke <b>CreateRasterCoverages()</b> if the <b>raster_coverages</b> table has not yet been created.</td></tr>
-		<tr><td><b>RegisterExternalGraphic</b></td>
-				<td>RegisterExternalGraphic( xlink_href <i>String</i> , resource <i>BLOB</i> ) : <i>Integer</i><hr>
-					RegisterExternalGraphic( xlink_href <i>String</i> , resource <i>BLOB</i> , title <i>String</i> , abstract <i>String</i> , file_name <i>String</i> ) : <i>Integer</i></td>
+		<tr><td><b>SE_RegisterVectorCoverage</b></td>
+				<td>SE_RegisterVectorCoverage( coverage_name <i>String</i> , f_table_name <i>String</i> , f_geometry_column <i>Sting</i> ) : <i>Integer</i><hr>
+					SE_RegisterVectorCoverage( coverage_name <i>String</i> , f_table_name <i>String</i> , f_geometry_column <i>Sting</i> , title <i>String</i> , abstract <i>String </i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Creates a <b>Vector Coverage</b> based on an already existing Spatial Table.
+				<ul>
+					<li><b>coverage_name</b> is the symbolic name uniquely identifying each Vector Coverage (<i>Primary Key</i>).</li>
+					<li><b>f_table_name</b> and <b>f_geometry_column</b> are expected to match a corresponding entry in the <b>geometry_columns</b> table.</li>
+					<li>the optional arguments <b>title</b> and <b>abstract</b> could be eventually specified for better human readability.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_UnregisterVectorCoverage</b></td>
+				<td>SE_UnregisterVectorCoverage( coverage_name <i>String</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Completely removes an already defined <b>Vector Coverage</b> this including any furher depency; the underlying Spatial Table will be absolutely unaffected.
+				<ul>
+					<li><b>coverage_name</b> must identify an existing Vector Coverage.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_SetVectorCoverageInfos</b></td>
+				<td>SE_SetVectorCoverageInfos( coverage_name <i>String</i> , title <i>String</i> , abstract <i>String</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Updates the descriptive infos associated to a <b>Vector Coverage</b>.
+				<ul>
+					<li><b>coverage_name</b> must identify an existing Vector Coverage.</li>
+					<li><b>title</b> and <b>abstract</b> represent the descriptive infos to be set.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_RegisterVectorCoverageSrid</b></td>
+				<td>SE_RegisterVectorCoverageSrid( coverage_name <i>String</i> , srid <i>Integer</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Adds an alternative <b>SRID</b> to an already defined Vector Coverage.
+				<ul>
+					<li><b>coverage_name</b> must identify an existing Vector Coverage.</li>
+					<li><b>srid</b> is expected to match a corresponding entry in the <b>spatial_ref_sys</b> table.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_UnregisterVectorCoverageSrid</b></td>
+				<td>SE_UnregisterVectorCoverageSrid( coverage_name <i>String</i> , srid <i>Integer</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Removes an already defined alternative <b>SRID</b> from a Vector Coverage.
+				<ul>
+					<li><b>coverage_name</b> and <b>srid</b> must identify some previously defined alternative SRID.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_UpdateVectorCoverageExtent</b></td>
+				<td>SE_UpdateVectorCoverageExtent() : <i>Integer</i><hr>
+				    SE_UpdateVectorCoverageExtent( transaction <i>Integer</i> ) : <i>Integer</i><hr>
+				    SE_UpdateVectorCoverageExtent( coverage_name <i>String</i> ) : <i>Integer</i><hr>
+				    SE_UpdateVectorCoverageExtent( coverage_name <i>String</i> , transaction <i>Integer</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Updates the <b>Extent</b> boundary supporting a Vector Coverage, this including any eventually defined alternative SRID.
+				<ul>
+					<li>if the optional <b>coverage_name</b> argument is set then only that single Vector Coverage will be updated; 
+					otherwise all registered Vector Coverages will be processed in a single pass (may require a long time).</li>
+					<li>if the optional <b>transaction</b> argument is set to <b>TRUE</b> then the whole operation will be internally
+					handled as a single SQL Transaction.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_RegisterExternalGraphic</b></td>
+				<td>SE_RegisterExternalGraphic( xlink_href <i>String</i> , resource <i>BLOB</i> ) : <i>Integer</i><hr>
+					SE_RegisterExternalGraphic( xlink_href <i>String</i> , resource <i>BLOB</i> , title <i>String</i> , abstract <i>String</i> , file_name <i>String</i> ) : <i>Integer</i></td>
 				<td></td>
 				<td align="center" bgcolor="#99d099">libxml2</td>
 				<td>Inserts (or updates) an <b>External Graphic Resource</b>.
@@ -2598,57 +2685,150 @@ the return type is Integer, with a return value of 1 for TRUE (success) or 0 for
 				</ul><hr>
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
 				returned on invalid arguments.</td></tr>
-		<tr><td><b>RegisterVectorStyledLayer</b></td>
-				<td>RegisterVectorStyledLayer( f_table_name <i>String</i> , f_geometry_column <i>String</i> , style <i>BLOB</i> ) : <i>Integer</i><hr>
-					RegisterVectorStyledLayer( f_table_name <i>String</i> , f_geometry_column <i>String</i> , style_id <i>Integer</i>  , style <i>BLOB</i> ) : <i>Integer</i></td>
+		<tr><td><b>SE_UnregisterExternalGraphic</b></td>
+				<td>SE_UnregisterExternalGraphic( xlink_href <i>String</i> ) : <i>Integer</i></td>
 				<td></td>
 				<td align="center" bgcolor="#99d099">libxml2</td>
-				<td>Inserts (or updates) a <b>Vector Styled Layer</b> definition.
+				<td>Deletes an already existing <b>External Graphic Resource</b>.
 				<ul>
-					<li><b>f_table_name</b> and <b>f_geometry_column</b> must identify an existing Vector Layer.</li>
-					<li><b>style</b> is expected to be an XmlBLOB containing a valid SLD/SE Style of the Vector type.<br>
-					If <b>CreatedStylingTables()</b> was invoked without specifying the <i>relaxed</i> option this XmlBLOB is expected to have successfully passed a formal XML Schema Validation.</li>
-					<li>The same Vector Layer could eventually support more than a single Style; in this case 
-					the optional argument <b>style_id</b> can be explicitly set in order to identify an individual Style.<br>
-					If no <b>style_id</b> argument is specified then a new Styled Layer will be created, and the <b>style_id</b> value will be automatically set so to ensure univocity.</li>
+					<li><b>xlink_href</b> the External Resource to be deleted.</li>
 				</ul><hr>
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
 				returned on invalid arguments.</td></tr>
-		<tr><td><b>RegisterRasterStyledLayer</b></td>
-				<td>RegisterRasterStyledLayer( coverage_name <i>String</i> , style <i>BLOB</i> ) : <i>Integer</i><hr>
-					RegisterRasterStyledLayer( coverage_name <i>String</i> , style_id <i>Integer</i>  , style <i>BLOB</i> ) : <i>Integer</i></td>
+		<tr><td><b>SE_RegisterVectorStyle</b></td>
+				<td>SE_RegisterVectorStyle( style <i>BLOB</i> ) : <i>Integer</i></td>
 				<td></td>
 				<td align="center" bgcolor="#99d099">libxml2</td>
-				<td>Inserts (or updates) a <b>Raster Styled Layer</b> definition.
+				<td>Inserts a new <b>Vector Style</b> definition.
+				<ul>
+					<li><b>style</b> is expected to be an XmlBLOB containing a valid SLD/SE Style of the Vector type.<br>
+					If <b>CreatedStylingTables()</b> was invoked without specifying the <i>relaxed</i> option this XmlBLOB is expected to have successfully passed a formal XML Schema Validation.<br>
+					The registered Style will be identified either by its unique <b>Style ID</b> or by its <b>Style Name</b> automatically retrieved from SLD/SE XML.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_UnregisterVectorStyle</b></td>
+				<td>SE_UnregisterVectorStyle( style_id <i>Integer</i> [ , remove_all <i>Integer</i> ] ) : <i>Integer</i><hr>
+					SE_UnregisterVectorStyle( style_name <i>Text</i> [ , remove_all <i>Integer</i> ] ) : <i>Integer</td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Removes an already registered <b>Vector Style</b> definition.
+				<ul>
+					<li>The Style to be removed could be referenced either by its unique <b>Style Id</b> or by its <b>Style Name</b>.<br>
+					Anyway any attempt to remove a Style identified by its <b>Name</b> will be rejected if the if two (or more) Styles share the same <b>Name</b> thus causing ambiguity.</li>
+					<li>when the <i>optional</i> argument <b>remove_all</b> is explicitly set to <b>TRUE</b> the Style will be removed even if it's already referenced by some
+					<b>VectorStyledLayer</b> and all dependings references will be removed at the same time.<br>
+					In any other case any attempt to unregister a Style already referenced by one (or more) <b>VectorStyleLayer</b> will be rejected.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_ReloadVectorStyle</b></td>
+				<td>SE_ReloadVectorStyle( style_id <i>Integer</i> , style <i>BLOB</i> ) : <i>Integer</i><hr>
+					SE_ReloadVectorStyle( style_name <i>Text</i> , style <i>BLOB</i> ) : <i>Integer</td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Updates an already existing <b>Vector Style</b> definition.
+				<ul>
+					<li><b>style</b> is expected to be an XmlBLOB containing a valid SLD/SE Style of the Vector type.<br>
+					If <b>CreatedStylingTables()</b> was invoked without specifying the <i>relaxed</i> option this XmlBLOB is expected to have successfully passed a formal XML Schema Validation.<br>
+					The updated Style will continue to be identified by its current unique <b>Style ID</b> but the <b>Style Name</b> will be automatically updated accordingly to SLD/SE XML.</li></li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_RegisterVectorStyledLayer</b></td>
+				<td>SE_RegisterVectorStyledLayer( coverage_name <i>String</i> , style_id <i>Integer</i> ) : <i>Integer</i><hr>
+					SE_RegisterVectorStyledLayer( coverage_name <i>String</i> , style_name <i>Text</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Associates a <b>Vector Style</b> to a <b>Vector Styled Layer</b>.
+				<ul>
+					<li><b>coverage_name</b> must identify an existing Vector Layer.</li>
+					<li>An already registered Style can be referenced either by its unique <b>Stile ID</b> or by its <b>Name</b>;
+					anyway a reference <i>by Name</i> could eventually fail if the Name is ambiguous (duplicate).</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_UnregisterVectorStyledLayer</b></td>
+				<td>SE_UnregisterVectorStyledLayer( coverage_name <i>String</i> , style_id <i>Integer</i> ) : <i>Integer</i><hr>
+					SE_UnregisterVectorStyledLayer( coverage_name <i>String</i> , style_name <i>Text</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Removes an association between a <b>Vector Style</b> and a <b>Vector Styled Layer</b>.
+				<ul>
+					<li><b>coverage_name</b> must identify an existing Vector Layer.</li>
+					<li>An already associated Style can be referenced either by its unique <b>Stile ID</b> or by its <b>Name</b>;
+					anyway a reference <i>by Name</i> could eventually fail if the Name is ambiguous (duplicate).</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_RegisterRasterStyle</b></td>
+				<td>SE_RegisterRasterStyle( style <i>BLOB</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Inserts a new <b>Raster Style</b> definition.
+				<ul>
+					<li><b>style</b> is expected to be an XmlBLOB containing a valid SLD/SE Style of the Raster type.<br>
+					If <b>CreatedStylingTables()</b> was invoked without specifying the <i>relaxed</i> option this XmlBLOB is expected to have successfully passed a formal XML Schema Validation.<br>
+					The registered Style will be identified either by its unique <b>Style ID</b> or by its <b>Style Name</b> automatically retrieved from SLD/SE XML.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_UnregisterRasterStyle</b></td>
+				<td>SE_UnregisterRasterStyle( style_id <i>Integer</i> [ , remove_all <i>Integer</i> ] ) : <i>Integer</i><hr>
+					SE_UnregisterRasterStyle( style_name <i>Text</i> [ , remove_all <i>Integer</i> ] ) : <i>Integer</td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Removes an already registered <b>Raster Style</b> definition.
+				<ul>
+					<li>The Style to be removed could be referenced either by its unique <b>Style Id</b> or by its <b>Style Name</b>.<br>
+					Anyway any attempt to remove a Style identified by its <b>Name</b> will be rejected if the if two (or more) Styles share the same <b>Name</b> thus causing ambiguity.</li>
+					<li>when the <i>optional</i> argument <b>remove_all</b> is explicitly set to <b>TRUE</b> the Style will be removed even if it's already referenced by some
+					<b>RasterStyledLayer</b> and all dependings references will be removed at the same time.<br>
+					In any other case any attempt to unregister a Style already referenced by one (or more) <b>RasterStyleLayer</b> will be rejected.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_ReloadRasterStyle</b></td>
+				<td>SE_ReloadRasterStyle( style_id <i>Integer</i> , style <i>BLOB</i> ) : <i>Integer</i><hr>
+					SE_ReloadRasterStyle( style_name <i>Text</i> , style <i>BLOB</i> ) : <i>Integer</td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Updates an already existing <b>Raster Style</b> definition.
+				<ul>
+					<li><b>style</b> is expected to be an XmlBLOB containing a valid SLD/SE Style of the Raster type.<br>
+					If <b>CreatedStylingTables()</b> was invoked without specifying the <i>relaxed</i> option this XmlBLOB is expected to have successfully passed a formal XML Schema Validation.<br>
+					The updated Style will continue to be identified by its current unique <b>Style ID</b> but the <b>Style Name</b> will be automatically updated accordingly to SLD/SE XML.</li><
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_RegisterRasterStyledLayer</b></td>
+				<td>SE_RegisterRasterStyledLayer( coverage_name <i>String</i> , style_id <i>Integer</i>  ) : <i>Integer</i><hr>
+					SE_RegisterRasterStyledLayer( coverage_name <i>String</i> , style_name <i>Text</i>  ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Associates a <b>Raster Style</b> to a <b>Raster Styled Layer</b>.
 				<ul>
 					<li><b>coverage_name</b> must identify an existing Raster Layer.</li>
-					<li><b>style</b> is expected to be an XmlBLOB containing a valid SLD/SE Style of the Raster type.<br>
-					If <b>CreatedStylingTables()</b> was invoked without specifying the <i>relaxed</i> option this XmlBLOB is expected to have successfully passed a formal XML Schema Validation.</li>
-					<li>The same Raster Layer could eventually support more than a single Style; in this case 
-					the optional argument <b>style_id</b> can be explicitly set in order to identify an individual Style.<br>
-					If no <b>style_id</b> argument is specified then a new Styled Layer will be created, and the <b>style_id</b> value will be automatically set so to ensure univocity.</li>
+					<li>An already registered Style can be referenced either by its unique <b>Stile ID</b> or by its <b>Name</b>;
+					anyway a reference <i>by Name</i> could eventually fail if the Name is ambiguous (duplicate).</li>
 				</ul><hr>
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
 				returned on invalid arguments.</td></tr>
-		<tr><td><b>RegisterStyledGroup</b></td>
-				<td>RegisterStyledGroup( group_name <i>String</i> , f_table_name <i>String</i> , f_geometry_column <i>String</i> [ , paint_order <i>Integer</i> ] ) : <i>Integer</i><hr>
-					RegisterStyledGroup( group_name <i>String</i> , coverage_name <i>String</i> [ , paint_order <i>Integer</i> ] ) : <i>Integer</i></td>
+		<tr><td><b>SE_UnregisterRasterStyledLayer</b></td>
+				<td>SE_UnregisterRasterStyledLayer( coverage_name <i>String</i> , style_id <i>Integer</i> ) : <i>Integer</i><hr>
+					SE_UnregisterRasterStyledLayer( coverage_name <i>String</i> , style_name <i>Text</i> ) : <i>Integer</i></td>
 				<td></td>
 				<td align="center" bgcolor="#99d099">libxml2</td>
-				<td>Inserts (or updates) a <b>Styled Group</b> definition.
+				<td>Removes an association between a <b>Raster Style</b> and a <b>Raster Styled Layer</b>.
 				<ul>
-					<li><b>group_name</b> must identify a Styled Group: if the Styled Group doesn't yet exists it will be implicitly created.</li>
-					<li><b>f_table_name</b> and <b>f_geometry_column</b> must identify an existing Vector Layer.</li>
-					<li>or alternatively: <b>coverage_name</b> must identify an existing Raster Layer.</li>
-					<li>the optional <b>paint_order</b> argument could be used to explicitly reference an already defined group item (this implying <u>updating</u> the previous registration)<br>
-					If <b>paint_order</b> is not specified or if a <i>negative</i> value is passed 
-					then the next available order position will be automatically assigned (this always implying <u>inserting</u> a new registration).<br>
-					<u>Please note</u>: the painting order will follow the <b>Painter rule</b>, i.e. a lower paint-order value will always be painted before painting any higher value.
+					<li><b>coverage_name</b> must identify an existing Raster Layer.</li>
+					<li>An already associated Style can be referenced either by its unique <b>Stile ID</b> or by its <b>Name</b>;
+					anyway a reference <i>by Name</i> could eventually fail if the Name is ambiguous (duplicate).</li>
 				</ul><hr>
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
 				returned on invalid arguments.</td></tr>
-		<tr><td><b>SetStyledGroupInfos</b></td>
-				<td>SetStyledGroupInfos( group_name <i>String</i> , title <i>String</i> , abstract <i>String</i> ) : <i>Integer</i></td>
+		<tr><td><b>SE_SetStyledGroupInfos</b></td>
+				<td>SE_SetStyledGroupInfos( group_name <i>String</i> , title <i>String</i> , abstract <i>String</i> ) : <i>Integer</i></td>
 				<td></td>
 				<td align="center" bgcolor="#99d099">libxml2</td>
 				<td>Inserts (or updates) the descriptive infos associated to a <b>Styled Group</b>.
@@ -2658,19 +2838,167 @@ the return type is Integer, with a return value of 1 for TRUE (success) or 0 for
 				</ul><hr>
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
 				returned on invalid arguments.</td></tr>
-		<tr><td><b>RegisterGroupStyle</b></td>
-				<td>RegisterGroupStyle( group_name <i>String</i> , style <i>BLOB</i> ) : <i>Integer</i><hr>
-					RegisterGroupStyle( group_name <i>String</i> , style_id <i>Integer</i>  , style <i>BLOB</i> ) : <i>Integer</i></td>
+		<tr><td><b>SE_UnregisterStyledGroup</b></td>
+				<td>SE_UnregisterStyledGroup( group_name <i>String</i> ) : <i>Integer</i></td>
 				<td></td>
 				<td align="center" bgcolor="#99d099">libxml2</td>
-				<td>Inserts (or updates) a <b>Group Style</b> definition.
+				<td>Completely removes a <b>Styled Group</b> and any related item.
 				<ul>
 					<li><b>group_name</b> must identify an existing Styled Group.</li>
-					<li><b>style</b> is expected to be an XmlBLOB containing a valid SLD Style.<br>
-					If <b>CreatedStylingTables()</b> was invoked without specifying the <i>relaxed</i> option this XmlBLOB is expected to have successfully passed a formal XML Schema Validation.</li>
-					<li>The same Styled Group could eventually support more than a single Style; in this case 
-					the optional argument <b>style_id</b> can be explicitly set in order to identify an individual Style.<br>
-					If no <b>style_id</b> argument is specified then a new Style will be created, and the <b>style_id</b> value will be automatically set so to ensure univocity.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_RegisterStyledGroupVector</b></td>
+				<td>SE_RegisterStyledGroupVector( group_name <i>String</i> , coverage_name <i>String</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Registers a <b>Vector</b> Layer within a <b>Styled Group</b>.
+				<ul>
+					<li><b>group_name</b> must identify a Styled Group: if the Styled Group doesn't yet exists it will be implicitly created.</li>
+					<li><b>coverage_name</b> must identify an existing Vector Layer.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_RegisterStyledGroupRaster</b></td>
+				<td>SE_RegisterStyledGroupRaster( group_name <i>String</i> , coverage_name <i>String</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Registers a <b>Raster</b> Layer within a <b>Styled Group</b>.
+				<ul>
+					<li><b>group_name</b> must identify a Styled Group: if the Styled Group doesn't yet exists it will be implicitly created.</li>
+					<li><b>coverage_name</b> must identify an existing Raster Layer.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_SetStyledGroupLayerPaintOrder</b></td>
+				<td>SE_SetStyledGroupLayerPaintOrder( item_id <i>Integer</i> , paint_order <i>Integer</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Explictly assigns the <b>paint_order</b> for a <b>Raster</b> or <b>Vector</b> Layer within a <b>Styled Group</b>.
+				<ul>
+					<li>If <b>paint_order</b> is a negative value then the next available order position will be automatically assigned (<i>top level</i>).<br>
+					<u>Please note</u>: the painting order will always follow the Painter rule, i.e. a lower paint-order value will always be painted before painting any higher value. </li>
+					<li>An already defined Vector or Raster Layer Item within a Styled Group can always be referenced its unique <b>item_id</b>.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_SetStyledGroupVectorPaintOrder</b></td>
+				<td>SE_SetStyledGroupVectorPaintOrder( group_name <i>Text</i> , coverage_name <i>String</i> , paint_order <i>Integer</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Explictly assigns the <b>paint_order</b> for a <b>Vector</b> Layer within a <b>Styled Group</b>.
+				<ul>
+					<li>If <b>paint_order</b> is a negative value then the next available order position will be automatically assigned (<i>top level</i>).<br>
+					<u>Please note</u>: the painting order will always follow the Painter rule, i.e. a lower paint-order value will always be painted before painting any higher value. </li>
+					<li>An already defined Vector Layer Item can be safely referenced by its <b>Name</b>.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_SetStyledGroupRasterPaintOrder</b></td>
+				<td>SE_SetStyledGroupRasterPaintOrder( group_name <i>Text</i> , coverage_name <i>String</i> , paint_order <i>Integer</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Explictly assigns the <b>paint_order</b> for a <b>Raster</b> Layer within a <b>Styled Group</b>.
+				<ul>
+					<li>If <b>paint_order</b> is a negative value then the next available order position will be automatically assigned (<i>top level</i>).<br>
+					<u>Please note</u>: the painting order will always follow the Painter rule, i.e. a lower paint-order value will always be painted before painting any higher value. </li>
+					<li>An already defined Raster Layer Item can be safely referenced by its <b>Name</b>.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_UnregisterStyledGroupLayer</b></td>
+				<td>SE_UnregisterStyledGroupLayer( item_id <i>Integer</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Removes a reference to a <b>Raster</b> or <b>Vector</b> Layer from within a <b>Styled Group</b>.
+				<ul>
+					<li>An already defined Vector or Raster Layer Item within a Styled Group can always be referenced its unique <b>item_id</b>.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_UnregisterStyledGroupVector</b></td>
+				<td>SE_UnregisterStyledGroupVector( group_name <i>Text</i> , coverage_name <i>String</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Removes a reference to a <b>Vector</b> Layer from within a <b>Styled Group</b>.
+				<ul>
+					<li>An already defined Vector Layer Item can be safely referenced by its <b>Name</b>.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_UnregisterStyledGroupRaster</b></td>
+				<td>SE_UnregisterStyledGroupRaster( group_name <i>Text</i> , coverage_name <i>String</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Removes a reference to a <b>Raster</b> Layer from within a <b>Styled Group</b>.
+				<ul>
+					<li>An already defined Raster Layer Item can be safely referenced by its <b>Name</b>.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_RegisterGroupStyle</b></td>
+				<td>SE_RegisterGroupStyle( style <i>BLOB</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Inserts a new <b>Group Style</b> definition.
+				<ul>
+					<li><b>style</b> is expected to be an XmlBLOB containing a valid SLD complex Style.<br>
+					If <b>CreatedStylingTables()</b> was invoked without specifying the <i>relaxed</i> option this XmlBLOB is expected to have successfully passed a formal XML Schema Validation.<br>
+					The registered Style will be identified either by its unique <b>Style ID</b> or by its unique <b>Style Name</b> automatically retrieved from SLD/SE XML.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_UnregisterGroupStyle</b></td>
+				<td>SE_UnregisterGroupStyle( style_id <i>Integer</i> [ , remove_all <i>Integer</i> ] ) : <i>Integer</i><hr>
+					SE_UnregisterGroupStyle( style_name <i>Text</i> [ , remove_all <i>Integer</i> ] ) : <i>Integer</td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Removes an already registered <b>Group Style</b> definition.
+				<ul>
+					<li>The Style to be removed could be referenced either by its unique <b>Style Id</b> or by its <b>Style Name</b>.<br>
+					Anyway any attempt to remove a Style identified by its <b>Name</b> will be rejected if the if two (or more) Styles share the same <b>Name</b> thus causing ambiguity.</li>
+					<li>when the <i>optional</i> argument <b>remove_all</b> is explicitly set to <b>TRUE</b> the Style will be removed even if it's already referenced by some
+					<b>RasterStyledLayer</b> and all dependings references will be removed at the same time.<br>
+					In any other case any attempt to unregister a Style already referenced by one (or more) <b>RasterStyleLayer</b> will be rejected.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_ReloadGroupStyle</b></td>
+				<td>SE_ReloadGroupStyle( style_id <i>Integer</i> , style <i>BLOB</i> ) : <i>Integer</i><hr>
+					SE_ReloadGroupStyle( style_name <i>Text</i> , style <i>BLOB</i> ) : <i>Integer</td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Updates an already existing <b>Group Style</b> definition.
+				<ul>
+					<li><b>style</b> is expected to be an XmlBLOB containing a valid SLD complex Style.<br>
+					If <b>CreatedStylingTables()</b> was invoked without specifying the <i>relaxed</i> option this XmlBLOB is expected to have successfully passed a formal XML Schema Validation.<br>
+					The updated Style will continue to be identified by its current unique <b>Style ID</b> but the <b>Style Name</b> will be automatically updated accordingly to SLD/SE XML.</li></li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_RegisterStyledGroupStyle</b></td>
+				<td>SE_RegisterStyledGroupStyle( group_name <i>String</i> , style_id <i>Integer</i> ) : <i>Integer</i><hr>
+					SE_RegisterStyledGroupStyle( group_name <i>String</i> , style_name <i>Text</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Associates a <b>Group Style</b> to a <b>Styled Group</b>.
+				<ul>
+					<li><b>group_name</b> must identify an existing Styled Group.</li>
+					<li>An already registered Style can be referenced either by its unique <b>Stile ID</b> or by its <b>Name</b>;
+					anyway a reference <i>by Name</i> could eventually fail if the Name is ambiguous (duplicate).</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_UnregisterStyledGroupStyle</b></td>
+				<td>SE_UnregisterStyledGroupStyle( group_name <i>String</i> , style_id <i>Integer</i> ) : <i>Integer</i><hr>
+					SE_UnregisterStyledGroupStyle( group_name <i>String</i> , style_name <i>Text</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Removes an association between a <b>Group Style</b> and a <b>Styled Group</b>.
+				<ul>
+					<li><b>group_name</b> must identify an existing Styled Group.</li>
+					<li>An already associated Style can be referenced either by its unique <b>Stile ID</b> or by its <b>Name</b>;
+					anyway a reference <i>by Name</i> could eventually fail if the Name is ambiguous (duplicate).</li>
 				</ul><hr>
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
 				returned on invalid arguments.</td></tr>
@@ -3307,6 +3635,63 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
                     <u>Please note well</u>: this SQL function open the doors to many potential security issues, and thus is always <i>disabled by default</i>.<br>
                     Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to effectively enable this function.<br>
 					Please see: <b>CountUnsafeTriggers()</b></td></tr>
+			<tr><td colspan="5" align="center" bgcolor="#f0e0c0">
+				<h3><a name="srid">SQL functions supporting SRID inspection</a></h3></td></tr>
+			<tr><th bgcolor="#d0d0d0">Function</th>
+				<th bgcolor="#d0d0d0">Syntax</th>
+				<th bgcolor="#d0d0d0" colspan="3">Summary</th></tr>
+			<tr><td><b>SridIsGeographic</b></td>
+				<td>SridIsGeographic( SRID <i>Integer</i> ) : <i>Integer</i></td>
+				<td colspan="3">Will inspect the SRID definitions checking if the SRID is of the <b>Geographic</b> type;<br>
+					will return <b>1</b> (i.e. <b>TRUE</b> or <b>0</b> (i.e. <b>FALSE</b>).<br>
+					<b>NULL</b> will be returned on invalid argument or if the SRID is undefined.</td></tr>
+			<tr><td><b>SridIsProjected</b></td>
+				<td>SridIsProjected( SRID <i>Integer</i> ) : <i>Integer</i></td>
+				<td colspan="3">Will inspect the SRID definitions checking if the SRID is of the <b>Projected</b> type;<br>
+					will return <b>1</b> (i.e. <b>TRUE</b> or <b>0</b> (i.e. <b>FALSE</b>).<br>
+					<b>NULL</b> will be returned on invalid argument or if the SRID is undefined.</td></tr>
+			<tr><td><b>SridHasFlippedAxes</b></td>
+				<td>SridHasFlippedAxes( SRID <i>Integer</i> ) : <i>Integer</i></td>
+				<td colspan="3">Will inspect the SRID definitions checking if the SRID requires a flipped Axes configuration: i.e. <b>Y,X</b> instead of the most usual <b>X.Y</b>;<br>
+					will return <b>1</b> (i.e. <b>TRUE</b> or <b>0</b> (i.e. <b>FALSE</b>).<br>
+					<b>NULL</b> will be returned on invalid argument or if the SRID is undefined.</td></tr>
+			<tr><td><b>SridGetSpheroid</b></td>
+				<td>SridGetSpheroid( SRID <i>Integer</i> ) : <i>Text</i><hr>
+					SridGetEllipsoid( SRID <i>Integer</i> ) : <i>Text</i></td>
+				<td colspan="3">Will inspect the SRID definitions then returning the appropriate <b>Spheroid</b> name.<br>
+					<b>NULL</b> will be returned on invalid argument or if the SRID is undefined.</td></tr>
+			<tr><td><b>SridGetPrimeMeridian</b></td>
+				<td>SridGetPrimeMeridian( SRID <i>Integer</i> ) : <i>Text</i></td>
+				<td colspan="3">Will inspect the SRID definitions then returning the appropriate <b>Prime Meridian</b> name.<br>
+					<b>NULL</b> will be returned on invalid argument or if the SRID is undefined.</td></tr>
+			<tr><td><b>SridGetDatum</b></td>
+				<td>SridGetDatum( SRID <i>Integer</i> ) : <i>Text</i></td>
+				<td colspan="3">Will inspect the SRID definitions then returning the appropriate <b>Datum</b> name.<br>
+					<b>NULL</b> will be returned on invalid argument or if the SRID is undefined.</td></tr>
+			<tr><td><b>SridGetUnit</b></td>
+				<td>SridGetUnit( SRID <i>Integer</i> ) : <i>Text</i></td>
+				<td colspan="3">Will inspect the SRID definitions then returning the appropriate <b>Unit</b> name.<br>
+					<b>NULL</b> will be returned on invalid argument or if the SRID is undefined.</td></tr>
+			<tr><td><b>SridGetProjection</b></td>
+				<td>SridGetProjection( SRID <i>Integer</i> ) : <i>Text</i></td>
+				<td colspan="3">Will inspect the SRID definitions then returning the appropriate <b>Projection</b> name.<br>
+					<b>NULL</b> will be returned on invalid argument or if the SRID is undefined.</td></tr>
+			<tr><td><b>SridGetAxis_1_Name</b></td>
+				<td>SridGetAxis_1_Name( SRID <i>Integer</i> ) : <i>Text</i></td>
+				<td colspan="3">Will inspect the SRID definitions then returning the appropriate <b>Name</b> for its <b>first</b> axis.<br>
+					<b>NULL</b> will be returned on invalid argument or if the SRID is undefined.</td></tr>
+			<tr><td><b>SridGetAxis_1_Orientation</b></td>
+				<td>SridGetAxis_1_Orientation( SRID <i>Integer</i> ) : <i>Text</i></td>
+				<td colspan="3">Will inspect the SRID definitions then returning the appropriate <b>Orientation</b> for its <b>first</b> axis.<br>
+					<b>NULL</b> will be returned on invalid argument or if the SRID is undefined.</td></tr>
+			<tr><td><b>SridGetAxis_2_Name</b></td>
+				<td>SridGetAxis_2_Name( SRID <i>Integer</i> ) : <i>Text</i></td>
+				<td colspan="3">Will inspect the SRID definitions then returning the appropriate <b>Name</b> for its <b>second</b> axis.<br>
+					<b>NULL</b> will be returned on invalid argument or if the SRID is undefined.</td></tr>
+			<tr><td><b>SridGetAxis_2_Orientation</b></td>
+				<td>SridGetAxis_2_Orientation( SRID <i>Integer</i> ) : <i>Text</i></td>
+				<td colspan="3">Will inspect the SRID definitions then returning the appropriate <b>Orientation</b> for its <b>second</b> axis.<br>
+					<b>NULL</b> will be returned on invalid argument or if the SRID is undefined.</td></tr>
 			<tr><td colspan="5" align="center" bgcolor="#f0e0c0">
 				<h3><a name="advanced">miscellaneous advanced SQL functions</a></h3></td></tr>
 			<tr><th bgcolor="#d0d0d0">Function</th>

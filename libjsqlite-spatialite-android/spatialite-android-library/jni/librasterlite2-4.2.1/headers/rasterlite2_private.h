@@ -195,6 +195,23 @@ extern "C"
 #define RL2_BAND_SELECTION_TRIPLE		0xd1
 #define RL2_BAND_SELECTION_MONO			0xd2
 
+/* internal VectorStyle constants */
+#define RL2_VECTOR_STYLE_UNKNOWN		0x00
+#define RL2_VECTOR_STYLE_POINT			0x10
+#define RL2_VECTOR_STYLE_LINE			0x20
+#define RL2_VECTOR_STYLE_POLYGON		0x30
+#define RL2_VECTOR_STYLE_TEXT			0x40
+
+#define RL2_STROKE_LINEJOIN_UNKNOWN		0x50
+#define RL2_STROKE_LINEJOIN_MITRE		0x51
+#define RL2_STROKE_LINEJOIN_ROUND		0x52
+#define RL2_STROKE_LINEJOIN_BEVEL		0x53
+
+#define RL2_STROKE_LINECAP_UNKNOWN		0x60
+#define RL2_STROKE_LINECAP_BUTT			0x61
+#define RL2_STROKE_LINECAP_ROUND		0x62
+#define RL2_STROKE_LINECAP_SQUARE		0x63
+
     typedef union rl2_priv_sample
     {
 	char int8;
@@ -294,6 +311,16 @@ extern "C"
 	int sectionSummary;
     } rl2PrivCoverage;
     typedef rl2PrivCoverage *rl2PrivCoveragePtr;
+
+    typedef struct rl2_priv_vector_layer
+    {
+	char *f_table_name;
+	char *f_geometry_column;
+	unsigned short geometry_type;
+	int srid;
+	unsigned char spatial_index;
+    } rl2PrivVectorLayer;
+    typedef rl2PrivVectorLayer *rl2PrivVectorLayerPtr;
 
     typedef struct rl2_priv_tiff_origin
     {
@@ -552,6 +579,87 @@ extern "C"
     } rl2PrivRasterStyle;
     typedef rl2PrivRasterStyle *rl2PrivRasterStylePtr;
 
+    typedef struct rl2_priv_point_symbolizer
+    {
+	unsigned char has_stroke;
+	unsigned char stroke_red;
+	unsigned char stroke_green;
+	unsigned char stroke_blue;
+	double stroke_opacity;
+	double stroke_width;
+	unsigned char stroke_linejoin;
+	unsigned char stroke_linecap;
+	int stroke_dash_count;
+	double *stroke_dash_list;
+	double stroke_dash_offset;
+	unsigned char has_fill;
+	unsigned char fill_red;
+	unsigned char fill_green;
+	unsigned char fill_blue;
+	double fill_opacity;
+    } rl2PrivPointSymbolizer;
+    typedef rl2PrivPointSymbolizer *rl2PrivPointSymbolizerPtr;
+
+    typedef struct rl2_priv_line_symbolizer
+    {
+	unsigned char has_stroke;
+	unsigned char stroke_red;
+	unsigned char stroke_green;
+	unsigned char stroke_blue;
+	double stroke_opacity;
+	double stroke_width;
+	unsigned char stroke_linejoin;
+	unsigned char stroke_linecap;
+	int stroke_dash_count;
+	double *stroke_dash_list;
+	double stroke_dash_offset;
+	double perpendicular_offset;
+    } rl2PrivLineSymbolizer;
+    typedef rl2PrivLineSymbolizer *rl2PrivLineSymbolizerPtr;
+
+    typedef struct rl2_priv_polygon_symbolizer
+    {
+	unsigned char has_stroke;
+	unsigned char stroke_red;
+	unsigned char stroke_green;
+	unsigned char stroke_blue;
+	double stroke_opacity;
+	double stroke_width;
+	unsigned char stroke_linejoin;
+	unsigned char stroke_linecap;
+	int stroke_dash_count;
+	double *stroke_dash_list;
+	double stroke_dash_offset;
+	unsigned char has_fill;
+	unsigned char fill_red;
+	unsigned char fill_green;
+	unsigned char fill_blue;
+	double fill_opacity;
+	double displacement_x;
+	double displacement_y;
+	double perpendicular_offset;
+    } rl2PrivPolygonSymbolizer;
+    typedef rl2PrivPolygonSymbolizer *rl2PrivPolygonSymbolizerPtr;
+
+    typedef struct rl2_priv_text_symbolizer
+    {
+	unsigned char fill_red;
+	unsigned char fill_green;
+	unsigned char fill_blue;
+	double fill_opacity;
+    } rl2PrivTextSymbolizer;
+    typedef rl2PrivTextSymbolizer *rl2PrivTextSymbolizerPtr;
+
+    typedef struct rl2_priv_vector_style
+    {
+	char *name;
+	char *title;
+	char *abstract;
+	unsigned char style_type;
+	void *symbolizer;
+    } rl2PrivVectorStyle;
+    typedef rl2PrivVectorStyle *rl2PrivVectorStylePtr;
+
     typedef struct rl2_priv_child_style
     {
 	char *namedLayer;
@@ -578,7 +686,7 @@ extern "C"
 	int layer_type;
 	char *layer_name;
 	rl2CoveragePtr coverage;
-	char *style_name;
+	sqlite3_int64 raster_style_id;
 	rl2PrivRasterStylePtr raster_symbolizer;
 	rl2PrivRasterStatisticsPtr raster_stats;
     } rl2PrivGroupRendererLayer;
@@ -1296,6 +1404,12 @@ extern "C"
 				     double *pres_x, double *pres_y);
 
     RL2_PRIVATE rl2RasterStylePtr raster_style_from_sld_se_xml (char *name,
+								char *title,
+								char *abstract,
+								unsigned char
+								*xml);
+
+    RL2_PRIVATE rl2VectorStylePtr vector_style_from_sld_se_xml (char *name,
 								char *title,
 								char *abstract,
 								unsigned char

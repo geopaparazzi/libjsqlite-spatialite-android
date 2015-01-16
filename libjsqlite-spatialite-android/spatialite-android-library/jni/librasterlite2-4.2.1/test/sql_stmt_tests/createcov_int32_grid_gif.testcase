@@ -1,7 +1,7 @@
-RL2_CreateCoverage - INT32 GRID GIF
+RL2_CreateRasterCoverage - INT32 GRID GIF
 :memory: #use in-memory database
-SELECT RL2_CreateCoverage('int32_grid_gif', 'INT32', 'DATAGRID', 1, 'GIF', 100, 512, 512, 3003, 1);
+SELECT RL2_CreateRasterCoverage('int32_grid_gif', 'INT32', 'DATAGRID', 1, 'GIF', 100, 512, 512, 3003, 1);
 1 # rows (not including the header row)
 1 # columns
-RL2_CreateCoverage('int32_grid_gif', 'INT32', 'DATAGRID', 1, 'GIF', 100, 512, 512, 3003, 1)
+RL2_CreateRasterCoverage('int32_grid_gif', 'INT32', 'DATAGRID', 1, 'GIF', 100, 512, 512, 3003, 1)
 0

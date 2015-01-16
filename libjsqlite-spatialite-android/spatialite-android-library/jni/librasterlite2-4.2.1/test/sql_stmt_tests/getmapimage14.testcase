@@ -1,7 +1,7 @@
-RL2_GetMapImage - Invalid height (too small)
+RL2_GetMapImageFromRaster - Invalid height (too small)
 :memory: #use in-memory database
-SELECT RL2_GetMapImage('landsat', BuildMbr(1, 1, 10, 10), 640, 8, 'default', 'image/png', '#ffffff', 1, 100, 0);
+SELECT RL2_GetMapImageFromRaster('landsat', BuildMbr(1, 1, 10, 10), 640, 8, 'default', 'image/png', '#ffffff', 1, 100, 0);
 1 # rows (not including the header row)
 1 # columns
-RL2_GetMapImage('landsat', BuildMbr(1, 1, 10, 10), 640, 8, 'default', 'image/png', '#ffffff', 1, 100, 0)
+RL2_GetMapImageFromRaster('landsat', BuildMbr(1, 1, 10, 10), 640, 8, 'default', 'image/png', '#ffffff', 1, 100, 0)
 (NULL)

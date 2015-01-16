@@ -393,7 +393,7 @@ on `(hostname || uname -n) 2>/dev/null | sed 1q`
 "
 
 # Files that config.status was made for.
-config_files=" Makefile headers/Makefile src/Makefile test/Makefile test/sql_stmt_tests/Makefile test/sql_stmt_security_tests/Makefile tools/Makefile examples/Makefile Doxyfile rasterlite2.pc"
+config_files=" Makefile headers/Makefile src/Makefile test/Makefile test/sql_stmt_tests/Makefile test/sql_stmt_security_tests/Makefile tools/Makefile Doxyfile rasterlite2.pc"
 config_headers=" config.h"
 config_commands=" depfiles libtool"
 
@@ -672,7 +672,7 @@ postuninstall_cmds=''
 finish_cmds=''
 finish_eval=''
 hardcode_into_libs='no'
-sys_lib_search_path_spec='/usr/lib/gcc/x86_64-linux-gnu/4.8 /usr/lib/lib /usr/lib /lib/x86_64-linux-gnu /lib '
+sys_lib_search_path_spec='/usr/lib/gcc/x86_64-linux-gnu/4.9 /usr/lib/lib /usr/lib /lib/x86_64-linux-gnu /lib '
 sys_lib_dlsearch_path_spec='/lib /usr/lib'
 hardcode_action='immediate'
 enable_dlopen='unknown'
@@ -728,12 +728,12 @@ prelink_cmds_CXX=''
 postlink_cmds_CXX=''
 file_list_spec_CXX=''
 hardcode_action_CXX='immediate'
-compiler_lib_search_dirs_CXX='/usr/lib/gcc/x86_64-linux-gnu/4.8 /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../../lib /lib/x86_64-linux-gnu /lib/../lib /usr/lib/x86_64-linux-gnu /usr/lib/../lib /usr/lib/gcc/x86_64-linux-gnu/4.8/../../..'
-predep_objects_CXX='/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/4.8/crtbeginS.o'
-postdep_objects_CXX='/usr/lib/gcc/x86_64-linux-gnu/4.8/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu/crtn.o'
+compiler_lib_search_dirs_CXX='/usr/lib/gcc/x86_64-linux-gnu/4.9 /usr/lib/gcc/x86_64-linux-gnu/4.9/../../../x86_64-linux-gnu /usr/lib/gcc/x86_64-linux-gnu/4.9/../../../../lib /lib/x86_64-linux-gnu /lib/../lib /usr/lib/x86_64-linux-gnu /usr/lib/../lib /usr/lib/gcc/x86_64-linux-gnu/4.9/../../..'
+predep_objects_CXX='/usr/lib/gcc/x86_64-linux-gnu/4.9/../../../x86_64-linux-gnu/crti.o /usr/lib/gcc/x86_64-linux-gnu/4.9/crtbeginS.o'
+postdep_objects_CXX='/usr/lib/gcc/x86_64-linux-gnu/4.9/crtendS.o /usr/lib/gcc/x86_64-linux-gnu/4.9/../../../x86_64-linux-gnu/crtn.o'
 predeps_CXX=''
 postdeps_CXX='-lstdc++ -lm -lgcc_s -lc -lgcc_s'
-compiler_lib_search_path_CXX='-L/usr/lib/gcc/x86_64-linux-gnu/4.8 -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.8/../../..'
+compiler_lib_search_path_CXX='-L/usr/lib/gcc/x86_64-linux-gnu/4.9 -L/usr/lib/gcc/x86_64-linux-gnu/4.9/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.9/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/x86_64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.9/../../..'
 
 LTCC='gcc'
 LTCFLAGS='-g -O2'
@@ -808,7 +808,6 @@ do
     "test/sql_stmt_tests/Makefile") CONFIG_FILES="$CONFIG_FILES test/sql_stmt_tests/Makefile" ;;
     "test/sql_stmt_security_tests/Makefile") CONFIG_FILES="$CONFIG_FILES test/sql_stmt_security_tests/Makefile" ;;
     "tools/Makefile") CONFIG_FILES="$CONFIG_FILES tools/Makefile" ;;
-    "examples/Makefile") CONFIG_FILES="$CONFIG_FILES examples/Makefile" ;;
     "Doxyfile") CONFIG_FILES="$CONFIG_FILES Doxyfile" ;;
     "rasterlite2.pc") CONFIG_FILES="$CONFIG_FILES rasterlite2.pc" ;;
 
@@ -881,21 +880,21 @@ S["am__EXEEXT_TRUE"]="#"
 S["LTLIBOBJS"]=" ${LIBOBJDIR}lstat$U.lo ${LIBOBJDIR}memcmp$U.lo ${LIBOBJDIR}stat$U.lo"
 S["MINGW_FALSE"]=""
 S["MINGW_TRUE"]="#"
-S["LIBXML2_LIBS"]="-lxml2  "
-S["LIBXML2_CFLAGS"]="-I/usr/include/libxml2  "
-S["LIBCURL_LIBS"]="-L/usr/local/lib -lcurl  "
-S["LIBCURL_CFLAGS"]="-I/usr/local/include  "
-S["LIBCAIRO_LIBS"]="-lcairo  "
+S["LIBXML2_LIBS"]="-lxml2 "
+S["LIBXML2_CFLAGS"]="-I/usr/include/libxml2 "
+S["LIBCURL_LIBS"]="-L/usr/local/lib -lcurl "
+S["LIBCURL_CFLAGS"]="-I/usr/local/include "
+S["LIBCAIRO_LIBS"]="-lcairo "
 S["LIBCAIRO_CFLAGS"]="-I/usr/local/include/freetype2 -I/usr/local/include -I/usr/local/include/libpng16 -I/usr/include/cairo -I/usr/include/glib-2.0 -I/usr/lib/x86_64-lin"\
-"ux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2  "
-S["LIBSPATIALITE_LIBS"]="-L/usr/local/lib -lspatialite -lsqlite3 -lm -lz  "
-S["LIBSPATIALITE_CFLAGS"]="-I/usr/local/include  "
-S["LIBLZMA_LIBS"]="-llzma  "
-S["LIBLZMA_CFLAGS"]=" "
-S["LIBWEBP_LIBS"]="-L/usr/local/lib -lwebp  "
-S["LIBWEBP_CFLAGS"]="-I/usr/local/include  "
-S["LIBPNG_LIBS"]="-L/usr/local/lib -lpng16  "
-S["LIBPNG_CFLAGS"]="-I/usr/local/include/libpng16  "
+"ux-gnu/glib-2.0/include -I/usr/include/pixman-1 -I/usr/include/freetype2 "
+S["LIBSPATIALITE_LIBS"]="-L/usr/local/lib -lspatialite -lsqlite3 -lm -lz "
+S["LIBSPATIALITE_CFLAGS"]="-I/usr/local/include "
+S["LIBLZMA_LIBS"]="-llzma "
+S["LIBLZMA_CFLAGS"]=""
+S["LIBWEBP_LIBS"]="-L/usr/local/lib -lwebp "
+S["LIBWEBP_CFLAGS"]="-I/usr/local/include "
+S["LIBPNG_LIBS"]="-L/usr/local/lib -lpng16 "
+S["LIBPNG_CFLAGS"]="-I/usr/local/include/libpng16 "
 S["PKG_CONFIG_LIBDIR"]=""
 S["PKG_CONFIG_PATH"]=""
 S["PKG_CONFIG"]="/usr/bin/pkg-config"
@@ -979,11 +978,11 @@ S["MAKEINFO"]="${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/lib
 S["AUTOHEADER"]="${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library"\
 "/jni/librasterlite2-4.2.1/missing autoheader"
 S["AUTOMAKE"]="${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library"\
-"/jni/librasterlite2-4.2.1/missing automake-1.13"
+"/jni/librasterlite2-4.2.1/missing automake-1.14"
 S["AUTOCONF"]="${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library"\
 "/jni/librasterlite2-4.2.1/missing autoconf"
 S["ACLOCAL"]="${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library"\
-"/jni/librasterlite2-4.2.1/missing aclocal-1.13"
+"/jni/librasterlite2-4.2.1/missing aclocal-1.14"
 S["VERSION"]="1.0.0-rc1"
 S["PACKAGE"]="librasterlite2"
 S["CYGPATH_W"]="echo"
@@ -994,7 +993,7 @@ S["INSTALL_PROGRAM"]="${INSTALL}"
 S["target_alias"]=""
 S["host_alias"]="arm-linux-eabi"
 S["build_alias"]="x86_64-pc-linux-gnu"
-S["LIBS"]="-lopenjp2 -lgeotiff -ltiff -lgif -lCharLS -ljpeg -lz -lsqlite3 "
+S["LIBS"]="-lCharLS -lopenjp2 -lgeotiff -ltiff -lgif -ljpeg -lz -lsqlite3 "
 S["ECHO_T"]=""
 S["ECHO_N"]="-n"
 S["ECHO_C"]=""
@@ -1099,15 +1098,12 @@ D["HAVE_MEMORY_H"]=" 1"
 D["HAVE_MATH_H"]=" 1"
 D["HAVE_FLOAT_H"]=" 1"
 D["HAVE_JPEGLIB_H"]=" 1"
-D["HAVE_CHARLS_INTERFACE_H"]=" 1"
 D["HAVE_JERROR_H"]=" 1"
 D["HAVE_PNG_H"]=" 1"
 D["HAVE_SQLITE3_H"]=" 1"
 D["HAVE_SQLITE3EXT_H"]=" 1"
 D["HAVE_ZLIB_H"]=" 1"
 D["HAVE_GIF_LIB_H"]=" 1"
-D["HAVE_LZMA_H"]=" 1"
-D["HAVE_OPENJPEG_2_0_OPENJPEG_H"]=" 1"
 D["HAVE_GEOTIFF_H"]=" 1"
 D["HAVE_DLFCN_H"]=" 1"
 D["LT_OBJDIR"]=" \".libs/\""
@@ -1124,11 +1120,13 @@ D["TARGET_CPU"]=" \"x86_64-linux-gnu\""
 D["HAVE_LIBSQLITE3"]=" 1"
 D["HAVE_LIBZ"]=" 1"
 D["HAVE_LIBJPEG"]=" 1"
-D["HAVE_LIBCHARLS"]=" 1"
 D["HAVE_LIBGIF"]=" 1"
 D["HAVE_LIBTIFF"]=" 1"
 D["HAVE_LIBGEOTIFF"]=" 1"
+D["HAVE_OPENJPEG_2_0_OPENJPEG_H"]=" 1"
 D["HAVE_LIBOPENJP2"]=" 1"
+D["HAVE_CHARLS_INTERFACE_H"]=" 1"
+D["HAVE_LIBCHARLS"]=" 1"
   for (key in D) D_is_set[key] = 1
   FS = ""
 }

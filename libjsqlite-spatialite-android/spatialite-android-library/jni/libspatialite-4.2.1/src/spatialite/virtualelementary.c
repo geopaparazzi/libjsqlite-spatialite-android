@@ -1028,6 +1028,17 @@ velem_rollback (sqlite3_vtab * pVTab)
 }
 
 static int
+velem_rename (sqlite3_vtab * pVTab, const char *zNew)
+{
+/* BEGIN TRANSACTION */
+    if (pVTab)
+	pVTab = pVTab;		/* unused arg warning suppression */
+    if (zNew)
+	zNew = zNew;		/* unused arg warning suppression */
+    return SQLITE_ERROR;
+}
+
+static int
 spliteVirtualElementaryInit (sqlite3 * db)
 {
     int rc = SQLITE_OK;
@@ -1050,6 +1061,7 @@ spliteVirtualElementaryInit (sqlite3 * db)
     my_elem_module.xCommit = &velem_commit;
     my_elem_module.xRollback = &velem_rollback;
     my_elem_module.xFindFunction = NULL;
+    my_elem_module.xRename = &velem_rename;
     sqlite3_create_module_v2 (db, "VirtualElementary", &my_elem_module, NULL,
 			      0);
     return rc;

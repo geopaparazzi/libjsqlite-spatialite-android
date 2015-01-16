@@ -901,6 +901,17 @@ vXL_rollback (sqlite3_vtab * pVTab)
 }
 
 static int
+vXL_rename (sqlite3_vtab * pVTab, const char *zNew)
+{
+/* BEGIN TRANSACTION */
+    if (pVTab)
+	pVTab = pVTab;		/* unused arg warning suppression */
+    if (zNew)
+	zNew = zNew;		/* unused arg warning suppression */
+    return SQLITE_ERROR;
+}
+
+static int
 spliteVirtualXLInit (sqlite3 * db)
 {
     int rc = SQLITE_OK;
@@ -923,6 +934,7 @@ spliteVirtualXLInit (sqlite3 * db)
     my_XL_module.xCommit = &vXL_commit;
     my_XL_module.xRollback = &vXL_rollback;
     my_XL_module.xFindFunction = NULL;
+    my_XL_module.xRename = &vXL_rename;
     sqlite3_create_module_v2 (db, "VirtualXL", &my_XL_module, NULL, 0);
     return rc;
 }

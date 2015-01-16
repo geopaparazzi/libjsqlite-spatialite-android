@@ -2300,7 +2300,7 @@ sanitize_geometry_column_common (const void *p_cache, sqlite3 * sqlite,
     else if (report->n_repaired > 0)
       {
 	  fprintf (out,
-		   "\t\t\t<tr><td colspan=\"2\" class=\"ok\">This layer has been succesfully repaired and is now completely valid;<br>");
+		   "\t\t\t<tr><td colspan=\"2\" class=\"ok\">This layer has been successfully repaired and is now completely valid;<br>");
 	  fprintf (out,
 		   "doesn't require any further corrective action.</td></tr>\n");
       }
@@ -2632,7 +2632,7 @@ sanitize_all_geometry_columns_common (const void *p_cache, sqlite3 * sqlite,
 		else if (n_discarded == 0 && n_failures == 0)
 		  {
 		      p_msg =
-			  "NONE: this layer has been succesfully sanitized and is now fully valid";
+			  "NONE: this layer has been successfully sanitized and is now fully valid";
 		      cls_msg = "ok";
 		  }
 		else if (n_discarded == 0 && n_failures > 0)

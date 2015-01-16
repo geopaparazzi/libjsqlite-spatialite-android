@@ -1,4 +1,6 @@
 ant.properties
 /jni/**/.deps/*
 /jni/**/src/.deps/*
+/jni/**/*.o
+/jni/**/*.lo
 

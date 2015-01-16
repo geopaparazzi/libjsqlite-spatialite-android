@@ -18,7 +18,7 @@ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
 for the specific language governing rights and limitations under the
 License.
 
-The Original Code is the SpatiaLite library
+The Original Code is the RasterLite2 library
 
 The Initial Developer of the Original Code is Alessandro Furieri
  
@@ -74,7 +74,9 @@ test_group_style (sqlite3 * db_handle, int no_web_connection, int *retcode)
     char *sql;
     int ret;
     int xret = 0;
-    sqlite3_stmt *stmt;
+    sqlite3_stmt *stmt1;
+    sqlite3_stmt *stmt2;
+    sqlite3_int64 last_id;
     const char *group = "my_group";
     const char *path1 = "group_style_1.xml";
     const char *path2 = "group_style_2.xml";
@@ -85,48 +87,96 @@ test_group_style (sqlite3 * db_handle, int no_web_connection, int *retcode)
 
 /* loading the Group Stles */
     if (no_web_connection)
-	sql = "SELECT RegisterGroupStyle(?, XB_Create(XB_LoadXML(?), 1))";
+	sql = "SELECT SE_RegisterGroupStyle(XB_Create(XB_LoadXML(?), 1))";
     else
-	sql = "SELECT RegisterGroupStyle(?, XB_Create(XB_LoadXML(?), 1, 1))";
-    ret = sqlite3_prepare_v2 (db_handle, sql, strlen (sql), &stmt, NULL);
+	sql = "SELECT SE_RegisterGroupStyle(XB_Create(XB_LoadXML(?), 1, 1))";
+    ret = sqlite3_prepare_v2 (db_handle, sql, strlen (sql), &stmt1, NULL);
     if (ret != SQLITE_OK)
       {
-	  fprintf (stderr, "Unable to create the SQL statement\n");
+	  fprintf (stderr, "Unable to create the SQL statement (GroupStyle)\n");
 	  *retcode += 1;
 	  return 0;
       }
-    sqlite3_reset (stmt);
-    sqlite3_clear_bindings (stmt);
-    sqlite3_bind_text (stmt, 1, group, strlen (group), SQLITE_STATIC);
-    sqlite3_bind_text (stmt, 2, path1, strlen (path1), SQLITE_STATIC);
-    ret = sqlite3_step (stmt);
-    if (ret == SQLITE_DONE || ret == SQLITE_ROW)
+
+    sql = "SELECT SE_RegisterStyledGroupStyle(?, ?)";
+    ret = sqlite3_prepare_v2 (db_handle, sql, strlen (sql), &stmt2, NULL);
+    if (ret != SQLITE_OK)
       {
-	  if (sqlite3_column_int (stmt, 0) == 1)
-	      xret = 1;
-      }
-    if (xret != 1)
-      {
-	  fprintf (stderr, "Unable to load \"%s\"\n", path2);
-	  *retcode += 1;
-	  return 0;
-      }
-    sqlite3_reset (stmt);
-    sqlite3_clear_bindings (stmt);
-    sqlite3_bind_text (stmt, 1, group, strlen (group), SQLITE_STATIC);
-    sqlite3_bind_text (stmt, 2, path2, strlen (path2), SQLITE_STATIC);
-    ret = sqlite3_step (stmt);
-    if (ret == SQLITE_DONE || ret == SQLITE_ROW)
-      {
-	  if (sqlite3_column_int (stmt, 0) == 1)
-	      xret = 1;
-      }
-    if (xret != 1)
-      {
-	  fprintf (stderr, "Unable to load \"%s\"\n", path2);
+	  fprintf (stderr,
+		   "Unable to create the SQL statement (StyledGroupStyle)\n");
 	  *retcode += 2;
 	  return 0;
       }
+
+    sqlite3_reset (stmt1);
+    sqlite3_clear_bindings (stmt1);
+    sqlite3_bind_text (stmt1, 1, path1, strlen (path1), SQLITE_STATIC);
+    ret = sqlite3_step (stmt1);
+    if (ret == SQLITE_DONE || ret == SQLITE_ROW)
+      {
+	  if (sqlite3_column_int (stmt1, 0) == 1)
+	      xret = 1;
+      }
+    if (xret != 1)
+      {
+	  fprintf (stderr, "Unable to load \"%s\"\n", path2);
+	  *retcode += 3;
+	  return 0;
+      }
+    last_id = sqlite3_last_insert_rowid (db_handle);
+
+    sqlite3_reset (stmt2);
+    sqlite3_clear_bindings (stmt2);
+    sqlite3_bind_text (stmt2, 1, group, strlen (group), SQLITE_STATIC);
+    sqlite3_bind_int64 (stmt2, 2, last_id);
+    ret = sqlite3_step (stmt2);
+    if (ret == SQLITE_DONE || ret == SQLITE_ROW)
+      {
+	  if (sqlite3_column_int (stmt2, 0) == 1)
+	      xret = 1;
+      }
+    if (xret != 1)
+      {
+	  fprintf (stderr, "Unable to register \"%s\"\n", path2);
+	  *retcode += 4;
+	  return 0;
+      }
+
+    sqlite3_reset (stmt1);
+    sqlite3_clear_bindings (stmt1);
+    sqlite3_bind_text (stmt1, 1, path2, strlen (path2), SQLITE_STATIC);
+    ret = sqlite3_step (stmt1);
+    if (ret == SQLITE_DONE || ret == SQLITE_ROW)
+      {
+	  if (sqlite3_column_int (stmt1, 0) == 1)
+	      xret = 1;
+      }
+    if (xret != 1)
+      {
+	  fprintf (stderr, "Unable to load \"%s\"\n", path2);
+	  *retcode += 5;
+	  return 0;
+      }
+    last_id = sqlite3_last_insert_rowid (db_handle);
+
+    sqlite3_reset (stmt2);
+    sqlite3_clear_bindings (stmt2);
+    sqlite3_bind_text (stmt2, 1, group, strlen (group), SQLITE_STATIC);
+    sqlite3_bind_int64 (stmt2, 2, last_id);
+    ret = sqlite3_step (stmt2);
+    if (ret == SQLITE_DONE || ret == SQLITE_ROW)
+      {
+	  if (sqlite3_column_int (stmt2, 0) == 1)
+	      xret = 1;
+      }
+    if (xret != 1)
+      {
+	  fprintf (stderr, "Unable to register \"%s\"\n", path2);
+	  *retcode += 6;
+	  return 0;
+      }
+    sqlite3_finalize (stmt1);
+    sqlite3_finalize (stmt2);
 
 /* testing Group Style #1 */
     style =
@@ -135,122 +185,122 @@ test_group_style (sqlite3 * db_handle, int no_web_connection, int *retcode)
     if (style == NULL)
       {
 	  fprintf (stderr, "Unable to create Group Style #1\n");
-	  *retcode += 3;
+	  *retcode += 7;
 	  return 0;
       }
     str = rl2_get_group_style_name (style);
     if (str == NULL)
       {
 	  fprintf (stderr, "Unable to get Group Style Name #1\n");
-	  *retcode += 4;
+	  *retcode += 8;
 	  return 0;
       }
     if (strcmp (str, "group_style_1") != 0)
       {
 	  fprintf (stderr, "Unexpected Group Style Name #1: %s\n", str);
-	  *retcode += 5;
+	  *retcode += 9;
 	  return 0;
       }
     str = rl2_get_group_style_title (style);
     if (str == NULL)
       {
 	  fprintf (stderr, "Unable to get Group Style Title #1\n");
-	  *retcode += 6;
+	  *retcode += 10;
 	  return 0;
       }
     if (strcmp (str, "style-1 title") != 0)
       {
 	  fprintf (stderr, "Unexpected Group Style Title #1: %s\n", str);
-	  *retcode += 7;
+	  *retcode += 11;
 	  return 0;
       }
     str = rl2_get_group_style_abstract (style);
     if (str == NULL)
       {
 	  fprintf (stderr, "Unable to get Group Style Abstract #1\n");
-	  *retcode += 8;
+	  *retcode += 12;
 	  return 0;
       }
     if (strcmp (str, "style-1 abstract") != 0)
       {
 	  fprintf (stderr, "Unexpected Group Style Abstract #1: %s\n", str);
-	  *retcode += 9;
+	  *retcode += 13;
 	  return 0;
       }
     if (rl2_is_valid_group_style (style, &valid) != RL2_OK)
       {
 	  fprintf (stderr, "Unable to get Group Style Validity #1\n");
-	  *retcode += 10;
+	  *retcode += 14;
 	  return 0;
       }
     if (valid != 1)
       {
 	  fprintf (stderr, "Unexpected Group Style Validity #1: %d\n", valid);
-	  *retcode += 11;
+	  *retcode += 15;
 	  return 0;
       }
     if (rl2_get_group_style_count (style, &count) != RL2_OK)
       {
 	  fprintf (stderr, "Unable to get Group Style Count #1\n");
-	  *retcode += 12;
+	  *retcode += 16;
 	  return 0;
       }
     if (count != 2)
       {
 	  fprintf (stderr, "Unexpected Group Style Count #1: %d\n", count);
-	  *retcode += 13;
+	  *retcode += 17;
 	  return 0;
       }
     str = rl2_get_group_named_layer (style, 1);
     if (str == NULL)
       {
 	  fprintf (stderr, "Unable to get Group Style NamedLayer #1\n");
-	  *retcode += 14;
+	  *retcode += 18;
 	  return 0;
       }
     if (strcmp (str, "dumb1") != 0)
       {
 	  fprintf (stderr, "Unexpected Group Style NamedLayer #1: %s\n", str);
-	  *retcode += 15;
+	  *retcode += 19;
 	  return 0;
       }
     str = rl2_get_group_named_style (style, 0);
     if (str == NULL)
       {
 	  fprintf (stderr, "Unable to get Group Style NamedLayer #1\n");
-	  *retcode += 16;
+	  *retcode += 20;
 	  return 0;
       }
     if (strcmp (str, "srtm_brightness") != 0)
       {
 	  fprintf (stderr, "Unexpected Group Style NamedStyle #1: %s\n", str);
-	  *retcode += 17;
+	  *retcode += 21;
 	  return 0;
       }
     if (rl2_is_valid_group_named_layer (style, 0, &valid) != RL2_OK)
       {
 	  fprintf (stderr, "Unable to get Group NamedLayer Validity #1\n");
-	  *retcode += 18;
+	  *retcode += 22;
 	  return 0;
       }
     if (valid != 1)
       {
 	  fprintf (stderr, "Unexpected Group NamedLayer Validity #1: %d\n",
 		   valid);
-	  *retcode += 19;
+	  *retcode += 23;
 	  return 0;
       }
     if (rl2_is_valid_group_named_style (style, 1, &valid) != RL2_OK)
       {
 	  fprintf (stderr, "Unable to get Group NamedStyle Validity #1\n");
-	  *retcode += 20;
+	  *retcode += 24;
 	  return 0;
       }
     if (valid != 1)
       {
 	  fprintf (stderr, "Unexpected Group NamedStyle Validity #1: %d\n",
 		   valid);
-	  *retcode += 21;
+	  *retcode += 25;
 	  return 0;
       }
     if (!test_group_renderer (db_handle, style, 1, retcode))
@@ -264,116 +314,116 @@ test_group_style (sqlite3 * db_handle, int no_web_connection, int *retcode)
     if (style == NULL)
       {
 	  fprintf (stderr, "Unable to create Group Style #2\n");
-	  *retcode += 22;
+	  *retcode += 26;
 	  return 0;
       }
     str = rl2_get_group_style_name (style);
     if (str == NULL)
       {
 	  fprintf (stderr, "Unable to get Group Style Name #2\n");
-	  *retcode += 23;
+	  *retcode += 27;
 	  return 0;
       }
     if (strcmp (str, "group_style_2") != 0)
       {
 	  fprintf (stderr, "Unexpected Group Style Name #2: %s\n", str);
-	  *retcode += 24;
+	  *retcode += 28;
 	  return 0;
       }
     str = rl2_get_group_style_title (style);
     if (str == NULL)
       {
 	  fprintf (stderr, "Unable to get Group Style Title #2\n");
-	  *retcode += 25;
+	  *retcode += 29;
 	  return 0;
       }
     if (strcmp (str, "style-2 title") != 0)
       {
 	  fprintf (stderr, "Unexpected Group Style Title #2: %s\n", str);
-	  *retcode += 26;
+	  *retcode += 30;
 	  return 0;
       }
     str = rl2_get_group_style_abstract (style);
     if (str != NULL)
       {
 	  fprintf (stderr, "Unexpected Group Style Abstract #2: %s\n", str);
-	  *retcode += 27;
+	  *retcode += 31;
 	  return 0;
       }
     if (rl2_is_valid_group_style (style, &valid) != RL2_OK)
       {
 	  fprintf (stderr, "Unable to get Group Style Validity #2\n");
-	  *retcode += 28;
+	  *retcode += 32;
 	  return 0;
       }
     if (valid != 0)
       {
 	  fprintf (stderr, "Unexpected Group Style Validity #2: %d\n", valid);
-	  *retcode += 29;
+	  *retcode += 33;
 	  return 0;
       }
     if (rl2_get_group_style_count (style, &count) != RL2_OK)
       {
 	  fprintf (stderr, "Unable to get Group Style Count #2\n");
-	  *retcode += 30;
+	  *retcode += 34;
 	  return 0;
       }
     if (count != 2)
       {
 	  fprintf (stderr, "Unexpected Group Style Count #2: %d\n", count);
-	  *retcode += 31;
+	  *retcode += 35;
 	  return 0;
       }
     str = rl2_get_group_named_layer (style, 1);
     if (str == NULL)
       {
 	  fprintf (stderr, "Unable to get Group Style NamedLayer #2\n");
-	  *retcode += 32;
+	  *retcode += 36;
 	  return 0;
       }
     if (strcmp (str, "dumb0") != 0)
       {
 	  fprintf (stderr, "Unexpected Group Style NamedLayer #2: %s\n", str);
-	  *retcode += 33;
+	  *retcode += 37;
 	  return 0;
       }
     str = rl2_get_group_named_style (style, 1);
     if (str == NULL)
       {
 	  fprintf (stderr, "Unable to get Group Style NamedLayer #2\n");
-	  *retcode += 34;
+	  *retcode += 38;
 	  return 0;
       }
     if (strcmp (str, "style1") != 0)
       {
 	  fprintf (stderr, "Unexpected Group Style NamedStyle #2: %s\n", str);
-	  *retcode += 35;
+	  *retcode += 39;
 	  return 0;
       }
     if (rl2_is_valid_group_named_layer (style, 0, &valid) != RL2_OK)
       {
 	  fprintf (stderr, "Unable to get Group NamedLayer Validity #2\n");
-	  *retcode += 36;
+	  *retcode += 40;
 	  return 0;
       }
     if (valid != 1)
       {
 	  fprintf (stderr, "Unexpected Group NamedLayer Validity #2: %d\n",
 		   valid);
-	  *retcode += 37;
+	  *retcode += 41;
 	  return 0;
       }
     if (rl2_is_valid_group_named_style (style, 1, &valid) != RL2_OK)
       {
 	  fprintf (stderr, "Unable to get Group NamedStyle Validity #2\n");
-	  *retcode += 38;
+	  *retcode += 42;
 	  return 0;
       }
     if (valid != 0)
       {
 	  fprintf (stderr, "Unexpected Group NamedStyle Validity #2: %d\n",
 		   valid);
-	  *retcode += 39;
+	  *retcode += 43;
 	  return 0;
       }
     if (!test_group_renderer (db_handle, style, 2, retcode))
@@ -385,7 +435,7 @@ test_group_style (sqlite3 * db_handle, int no_web_connection, int *retcode)
     if (style != NULL)
       {
 	  fprintf (stderr, "Unexpected success create Group Style\n");
-	  *retcode += 40;
+	  *retcode += 44;
 	  return 0;
       }
     rl2_get_group_style_name (NULL);
@@ -410,24 +460,51 @@ load_symbolizer (sqlite3 * db_handle, const char *coverage, const char *path,
     int ret;
     int xret = 0;
     sqlite3_stmt *stmt;
+    sqlite3_int64 last_id;
 
     if (no_web_connection)
-	sql =
-	    "SELECT RegisterRasterStyledLayer(?, XB_Create(XB_LoadXML(?), 1))";
+	sql = "SELECT SE_RegisterRasterStyle(XB_Create(XB_LoadXML(?), 1))";
     else
-	sql =
-	    "SELECT RegisterRasterStyledLayer(?, XB_Create(XB_LoadXML(?), 1, 1))";
+	sql = "SELECT SE_RegisterRasterStyle(XB_Create(XB_LoadXML(?), 1, 1))";
     ret = sqlite3_prepare_v2 (db_handle, sql, strlen (sql), &stmt, NULL);
     if (ret != SQLITE_OK)
       {
-	  fprintf (stderr, "Unable to create the SQL statement\n");
+	  fprintf (stderr, "Unable to create the SQL statement (Style)\n");
+	  *retcode += 1;
+	  return 0;
+      }
+    sqlite3_reset (stmt);
+    sqlite3_clear_bindings (stmt);
+    sqlite3_bind_text (stmt, 1, path, strlen (path), SQLITE_STATIC);
+    ret = sqlite3_step (stmt);
+    if (ret == SQLITE_DONE || ret == SQLITE_ROW)
+      {
+	  if (sqlite3_column_int (stmt, 0) == 1)
+	      xret = 1;
+      }
+    last_id = sqlite3_last_insert_rowid (db_handle);
+    sqlite3_finalize (stmt);
+    if (xret != 1)
+      {
+	  fprintf (stderr, "unable to register a Raster Style \"%s\")\n", path);
+	  *retcode += 1;
+	  return 0;
+      }
+    xret = 0;
+
+    sql = "SELECT SE_RegisterRasterStyledLayer(?, ?)";
+    ret = sqlite3_prepare_v2 (db_handle, sql, strlen (sql), &stmt, NULL);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr,
+		   "Unable to create the SQL statement (RasterStyledLayer)\n");
 	  *retcode += 1;
 	  return 0;
       }
     sqlite3_reset (stmt);
     sqlite3_clear_bindings (stmt);
     sqlite3_bind_text (stmt, 1, coverage, strlen (coverage), SQLITE_STATIC);
-    sqlite3_bind_text (stmt, 2, path, strlen (path), SQLITE_STATIC);
+    sqlite3_bind_int64 (stmt, 2, last_id);
     ret = sqlite3_step (stmt);
     if (ret == SQLITE_DONE || ret == SQLITE_ROW)
       {
@@ -1529,33 +1606,35 @@ main (int argc, char *argv[])
 	  return -3;
       }
     ret =
-	sqlite3_exec (db_handle, "SELECT RL2_CreateCoverage('dumb1', 'UINT8', "
+	sqlite3_exec (db_handle,
+		      "SELECT RL2_CreateRasterCoverage('dumb1', 'UINT8', "
 		      "'GRAYSCALE', 1, 'NONE', 100, 256, 256, 4326, 1.0)", NULL,
 		      NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
-	  fprintf (stderr, "CreateCoverage() error: %s\n", err_msg);
+	  fprintf (stderr, "CreateRasterCoverage() error: %s\n", err_msg);
 	  sqlite3_free (err_msg);
 	  return -4;
       }
     ret =
-	sqlite3_exec (db_handle, "SELECT RL2_CreateCoverage('dumb2', 'UINT8', "
+	sqlite3_exec (db_handle,
+		      "SELECT RL2_CreateRasterCoverage('dumb2', 'UINT8', "
 		      "'GRAYSCALE', 1, 'NONE', 100, 256, 256, 4326, 1.0)", NULL,
 		      NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
-	  fprintf (stderr, "CreateCoverage() error: %s\n", err_msg);
+	  fprintf (stderr, "CreateRasterCoverage() error: %s\n", err_msg);
 	  sqlite3_free (err_msg);
 	  return -5;
       }
     ret =
 	sqlite3_exec (db_handle,
-		      "SELECT RL2_CreateCoverage('dumb_dem', 'INT16', "
+		      "SELECT RL2_CreateRasterCoverage('dumb_dem', 'INT16', "
 		      "'DATAGRID', 1, 'NONE', 100, 256, 256, 4326, 1.0)", NULL,
 		      NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
-	  fprintf (stderr, "CreateCoverage() error: %s\n", err_msg);
+	  fprintf (stderr, "CreateRasterCoverage() error: %s\n", err_msg);
 	  sqlite3_free (err_msg);
 	  return -6;
       }
@@ -1575,21 +1654,23 @@ main (int argc, char *argv[])
       }
     ret =
 	sqlite3_exec (db_handle,
-		      "SELECT RegisterStyledGroup('my_group', 'dumb1')", NULL,
-		      NULL, &err_msg);
+		      "SELECT SE_RegisterStyledGroupRaster('my_group', 'dumb1')",
+		      NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
-	  fprintf (stderr, "RegisterStyledGroup() #1 error: %s\n", err_msg);
+	  fprintf (stderr, "RegisterStyledGroupRaster() #1 error: %s\n",
+		   err_msg);
 	  sqlite3_free (err_msg);
 	  return -8;
       }
     ret =
 	sqlite3_exec (db_handle,
-		      "SELECT RegisterStyledGroup('my_group', 'dumb_dem')",
+		      "SELECT SE_RegisterStyledGroupRaster('my_group', 'dumb_dem')",
 		      NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
-	  fprintf (stderr, "RegisterStyledGroup() #2 error: %s\n", err_msg);
+	  fprintf (stderr, "RegisterStyledGroupRaster() #2 error: %s\n",
+		   err_msg);
 	  sqlite3_free (err_msg);
 	  return -9;
       }
@@ -1639,13 +1720,13 @@ main (int argc, char *argv[])
     if (!test_symbolizer_3 (db_handle, "dumb1", "style3", &ret))
 	return ret;
     ret = -410;
-    if (!test_symbolizer_1 (db_handle, "dumb2", "style1", &ret))
+    if (!test_symbolizer_1 (db_handle, "dumb2", "style4", &ret))
 	return ret;
     ret = -510;
-    if (!test_symbolizer_2 (db_handle, "dumb2", "style2", &ret))
+    if (!test_symbolizer_2 (db_handle, "dumb2", "style5", &ret))
 	return ret;
     ret = -610;
-    if (!test_symbolizer_3 (db_handle, "dumb2", "style3", &ret))
+    if (!test_symbolizer_3 (db_handle, "dumb2", "style6", &ret))
 	return ret;
     ret = -710;
     if (!test_symbolizer_null (&ret))

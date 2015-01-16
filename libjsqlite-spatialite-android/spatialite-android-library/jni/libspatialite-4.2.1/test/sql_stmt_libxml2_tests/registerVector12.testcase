@@ -1,8 +1,7 @@
-RegisterVectorStyledLayer - TEXT style
+RegisterVectorStyledLayer - TEXT style_name
 :memory: #use in-memory database
-SELECT RegisterVectorStyledLayer('alpha', 'beta', 'gamma');
+SELECT SE_RegisterVectorStyledLayer('alpha', 'gamma');
 1 # rows (not including the header row)
 1 # columns
-RegisterVectorStyledLayer('alpha', 'beta', 'gamma')
--1
-
+SE_RegisterVectorStyledLayer('alpha', 'gamma')
+0

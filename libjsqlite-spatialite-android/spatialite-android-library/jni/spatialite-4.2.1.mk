@@ -1,6 +1,6 @@
 include $(CLEAR_VARS)
 # ./configure --enable-examples=no --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
-# 2015-10-03: libspatialite-4.2.0-rc1
+# 2015-01-16: libspatialite-4.2.1-rc2, [5 source new files added]
 LOCAL_MODULE    := spatialite
 
 # SQLite flags copied from ASOP
@@ -103,8 +103,10 @@ LOCAL_SRC_FILES := \
  $(SPATIALITE_PATH)/src/spatialite/extra_tables.c \
  $(SPATIALITE_PATH)/src/spatialite/mbrcache.c \
  $(SPATIALITE_PATH)/src/spatialite/metatables.c \
+ $(SPATIALITE_PATH)/src/spatialite/se_helpers.c \
  $(SPATIALITE_PATH)/src/spatialite/spatialite.c \
  $(SPATIALITE_PATH)/src/spatialite/spatialite_init.c \
+ $(SPATIALITE_PATH)/src/spatialite/srid_aux.c \
  $(SPATIALITE_PATH)/src/spatialite/statistics.c \
  $(SPATIALITE_PATH)/src/spatialite/table_cloner.c \
  $(SPATIALITE_PATH)/src/spatialite/virtualbbox.c \
@@ -163,12 +165,15 @@ LOCAL_SRC_FILES := \
  $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_43.c \
  $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_44.c \
  $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_45.c \
+ $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_46.c \
  $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_extra.c \
  $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_prussian.c \
  $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_wgs84_00.c \
  $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_wgs84_01.c \
  $(SPATIALITE_PATH)/src/srsinit/srs_init.c \
  $(SPATIALITE_PATH)/src/srsinit/epsg_update/auto_epsg.c \
+ $(SPATIALITE_PATH)/src/srsinit/epsg_update/auto_epsg_ext.c \
+ $(SPATIALITE_PATH)/src/srsinit/epsg_update/epsg_from_gdal.c \
  $(SPATIALITE_PATH)/src/versioninfo/version.c \
  $(SPATIALITE_PATH)/src/virtualtext/virtualtext.c \
  $(SPATIALITE_PATH)/src/wfs/wfs_in.c

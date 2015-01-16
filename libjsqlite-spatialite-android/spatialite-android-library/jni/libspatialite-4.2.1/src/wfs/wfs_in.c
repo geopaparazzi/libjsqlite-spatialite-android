@@ -119,6 +119,7 @@ struct wfs_layer_def
 struct wfs_catalog
 {
 /* a list of WFS layers */
+    char *version;
     char *request_url;
     char *describe_url;
     struct wfs_layer_def *first;
@@ -485,6 +486,7 @@ alloc_wfs_catalog ()
 {
 /* allocating an empty WFS catalog object */
     struct wfs_catalog *ptr = malloc (sizeof (struct wfs_catalog));
+    ptr->version = NULL;
     ptr->first = NULL;
     ptr->last = NULL;
     ptr->request_url = NULL;
@@ -500,6 +502,8 @@ free_wfs_catalog (struct wfs_catalog *ptr)
     struct wfs_layer_def *n_lyr;
     if (ptr == NULL)
 	return;
+    if (ptr->version != NULL)
+	free (ptr->version);
     lyr = ptr->first;
     while (lyr != NULL)
       {
@@ -680,6 +684,22 @@ clean_copy (char *dest, const char *orig)
 	  *po++ = *pi++;
       }
     *po = '\0';
+}
+
+static void
+set_wfs_version (struct wfs_catalog *ptr, const char *version)
+{
+/* setting the WFS Version from GetCapabilities */
+    int len;
+    if (ptr == NULL)
+	return;
+    if (ptr->version != NULL)
+	free (ptr->version);
+    if (version == NULL)
+	return;
+    len = strlen (version);
+    ptr->version = malloc (len + 1);
+    strcpy (ptr->version, version);
 }
 
 static void
@@ -3496,7 +3516,11 @@ parse_wfs_layer (xmlNodePtr node, struct wfs_catalog *catalog)
 			  || strcmp ((const char *) (cur_node->name),
 				     "DefaultSRS") == 0
 			  || strcmp ((const char *) (cur_node->name),
-				     "OtherSRS") == 0)
+				     "OtherSRS") == 0
+			  || strcmp ((const char *) (cur_node->name),
+				     "DefaultCRS") == 0
+			  || strcmp ((const char *) (cur_node->name),
+				     "OtherCRS") == 0)
 			{
 			    int srid = parse_srsname (cur_node->children);
 			    if (srid > 0)
@@ -3762,10 +3786,34 @@ parse_wfs_base_url_110 (xmlNodePtr node, struct wfs_catalog *catalog)
 	  if (cur_node->type == XML_ELEMENT_NODE)
 	    {
 		if (strcmp ((const char *) (cur_node->name), "Operation") == 0)
-		    parse_wfs_operation_110 (cur_node, catalog);
+		  {
+		      parse_wfs_operation_110 (cur_node, catalog);
+		  }
 	    }
       }
 }
+
+static void
+parse_wfs_version (xmlNodePtr node, struct wfs_catalog *catalog)
+{
+/* parsing the WFS version from GetCapabilities */
+    struct _xmlAttr *attr = node->properties;
+    const char *version = NULL;
+
+    while (attr != NULL)
+      {
+	  if (attr->name != NULL)
+	    {
+		if (strcmp ((const char *) (attr->name), "version") == 0)
+		  {
+		      version = parse_attribute_name (attr->children);
+		      set_wfs_version (catalog, version);
+		  }
+	    }
+	  attr = attr->next;
+      }
+}
+
 
 static void
 parse_wfs_catalog (xmlNodePtr node, struct wfs_catalog *catalog,
@@ -3780,7 +3828,10 @@ parse_wfs_catalog (xmlNodePtr node, struct wfs_catalog *catalog,
 	    {
 		if (strcmp ((const char *) (cur_node->name), "WFS_Capabilities")
 		    == 0)
-		    *capabilities = 1;
+		  {
+		      *capabilities = 1;
+		      parse_wfs_version (cur_node, catalog);
+		  }
 		if (*capabilities != 0
 		    && strcmp ((const char *) (cur_node->name),
 			       "FeatureTypeList") == 0)
@@ -3871,6 +3922,16 @@ destroy_wfs_catalog (gaiaWFScatalogPtr handle)
     if (ptr == NULL)
 	return;
     free_wfs_catalog (ptr);
+}
+
+SPATIALITE_DECLARE const char *
+get_wfs_version (gaiaWFScatalogPtr handle)
+{
+/* return the WFS-Version returned by GetCapabilities */
+    struct wfs_catalog *ptr = (struct wfs_catalog *) handle;
+    if (ptr == NULL)
+	return NULL;
+    return ptr->version;
 }
 
 SPATIALITE_DECLARE const char *
@@ -4059,6 +4120,10 @@ build_request_url (struct wfs_catalog *ptr, struct wfs_layer_def *lyr,
       {
 	  if (strcmp (version, "1.0.0") == 0)
 	      ver = "1.0.0";
+	  if (strcmp (version, "2.0.0") == 0)
+	      ver = "2.0.0";
+	  if (strcmp (version, "2.0.2") == 0)
+	      ver = "2.0.2";
       }
     if (srid > 0)
       {
@@ -4144,6 +4209,10 @@ build_describe_url (struct wfs_catalog *ptr, struct wfs_layer_def *lyr,
       {
 	  if (strcmp (version, "1.0.0") == 0)
 	      ver = "1.0.0";
+	  if (strcmp (version, "2.0.0") == 0)
+	      ver = "2.0.0";
+	  if (strcmp (version, "2.0.2") == 0)
+	      ver = "2.0.2";
       }
     url =
 	sqlite3_mprintf

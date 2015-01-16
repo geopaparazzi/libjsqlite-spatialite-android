@@ -59,9 +59,6 @@
    zero-length file name argument. */
 #define HAVE_LSTAT_EMPTY_STRING_BUG 1
 
-/* Define to 1 if you have the <lzma.h> header file. */
-#define HAVE_LZMA_H 1
-
 /* Define to 1 if you have the <math.h> header file. */
 #define HAVE_MATH_H 1
 
@@ -142,6 +139,18 @@
 
 /* Must be defined in order to disable debug mode. */
 #define NDEBUG 1
+
+/* Should be defined in order to disable CharLS support. */
+/* #undef OMIT_CHARLS */
+
+/* Should be defined in order to disable LZMA support. */
+/* #undef OMIT_LZMA */
+
+/* Should be defined in order to disable OpenJpeg support. */
+/* #undef OMIT_OPENJPEG */
+
+/* Should be defined in order to disable WebP support. */
+/* #undef OMIT_WEBP */
 
 /* testing for OpenJpeg 2.1 */
 /* #undef OPENJPEG_2_1 */

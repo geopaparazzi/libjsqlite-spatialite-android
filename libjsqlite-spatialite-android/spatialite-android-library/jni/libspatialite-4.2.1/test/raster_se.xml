@@ -1,42 +1,75 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<StyledLayerDescriptor xmlns="http://www.opengis.net/sld" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0.0" xsi:schemaLocation="http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd">
-  <Name>SLD raster - basic test</Name>
-  <NamedLayer>
-    <Name>raster - basic test</Name>
-    <UserStyle>
-      <Title>raster - fantasy raster</Title>
-      <Abstract>a style using &quot;dont't care&quot; rendering</Abstract>
-      <FeatureTypeStyle>
-        <Rule>
-          <Title>fantasy raster</Title>
-          <MinScaleDenominator>2000000</MinScaleDenominator>
-          <RasterSymbolizer>
-<Opacity>1.0</Opacity>
-<ColorMap><ColorMapEntry color="#00ff00" quantity="-500"/>
-<ColorMapEntry color="#00fa00" quantity="-417"/>
-<ColorMapEntry color="#14f500" quantity="-333"/>
-<ColorMapEntry color="#28f502" quantity="-250"/>
-<ColorMapEntry color="#3cf505" quantity="-167"/>
-<ColorMapEntry color="#50f50a" quantity="-83"/>
-<ColorMapEntry color="#64f014" quantity="-1"/>
-<ColorMapEntry color="#7deb32" quantity="0"/>
-<ColorMapEntry color="#78c818" quantity="30"/>
-<ColorMapEntry color="#38840c" quantity="105"/>
-<ColorMapEntry color="#2c4b04" quantity="300"/>
-<ColorMapEntry color="#ffff00" quantity="400"/>
-<ColorMapEntry color="#dcdc00" quantity="700"/>
-<ColorMapEntry color="#b47800" quantity="1200"/>
-<ColorMapEntry color="#c85000" quantity="1400"/>
-<ColorMapEntry color="#be4100" quantity="1600"/>
-<ColorMapEntry color="#963000" quantity="2000"/>
-<ColorMapEntry color="#3c0200" quantity="3000"/>
-<ColorMapEntry color="#ffffff" quantity="5000"/>
-<ColorMapEntry color="#ffffff" quantity="13000"/>
-</ColorMap>
-<ShadedRelief/>
+<?xml version="1.0" encoding="UTF-8"?>
+<RasterSymbolizer version="1.1.0" xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/Symbolizer.xsd" xmlns="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>srtm_style</Name>
+	<Description>
+		<Title>SRTM Color Map</Title>
+		<Abstract>derived from the original "srtm_plus" color rule (GRASS GIS)</Abstract>
+	</Description>
+	<Opacity>1.0</Opacity>
+	<ColorMap>
+		<Interpolate fallbackValue="#ffffff">
+			<LookupValue>Rasterdata</LookupValue>
+			<InterpolationPoint>
+				<Data>-11000.00000000</Data>
+				<Value>#000000</Value>
+			</InterpolationPoint>
+			<InterpolationPoint>
+				<Data>-8000.00000000</Data>
+				<Value>#000032</Value>
+			</InterpolationPoint>
+			<InterpolationPoint>
+				<Data>-5000.00000000</Data>
+				<Value>#0a0a64</Value>
+			</InterpolationPoint>
+			<InterpolationPoint>
+				<Data>-3000.00000000</Data>
+				<Value>#1e1e96</Value>
+			</InterpolationPoint>
+			<InterpolationPoint>
+				<Data>-1000.00000000</Data>
+				<Value>#4646c8</Value>
+			</InterpolationPoint>
+			<InterpolationPoint>
+				<Data>-100.00000000</Data>
+				<Value>#6464e1</Value>
+			</InterpolationPoint>
+			<InterpolationPoint>
+				<Data>0.00000000</Data>
+				<Value>#aaaaff</Value>
+			</InterpolationPoint>
+			<InterpolationPoint>
+				<Data>0.10000000</Data>
+				<Value>#399769</Value>
+			</InterpolationPoint>
+			<InterpolationPoint>
+				<Data>100.00000000</Data>
+				<Value>#75c25d</Value>
+			</InterpolationPoint>
+			<InterpolationPoint>
+				<Data>500.00000000</Data>
+				<Value>#e6e680</Value>
+			</InterpolationPoint>
+			<InterpolationPoint>
+				<Data>1000.00000000</Data>
+				<Value>#ca9e4b</Value>
+			</InterpolationPoint>
+			<InterpolationPoint>
+				<Data>2000.00000000</Data>
+				<Value>#b99a64</Value>
+			</InterpolationPoint>
+			<InterpolationPoint>
+				<Data>3000.00000000</Data>
+				<Value>#dcdcdc</Value>
+			</InterpolationPoint>
+			<InterpolationPoint>
+				<Data>5000.00000000</Data>
+				<Value>#ffffff</Value>
+			</InterpolationPoint>
+			<InterpolationPoint>
+				<Data>8850.00000000</Data>
+				<Value>#6464c8</Value>
+			</InterpolationPoint>
+		</Interpolate>
+	</ColorMap>
+	<ShadedRelief/>
 </RasterSymbolizer>
-        </Rule>
-      </FeatureTypeStyle>
-    </UserStyle>
-  </NamedLayer>
-</StyledLayerDescriptor>
