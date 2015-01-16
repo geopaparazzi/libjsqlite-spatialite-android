@@ -22,3 +22,4 @@ include $(LOCAL_PATH)/libxml2-2.9.1.mk
 include $(LOCAL_PATH)/lzma-xz-5.1.3a.mk
 include $(LOCAL_PATH)/spatialite-4.2.1.mk
 include $(LOCAL_PATH)/jsqlite-20120209.mk
+$(call import-module,android/cpufeatures)
