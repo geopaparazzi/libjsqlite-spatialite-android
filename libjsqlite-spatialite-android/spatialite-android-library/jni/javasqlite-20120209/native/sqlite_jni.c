@@ -172,9 +172,10 @@ static jmethodID M_java_lang_String_initBytes2 = 0;
 static const char xdigits[] = "0123456789ABCDEF";
 
 static int SPATIALITE_CONNECTIONS=0;
+static  const char *rasterlite2_version = NULL;
 
 JNIEXPORT jint JNICALL
-Java_SQLite_Database__1count_1connectionst(JNIEnv *env, jobject obj)
+Java_SQLite_Database_count_1connections(JNIEnv *env, jobject obj)
 {
     return SPATIALITE_CONNECTIONS;
 }
@@ -972,6 +973,23 @@ Java_jsqlite_Database_dbversion(JNIEnv *env, jobject obj)
     return (*env)->NewStringUTF(env, "unknown");
 }
 
+JNIEXPORT jstring JNICALL
+Java_jsqlite_Database_rasterlite2_1version(JNIEnv *env, jobject obj)
+{
+  if (rasterlite2_version == NULL)
+  {
+#if HAVE_RASTERLITE2 == 1
+  return (*env)->NewStringUTF(env, "0"); // failed
+#else
+  return (*env)->NewStringUTF(env, ""); // not installed
+#endif
+  }
+  else
+  { 
+   return (*env)->NewStringUTF(env, rasterlite2_version);
+  }
+}
+
 JNIEXPORT jlong JNICALL
 Java_jsqlite_Database__1last_1insert_1rowid(JNIEnv *env, jobject obj)
 {
@@ -1276,7 +1294,7 @@ Java_jsqlite_Database__1open4(JNIEnv *env, jobject obj, jstring file, jint mode,
 #if HAVE_SPATIALITE41 == 1
  /* Since 4.1.1: spatialite_init(1) is now DEPRECATED because is not reentrant (not thread safe) */
  /* Initializes a SpatiaLite connection. */
-    void *p_cache = spatialite_alloc_connection();
+    void *p_cache = (void *)spatialite_alloc_connection();
     if (p_cache != NULL)
     { // Avoid ERROR unable to initialize the SpatiaLite extension: NULL cache !!!
      spatialite_init_ex((sqlite3 *)h->sqlite,p_cache,0);
@@ -1284,9 +1302,25 @@ Java_jsqlite_Database__1open4(JNIEnv *env, jobject obj, jstring file, jint mode,
 #if HAVE_RASTERLITE2 == 1
      /* Initializes the (RasterLite2) library */
      rl2_init((sqlite3 *)h->sqlite,0);
+     if (rasterlite2_version == NULL)
+     { // The library may be compiled in, but the functionality missing
+      rasterlite2_version=(const char *)rl2_version();
+      int ret;
+      char sql[2048];
+      char *err_msg = NULL;
+      strcpy (sql, "SELECT RL2_Version()");
+      ret = sqlite3_exec ((sqlite3 *) h->sqlite,sql, NULL, NULL, &err_msg);
+      if (ret != SQLITE_OK)
+      { // no such function: RL2_GetMapImage
+       sprintf(sql, "RL2_Version(%s) error: %s\n",rasterlite2_version, err_msg);
+       sqlite3_free (err_msg);
+       throwex(env, (const char*)&sql);
+	      return;
+      }
+     }
 #pragma message(VAR_NAME_VALUE(HAVE_RASTERLITE2))
-     SPATIALITE_CONNECTIONS++;
 #endif
+     SPATIALITE_CONNECTIONS++;
     }
     else
     { // E Spatialite: ERROR: Too much connections: max 64

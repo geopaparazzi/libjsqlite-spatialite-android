@@ -1,0 +1,7 @@
+DeleteSection - NULL transaction
+:memory: #use in-memory database
+SELECT RL2_DeleteSection('alpha', 1, NULL);
+1 # rows (not including the header row)
+1 # columns
+RL2_DeleteSection('alpha', 1, NULL)
+-1

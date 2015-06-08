@@ -1,0 +1,7 @@
+RL2_WriteSectionTripleBandTiff - invalid green band (too big)
+:memory: #use in-memory database
+SELECT RL2_WriteSectionTripleBandTiff('alpha', 1, './test.tif', 1024, 1024, 0, 500, 2, BuildMbr(1, 1, 10, 10), 1, 1, 'JPEG', 256);
+1 # rows (not including the header row)
+1 # columns
+RL2_WriteSectionTripleBandTiff('alpha', 1, './test.tif', 1024, 1024, 0, 500, 2, BuildMbr(1, 1, 10, 10), 1, 1, 'JPEG', 256)
+-1

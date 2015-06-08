@@ -1,0 +1,7 @@
+RL2_WriteSectionMonoBandGeoTiff - NULL Height
+:memory: #use in-memory database
+SELECT RL2_WriteSectionMonoBandGeoTiff('alpha', 1, './test.tif', 1024, NULL, 0, 1, 2, MakePoint(1, 1), 1);
+1 # rows (not including the header row)
+1 # columns
+RL2_WriteSectionMonoBandGeoTiff('alpha', 1, './test.tif', 1024, NULL, 0, 1, 2, MakePoint(1, 1), 1)
+-1

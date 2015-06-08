@@ -10,9 +10,9 @@ extern "C" {
 /*
  * Class:     SQLite_Database
  * Method:    _count_connections
- * Signature: ()J
+ * Signature:  ()I
  */
-JNIEXPORT jint JNICALL Java_SQLite_Database__1count_1connections
+JNIEXPORT jint JNICALL Java_SQLite_Database_count_1connections
   (JNIEnv *, jobject);
 /*
  * Class:     SQLite_Database
@@ -132,6 +132,14 @@ JNIEXPORT jstring JNICALL Java_SQLite_Database_version
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_SQLite_Database_dbversion
+  (JNIEnv *, jobject);
+  
+ /*
+ * Class:     SQLite_Database
+ * Method:    rasterlite2_version
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_SQLite_Database_rasterlite2_1version
   (JNIEnv *, jobject);
 
 /*

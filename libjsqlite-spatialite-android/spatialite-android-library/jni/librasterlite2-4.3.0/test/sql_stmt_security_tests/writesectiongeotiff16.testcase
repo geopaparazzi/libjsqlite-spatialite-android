@@ -1,0 +1,7 @@
+RL2_WriteSectionGeoTiff - invalid tile-size (too small)
+:memory: #use in-memory database
+SELECT RL2_WriteSectionGeoTiff('alpha', 1, './test.tif', 1024, 1024, MakePoint(1, 1), 0.5, 0.5, 1, 'LZW', 2);
+1 # rows (not including the header row)
+1 # columns
+RL2_WriteSectionGeoTiff('alpha', 1, './test.tif', 1024, 1024, MakePoint(1, 1), 0.5, 0.5, 1, 'LZW', 2)
+-1

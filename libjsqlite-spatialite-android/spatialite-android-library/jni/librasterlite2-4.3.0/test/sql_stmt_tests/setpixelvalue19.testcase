@@ -1,0 +1,7 @@
+SetPixelValue - negative UINT8 value
+:memory: #use in-memory database
+SELECT RL2_SetPixelValue(RL2_CreatePixel('UINT8', 'PALETTE', 1), 0, -256);
+1 # rows (not including the header row)
+1 # columns
+RL2_SetPixelValue(RL2_CreatePixel('UINT8', 'PALETTE', 1), 0, -256)
+(NULL)

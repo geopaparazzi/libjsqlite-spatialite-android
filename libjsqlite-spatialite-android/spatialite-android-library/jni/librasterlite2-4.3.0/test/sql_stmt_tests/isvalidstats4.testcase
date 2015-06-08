@@ -1,0 +1,7 @@
+IsValidRasterStatistics - NULL stats (3 args)
+:memory: #use in-memory database
+SELECT RL2_IsValidRasterStatistics(NULL, 'UINT8', 1);
+1 # rows (not including the header row)
+1 # columns
+RL2_IsValidRasterStatistics(NULL, 'UINT8', 1)
+-1

@@ -1,0 +1,7 @@
+RL2_GetMapImageFromRaster - Invalid BLOB geometry
+:memory: #use in-memory database
+SELECT RL2_GetMapImageFromRaster('landsat', zeroblob(100), 640, 480, 'default', 'image/png', '#ffffff', 1, 100, 0);
+1 # rows (not including the header row)
+1 # columns
+RL2_GetMapImageFromRaster('landsat', zeroblob(100), 640, 480, 'default', 'image/png', '#ffffff', 1, 100, 0)
+(NULL)
