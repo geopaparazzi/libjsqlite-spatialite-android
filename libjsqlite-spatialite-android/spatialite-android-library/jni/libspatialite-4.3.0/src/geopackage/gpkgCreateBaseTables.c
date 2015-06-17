@@ -46,7 +46,7 @@ the terms of any one of the MPL, the GPL or the LGPL.
 
 #ifdef ENABLE_GEOPACKAGE
 
-GEOPACKAGE_DECLARE void
+GEOPACKAGE_PRIVATE void
 fnct_gpkgCreateBaseTables (sqlite3_context * context, int argc
 			   __attribute__ ((unused)), sqlite3_value ** argv)
 {

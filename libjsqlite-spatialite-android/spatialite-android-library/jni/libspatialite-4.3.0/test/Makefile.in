@@ -120,7 +120,7 @@ check_PROGRAMS = check_endian$(EXEEXT) check_version$(EXEEXT) \
 @ENABLE_GEOPACKAGE_TRUE@		check_gpkgCreateTilesTable \
 @ENABLE_GEOPACKAGE_TRUE@		check_gpkgCreateTilesTableMissingSRID \
 @ENABLE_GEOPACKAGE_TRUE@		check_gpkgCreateTilesZoomLevel \
-@ENABLE_GEOPACKAGE_TRUE@		check_gpkgInsertEpsgSRID \
+@ENABLE_GEOPACKAGE_TRUE@		check_gpkgInsertEpsgSRID check_gpkgMode \
 @ENABLE_GEOPACKAGE_TRUE@		check_gpkgCreateFeaturesTable \
 @ENABLE_GEOPACKAGE_TRUE@		check_gpkg_base_core_container_data_file_format_application_id \
 @ENABLE_GEOPACKAGE_TRUE@		check_gpkg_base_core_spatial_ref_sys_data_table_def \
@@ -164,6 +164,7 @@ CONFIG_CLEAN_VPATH_FILES =
 @ENABLE_GEOPACKAGE_TRUE@	check_gpkgCreateTilesTableMissingSRID$(EXEEXT) \
 @ENABLE_GEOPACKAGE_TRUE@	check_gpkgCreateTilesZoomLevel$(EXEEXT) \
 @ENABLE_GEOPACKAGE_TRUE@	check_gpkgInsertEpsgSRID$(EXEEXT) \
+@ENABLE_GEOPACKAGE_TRUE@	check_gpkgMode$(EXEEXT) \
 @ENABLE_GEOPACKAGE_TRUE@	check_gpkgCreateFeaturesTable$(EXEEXT) \
 @ENABLE_GEOPACKAGE_TRUE@	check_gpkg_base_core_container_data_file_format_application_id$(EXEEXT) \
 @ENABLE_GEOPACKAGE_TRUE@	check_gpkg_base_core_spatial_ref_sys_data_table_def$(EXEEXT) \
@@ -346,6 +347,9 @@ check_gpkgGetImageFormat_webp_LDADD = $(LDADD)
 check_gpkgInsertEpsgSRID_SOURCES = check_gpkgInsertEpsgSRID.c
 check_gpkgInsertEpsgSRID_OBJECTS = check_gpkgInsertEpsgSRID.$(OBJEXT)
 check_gpkgInsertEpsgSRID_LDADD = $(LDADD)
+check_gpkgMode_SOURCES = check_gpkgMode.c
+check_gpkgMode_OBJECTS = check_gpkgMode.$(OBJEXT)
+check_gpkgMode_LDADD = $(LDADD)
 check_gpkgVirtual_SOURCES = check_gpkgVirtual.c
 check_gpkgVirtual_OBJECTS = check_gpkgVirtual.$(OBJEXT)
 check_gpkgVirtual_LDADD = $(LDADD)
@@ -532,7 +536,7 @@ SOURCES = check_add_tile_triggers.c \
 	check_gpkgGetImageFormat_nonimage.c \
 	check_gpkgGetImageFormat_png.c check_gpkgGetImageFormat_tiff.c \
 	check_gpkgGetImageFormat_webp.c check_gpkgInsertEpsgSRID.c \
-	check_gpkgVirtual.c \
+	check_gpkgMode.c check_gpkgVirtual.c \
 	check_gpkg_base_core_container_data_file_format_application_id.c \
 	check_gpkg_base_core_contents_data_table_def.c \
 	check_gpkg_base_core_spatial_ref_sys_data_table_def.c \
@@ -571,7 +575,7 @@ DIST_SOURCES = check_add_tile_triggers.c \
 	check_gpkgGetImageFormat_nonimage.c \
 	check_gpkgGetImageFormat_png.c check_gpkgGetImageFormat_tiff.c \
 	check_gpkgGetImageFormat_webp.c check_gpkgInsertEpsgSRID.c \
-	check_gpkgVirtual.c \
+	check_gpkgMode.c check_gpkgVirtual.c \
 	check_gpkg_base_core_container_data_file_format_application_id.c \
 	check_gpkg_base_core_contents_data_table_def.c \
 	check_gpkg_base_core_spatial_ref_sys_data_table_def.c \
@@ -1300,6 +1304,10 @@ check_gpkgInsertEpsgSRID$(EXEEXT): $(check_gpkgInsertEpsgSRID_OBJECTS) $(check_g
 	@rm -f check_gpkgInsertEpsgSRID$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(check_gpkgInsertEpsgSRID_OBJECTS) $(check_gpkgInsertEpsgSRID_LDADD) $(LIBS)
 
+check_gpkgMode$(EXEEXT): $(check_gpkgMode_OBJECTS) $(check_gpkgMode_DEPENDENCIES) $(EXTRA_check_gpkgMode_DEPENDENCIES) 
+	@rm -f check_gpkgMode$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(check_gpkgMode_OBJECTS) $(check_gpkgMode_LDADD) $(LIBS)
+
 check_gpkgVirtual$(EXEEXT): $(check_gpkgVirtual_OBJECTS) $(check_gpkgVirtual_DEPENDENCIES) $(EXTRA_check_gpkgVirtual_DEPENDENCIES) 
 	@rm -f check_gpkgVirtual$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(check_gpkgVirtual_OBJECTS) $(check_gpkgVirtual_LDADD) $(LIBS)
@@ -1512,6 +1520,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/check_gpkgGetImageFormat_tiff.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/check_gpkgGetImageFormat_webp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/check_gpkgInsertEpsgSRID.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/check_gpkgMode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/check_gpkgVirtual.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/check_gpkg_base_core_container_data_file_format_application_id.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/check_gpkg_base_core_contents_data_table_def.Po@am__quote@
@@ -2237,6 +2246,13 @@ check_gpkgCreateTilesZoomLevel.log: check_gpkgCreateTilesZoomLevel$(EXEEXT)
 check_gpkgInsertEpsgSRID.log: check_gpkgInsertEpsgSRID$(EXEEXT)
 	@p='check_gpkgInsertEpsgSRID$(EXEEXT)'; \
 	b='check_gpkgInsertEpsgSRID'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+check_gpkgMode.log: check_gpkgMode$(EXEEXT)
+	@p='check_gpkgMode$(EXEEXT)'; \
+	b='check_gpkgMode'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

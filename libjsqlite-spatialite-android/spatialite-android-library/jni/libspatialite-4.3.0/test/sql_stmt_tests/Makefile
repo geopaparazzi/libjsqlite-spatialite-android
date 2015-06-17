@@ -184,10 +184,10 @@ OTOOL64 =
 PACKAGE = libspatialite
 PACKAGE_BUGREPORT = a.furieri@lqt.it
 PACKAGE_NAME = libspatialite
-PACKAGE_STRING = libspatialite 4.3.0-devel
+PACKAGE_STRING = libspatialite 4.3.0-RC0
 PACKAGE_TARNAME = libspatialite
 PACKAGE_URL = 
-PACKAGE_VERSION = 4.3.0-devel
+PACKAGE_VERSION = 4.3.0-RC0
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
@@ -197,7 +197,7 @@ SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/bash
 STRIP = strip
-VERSION = 4.3.0-devel
+VERSION = 4.3.0-RC0
 abs_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.3.0/test/sql_stmt_tests
 abs_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.3.0/test/sql_stmt_tests
 abs_top_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.3.0
@@ -921,12 +921,18 @@ EXTRA_DIST = addpoint10.testcase \
 	dropgeo3.testcase \
 	dropgeo4.testcase \
 	dropgeo5.testcase \
+	dropgeo6.testcase \
+	dropgeo7.testcase \
+	dropgeo8.testcase \
+	dropgeo9.testcase \
 	elemgeo1.testcase \
 	elemgeo2.testcase \
 	elemgeo3.testcase \
 	elemgeo4.testcase \
 	elemgeo5.testcase \
 	elemgeo6.testcase \
+	elemgeo7.testcase \
+	elemgeo8.testcase \
 	emptyfile.txt \
 	encodeurl1.testcase \
 	encodeurl2.testcase \
@@ -1956,6 +1962,8 @@ EXTRA_DIST = addpoint10.testcase \
 	reflectcoords9.testcase \
 	removedupl1.testcase \
 	removedupl2.testcase \
+	removedupl3.testcase \
+	removedupl4.testcase \
 	removepoint10.testcase \
 	removepoint11.testcase \
 	removepoint12.testcase \

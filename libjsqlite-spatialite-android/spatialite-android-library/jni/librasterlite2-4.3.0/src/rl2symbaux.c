@@ -1581,8 +1581,8 @@ rl2_create_default_graphic ()
     graphic->opacity = 1.0;
     graphic->size = 10.0;
     graphic->rotation = 0.0;
-    graphic->anchor_point_x = 0.0;
-    graphic->anchor_point_y = 0.0;
+    graphic->anchor_point_x = 0.5;
+    graphic->anchor_point_y = 0.5;
     graphic->displacement_x = 0.0;
     graphic->displacement_y = 0.0;
     return graphic;
@@ -1612,8 +1612,8 @@ rl2_create_default_point_placement ()
 {
 /* creating a default PointPlacement object */
     rl2PrivPointPlacementPtr place = malloc (sizeof (rl2PrivPointPlacement));
-    place->anchor_point_x = 0.0;
-    place->anchor_point_y = 0.0;
+    place->anchor_point_x = 0.5;
+    place->anchor_point_y = 0.5;
     place->displacement_x = 0.0;
     place->displacement_y = 0.0;
     place->rotation = 0.0;

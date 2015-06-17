@@ -55,6 +55,7 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #include "rasterlite2_private.h"
 
 #ifndef OMIT_CHARLS		/* only if CharLS is enabled */
+
 #ifdef __ANDROID__		/* Android specific */
 #include <interface.h>
 #else

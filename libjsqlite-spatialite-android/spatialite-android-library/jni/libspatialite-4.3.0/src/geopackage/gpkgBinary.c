@@ -65,8 +65,8 @@ gpkgSetHeader2DMbr (unsigned char *ptr, double min_x, double min_y,
     gaiaExport64 (ptr + 3 * sizeof (double), max_y, 1, endian_arch);
 }
 
-static void
-gaiaToGPB (gaiaGeomCollPtr geom, unsigned char **result, unsigned int *size)
+GEOPACKAGE_DECLARE void
+gaiaToGPB (gaiaGeomCollPtr geom, unsigned char **result, int *size)
 {
     int wkbOnlyLength;
     unsigned char *wkbOnlyGeometry = NULL;
@@ -103,7 +103,7 @@ gaiaToGPB (gaiaGeomCollPtr geom, unsigned char **result, unsigned int *size)
 }
 
 
-GEOPACKAGE_DECLARE void
+GEOPACKAGE_PRIVATE void
 fnct_ToGPB (sqlite3_context * context, int argc, sqlite3_value ** argv)
 {
 /* SQL function:
@@ -115,7 +115,7 @@ fnct_ToGPB (sqlite3_context * context, int argc, sqlite3_value ** argv)
     unsigned char *p_blob;
     int n_bytes;
     gaiaGeomCollPtr geo = NULL;
-    unsigned int len;
+    int len;
     unsigned char *p_result = NULL;
     GEOPACKAGE_UNUSED ();	/* LCOV_EXCL_LINE */
     if (sqlite3_value_type (argv[0]) != SQLITE_BLOB)
@@ -235,7 +235,7 @@ gaiaFromGeoPackageGeometryBlob (const unsigned char *gpb, unsigned int gpb_len)
     return geo;
 }
 
-GEOPACKAGE_DECLARE void
+GEOPACKAGE_PRIVATE void
 fnct_GeomFromGPB (sqlite3_context * context, int argc, sqlite3_value ** argv)
 {
 /* SQL function:
@@ -440,7 +440,7 @@ gaiaGetGeometryTypeFromGPB (const unsigned char *gpb, int gpb_len)
     return gtype;
 }
 
-GEOPACKAGE_DECLARE void
+GEOPACKAGE_PRIVATE void
 fnct_GPKG_IsAssignable (sqlite3_context * context, int argc,
 			sqlite3_value ** argv)
 {
@@ -484,7 +484,7 @@ fnct_GPKG_IsAssignable (sqlite3_context * context, int argc,
     sqlite3_result_int (context, ret);
 }
 
-GEOPACKAGE_DECLARE void
+GEOPACKAGE_PRIVATE void
 fnct_IsValidGPB (sqlite3_context * context, int argc, sqlite3_value ** argv)
 {
 /* SQL function:

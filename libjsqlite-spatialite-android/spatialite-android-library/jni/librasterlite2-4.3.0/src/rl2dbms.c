@@ -7592,6 +7592,7 @@ rl2_copy_raster_coverage (sqlite3 * sqlite, const char *db_prefix,
 		       SQLITE_STATIC);
     ret = sqlite3_step (stmt);
     sqlite3_finalize(stmt);
+    stmt = NULL;
     if (ret == SQLITE_DONE || ret == SQLITE_ROW)
 	goto ok_continue;
     fprintf (stderr,

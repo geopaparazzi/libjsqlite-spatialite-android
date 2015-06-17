@@ -1,7 +1,6 @@
 include $(CLEAR_VARS)
 # ./configure  --enable-lwgeom=no --enable-gcp --enable-examples=no --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
-# ./configure  --build=x86_64-pc-linux-gnu --host=arm-linux-eabi --without-grib --prefix=$PROJECT/external/gdal
-# 20150607.libspatialite-4.3.0-dev
+# 20150616.libspatialite-4.3.0-RC0
 LOCAL_MODULE    := spatialite
 
 # SQLite flags copied from ASOP

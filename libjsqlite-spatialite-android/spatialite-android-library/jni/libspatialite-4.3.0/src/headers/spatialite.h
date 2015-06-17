@@ -725,7 +725,7 @@ extern "C"
  \param removed on successful completion will contain the total
  count of removed duplicate rows
 
- \sa check_duplicated_rows, remove_duplicated_rows
+ \sa check_duplicated_rows, remove_duplicated_rows_ex2
 
  \note when two (or more) duplicated rows exist, only the first occurence
  will be preserved, then deleting any further occurrence.
@@ -733,6 +733,26 @@ extern "C"
     SPATIALITE_DECLARE void remove_duplicated_rows_ex (sqlite3 * sqlite,
 						       char *table,
 						       int *removed);
+
+/**
+ Remove duplicated rows from a table
+
+ \param sqlite handle to current DB connection
+ \param table name of the table to be cleaned
+ \param removed on successful completion will contain the total
+ count of removed duplicate rows
+ \param transaction boolena; if set to TRUE will internally handle
+ a SQL Transaction
+
+ \sa check_duplicated_rows, remove_duplicated_rows
+
+ \note when two (or more) duplicated rows exist, only the first occurence
+ will be preserved, then deleting any further occurrence.
+ */
+    SPATIALITE_DECLARE void remove_duplicated_rows_ex2 (sqlite3 * sqlite,
+							char *table,
+							int *removed,
+							int transaction);
 
 /**
  Creates a derived table surely containing elementary Geometries
@@ -770,7 +790,7 @@ extern "C"
  \param multiId name of the column identifying origins in the output table
  \param rows on completion will contain the total number of inserted rows
  
- \sa elementary_geometries
+ \sa elementary_geometries_ex2
 
  \note if the input table contains some kind of complex Geometry
  (MULTIPOINT, MULTILINESTRING, MULTIPOLYGON or GEOMETRYCOLLECTION),
@@ -785,6 +805,36 @@ extern "C"
 						      char *outTable,
 						      char *pKey, char *multiId,
 						      int *rows);
+
+/**
+ Creates a derived table surely containing elementary Geometries
+
+ \param sqlite handle to current DB connection
+ \param inTable name of the input table 
+ \param geometry name of the Geometry column
+ \param outTable name of the output table to be created
+ \param pKey name of the Primary Key column in the output table
+ \param multiId name of the column identifying origins in the output table
+ \param rows on completion will contain the total number of inserted rows
+ \param transaction boolena; if set to TRUE will internally handle
+ a SQL Transaction
+ 
+ \sa elementary_geometries
+
+ \note if the input table contains some kind of complex Geometry
+ (MULTIPOINT, MULTILINESTRING, MULTIPOLYGON or GEOMETRYCOLLECTION),
+ then many rows are inserted into the output table: each single 
+ row will contain the same attributes and an elementaty Geometry.
+ All the rows created by expanding the same input row will expose
+ the same value in the "multiId" column.
+ */
+    SPATIALITE_DECLARE void elementary_geometries_ex2 (sqlite3 * sqlite,
+						       char *inTable,
+						       char *geometry,
+						       char *outTable,
+						       char *pKey,
+						       char *multiId, int *rows,
+						       int transaction);
 
 /**
  Dumps a full geometry-table into an external GeoJSON file
@@ -1043,11 +1093,35 @@ extern "C"
 
  \return 0 on failure, any other value on success
 
- \sa gaiaDropTable
+ \sa gaiaDropTableEx2
  */
     SPATIALITE_DECLARE int gaiaDropTableEx (sqlite3 * sqlite,
 					    const char *prefix,
 					    const char *table);
+
+/**
+ Drops a layer-table, removing any related dependency
+
+ \param sqlite handle to current DB connection
+ \param prefix schema prefix identifying the target DB\n
+ "main" always identifies the main DB (primary, not Attached).
+ \param table name of the table to be removed
+ \param transaction boolena; if set to TRUE will internally handle
+ a SQL Transaction
+
+ \note this function will drop a SpatialTable, SpatialView or VirtualShape being
+ properly registered within the Metadata tables.
+ \n an eventual Spatial Index will be dropped as well, and any row referring the
+ selected table will be removed from the Metadata tables.
+
+ \return 0 on failure, any other value on success
+
+ \sa gaiaDropTable
+ */
+    SPATIALITE_DECLARE int gaiaDropTableEx2 (sqlite3 * sqlite,
+					     const char *prefix,
+					     const char *table,
+					     int transaction);
 
 /**
  Checks a Geometry Column for validity

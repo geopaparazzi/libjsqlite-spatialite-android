@@ -2183,6 +2183,13 @@ gaiaDropTable (sqlite3 * sqlite, const char *table)
 SPATIALITE_DECLARE int
 gaiaDropTableEx (sqlite3 * sqlite, const char *prefix, const char *table)
 {
+    return gaiaDropTableEx2 (sqlite, prefix, table, 1);
+}
+
+SPATIALITE_DECLARE int
+gaiaDropTableEx2 (sqlite3 * sqlite, const char *prefix, const char *table,
+		  int transaction)
+{
 /* dropping a Spatial Table and any other related stuff */
     int ret;
     struct drop_params aux;
@@ -2213,10 +2220,15 @@ gaiaDropTableEx (sqlite3 * sqlite, const char *prefix, const char *table)
 	return 0;
     if (table == NULL)
 	return 0;
-/* the whole operation is a single transaction */
-    ret = sqlite3_exec (sqlite, "BEGIN", NULL, NULL, NULL);
-    if (ret != SQLITE_OK)
-	return 0;
+
+    if (transaction)
+      {
+	  /* the whole operation is a single transaction */
+	  ret = sqlite3_exec (sqlite, "BEGIN", NULL, NULL, NULL);
+	  if (ret != SQLITE_OK)
+	      return 0;
+      }
+
 /* checking the actual DB configuration */
     if (!check_drop_layout (sqlite, prefix, table, &aux))
 	goto rollback;
@@ -2225,10 +2237,15 @@ gaiaDropTableEx (sqlite3 * sqlite, const char *prefix, const char *table)
 	goto rollback;
     if (!do_drop_table (sqlite, prefix, table, &aux))
 	goto rollback;
-/* committing the still pending transaction */
-    ret = sqlite3_exec (sqlite, "COMMIT", NULL, NULL, NULL);
-    if (ret != SQLITE_OK)
-	goto rollback;
+
+    if (transaction)
+      {
+	  /* committing the still pending transaction */
+	  ret = sqlite3_exec (sqlite, "COMMIT", NULL, NULL, NULL);
+	  if (ret != SQLITE_OK)
+	      goto rollback;
+      }
+
     if (aux.rtrees)
       {
 	  /* memory cleanup - rtrees */
@@ -2244,8 +2261,12 @@ gaiaDropTableEx (sqlite3 * sqlite, const char *prefix, const char *table)
 
   rollback:
 
-/* invalidating the still pending transaction */
-    sqlite3_exec (sqlite, "ROLLBACK", NULL, NULL, NULL);
+    if (transaction)
+      {
+	  /* invalidating the still pending transaction */
+	  sqlite3_exec (sqlite, "ROLLBACK", NULL, NULL, NULL);
+      }
+
     if (aux.rtrees)
       {
 	  /* memory cleanup - rtrees */

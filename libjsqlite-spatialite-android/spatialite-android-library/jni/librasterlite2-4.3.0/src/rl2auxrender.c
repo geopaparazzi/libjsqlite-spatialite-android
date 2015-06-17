@@ -1749,193 +1749,6 @@ rl2_get_raw_raster_data_mixed_resolutions (sqlite3 * handle, int max_threads,
     return RL2_ERROR;
 }
 
-static rl2GraphicsPatternPtr
-load_external_graphic_from_dbms (sqlite3 * handle, rl2PrivGraphicPtr graphic)
-{
-/* attempting to load an External Graphic from the DBMS */
-    int ret;
-    sqlite3_stmt *stmt = NULL;
-    const char *sql;
-    const char *xlink_href = NULL;
-    rl2GraphicsPatternPtr pattern = NULL;
-    rl2PrivGraphicItemPtr item;
-
-    if (graphic == NULL)
-	return NULL;
-    /* searching for an xlink_href pseudo-URL */
-    item = graphic->first;
-    while (item != NULL)
-      {
-	  if (item->type == RL2_EXTERNAL_GRAPHIC && item->item != NULL)
-	    {
-		rl2PrivExternalGraphicPtr ext =
-		    (rl2PrivExternalGraphicPtr) (item->item);
-		if (ext->xlink_href != NULL)
-		  {
-		      xlink_href = ext->xlink_href;
-		      break;
-		  }
-	    }
-	  item = item->next;
-      }
-    if (xlink_href == NULL)
-	return NULL;
-
-    sql = "SELECT resource, GetMimeType(resource) FROM SE_external_graphics "
-	"WHERE xlink_href = ?";
-    ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
-    if (ret != SQLITE_OK)
-	return NULL;
-
-    sqlite3_reset (stmt);
-    sqlite3_clear_bindings (stmt);
-    sqlite3_bind_text (stmt, 1, xlink_href, strlen (xlink_href), SQLITE_STATIC);
-    while (1)
-      {
-	  /* scrolling the result set rows */
-	  ret = sqlite3_step (stmt);
-	  if (ret == SQLITE_DONE)
-	      break;		/* end of result set */
-	  if (ret == SQLITE_ROW)
-	    {
-		rl2RasterPtr raster = NULL;
-		if (sqlite3_column_type (stmt, 0) == SQLITE_BLOB
-		    && sqlite3_column_type (stmt, 1) == SQLITE_TEXT)
-		  {
-		      const unsigned char *blob = sqlite3_column_blob (stmt, 0);
-		      int blob_sz = sqlite3_column_bytes (stmt, 0);
-		      const char *mime_type =
-			  (const char *) sqlite3_column_text (stmt, 1);
-		      if (strcmp (mime_type, "image/gif") == 0)
-			  raster = rl2_raster_from_gif (blob, blob_sz);
-		      if (strcmp (mime_type, "image/png") == 0)
-			  raster = rl2_raster_from_png (blob, blob_sz, 1);
-		      if (strcmp (mime_type, "image/jpeg") == 0)
-			  raster = rl2_raster_from_jpeg (blob, blob_sz);
-		      if (strcmp (mime_type, "image/tiff") == 0)
-			  raster = rl2_raster_from_tiff (blob, blob_sz);
-		  }
-		if (raster != NULL)
-		  {
-		      unsigned char *rgba;
-		      int rgba_sz;
-		      unsigned int width;
-		      unsigned int height;
-		      if (rl2_get_raster_size (raster, &width, &height) !=
-			  RL2_OK)
-			{
-			    rl2_destroy_raster (raster);
-			    goto error;
-			}
-		      if (rl2_raster_data_to_RGBA (raster, &rgba, &rgba_sz) !=
-			  RL2_OK)
-			{
-			    rl2_destroy_raster (raster);
-			    goto error;
-			}
-		      pattern =
-			  rl2_graph_create_pattern (rgba, width, height, 0);
-		      rl2_destroy_raster (raster);
-		  }
-	    }
-	  else
-	    {
-		fprintf (stderr, "SQL error: %s\n%s\n", sql,
-			 sqlite3_errmsg (handle));
-		goto error;
-	    }
-      }
-    return pattern;
-
-  error:
-    if (stmt != NULL)
-	sqlite3_finalize (stmt);
-    return NULL;
-}
-
-static rl2GraphicsBitmapPtr
-load_external_bitmap_from_dbms (sqlite3 * handle, const char *xlink_href)
-{
-/* attempting to load an External Graphic from the DBMS */
-    int ret;
-    sqlite3_stmt *stmt = NULL;
-    const char *sql;
-    rl2GraphicsBitmapPtr bitmap = NULL;
-
-    if (xlink_href == NULL)
-	return NULL;
-
-    sql = "SELECT resource, GetMimeType(resource) FROM SE_external_graphics "
-	"WHERE xlink_href = ?";
-    ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
-    if (ret != SQLITE_OK)
-	return NULL;
-
-    sqlite3_reset (stmt);
-    sqlite3_clear_bindings (stmt);
-    sqlite3_bind_text (stmt, 1, xlink_href, strlen (xlink_href), SQLITE_STATIC);
-    while (1)
-      {
-	  /* scrolling the result set rows */
-	  ret = sqlite3_step (stmt);
-	  if (ret == SQLITE_DONE)
-	      break;		/* end of result set */
-	  if (ret == SQLITE_ROW)
-	    {
-		rl2RasterPtr raster = NULL;
-		if (sqlite3_column_type (stmt, 0) == SQLITE_BLOB
-		    && sqlite3_column_type (stmt, 1) == SQLITE_TEXT)
-		  {
-		      const unsigned char *blob = sqlite3_column_blob (stmt, 0);
-		      int blob_sz = sqlite3_column_bytes (stmt, 0);
-		      const char *mime_type =
-			  (const char *) sqlite3_column_text (stmt, 1);
-		      if (strcmp (mime_type, "image/gif") == 0)
-			  raster = rl2_raster_from_gif (blob, blob_sz);
-		      if (strcmp (mime_type, "image/png") == 0)
-			  raster = rl2_raster_from_png (blob, blob_sz, 1);
-		      if (strcmp (mime_type, "image/jpeg") == 0)
-			  raster = rl2_raster_from_jpeg (blob, blob_sz);
-		      if (strcmp (mime_type, "image/tiff") == 0)
-			  raster = rl2_raster_from_tiff (blob, blob_sz);
-		  }
-		if (raster != NULL)
-		  {
-		      unsigned char *rgba;
-		      int rgba_sz;
-		      unsigned int width;
-		      unsigned int height;
-		      if (rl2_get_raster_size (raster, &width, &height) !=
-			  RL2_OK)
-			{
-			    rl2_destroy_raster (raster);
-			    goto error;
-			}
-		      if (rl2_raster_data_to_RGBA (raster, &rgba, &rgba_sz) !=
-			  RL2_OK)
-			{
-			    rl2_destroy_raster (raster);
-			    goto error;
-			}
-		      bitmap = rl2_graph_create_bitmap (rgba, width, height);
-		      rl2_destroy_raster (raster);
-		  }
-	    }
-	  else
-	    {
-		fprintf (stderr, "SQL error: %s\n%s\n", sql,
-			 sqlite3_errmsg (handle));
-		goto error;
-	    }
-      }
-    return bitmap;
-
-  error:
-    if (stmt != NULL)
-	sqlite3_finalize (stmt);
-    return NULL;
-}
-
 static void
 draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 	     rl2PrivVectorSymbolizerPtr sym, int height, double minx,
@@ -1972,7 +1785,7 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 		      int pen_join;
 		      double opacity;
 		      unsigned char norm_opacity;
-		      rl2GraphicsBitmapPtr pattern = NULL;
+		      rl2GraphicsPatternPtr pattern = NULL;
 		      rl2GraphicsPatternPtr pattern_fill = NULL;
 		      rl2GraphicsPatternPtr pattern_stroke = NULL;
 
@@ -1989,15 +1802,97 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 					if (mark->fill->graphic != NULL)
 					  {
 					      /* external Graphic fill */
-					      pattern_fill =
-						  load_external_graphic_from_dbms
-						  (handle, mark->fill->graphic);
+					      const char *xlink_href = NULL;
+					      int recolor = 0;
+					      unsigned char red;
+					      unsigned char green;
+					      unsigned char blue;
+					      pattern_fill = NULL;
+					      if (mark->fill->graphic->first !=
+						  NULL)
+						{
+						    if (mark->fill->
+							graphic->first->type ==
+							RL2_EXTERNAL_GRAPHIC)
+						      {
+							  rl2PrivExternalGraphicPtr
+							      ext =
+							      (rl2PrivExternalGraphicPtr)
+							      (mark->
+							       fill->graphic->
+							       first->item);
+							  xlink_href =
+							      ext->xlink_href;
+							  if (ext->first !=
+							      NULL)
+							    {
+								recolor = 1;
+								red =
+								    ext->
+								    first->red;
+								green =
+								    ext->
+								    first->green;
+								blue =
+								    ext->
+								    first->blue;
+							    }
+						      }
+						}
+					      if (xlink_href != NULL)
+						  pattern_fill =
+						      rl2_create_pattern_from_external_graphic
+						      (handle, xlink_href, 1);
 					      if (pattern_fill != NULL)
 						{
+						    if (recolor)
+						      {
+							  /* attempting to recolor the External Graphic resource */
+							  rl2_graph_pattern_recolor
+							      (pattern_fill,
+							       red, green,
+							       blue);
+						      }
+						    if (mark->fill->opacity <=
+							0.0)
+							norm_opacity = 0;
+						    else if (mark->
+							     fill->opacity >=
+							     1.0)
+							norm_opacity = 255;
+						    else
+						      {
+							  opacity =
+							      255.0 *
+							      mark->
+							      fill->opacity;
+							  if (opacity <= 0.0)
+							      norm_opacity = 0;
+							  else if (opacity >=
+								   255.0)
+							      norm_opacity =
+								  255;
+							  else
+							      norm_opacity =
+								  opacity;
+						      }
+						    if (norm_opacity < 1.0)
+							rl2_graph_pattern_transparency
+							    (pattern_fill,
+							     norm_opacity);
 						    rl2_graph_set_pattern_brush
 							(ctx, pattern_fill);
-						    fill = 1;
 						}
+					      else
+						{
+						    /* invalid Pattern: defaulting to a Gray brush */
+						    rl2_graph_set_brush (ctx,
+									 128,
+									 128,
+									 128,
+									 255);
+						}
+					      fill = 1;
 					  }
 					else
 					  {
@@ -2032,70 +1927,146 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 				    {
 					if (mark->stroke->graphic != NULL)
 					  {
-					      /* external Graphic stroke */
-					      pattern_stroke =
-						  load_external_graphic_from_dbms
-						  (handle,
-						   mark->stroke->graphic);
-					      if (pattern_stroke != NULL)
+					      const char *xlink_href = NULL;
+					      int recolor = 0;
+					      unsigned char red;
+					      unsigned char green;
+					      unsigned char blue;
+					      pattern_stroke = NULL;
+					      if (mark->stroke->
+						  graphic->first != NULL)
 						{
-						    switch (mark->
-							    stroke->linecap)
+						    if (mark->stroke->
+							graphic->first->type ==
+							RL2_EXTERNAL_GRAPHIC)
 						      {
-						      case RL2_STROKE_LINECAP_ROUND:
-							  pen_cap =
-							      RL2_PEN_CAP_ROUND;
-							  break;
-						      case RL2_STROKE_LINECAP_SQUARE:
-							  pen_cap =
-							      RL2_PEN_CAP_SQUARE;
-							  break;
-						      default:
-							  pen_cap =
-							      RL2_PEN_CAP_BUTT;
-							  break;
-						      };
-						    switch (mark->
-							    stroke->linejoin)
+							  rl2PrivExternalGraphicPtr
+							      ext =
+							      (rl2PrivExternalGraphicPtr)
+							      (mark->
+							       stroke->graphic->
+							       first->item);
+							  xlink_href =
+							      ext->xlink_href;
+							  if (ext->first !=
+							      NULL)
+							    {
+								recolor = 1;
+								red =
+								    ext->
+								    first->red;
+								green =
+								    ext->
+								    first->green;
+								blue =
+								    ext->
+								    first->blue;
+							    }
+						      }
+						}
+					      if (xlink_href != NULL)
+						  pattern_stroke =
+						      rl2_create_pattern_from_external_graphic
+						      (handle, xlink_href, 1);
+					      if (pattern != NULL)
+						{
+						    if (recolor)
 						      {
-						      case RL2_STROKE_LINEJOIN_BEVEL:
-							  pen_join =
-							      RL2_PEN_JOIN_BEVEL;
-							  break;
-						      case RL2_STROKE_LINEJOIN_ROUND:
-							  pen_join =
-							      RL2_PEN_JOIN_ROUND;
-							  break;
-						      default:
-							  pen_join =
-							      RL2_PEN_JOIN_MITER;
-							  break;
-						      };
-						    if (mark->
-							stroke->dash_count > 0
-							&& mark->
-							stroke->dash_list !=
-							NULL)
-							rl2_graph_set_pattern_dashed_pen
-							    (ctx,
-							     pattern_stroke,
-							     mark->
-							     stroke->width,
-							     pen_cap, pen_join,
-							     mark->
-							     stroke->dash_count,
-							     mark->
-							     stroke->dash_list,
-							     mark->
-							     stroke->dash_offset);
+							  /* attempting to recolor the External Graphic resource */
+							  rl2_graph_pattern_recolor
+							      (pattern_stroke, red,
+							       green, blue);
+						      }
+						    if (mark->stroke->opacity <=
+							0.0)
+							norm_opacity = 0;
+						    else if (mark->
+							     stroke->opacity >=
+							     1.0)
+							norm_opacity = 255;
 						    else
-							rl2_graph_set_pattern_solid_pen
-							    (ctx,
-							     pattern_stroke,
-							     mark->
-							     stroke->width,
-							     pen_cap, pen_join);
-						    stroke = 1;
+						      {
+							  opacity =
+							      255.0 *
+							      mark->
+							      stroke->opacity;
+							  if (opacity <= 0.0)
+							      norm_opacity = 0;
+							  else if (opacity >=
+								   255.0)
+							      norm_opacity =
+								  255;
+							  else
+							      norm_opacity =
+								  opacity;
+						      }
+						    if (norm_opacity < 1.0)
+							rl2_graph_pattern_transparency
+							    (pattern_stroke,
+							     norm_opacity);
+						    if (pattern_stroke != NULL)
+						      {
+							  switch (mark->
+								  stroke->linecap)
+							    {
+							    case RL2_STROKE_LINECAP_ROUND:
+								pen_cap =
+								    RL2_PEN_CAP_ROUND;
+								break;
+							    case RL2_STROKE_LINECAP_SQUARE:
+								pen_cap =
+								    RL2_PEN_CAP_SQUARE;
+								break;
+							    default:
+								pen_cap =
+								    RL2_PEN_CAP_BUTT;
+								break;
+							    };
+							  switch (mark->
+								  stroke->linejoin)
+							    {
+							    case RL2_STROKE_LINEJOIN_BEVEL:
+								pen_join =
+								    RL2_PEN_JOIN_BEVEL;
+								break;
+							    case RL2_STROKE_LINEJOIN_ROUND:
+								pen_join =
+								    RL2_PEN_JOIN_ROUND;
+								break;
+							    default:
+								pen_join =
+								    RL2_PEN_JOIN_MITER;
+								break;
+							    };
+							  if (mark->
+							      stroke->dash_count
+							      > 0
+							      && mark->
+							      stroke->dash_list
+							      != NULL)
+							      rl2_graph_set_pattern_dashed_pen
+								  (ctx,
+								   pattern_stroke,
+								   mark->
+								   stroke->width,
+								   pen_cap,
+								   pen_join,
+								   mark->
+								   stroke->dash_count,
+								   mark->
+								   stroke->dash_list,
+								   mark->
+								   stroke->dash_offset);
+							  else
+							      rl2_graph_set_pattern_solid_pen
+								  (ctx,
+								   pattern_stroke,
+								   mark->
+								   stroke->width,
+								   pen_cap,
+								   pen_join);
+							  stroke = 1;
+						      }
 						}
 					  }
 					else
@@ -2176,12 +2147,74 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 			{
 			    rl2PrivExternalGraphicPtr ext =
 				(rl2PrivExternalGraphicPtr) (graphic->item);
+			    const char *xlink_href = NULL;
+			    int recolor = 0;
+			    unsigned char red;
+			    unsigned char green;
+			    unsigned char blue;
+			    pattern = NULL;
 			    if (ext != NULL)
 			      {
 				  is_external = 1;
-				  pattern =
-				      load_external_bitmap_from_dbms (handle,
-								      ext->xlink_href);
+				  if (ext->xlink_href != NULL)
+				      xlink_href = ext->xlink_href;
+				  if (ext->first != NULL)
+				    {
+					recolor = 1;
+					red = ext->first->red;
+					green = ext->first->green;
+					blue = ext->first->blue;
+				    }
+				  if (xlink_href != NULL)
+				    {
+					/* first attempt: Bitmap */
+					pattern =
+					    rl2_create_pattern_from_external_graphic
+					    (handle, xlink_href, 1);
+					if (pattern == NULL)
+					  {
+					      /* second attempt: SVG */
+					      pattern =
+						  rl2_create_pattern_from_external_svg
+						  (handle, xlink_href,
+						   point_sym->graphic->size);
+					  }
+				    }
+			      }
+			    if (pattern != NULL)
+			      {
+				  if (recolor)
+				    {
+					/* attempting to recolor the External Graphic resource */
+					rl2_graph_pattern_recolor (pattern,
+								   red, green,
+								   blue);
+				    }
+				  if (point_sym->graphic->opacity <= 0.0)
+				      norm_opacity = 0;
+				  else if (point_sym->graphic->opacity >= 1.0)
+				      norm_opacity = 255;
+				  else
+				    {
+					opacity =
+					    255.0 * point_sym->graphic->opacity;
+					if (opacity <= 0.0)
+					    norm_opacity = 0;
+					else if (opacity >= 255.0)
+					    norm_opacity = 255;
+					else
+					    norm_opacity = opacity;
+				    }
+				  if (norm_opacity < 1.0)
+				      rl2_graph_pattern_transparency
+					  (pattern, norm_opacity);
+				  rl2_graph_set_pattern_brush (ctx,
+							       pattern);
+			      }
+			    else
+			      {
+				  /* invalid Pattern: defaulting to a Gray brush */
+				  rl2_graph_set_brush (ctx, 128, 128, 128, 255);
 			      }
 			}
 
@@ -2372,15 +2405,30 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 			      }
 			    if (is_external && pattern != NULL)
 			      {
-				  /* drawing an External Graphic bitmap */
-				  rl2_graph_draw_bitmap (ctx, pattern, x, y);
+				  /* drawing an External Graphic pattern */
+				  unsigned int width;
+				  unsigned int height;
+				  rl2_graph_get_pattern_size (pattern, &width,
+							      &height);
+				  double out_width = width;
+				  double out_height = height;
+				  rl2_graph_draw_graphic_symbol (ctx, pattern,
+								 out_width,
+								 out_height,
+								 x +
+								 point_sym->graphic->displacement_x,
+								 y -
+								 point_sym->graphic->displacement_y,
+								 point_sym->graphic->rotation,
+								 point_sym->graphic->anchor_point_x,
+								 point_sym->graphic->anchor_point_y);
 			      }
 			    point = point->next;
 			}
 
 		      /* releasing Patterns */
 		      if (pattern != NULL)
-			  rl2_graph_destroy_bitmap (pattern);
+			  rl2_graph_destroy_pattern (pattern);
 		      if (pattern_fill != NULL)
 			{
 			    rl2_graph_release_pattern_pen (ctx);
@@ -2425,34 +2473,62 @@ draw_lines (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 		      if (line_sym->stroke->graphic != NULL)
 			{
 			    /* external Graphic stroke */
-			    pattern = load_external_graphic_from_dbms (handle,
-								       line_sym->stroke->graphic);
+			    const char *xlink_href = NULL;
+			    int recolor = 0;
+			    unsigned char red;
+			    unsigned char green;
+			    unsigned char blue;
+			    pattern = NULL;
+			    if (line_sym->stroke->graphic->first != NULL)
+			      {
+				  if (line_sym->stroke->graphic->first->type ==
+				      RL2_EXTERNAL_GRAPHIC)
+				    {
+					rl2PrivExternalGraphicPtr ext =
+					    (rl2PrivExternalGraphicPtr)
+					    (line_sym->stroke->graphic->
+					     first->item);
+					xlink_href = ext->xlink_href;
+					if (ext->first != NULL)
+					  {
+					      recolor = 1;
+					      red = ext->first->red;
+					      green = ext->first->green;
+					      blue = ext->first->blue;
+					  }
+				    }
+			      }
+			    if (xlink_href != NULL)
+				pattern =
+				    rl2_create_pattern_from_external_graphic
+				    (handle, xlink_href, 1);
 			    if (pattern != NULL)
 			      {
-				  switch (line_sym->stroke->linecap)
+				  if (recolor)
 				    {
-				    case RL2_STROKE_LINECAP_ROUND:
-					pen_cap = RL2_PEN_CAP_ROUND;
-					break;
-				    case RL2_STROKE_LINECAP_SQUARE:
-					pen_cap = RL2_PEN_CAP_SQUARE;
-					break;
-				    default:
-					pen_cap = RL2_PEN_CAP_BUTT;
-					break;
-				    };
-				  switch (line_sym->stroke->linejoin)
+					/* attempting to recolor the External Graphic resource */
+					rl2_graph_pattern_recolor (pattern,
+								   red, green,
+								   blue);
+				    }
+				  if (line_sym->stroke->opacity <= 0.0)
+				      norm_opacity = 0;
+				  else if (line_sym->stroke->opacity >= 1.0)
+				      norm_opacity = 255;
+				  else
 				    {
-				    case RL2_STROKE_LINEJOIN_BEVEL:
-					pen_join = RL2_PEN_JOIN_BEVEL;
-					break;
-				    case RL2_STROKE_LINEJOIN_ROUND:
-					pen_join = RL2_PEN_JOIN_ROUND;
-					break;
-				    default:
-					pen_join = RL2_PEN_JOIN_MITER;
-					break;
-				    };
+					opacity =
+					    255.0 * line_sym->stroke->opacity;
+					if (opacity <= 0.0)
+					    norm_opacity = 0;
+					else if (opacity >= 255.0)
+					    norm_opacity = 255;
+					else
+					    norm_opacity = opacity;
+				    }
+				  if (norm_opacity < 1.0)
+				      rl2_graph_pattern_transparency
+					  (pattern, norm_opacity);
 				  if (line_sym->stroke->dash_count > 0
 				      && line_sym->stroke->dash_list != NULL)
 				      rl2_add_pattern_to_multi_stroke_dash
@@ -2467,6 +2543,11 @@ draw_lines (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 					  (multi_stroke, pattern,
 					   line_sym->stroke->width, pen_cap,
 					   pen_join);
+			      }
+			    else
+			      {
+				  /* invalid Pattern: defaulting to a Gray brush */
+				  rl2_graph_set_brush (ctx, 128, 128, 128, 255);
 			      }
 			}
 		      else
@@ -2769,55 +2850,70 @@ draw_polygons (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 		      if (polyg_sym->stroke->graphic != NULL)
 			{
 			    /* external Graphic stroke */
-			    pattern_stroke =
-				load_external_graphic_from_dbms (handle,
-								 polyg_sym->stroke->graphic);
+			    const char *xlink_href = NULL;
+			    int recolor = 0;
+			    unsigned char red;
+			    unsigned char green;
+			    unsigned char blue;
+			    pattern_stroke = NULL;
+			    if (polyg_sym->stroke->graphic->first != NULL)
+			      {
+				  if (polyg_sym->stroke->graphic->first->type ==
+				      RL2_EXTERNAL_GRAPHIC)
+				    {
+					rl2PrivExternalGraphicPtr ext =
+					    (rl2PrivExternalGraphicPtr)
+					    (polyg_sym->stroke->graphic->
+					     first->item);
+					xlink_href = ext->xlink_href;
+					if (ext->first != NULL)
+					  {
+					      recolor = 1;
+					      red = ext->first->red;
+					      green = ext->first->green;
+					      blue = ext->first->blue;
+					  }
+				    }
+			      }
+			    if (xlink_href != NULL)
+				pattern_stroke =
+				    rl2_create_pattern_from_external_graphic
+				    (handle, xlink_href, 1);
 			    if (pattern_stroke != NULL)
 			      {
-				  switch (polyg_sym->stroke->linecap)
+				  if (recolor)
 				    {
-				    case RL2_STROKE_LINECAP_ROUND:
-					pen_cap = RL2_PEN_CAP_ROUND;
-					break;
-				    case RL2_STROKE_LINECAP_SQUARE:
-					pen_cap = RL2_PEN_CAP_SQUARE;
-					break;
-				    default:
-					pen_cap = RL2_PEN_CAP_BUTT;
-					break;
-				    };
-				  switch (polyg_sym->stroke->linejoin)
-				    {
-				    case RL2_STROKE_LINEJOIN_BEVEL:
-					pen_join = RL2_PEN_JOIN_BEVEL;
-					break;
-				    case RL2_STROKE_LINEJOIN_ROUND:
-					pen_join = RL2_PEN_JOIN_ROUND;
-					break;
-				    default:
-					pen_join = RL2_PEN_JOIN_MITER;
-					break;
-				    };
-				  if (polyg_sym->stroke->dash_count > 0
-				      && polyg_sym->stroke->dash_list != NULL)
-				      rl2_graph_set_pattern_dashed_pen (ctx,
-									pattern_stroke,
-									polyg_sym->
-									stroke->width,
-									pen_cap,
-									pen_join,
-									polyg_sym->stroke->dash_count,
-									polyg_sym->stroke->dash_list,
-									polyg_sym->stroke->dash_offset);
+					/* attempting to recolor the External Graphic resource */
+					rl2_graph_pattern_recolor
+					    (pattern_stroke, red, green, blue);
+				    }
+				  if (polyg_sym->stroke->opacity <= 0.0)
+				      norm_opacity = 0;
+				  else if (polyg_sym->stroke->opacity >= 1.0)
+				      norm_opacity = 255;
 				  else
-				      rl2_graph_set_pattern_solid_pen (ctx,
-								       pattern_stroke,
-								       polyg_sym->
-								       stroke->width,
-								       pen_cap,
-								       pen_join);
-				  stroke = 1;
+				    {
+					opacity =
+					    255.0 * polyg_sym->stroke->opacity;
+					if (opacity <= 0.0)
+					    norm_opacity = 0;
+					else if (opacity >= 255.0)
+					    norm_opacity = 255;
+					else
+					    norm_opacity = opacity;
+				    }
+				  if (norm_opacity < 1.0)
+				      rl2_graph_pattern_transparency
+					  (pattern_stroke, norm_opacity);
+				  rl2_graph_set_pattern_brush (ctx,
+							       pattern_stroke);
 			      }
+			    else
+			      {
+				  /* invalid Pattern: defaulting to a Gray brush */
+				  rl2_graph_set_brush (ctx, 128, 128, 128, 255);
+			      }
+			    stroke = 1;
 			}
 		      else
 			{

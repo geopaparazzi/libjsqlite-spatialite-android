@@ -921,12 +921,18 @@ EXTRA_DIST = addpoint10.testcase \
 	dropgeo3.testcase \
 	dropgeo4.testcase \
 	dropgeo5.testcase \
+	dropgeo6.testcase \
+	dropgeo7.testcase \
+	dropgeo8.testcase \
+	dropgeo9.testcase \
 	elemgeo1.testcase \
 	elemgeo2.testcase \
 	elemgeo3.testcase \
 	elemgeo4.testcase \
 	elemgeo5.testcase \
 	elemgeo6.testcase \
+	elemgeo7.testcase \
+	elemgeo8.testcase \
 	emptyfile.txt \
 	encodeurl1.testcase \
 	encodeurl2.testcase \
@@ -1956,6 +1962,8 @@ EXTRA_DIST = addpoint10.testcase \
 	reflectcoords9.testcase \
 	removedupl1.testcase \
 	removedupl2.testcase \
+	removedupl3.testcase \
+	removedupl4.testcase \
 	removepoint10.testcase \
 	removepoint11.testcase \
 	removepoint12.testcase \

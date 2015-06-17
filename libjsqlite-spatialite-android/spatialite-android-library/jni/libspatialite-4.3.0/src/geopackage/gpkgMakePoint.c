@@ -218,7 +218,7 @@ gpkgMakePointZM (double x, double y, double z, double m, int srid,
 		  endian_arch);
 }
 
-GEOPACKAGE_DECLARE void
+GEOPACKAGE_PRIVATE void
 fnct_gpkgMakePoint (sqlite3_context * context, int argc UNUSED,
 		    sqlite3_value ** argv)
 {
@@ -274,7 +274,7 @@ fnct_gpkgMakePoint (sqlite3_context * context, int argc UNUSED,
       }
 }
 
-GEOPACKAGE_DECLARE void
+GEOPACKAGE_PRIVATE void
 fnct_gpkgMakePointWithSRID (sqlite3_context * context, int argc UNUSED,
 			    sqlite3_value ** argv)
 {
@@ -338,7 +338,7 @@ fnct_gpkgMakePointWithSRID (sqlite3_context * context, int argc UNUSED,
       }
 }
 
-GEOPACKAGE_DECLARE void
+GEOPACKAGE_PRIVATE void
 fnct_gpkgMakePointZ (sqlite3_context * context, int argc UNUSED,
 		     sqlite3_value ** argv)
 {
@@ -411,7 +411,7 @@ fnct_gpkgMakePointZ (sqlite3_context * context, int argc UNUSED,
       }
 }
 
-GEOPACKAGE_DECLARE void
+GEOPACKAGE_PRIVATE void
 fnct_gpkgMakePointZWithSRID (sqlite3_context * context, int argc UNUSED,
 			     sqlite3_value ** argv)
 {
@@ -490,7 +490,7 @@ fnct_gpkgMakePointZWithSRID (sqlite3_context * context, int argc UNUSED,
       }
 }
 
-GEOPACKAGE_DECLARE void
+GEOPACKAGE_PRIVATE void
 fnct_gpkgMakePointM (sqlite3_context * context, int argc UNUSED,
 		     sqlite3_value ** argv)
 {
@@ -563,7 +563,7 @@ fnct_gpkgMakePointM (sqlite3_context * context, int argc UNUSED,
       }
 }
 
-GEOPACKAGE_DECLARE void
+GEOPACKAGE_PRIVATE void
 fnct_gpkgMakePointMWithSRID (sqlite3_context * context, int argc UNUSED,
 			     sqlite3_value ** argv)
 {
@@ -642,7 +642,7 @@ fnct_gpkgMakePointMWithSRID (sqlite3_context * context, int argc UNUSED,
       }
 }
 
-GEOPACKAGE_DECLARE void
+GEOPACKAGE_PRIVATE void
 fnct_gpkgMakePointZM (sqlite3_context * context, int argc UNUSED,
 		      sqlite3_value ** argv)
 {
@@ -730,7 +730,7 @@ fnct_gpkgMakePointZM (sqlite3_context * context, int argc UNUSED,
       }
 }
 
-GEOPACKAGE_DECLARE void
+GEOPACKAGE_PRIVATE void
 fnct_gpkgMakePointZMWithSRID (sqlite3_context * context, int argc UNUSED,
 			      sqlite3_value ** argv)
 {

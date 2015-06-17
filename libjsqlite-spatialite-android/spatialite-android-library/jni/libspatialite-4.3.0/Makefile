@@ -298,10 +298,10 @@ OTOOL64 =
 PACKAGE = libspatialite
 PACKAGE_BUGREPORT = a.furieri@lqt.it
 PACKAGE_NAME = libspatialite
-PACKAGE_STRING = libspatialite 4.3.0-devel
+PACKAGE_STRING = libspatialite 4.3.0-RC0
 PACKAGE_TARNAME = libspatialite
 PACKAGE_URL = 
-PACKAGE_VERSION = 4.3.0-devel
+PACKAGE_VERSION = 4.3.0-RC0
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
@@ -311,7 +311,7 @@ SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/bash
 STRIP = strip
-VERSION = 4.3.0-devel
+VERSION = 4.3.0-RC0
 abs_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.3.0
 abs_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.3.0
 abs_top_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.3.0
@@ -367,8 +367,8 @@ top_builddir = .
 top_srcdir = .
 ACLOCAL_AMFLAGS = -I m4
 AUTOMAKE_OPTIONS = dist-zip
-EXTRA_DIST = makefile.vc nmake.opt Android.mk Android_4.2.0.mk \
-	spatialite-4.2.0.mk mainpage.doxy README.coverage \
+EXTRA_DIST = makefile.vc nmake.opt Android.mk Android_4.3.0.mk \
+	spatialite-4.3.0.mk mainpage.doxy README.coverage \
 	spatialite-sql-latest.html config-msvc.h
 
 #EXAMPLES = examples

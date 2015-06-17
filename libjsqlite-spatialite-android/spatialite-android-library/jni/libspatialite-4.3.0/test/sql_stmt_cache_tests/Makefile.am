@@ -7,5 +7,7 @@ EXTRA_DIST = amphibious1.testcase \
 	precision4.testcase \
 	precision5.testcase \
 	precision6.testcase \
-	precision7.testcase 
+	precision7.testcase  \
+	gpkg1.testcase \
+	gpkg2.testcase 
 	

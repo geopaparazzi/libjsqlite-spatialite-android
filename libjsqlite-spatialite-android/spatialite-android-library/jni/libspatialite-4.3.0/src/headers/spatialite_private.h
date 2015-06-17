@@ -130,6 +130,7 @@ extern "C"
     struct splite_internal_cache
     {
 	unsigned char magic1;
+	int gpkg_mode;
 	int gpkg_amphibious_mode;
 	int decimal_precision;
 	void *GEOS_handle;

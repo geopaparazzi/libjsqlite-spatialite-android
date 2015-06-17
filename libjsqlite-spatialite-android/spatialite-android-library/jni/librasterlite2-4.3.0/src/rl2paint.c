@@ -1558,7 +1558,9 @@ rl2_graph_pattern_recolor (rl2GraphicsPatternPtr ptrn, unsigned char r,
     unsigned char xred;
     unsigned char xgreen;
     unsigned char xblue;
+    unsigned char xalpha;
     int valid = 0;
+    int has_black = 0;
     unsigned char *bitmap;
     RL2PrivGraphPatternPtr pattern = (RL2PrivGraphPatternPtr) ptrn;
     if (pattern == NULL)
@@ -1579,18 +1581,21 @@ rl2_graph_pattern_recolor (rl2GraphicsPatternPtr ptrn, unsigned char r,
 				       &alpha);
 		if (alpha != 0)
 		  {
+			  if (red < 64 && green < 64 && blue < 64)
+			  has_black++; 
 		      if (valid)
 			{
-			    if (xred == red && xgreen == green && xblue == blue)
+			    if (xred == red && xgreen == green && xblue == blue && alpha == xalpha)
 				;
 			    else
-				return RL2_ERROR;
+				goto not_mono;
 			}
 		      else
 			{
 			    xred = red;
 			    xgreen = green;
 			    xblue = blue;
+			    xalpha = alpha;
 			    valid = 1;
 			}
 		  }
@@ -1604,11 +1609,30 @@ rl2_graph_pattern_recolor (rl2GraphicsPatternPtr ptrn, unsigned char r,
 		aux_pattern_get_pixel (x, y, width, bitmap, &red, &green, &blue,
 				       &alpha);
 		if (alpha != 0)
-		    aux_pattern_set_pixel (x, y, width, bitmap, r, g, b, alpha);
+		    aux_pattern_set_pixel (x, y, width, bitmap, r, g, b, alpha);          
 	    }
       }
     cairo_surface_mark_dirty (pattern->bitmap);
     return RL2_OK;
+    
+not_mono:
+	if (has_black)
+	{
+	/* recoloring only the black pixels */
+    for (y = 0; y < height; y++)
+      {
+	  for (x = 0; x < width; x++)
+	    {
+		aux_pattern_get_pixel (x, y, width, bitmap, &red, &green, &blue,
+				       &alpha);
+		if (red < 64 && green < 64 && blue < 64)
+		    aux_pattern_set_pixel (x, y, width, bitmap, r, g, b, alpha);          
+	    }
+      }
+    cairo_surface_mark_dirty (pattern->bitmap);
+    return RL2_OK;
+	}
+				return RL2_ERROR;
 }
 
 RL2_DECLARE int

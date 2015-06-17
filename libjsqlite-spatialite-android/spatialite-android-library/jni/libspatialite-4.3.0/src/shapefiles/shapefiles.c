@@ -4421,7 +4421,7 @@ do_delete_duplicates2 (sqlite3 * sqlite, sqlite3_int64 rowid,
 
 static int
 do_delete_duplicates (sqlite3 * sqlite, const char *sql1, const char *sql2,
-		      int *count)
+		      int *count, int transaction)
 {
 /* deleting duplicate rows */
     struct resultset_comparator *rs_obj = NULL;
@@ -4433,14 +4433,18 @@ do_delete_duplicates (sqlite3 * sqlite, const char *sql1, const char *sql2,
 
     *count = 0;
 
-/* the complete operation is handled as an unique SQL Transaction */
-    ret = sqlite3_exec (sqlite, "BEGIN", NULL, NULL, &sql_err);
-    if (ret != SQLITE_OK)
+    if (transaction)
       {
-	  spatialite_e ("BEGIN TRANSACTION error: %s\n", sql_err);
-	  sqlite3_free (sql_err);
-	  return 0;
+	  /* the complete operation is handled as an unique SQL Transaction */
+	  ret = sqlite3_exec (sqlite, "BEGIN", NULL, NULL, &sql_err);
+	  if (ret != SQLITE_OK)
+	    {
+		spatialite_e ("BEGIN TRANSACTION error: %s\n", sql_err);
+		sqlite3_free (sql_err);
+		return 0;
+	    }
       }
+
 /* preparing the main SELECT statement */
     ret = sqlite3_prepare_v2 (sqlite, sql1, strlen (sql1), &stmt1, NULL);
     if (ret != SQLITE_OK)
@@ -4492,13 +4496,16 @@ do_delete_duplicates (sqlite3 * sqlite, const char *sql1, const char *sql2,
     sqlite3_finalize (stmt2);
     destroy_resultset_comparator (rs_obj);
 
-/* confirm the still pending Transaction */
-    ret = sqlite3_exec (sqlite, "COMMIT", NULL, NULL, &sql_err);
-    if (ret != SQLITE_OK)
+    if (transaction)
       {
-	  spatialite_e ("COMMIT TRANSACTION error: %s\n", sql_err);
-	  sqlite3_free (sql_err);
-	  return 0;
+	  /* confirm the still pending Transaction */
+	  ret = sqlite3_exec (sqlite, "COMMIT", NULL, NULL, &sql_err);
+	  if (ret != SQLITE_OK)
+	    {
+		spatialite_e ("COMMIT TRANSACTION error: %s\n", sql_err);
+		sqlite3_free (sql_err);
+		return 0;
+	    }
       }
 
     *count = cnt;
@@ -4511,20 +4518,24 @@ do_delete_duplicates (sqlite3 * sqlite, const char *sql1, const char *sql2,
     if (stmt2)
 	sqlite3_finalize (stmt2);
 
-/* performing a ROLLBACK anyway */
-    ret = sqlite3_exec (sqlite, "ROLLBACK", NULL, NULL, &sql_err);
-    if (ret != SQLITE_OK)
+    if (transaction)
       {
-	  spatialite_e ("ROLLBACK TRANSACTION error: %s\n", sql_err);
-	  sqlite3_free (sql_err);
-	  return 0;
+	  /* performing a ROLLBACK anyway */
+	  ret = sqlite3_exec (sqlite, "ROLLBACK", NULL, NULL, &sql_err);
+	  if (ret != SQLITE_OK)
+	    {
+		spatialite_e ("ROLLBACK TRANSACTION error: %s\n", sql_err);
+		sqlite3_free (sql_err);
+		return 0;
+	    }
       }
 
     return 0;
 }
 
 SPATIALITE_DECLARE void
-remove_duplicated_rows_ex (sqlite3 * sqlite, char *table, int *removed)
+remove_duplicated_rows_ex2 (sqlite3 * sqlite, char *table, int *removed,
+			    int transaction)
 {
 /* attempting to delete Duplicate rows from a table */
     char *sql;
@@ -4611,7 +4622,7 @@ remove_duplicated_rows_ex (sqlite3 * sqlite, char *table, int *removed)
 	sql = sql_statement.Buffer;
     else
 	sql = "NULL-SELECT";
-    if (do_delete_duplicates (sqlite, sql, sql2, &count))
+    if (do_delete_duplicates (sqlite, sql, sql2, &count, transaction))
       {
 	  if (removed == NULL)
 	    {
@@ -4626,6 +4637,13 @@ remove_duplicated_rows_ex (sqlite3 * sqlite, char *table, int *removed)
       }
     gaiaOutBufferReset (&sql_statement);
     sqlite3_free (sql2);
+}
+
+SPATIALITE_DECLARE void
+remove_duplicated_rows_ex (sqlite3 * sqlite, char *table, int *removed)
+{
+/* attempting to delete Duplicate rows from a table */
+    remove_duplicated_rows_ex2 (sqlite, table, removed, 1);
 }
 
 SPATIALITE_DECLARE void
@@ -5162,6 +5180,17 @@ elementary_geometries_ex (sqlite3 * sqlite,
 			  char *pKey, char *multiId, int *xrows)
 {
 /* attempting to create a derived table surely containing elemetary Geoms */
+    elementary_geometries_ex2 (sqlite, inTable, geometry, outTable, pKey,
+			       multiId, xrows, 1);
+}
+
+SPATIALITE_DECLARE void
+elementary_geometries_ex2 (sqlite3 * sqlite,
+			   char *inTable, char *geometry, char *outTable,
+			   char *pKey, char *multiId, int *xrows,
+			   int transaction)
+{
+/* attempting to create a derived table surely containing elemetary Geoms */
     char type[128];
     int srid;
     char dims[64];
@@ -5197,13 +5226,16 @@ elementary_geometries_ex (sqlite3 * sqlite,
 	  return;
       }
 
-/* starts a transaction */
-    ret = sqlite3_exec (sqlite, "BEGIN", NULL, NULL, &errMsg);
-    if (ret != SQLITE_OK)
+    if (transaction)
       {
-	  spatialite_e ("SQL error: %s\n", errMsg);
-	  sqlite3_free (errMsg);
-	  goto abort;
+	  /* starts a transaction */
+	  ret = sqlite3_exec (sqlite, "BEGIN", NULL, NULL, &errMsg);
+	  if (ret != SQLITE_OK)
+	    {
+		spatialite_e ("SQL error: %s\n", errMsg);
+		sqlite3_free (errMsg);
+		goto abort;
+	    }
       }
 
     gaiaOutBufferInitialize (&sql_statement);
@@ -5662,13 +5694,16 @@ elementary_geometries_ex (sqlite3 * sqlite,
     sqlite3_finalize (stmt_in);
     sqlite3_finalize (stmt_out);
 
-/* commits the transaction */
-    ret = sqlite3_exec (sqlite, "COMMIT", NULL, NULL, &errMsg);
-    if (ret != SQLITE_OK)
+    if (transaction)
       {
-	  spatialite_e ("SQL error: %s\n", errMsg);
-	  sqlite3_free (errMsg);
-	  goto abort;
+	  /* commits the transaction */
+	  ret = sqlite3_exec (sqlite, "COMMIT", NULL, NULL, &errMsg);
+	  if (ret != SQLITE_OK)
+	    {
+		spatialite_e ("SQL error: %s\n", errMsg);
+		sqlite3_free (errMsg);
+		goto abort;
+	    }
       }
     *xrows = inserted;
     return;
@@ -5678,6 +5713,17 @@ elementary_geometries_ex (sqlite3 * sqlite,
 	sqlite3_finalize (stmt_in);
     if (stmt_out)
 	sqlite3_finalize (stmt_out);
+
+    if (transaction)
+      {
+	  /* rolling bacj the transaction */
+	  ret = sqlite3_exec (sqlite, "ROLLBACK", NULL, NULL, &errMsg);
+	  if (ret != SQLITE_OK)
+	    {
+		spatialite_e ("SQL error: %s\n", errMsg);
+		sqlite3_free (errMsg);
+	    }
+      }
     *xrows = 0;
 }
 

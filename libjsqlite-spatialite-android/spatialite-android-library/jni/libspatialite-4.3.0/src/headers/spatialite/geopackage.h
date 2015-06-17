@@ -45,12 +45,18 @@ the terms of any one of the MPL, the GPL or the LGPL.
 
  GeoPackage: supporting functions and constants
  */
-
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
+#ifdef _WIN32
 #ifdef DLL_EXPORT
 #define GEOPACKAGE_DECLARE __declspec(dllexport)
+#define GEOPACKAGE_PRIVATE
 #else
 #define GEOPACKAGE_DECLARE extern
+#define GEOPACKAGE_PRIVATE
+#endif
+#else
+#define GEOPACKAGE_DECLARE __attribute__ ((visibility("default")))
+#define GEOPACKAGE_PRIVATE __attribute__ ((visibility("hidden")))
 #endif
 #endif
 
@@ -69,62 +75,62 @@ extern "C"
 #include <spatialite/gaiageo.h>
 
 /* Internal geopackage SQL function implementation */
-    GEOPACKAGE_DECLARE void fnct_gpkgCreateBaseTables (sqlite3_context *
+    GEOPACKAGE_PRIVATE void fnct_gpkgCreateBaseTables (sqlite3_context *
 						       context, int argc,
 						       sqlite3_value ** argv);
-    GEOPACKAGE_DECLARE void fnct_gpkgCreateTilesTable (sqlite3_context *
+    GEOPACKAGE_PRIVATE void fnct_gpkgCreateTilesTable (sqlite3_context *
 						       context, int argc,
 						       sqlite3_value ** argv);
-    GEOPACKAGE_DECLARE void fnct_gpkgCreateTilesZoomLevel (sqlite3_context *
+    GEOPACKAGE_PRIVATE void fnct_gpkgCreateTilesZoomLevel (sqlite3_context *
 							   context, int argc,
 							   sqlite3_value **
 							   argv);
-    GEOPACKAGE_DECLARE void fnct_gpkgInsertEpsgSRID (sqlite3_context *
+    GEOPACKAGE_PRIVATE void fnct_gpkgInsertEpsgSRID (sqlite3_context *
 						     context, int argc,
 						     sqlite3_value ** argv);
-    GEOPACKAGE_DECLARE void fnct_gpkgAddTileTriggers (sqlite3_context * context,
+    GEOPACKAGE_PRIVATE void fnct_gpkgAddTileTriggers (sqlite3_context * context,
 						      int argc,
 						      sqlite3_value ** argv);
-    GEOPACKAGE_DECLARE void fnct_gpkgGetNormalRow (sqlite3_context * context,
+    GEOPACKAGE_PRIVATE void fnct_gpkgGetNormalRow (sqlite3_context * context,
 						   int argc,
 						   sqlite3_value ** argv);
-    GEOPACKAGE_DECLARE void fnct_gpkgGetNormalZoom (sqlite3_context * context,
+    GEOPACKAGE_PRIVATE void fnct_gpkgGetNormalZoom (sqlite3_context * context,
 						    int argc,
 						    sqlite3_value ** argv);
-    GEOPACKAGE_DECLARE void fnct_gpkgGetImageType (sqlite3_context * context,
+    GEOPACKAGE_PRIVATE void fnct_gpkgGetImageType (sqlite3_context * context,
 						   int argc,
 						   sqlite3_value ** argv);
-    GEOPACKAGE_DECLARE void fnct_gpkgAddGeometryColumn (sqlite3_context *
+    GEOPACKAGE_PRIVATE void fnct_gpkgAddGeometryColumn (sqlite3_context *
 							context, int argc,
 							sqlite3_value ** argv);
-    GEOPACKAGE_DECLARE void fnct_gpkgMakePoint (sqlite3_context *
+    GEOPACKAGE_PRIVATE void fnct_gpkgMakePoint (sqlite3_context *
 						context, int argc,
 						sqlite3_value ** argv);
-    GEOPACKAGE_DECLARE void fnct_gpkgMakePointWithSRID (sqlite3_context *
+    GEOPACKAGE_PRIVATE void fnct_gpkgMakePointWithSRID (sqlite3_context *
 							context, int argc,
 							sqlite3_value ** argv);
-    GEOPACKAGE_DECLARE void fnct_gpkgMakePointZ (sqlite3_context *
+    GEOPACKAGE_PRIVATE void fnct_gpkgMakePointZ (sqlite3_context *
 						 context, int argc,
 						 sqlite3_value ** argv);
-    GEOPACKAGE_DECLARE void fnct_gpkgMakePointZWithSRID (sqlite3_context *
+    GEOPACKAGE_PRIVATE void fnct_gpkgMakePointZWithSRID (sqlite3_context *
 							 context, int argc,
 							 sqlite3_value ** argv);
-    GEOPACKAGE_DECLARE void fnct_gpkgMakePointM (sqlite3_context *
+    GEOPACKAGE_PRIVATE void fnct_gpkgMakePointM (sqlite3_context *
 						 context, int argc,
 						 sqlite3_value ** argv);
-    GEOPACKAGE_DECLARE void fnct_gpkgMakePointMWithSRID (sqlite3_context *
+    GEOPACKAGE_PRIVATE void fnct_gpkgMakePointMWithSRID (sqlite3_context *
 							 context, int argc,
 							 sqlite3_value ** argv);
-    GEOPACKAGE_DECLARE void fnct_gpkgMakePointZM (sqlite3_context *
+    GEOPACKAGE_PRIVATE void fnct_gpkgMakePointZM (sqlite3_context *
 						  context, int argc,
 						  sqlite3_value ** argv);
-    GEOPACKAGE_DECLARE void fnct_gpkgMakePointZMWithSRID (sqlite3_context *
+    GEOPACKAGE_PRIVATE void fnct_gpkgMakePointZMWithSRID (sqlite3_context *
 							  context, int argc,
 							  sqlite3_value **
 							  argv);
-    GEOPACKAGE_DECLARE void fnct_ToGPB (sqlite3_context * context, int argc,
+    GEOPACKAGE_PRIVATE void fnct_ToGPB (sqlite3_context * context, int argc,
 					sqlite3_value ** argv);
-    GEOPACKAGE_DECLARE void fnct_GeomFromGPB (sqlite3_context * context,
+    GEOPACKAGE_PRIVATE void fnct_GeomFromGPB (sqlite3_context * context,
 					      int argc, sqlite3_value ** argv);
 
     GEOPACKAGE_DECLARE gaiaGeomCollPtr gaiaFromGeoPackageGeometryBlob (const
@@ -151,23 +157,29 @@ extern "C"
 						   double *max_m);
     GEOPACKAGE_DECLARE char *gaiaGetGeometryTypeFromGPB (const unsigned char
 							 *gpb, int gpb_len);
-    GEOPACKAGE_DECLARE void fnct_IsValidGPB (sqlite3_context * context,
+    GEOPACKAGE_PRIVATE void fnct_IsValidGPB (sqlite3_context * context,
 					     int argc, sqlite3_value ** argv);
-    GEOPACKAGE_DECLARE void fnct_GPKG_IsAssignable (sqlite3_context * context,
+    GEOPACKAGE_PRIVATE void fnct_GPKG_IsAssignable (sqlite3_context * context,
 						    int argc,
 						    sqlite3_value ** argv);
-    GEOPACKAGE_DECLARE void fnct_gpkgAddGeometryTriggers (sqlite3_context *
+    GEOPACKAGE_PRIVATE void fnct_gpkgAddGeometryTriggers (sqlite3_context *
 							  context, int argc,
 							  sqlite3_value **
 							  argv);
-    GEOPACKAGE_DECLARE void fnct_gpkgAddGeometryTriggers (sqlite3_context *
+    GEOPACKAGE_PRIVATE void fnct_gpkgAddGeometryTriggers (sqlite3_context *
 							  context, int argc,
 							  sqlite3_value **
 							  argv);
-    GEOPACKAGE_DECLARE void fnct_gpkgAddSpatialIndex (sqlite3_context * context,
+    GEOPACKAGE_PRIVATE void fnct_gpkgAddSpatialIndex (sqlite3_context * context,
 						      int argc,
 						      sqlite3_value ** argv);
 /* end Sandro Furieri - 2014-05-19 */
+
+/* Sandro Furieri - 2015-06-14 */
+    GEOPACKAGE_DECLARE void
+	gaiaToGPB (gaiaGeomCollPtr geom, unsigned char **result, int *size);
+/* end Sandro Furieri - 2015-06-14 */
+
 
 
 /* Markers for unused arguments / variable */

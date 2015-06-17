@@ -1073,7 +1073,7 @@ ParseWkbGeometry (gaiaGeomCollPtr geo, int isWKB)
 
 GAIAGEO_DECLARE gaiaGeomCollPtr
 gaiaFromSpatiaLiteBlobWkbEx (const unsigned char *blob, unsigned int size,
-			     int gpkg_amphibious)
+			     int gpkg_mode, int gpkg_amphibious)
 {
 /* decoding from SpatiaLite BLOB to GEOMETRY */
     int type;
@@ -1081,7 +1081,7 @@ gaiaFromSpatiaLiteBlobWkbEx (const unsigned char *blob, unsigned int size,
     int endian_arch = gaiaEndianArch ();
     gaiaGeomCollPtr geo = NULL;
 
-    if (gpkg_amphibious)
+    if (gpkg_amphibious || gpkg_mode)
       {
 #ifdef ENABLE_GEOPACKAGE	/* GEOPACKAGE enabled: supporting GPKG geometries */
 	  if (gaiaIsValidGPB (blob, size))
@@ -1090,6 +1090,8 @@ gaiaFromSpatiaLiteBlobWkbEx (const unsigned char *blob, unsigned int size,
 		if (geo != NULL)
 		    return geo;
 	    }
+	  if (gpkg_mode)
+	      return NULL;	/* must accept only GPKG geometries */
 #else
 	  ;
 #endif /* end GEOPACKAGE: supporting GPKG geometries */
@@ -1310,9 +1312,9 @@ gaiaFromSpatiaLiteBlobWkb (const unsigned char *blob, unsigned int size)
 {
 /* 
 * decoding from SpatiaLite BLOB to GEOMETRY 
-* convenience method - always disabling GPKG Amphibious Mode
+* convenience method - always disabling GPKG compatibility Modes
 */
-    return gaiaFromSpatiaLiteBlobWkbEx (blob, size, 0);
+    return gaiaFromSpatiaLiteBlobWkbEx (blob, size, 0, 0);
 }
 
 GAIAGEO_DECLARE gaiaGeomCollPtr
@@ -1358,8 +1360,8 @@ gaiaFromSpatiaLiteBlobMbr (const unsigned char *blob, unsigned int size)
 }
 
 GAIAGEO_DECLARE void
-gaiaToSpatiaLiteBlobWkb (gaiaGeomCollPtr geom, unsigned char **result,
-			 int *size)
+gaiaToSpatiaLiteBlobWkbEx (gaiaGeomCollPtr geom, unsigned char **result,
+			   int *size, int gpkg_mode)
 {
 /* builds the SpatiaLite BLOB representation for this GEOMETRY */
     int ib;
@@ -1383,6 +1385,14 @@ gaiaToSpatiaLiteBlobWkb (gaiaGeomCollPtr geom, unsigned char **result,
     gaiaPolygonPtr polyg = NULL;
     int endian_arch = gaiaEndianArch ();
     gaiaMbrGeometry (geom);
+
+    if (gpkg_mode)
+      {
+	  /* GeoPackage Mode enabled */
+	  gaiaToGPB (geom, result, size);
+	  return;
+      }
+
 /* how many entities, and of what kind, do we have ? */
     pt = geom->FirstPoint;
     while (pt)
@@ -2239,6 +2249,17 @@ gaiaToSpatiaLiteBlobWkb (gaiaGeomCollPtr geom, unsigned char **result,
 	    }
 	  *ptr = GAIA_MARK_END;	/* END signature */
       };
+}
+
+GAIAGEO_DECLARE void
+gaiaToSpatiaLiteBlobWkb (gaiaGeomCollPtr geom, unsigned char **result,
+			 int *size)
+{
+/* 
+* builds the SpatiaLite BLOB representation for this GEOMETRY 
+* convenience method - always disabling GPKG compatibility Modes
+*/
+    gaiaToSpatiaLiteBlobWkbEx (geom, result, size, 0);
 }
 
 GAIAGEO_DECLARE void

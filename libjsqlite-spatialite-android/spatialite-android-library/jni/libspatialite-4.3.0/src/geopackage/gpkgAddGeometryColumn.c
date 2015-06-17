@@ -56,7 +56,7 @@ static char *SUPPORTED_GEOMETRY_TYPES[] = {
     NULL
 };
 
-GEOPACKAGE_DECLARE void
+GEOPACKAGE_PRIVATE void
 fnct_gpkgAddGeometryColumn (sqlite3_context * context, int argc
 			    __attribute__ ((unused)), sqlite3_value ** argv)
 {

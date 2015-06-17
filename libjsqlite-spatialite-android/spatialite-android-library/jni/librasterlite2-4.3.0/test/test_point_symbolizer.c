@@ -790,7 +790,7 @@ test_symbolizer (sqlite3 * db_handle, const char *coverage,
       }
     else
       {
-	  if (dblval == 0.0 && dblval2 == 0.0)
+	  if (dblval == 0.5 && dblval2 == 0.5)
 	      intval = 1;
       }
     if (intval != 1)

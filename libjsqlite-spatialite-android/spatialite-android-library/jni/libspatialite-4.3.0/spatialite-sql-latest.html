@@ -191,10 +191,22 @@
 			<tr><th bgcolor="#d0d0d0">Function</th>
 				<th bgcolor="#d0d0d0">Syntax</th>
 				<th colspan="3" bgcolor="#d0d0d0">Summary</th></tr>
+			<tr><td><b>EnableGpkgMode</b></td>
+				<td>EnableGpkgMode( <i>void</i> ) : <i>void</i></td>
+				<td colspan="3">Enables the <b>Geopackage mode</b><br>
+				all connections initially start by disabling the GPKG mode, that has always to be explicitly enabled whenever reguired.<br>
+				Enabling GPKG mode is a supported option only if the currently connected DB-file presents a GPKG layout.</td></tr>
+			<tr><td><b>DisableGpkgMode</b></td>
+				<td>DisableGpkgMode( <i>void</i> ) : <i>void</i></td>
+				<td colspan="3">Disables the <b>Geopackage mode</b></td></tr>
+			<tr><td><b>GetGpkgMode</b></td>
+				<td>GetGpkgMode( <i>void</i> ) : <i>boolean</i></td>
+				<td colspan="3">Returns <b>TRUE</b> if the <b>Geopackage mode</b> is currently enabled, otherwise <b>FALSE</b></td></tr>
 			<tr><td><b>EnableGpkgAmphibiousMode</b></td>
 				<td>EnableGpkgAmphibiousMode( <i>void</i> ) : <i>void</i></td>
 				<td colspan="3">Enables the <b>Geopackage amphibious mode</b><br>
-				all connections initially start by disabling the amphibious mode, that has always to be explicitly enabled whenever reguired.</td></tr>
+				all connections initially start by disabling the amphibious mode, that has always to be explicitly enabled whenever reguired.<br>
+				<u>Note</u>: <i>GPKG mode</i> and <i>GPKG amphibious mode</i> are mutually exclusive options.</td></tr>
 			<tr><td><b>DisableGpkgAmphibiousMode</b></td>
 				<td>DisableGpkgAmphibiousMode( <i>void</i> ) : <i>void</i></td>
 				<td colspan="3">Disables the <b>Geopackage amphibious mode</b></td></tr>
@@ -230,7 +242,7 @@
 				<td>Atan( x <i>Double precision</i> ) : <i>Double precision</i></td>
 				<td colspan="3">returns the arc tangent of <b>x</b>, that is, the value whose tangent is <b>x</b></td></tr>
 			<tr><td><b>Atan2</b></td>
-				<td>Atan2( x <i>Double precision</i> , y <i>Double precision</i> ) : <i>Double precision</i></td>
+				<td>Atan2( y <i>Double precision</i> , x <i>Double precision</i> ) : <i>Double precision</i></td>
 				<td colspan="3">returns the principal value of the arc tangent of <b>y/x</b> in radians, using the signs of the two
 				arguments to determine the quadrant of the result. The eturn value is in the range[<b>-pi</b>, <b>pi</b>].</td></tr>
 			<tr><td><b>Ceil<br>Ceiling</b></td>
@@ -4040,26 +4052,37 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				<hr>
 				Will return the total number of duplicate rows found.<br> <b>NULL</b> will be returned on invalid arguments.</td></tr>
 			<tr><td><b>RemoveDuplicateRows</b></td>
-				<td>RemoveDuplicateRows( table <i>Text</i> ) : <i>Integer</i></td>
-				<td colspan="3">Will remove all duplicate rows from the given <b>table</b> preserving only a songle occurrence.
+				<td>RemoveDuplicateRows( table <i>Text</i> ) : <i>Integer</i><hr>
+				RemoveDuplicateRows( table <i>Text</i> , transaction <i>Boolean</i> ) : <i>Integer</i></td>
+				<td colspan="3">Will remove all duplicate rows from the given <b>table</b> preserving only a songle occurrence.<br>
+				The <i>optional</i> argument <b>transaction</b> determines if an internal SQL Transaction should be automatically
+				started or not (the default setting if not explicitly overridden is <b>TRUE</b>).
 				<hr>
 				Will return the total number of deleted rows.<br> <b>NULL</b> will be returned on invalid arguments.</td></tr>
 			<tr><td><b>ElementaryGeometries</b></td>
 				<td>ElementaryGeometries( in_table <i>Text</i> , geom_column <i>Text</i> , out_table <i>Text</i> ,
-				out_pk <i>Text</i> , out_multi_id <i>Text</i> ) : <i>Integer</i></td>
+				out_pk <i>Text</i> , out_multi_id <i>Text</i> ) : <i>Integer</i><hr>
+				ElementaryGeometries( in_table <i>Text</i> , geom_column <i>Text</i> , out_table <i>Text</i> ,
+				out_pk <i>Text</i> , out_multi_id <i>Text</i> , transaction <i>Boolean</i> ) : <i>Integer</i></td>
 				<td colspan="3">Will create a new <b>out_table</b> directly corresponding to <b>in_table</b>.
 				The output table will be arranged in such a way that each row will always contain an elementary Geometry;
 				so each time that a <b>MULTI-type</b> Geometry is found in the input table it will be split into mamy
 				distinct rows.<br>
 				<b>out_pk</b> is the name to be set for the output Primary Key, and <b>out_multi_id</b> is the name to
-				be set for a second column within the output table where to store the original Primary Key.
+				be set for a second column within the output table where to store the original Primary Key.<br>
+				The <i>optional</i> argument <b>transaction</b> determines if an internal SQL Transaction should be automatically
+				started or not (the default setting if not explicitly overridden is <b>TRUE</b>).
 				<hr>
 				Will return the total number of rows inserted into the output table.<br> <b>NULL</b> will be returned on invalid arguments.</td></tr>
 			<tr><td><b>DropGeoTable</b></td>
 				<td>DropGeoTable( table <i>Text</i> ) : <i>Integer</i><hr>
-				DropGeoTable( db-prefix <i>Text</i> , table <i>Text</i> ) : <i>Integer</i></td>
+				DropGeoTable( table <i>Text</i> , transaction <i>Boolean</i> ) : <i>Integer</i><hr>
+				DropGeoTable( db-prefix <i>Text</i> , table <i>Text</i> ) : <i>Integer</i><hr>
+				DropGeoTable( db-prefix <i>Text</i> , table <i>Text</i> , transaction <i>Boolean</i> ) : <i>Integer</i></td>
 				<td colspan="3">Will completely remove a Geometry Table (or Spatial View) this including any eventual SpatialIndex,
-				metadata and statistics definitions an alike.
+				metadata and statistics definitions an alike.<br>
+				The <i>optional</i> argument <b>transaction</b> determines if an internal SQL Transaction should be automatically
+				started or not (the default setting if not explicitly overridden is <b>TRUE</b>).
 				<hr>
 				Will return <b>0</b> (i.e. <b>FALSE</b>) on failure, any other value (i.e. <b>TRUE</b>) on success..<br> 
 				<b>NULL</b> will be returned on invalid arguments.</td></tr>

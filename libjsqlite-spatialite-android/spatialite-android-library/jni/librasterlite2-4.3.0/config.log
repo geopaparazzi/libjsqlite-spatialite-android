@@ -1258,7 +1258,7 @@ configure:17344: gcc -o conftest -g -O2   conftest.c  >&5
 conftest.c:68:6: warning: conflicting types for built-in function 'sqrt'
  char sqrt ();
       ^
-/tmp/ccmT6ncS.o: In function `main':
+/tmp/cc5xlRY6.o: In function `main':
 /home/mj10777/000_links/geopaparazzi/spatialite-android/fossil_update_clean/librasterlite2/conftest.c:79: undefined reference to `sqrt'
 collect2: error: ld returned 1 exit status
 configure:17344: $? = 1

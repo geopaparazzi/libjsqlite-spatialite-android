@@ -462,6 +462,7 @@ extern "C"
 
  \param blob pointer to BLOB-Geometry
  \param size the BLOB's size
+ \param gpkg_mode is set to TRUE will accept only GPKG Geometry-BLOBs
  \param gpkg_amphibious is set to TRUE will indifferenctly accept
   either SpatiaLite Geometry-BLOBs or GPKG Geometry-BLOBs
 
@@ -478,6 +479,7 @@ extern "C"
 								 char *blob,
 								 unsigned int
 								 size,
+								 int gpkg_mode,
 								 int
 								 gpkg_amphibious);
 
@@ -498,6 +500,25 @@ extern "C"
     GAIAGEO_DECLARE void gaiaToSpatiaLiteBlobWkb (gaiaGeomCollPtr geom,
 						  unsigned char **result,
 						  int *size);
+
+/**
+ Creates a BLOB-Geometry corresponding to a Geometry object
+
+ \param geom pointer to the Geometry object.
+ \param result on completion will containt a pointer to BLOB-Geometry:
+ NULL on failure.
+ \param size on completion this variable will contain the BLOB's size (in bytes)
+ \param gpkg_mode is set to TRUE will always return GPKG Geometry-BLOBs
+
+ \sa gaiaFromSpatiaLiteBlobWkb, gaiaToCompressedBlobWkb
+
+ \note the BLOB buffer corresponds to dynamically allocated memory:
+ so you are responsible to free() it [unless SQLite will take care
+ of memory cleanup via buffer binding].
+ */
+    GAIAGEO_DECLARE void gaiaToSpatiaLiteBlobWkbEx (gaiaGeomCollPtr geom,
+						    unsigned char **result,
+						    int *size, int gpkg_mode);
 
 /**
  Creates a Compressed BLOB-Geometry corresponding to a Geometry object

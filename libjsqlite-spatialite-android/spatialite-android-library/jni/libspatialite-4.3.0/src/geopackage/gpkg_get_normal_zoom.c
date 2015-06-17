@@ -42,7 +42,7 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #include "geopackage_internal.h"
 
 #ifdef ENABLE_GEOPACKAGE
-GEOPACKAGE_DECLARE void
+GEOPACKAGE_PRIVATE void
 fnct_gpkgGetNormalZoom (sqlite3_context * context, int argc UNUSED,
 			sqlite3_value ** argv)
 {
