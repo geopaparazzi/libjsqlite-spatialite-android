@@ -3,6 +3,7 @@
 # [from 'jni/' directory]
 # ndk-build clean
 # ndk-build
+# 20150623: used when creating 'libjsqlite.so' with jsqlite-20120209.mk
 # -------------------
 LOCAL_PATH := $(call my-dir)
 JSQLITE_PATH := javasqlite-20120209

@@ -1,8 +1,9 @@
 # -------------------
-# Android_4.3.0.mk
+# Android_4.3.0_so.mk
 # [from 'jni/' directory]
 # ndk-build clean
 # ndk-build
+# 20150623: used to create a 'libspatialite.so' with spatialite-4.3.0_so.mk
 # -------------------
 LOCAL_PATH := $(call my-dir)
 JSQLITE_PATH := javasqlite-20120209
@@ -20,6 +21,5 @@ include $(LOCAL_PATH)/proj4-4.9.1.mk
 include $(LOCAL_PATH)/geos-3.4.2.mk
 include $(LOCAL_PATH)/libxml2-2.9.1.mk
 include $(LOCAL_PATH)/lzma-xz-5.1.3a.mk
-include $(LOCAL_PATH)/spatialite-4.3.0.mk
-include $(LOCAL_PATH)/jsqlite-20120209.mk
+include $(LOCAL_PATH)/spatialite-4.3.0_so.mk
 $(call import-module,android/cpufeatures)

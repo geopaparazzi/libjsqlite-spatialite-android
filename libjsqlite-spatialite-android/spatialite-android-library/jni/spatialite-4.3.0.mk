@@ -1,6 +1,7 @@
 include $(CLEAR_VARS)
 # ./configure  --enable-lwgeom=no --enable-gcp --enable-examples=no --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
 # 20150616.libspatialite-4.3.0-RC0
+# 20150623: used when creating 'libjsqlite.so' with Android_4.3.0.mk
 LOCAL_MODULE    := spatialite
 
 # SQLite flags copied from ASOP
@@ -16,7 +17,6 @@ common_sqlite_flags := \
  -DSQLITE_ENABLE_FTS3_BACKWARDS \
  -DSQLITE_ENABLE_RTREE=1 \
  -DSQLITE_DEFAULT_FILE_FORMAT=4
-
 
 # spatialite flags
 # comment out TARGET_CPU in config.h - will be replaced with TARGET_ARCH_ABI
@@ -184,5 +184,6 @@ LOCAL_SRC_FILES := \
  $(SPATIALITE_PATH)/src/versioninfo/version.c \
  $(SPATIALITE_PATH)/src/virtualtext/virtualtext.c \
  $(SPATIALITE_PATH)/src/wfs/wfs_in.c
+# 'libjsqlite.so' specific settings
 LOCAL_STATIC_LIBRARIES := iconv proj geos libxml2
 include $(BUILD_STATIC_LIBRARY)
