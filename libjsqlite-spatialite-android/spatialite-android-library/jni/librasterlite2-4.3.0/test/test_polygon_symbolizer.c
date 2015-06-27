@@ -1510,7 +1510,7 @@ test_filter (sqlite3 * db_handle, const char *coverage,
 	  *retcode += 22;
 	  return 0;
       }
-    polyg = rl2_get_polygon_symbolizer (symbolizer, 0);
+    polyg = rl2_get_polygon_symbolizer (symbolizer, 1);
     if (polyg == NULL)
       {
 	  fprintf (stderr, "Unable to get Polygon Symbolizer #5\n");
@@ -1525,7 +1525,7 @@ test_filter (sqlite3 * db_handle, const char *coverage,
 	  *retcode += 24;
 	  return 0;
       }
-    if (red != 0x70 || green != 0xff || blue != 0xc0)
+    if (red != 0x37 || green != 0x81 || blue != 0xf2)
       {
 	  fprintf (stderr,
 		   "Unexpected Polygon Symbolizer GetStrokeColor #5: %02x%02x%02x\n",

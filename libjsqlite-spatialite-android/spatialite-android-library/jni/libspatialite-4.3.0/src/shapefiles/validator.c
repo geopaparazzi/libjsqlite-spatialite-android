@@ -1675,6 +1675,8 @@ sanitize_geometry_column_common (const void *p_cache, sqlite3 * sqlite,
 				 int *n_discarded, int *n_failures,
 				 char **err_msg)
 {
+#ifdef ENABLE_LWGEOM		/* omly if LWGEOM is enabled */
+
 /* attempts to repair invalid Geometries from a Geometry Column */
     char *sql;
     char *xtable;
@@ -2407,6 +2409,9 @@ sanitize_geometry_column_common (const void *p_cache, sqlite3 * sqlite,
     free_sanitize_report (report);
     if (out)
 	fclose (out);
+	
+#endif /* end LWGEOM conditional */
+    
     return 0;
 }
 

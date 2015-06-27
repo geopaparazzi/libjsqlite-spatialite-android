@@ -89,7 +89,12 @@ check_PROGRAMS += \
 endif
 
 AM_CFLAGS = -I@srcdir@/../src/headers -I@srcdir@
-AM_LDFLAGS = -L../src -lspatialite -lm $(GCOV_FLAGS)
+
+if MINGW
+AM_LDFLAGS = -L../src -lspatialite -lm -lxml2 $(GCOV_FLAGS)
+else 
+AM_LDFLAGS = -L../src -lpthread -lspatialite -lm -lxml2 $(GCOV_FLAGS)
+endif
 
 TESTS = $(check_PROGRAMS)
 

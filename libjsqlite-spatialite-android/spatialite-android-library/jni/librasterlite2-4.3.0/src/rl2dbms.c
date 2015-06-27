@@ -79,10 +79,10 @@ insert_into_raster_coverages (sqlite3 * handle, const char *coverage,
 			      unsigned int tile_height, int srid,
 			      double x_res, double y_res,
 			      unsigned char *blob, int blob_sz,
-			      unsigned char *blob_no_data, int blob_no_data_sz,
-			      int strict_resolution, int mixed_resolutions,
-			      int section_paths, int section_md5,
-			      int section_summary)
+			      unsigned char *blob_no_data,
+			      int blob_no_data_sz, int strict_resolution,
+			      int mixed_resolutions, int section_paths,
+			      int section_md5, int section_summary)
 {
 /* inserting into "raster_coverages" */
     int ret;
@@ -280,8 +280,8 @@ create_levels (sqlite3 * handle, const char *coverage)
     sqlite3_free (sql);
     if (ret != SQLITE_OK)
       {
-	  fprintf (stderr, "CREATE TABLE \"%s_levels\" error: %s\n", xxcoverage,
-		   sql_err);
+	  fprintf (stderr, "CREATE TABLE \"%s_levels\" error: %s\n",
+		   xxcoverage, sql_err);
 	  sqlite3_free (sql_err);
 	  free (xxcoverage);
 	  return 0;
@@ -340,8 +340,8 @@ create_section_levels (sqlite3 * handle, const char *coverage)
     free (xmother);
     if (ret != SQLITE_OK)
       {
-	  fprintf (stderr, "CREATE TABLE \"%s_levels\" error: %s\n", xxcoverage,
-		   sql_err);
+	  fprintf (stderr, "CREATE TABLE \"%s_levels\" error: %s\n",
+		   xxcoverage, sql_err);
 	  sqlite3_free (sql_err);
 	  free (xxcoverage);
 	  return 0;
@@ -1248,7 +1248,8 @@ resolve_base_resolution_section (sqlite3 * handle, const char *coverage,
 
 RL2_DECLARE int
 rl2_resolve_base_resolution_from_dbms (sqlite3 * handle, const char *coverage,
-				       int by_section, sqlite3_int64 section_id,
+				       int by_section,
+				       sqlite3_int64 section_id,
 				       double *x_res, double *y_res)
 {
 /* resolving the Base Resolution */
@@ -1443,8 +1444,8 @@ rl2_get_dbms_section_id (sqlite3 * handle, const char *coverage,
     xtable = rl2_double_quoted_sql (table);
     sqlite3_free (table);
     sql =
-	sqlite3_mprintf ("SELECT section_id FROM \"%s\" WHERE section_name = ?",
-			 xtable);
+	sqlite3_mprintf
+	("SELECT section_id FROM \"%s\" WHERE section_name = ?", xtable);
     free (xtable);
     ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
     sqlite3_free (sql);
@@ -2390,9 +2391,10 @@ rl2_create_coverage_from_dbms (sqlite3 * handle, const char *coverage)
 		      ok_summary = 1;
 		  }
 		if (ok_sample && ok_pixel && ok_num_bands && ok_compression
-		    && ok_quality && ok_tile_width && ok_tile_height && ok_x_res
-		    && ok_y_res && ok_srid && ok_nodata && ok_strict && ok_mixed
-		    && ok_paths && ok_md5 && ok_summary)
+		    && ok_quality && ok_tile_width && ok_tile_height
+		    && ok_x_res && ok_y_res && ok_srid && ok_nodata
+		    && ok_strict && ok_mixed && ok_paths && ok_md5
+		    && ok_summary)
 		    ok = 1;
 	    }
       }
@@ -2424,8 +2426,8 @@ rl2_create_coverage_from_dbms (sqlite3 * handle, const char *coverage)
 	  return NULL;
       }
     if (rl2_set_coverage_policies
-	(cvg, strict_resolution, mixed_resolutions, section_paths, section_md5,
-	 section_summary) != RL2_OK)
+	(cvg, strict_resolution, mixed_resolutions, section_paths,
+	 section_md5, section_summary) != RL2_OK)
       {
 	  fprintf (stderr,
 		   "ERROR: unable to set the Policies on the Coverage Object supporting \"%s\"\n",
@@ -2537,8 +2539,8 @@ rl2_create_vector_layer_from_dbms (sqlite3 * handle, const char *coverage)
       }
 
     vector =
-	rl2_create_vector_layer (f_table_name, f_geometry_column, geometry_type,
-				 srid, spatial_index);
+	rl2_create_vector_layer (f_table_name, f_geometry_column,
+				 geometry_type, srid, spatial_index);
     free (f_table_name);
     free (f_geometry_column);
     if (vector == NULL)
@@ -2892,7 +2894,8 @@ do_decode_tile (rl2AuxDecoderPtr decoder)
 {
 /* servicing an AuxDecoder Tile request */
     decoder->raster =
-	(rl2PrivRasterPtr) rl2_raster_decode (decoder->scale, decoder->blob_odd,
+	(rl2PrivRasterPtr) rl2_raster_decode (decoder->scale,
+					      decoder->blob_odd,
 					      decoder->blob_odd_sz,
 					      decoder->blob_even,
 					      decoder->blob_even_sz,
@@ -3077,9 +3080,10 @@ do_run_decoder_children (rl2AuxDecoderPtr * thread_slots, int thread_count)
 
 static int
 rl2_load_dbms_tiles_common (sqlite3 * handle, int max_threads,
-			    sqlite3_stmt * stmt_tiles, sqlite3_stmt * stmt_data,
-			    unsigned char *outbuf, unsigned int width,
-			    unsigned int height, unsigned char sample_type,
+			    sqlite3_stmt * stmt_tiles,
+			    sqlite3_stmt * stmt_data, unsigned char *outbuf,
+			    unsigned int width, unsigned int height,
+			    unsigned char sample_type,
 			    unsigned char num_bands, unsigned char auto_ndvi,
 			    unsigned char red_band_index,
 			    unsigned char nir_band_index, double x_res,
@@ -3708,8 +3712,8 @@ load_triple_band_dbms_tiles (sqlite3 * handle, sqlite3_stmt * stmt_tiles,
 		      goto error;
 		  }
 		raster =
-		    rl2_raster_decode (scale, blob_odd, blob_odd_sz, blob_even,
-				       blob_even_sz, NULL);
+		    rl2_raster_decode (scale, blob_odd, blob_odd_sz,
+				       blob_even, blob_even_sz, NULL);
 		if (raster == NULL)
 		  {
 		      fprintf (stderr, ERR_FRMT64, tile_id);
@@ -3717,8 +3721,8 @@ load_triple_band_dbms_tiles (sqlite3 * handle, sqlite3_stmt * stmt_tiles,
 		  }
 		if (!copy_triple_band_raw_pixels
 		    (raster, outbuf, width, height, red_band, green_band,
-		     blue_band, x_res, y_res, minx, maxy, tile_minx, tile_maxy,
-		     no_data))
+		     blue_band, x_res, y_res, minx, maxy, tile_minx,
+		     tile_maxy, no_data))
 		    goto error;
 		rl2_destroy_raster (raster);
 		raster = NULL;
@@ -3870,9 +3874,10 @@ copy_mono_band_raw_pixels_u16 (rl2RasterPtr raster, unsigned char *outbuf,
 static int
 copy_mono_band_raw_pixels (rl2RasterPtr raster, unsigned char *outbuf,
 			   unsigned int width, unsigned int height,
-			   unsigned char mono_band, double x_res, double y_res,
-			   double minx, double maxy, double tile_minx,
-			   double tile_maxy, rl2PixelPtr no_data)
+			   unsigned char mono_band, double x_res,
+			   double y_res, double minx, double maxy,
+			   double tile_minx, double tile_maxy,
+			   rl2PixelPtr no_data)
 {
 /* copying raw pixels into the output buffer */
     unsigned int tile_width;
@@ -4003,9 +4008,10 @@ static int
 load_mono_band_dbms_tiles (sqlite3 * handle, sqlite3_stmt * stmt_tiles,
 			   sqlite3_stmt * stmt_data, unsigned char *outbuf,
 			   unsigned int width, unsigned int height,
-			   unsigned char mono_band, double x_res, double y_res,
-			   double minx, double miny, double maxx, double maxy,
-			   int level, int scale, rl2PixelPtr no_data)
+			   unsigned char mono_band, double x_res,
+			   double y_res, double minx, double miny,
+			   double maxx, double maxy, int level, int scale,
+			   rl2PixelPtr no_data)
 {
 /* retrieving a full image from DBMS tiles */
     rl2RasterPtr raster = NULL;
@@ -4064,8 +4070,8 @@ load_mono_band_dbms_tiles (sqlite3 * handle, sqlite3_stmt * stmt_tiles,
 		      goto error;
 		  }
 		raster =
-		    rl2_raster_decode (scale, blob_odd, blob_odd_sz, blob_even,
-				       blob_even_sz, NULL);
+		    rl2_raster_decode (scale, blob_odd, blob_odd_sz,
+				       blob_even, blob_even_sz, NULL);
 		if (raster == NULL)
 		  {
 		      fprintf (stderr, ERR_FRMT64, tile_id);
@@ -4101,11 +4107,12 @@ rl2_load_dbms_tiles (sqlite3 * handle, int max_threads,
 		     unsigned char *outbuf, unsigned int width,
 		     unsigned int height, unsigned char sample_type,
 		     unsigned char num_bands, unsigned char auto_ndvi,
-		     unsigned char red_band_index, unsigned char nir_band_index,
-		     double x_res, double y_res, double minx, double miny,
-		     double maxx, double maxy, int level, int scale,
-		     rl2PalettePtr palette, rl2PixelPtr no_data,
-		     rl2RasterSymbolizerPtr style, rl2RasterStatisticsPtr stats)
+		     unsigned char red_band_index,
+		     unsigned char nir_band_index, double x_res, double y_res,
+		     double minx, double miny, double maxx, double maxy,
+		     int level, int scale, rl2PalettePtr palette,
+		     rl2PixelPtr no_data, rl2RasterSymbolizerPtr style,
+		     rl2RasterStatisticsPtr stats)
 {
 /* binding the query args */
     sqlite3_reset (stmt_tiles);
@@ -4130,12 +4137,13 @@ rl2_load_dbms_tiles_section (sqlite3 * handle, int max_threads,
 			     sqlite3_stmt * stmt_tiles,
 			     sqlite3_stmt * stmt_data, unsigned char *outbuf,
 			     unsigned int width, unsigned int height,
-			     unsigned char sample_type, unsigned char num_bands,
-			     unsigned char auto_ndvi,
+			     unsigned char sample_type,
+			     unsigned char num_bands, unsigned char auto_ndvi,
 			     unsigned char red_band_index,
 			     unsigned char nir_band_index, double x_res,
-			     double y_res, double minx, double maxy, int scale,
-			     rl2PalettePtr palette, rl2PixelPtr no_data)
+			     double y_res, double minx, double maxy,
+			     int scale, rl2PalettePtr palette,
+			     rl2PixelPtr no_data)
 {
 /* binding the query args */
     sqlite3_reset (stmt_tiles);
@@ -4587,10 +4595,10 @@ rl2_get_raw_raster_data_common (sqlite3 * handle, int max_threads,
 			    /* default: white */
 			    rl2_set_pixel_sample_uint8 (no_data, RL2_RED_BAND,
 							255);
-			    rl2_set_pixel_sample_uint8 (no_data, RL2_GREEN_BAND,
-							255);
-			    rl2_set_pixel_sample_uint8 (no_data, RL2_BLUE_BAND,
-							255);
+			    rl2_set_pixel_sample_uint8 (no_data,
+							RL2_GREEN_BAND, 255);
+			    rl2_set_pixel_sample_uint8 (no_data,
+							RL2_BLUE_BAND, 255);
 			}
 		  }
 	    }
@@ -4815,8 +4823,9 @@ rl2_get_raw_raster_data_common (sqlite3 * handle, int max_threads,
       }
     if (!rl2_load_dbms_tiles
 	(handle, max_threads, stmt_tiles, stmt_data, bufpix, width, height,
-	 sample_type, num_bands, auto_ndvi, red_band, nir_band, xx_res, yy_res,
-	 minx, miny, maxx, maxy, level, scale, plt, no_data, style, stats))
+	 sample_type, num_bands, auto_ndvi, red_band, nir_band, xx_res,
+	 yy_res, minx, miny, maxx, maxy, level, scale, plt, no_data, style,
+	 stats))
 	goto error;
     if (kill_no_data != NULL)
 	rl2_destroy_pixel (kill_no_data);
@@ -4872,19 +4881,19 @@ rl2_get_raw_raster_data_common (sqlite3 * handle, int max_threads,
 }
 
 RL2_DECLARE int
-rl2_get_raw_raster_data (sqlite3 * handle, int max_threads, rl2CoveragePtr cvg,
-			 unsigned int width, unsigned int height,
-			 double minx, double miny, double maxx, double maxy,
-			 double x_res, double y_res, unsigned char **buffer,
-			 int *buf_size, rl2PalettePtr * palette,
-			 unsigned char out_pixel)
+rl2_get_raw_raster_data (sqlite3 * handle, int max_threads,
+			 rl2CoveragePtr cvg, unsigned int width,
+			 unsigned int height, double minx, double miny,
+			 double maxx, double maxy, double x_res, double y_res,
+			 unsigned char **buffer, int *buf_size,
+			 rl2PalettePtr * palette, unsigned char out_pixel)
 {
 /* attempting to return a buffer containing raw pixels from the DBMS Coverage */
     return rl2_get_raw_raster_data_common (handle, max_threads, cvg, 0, 0,
 					   width, height, minx, miny, maxx,
-					   maxy, x_res, y_res, buffer, buf_size,
-					   palette, out_pixel, NULL, NULL,
-					   NULL);
+					   maxy, x_res, y_res, buffer,
+					   buf_size, palette, out_pixel, NULL,
+					   NULL, NULL);
 }
 
 RL2_DECLARE int
@@ -4901,17 +4910,18 @@ rl2_get_section_raw_raster_data (sqlite3 * handle, int max_threads,
     return rl2_get_raw_raster_data_common (handle, max_threads, cvg, 1,
 					   section_id, width, height, minx,
 					   miny, maxx, maxy, x_res, y_res,
-					   buffer, buf_size, palette, out_pixel,
-					   NULL, NULL, NULL);
+					   buffer, buf_size, palette,
+					   out_pixel, NULL, NULL, NULL);
 }
 
 static int
 get_triple_band_raw_raster_data_common (int by_section, sqlite3 * handle,
 					rl2CoveragePtr cvg,
 					sqlite3_int64 section_id,
-					unsigned int width, unsigned int height,
-					double minx, double miny, double maxx,
-					double maxy, double x_res, double y_res,
+					unsigned int width,
+					unsigned int height, double minx,
+					double miny, double maxx, double maxy,
+					double x_res, double y_res,
 					unsigned char red_band,
 					unsigned char green_band,
 					unsigned char blue_band,
@@ -5076,9 +5086,10 @@ rl2_get_triple_band_raw_raster_data (sqlite3 * handle, rl2CoveragePtr cvg,
 /* attempting to return a buffer containing raw pixels from the DBMS Coverage */
     return get_triple_band_raw_raster_data_common (0, handle, cvg, 0, width,
 						   height, minx, miny, maxx,
-						   maxy, x_res, y_res, red_band,
-						   green_band, blue_band,
-						   buffer, buf_size, bgcolor);
+						   maxy, x_res, y_res,
+						   red_band, green_band,
+						   blue_band, buffer,
+						   buf_size, bgcolor);
 }
 
 RL2_DECLARE int
@@ -5101,8 +5112,8 @@ rl2_get_section_triple_band_raw_raster_data (sqlite3 * handle,
 						   width, height, minx, miny,
 						   maxx, maxy, x_res, y_res,
 						   red_band, green_band,
-						   blue_band, buffer, buf_size,
-						   bgcolor);
+						   blue_band, buffer,
+						   buf_size, bgcolor);
 }
 
 static int
@@ -5267,13 +5278,14 @@ rl2_get_mono_band_raw_raster_data (sqlite3 * handle, rl2CoveragePtr cvg,
 {
 /* attempting to return a buffer containing raw pixels from the DBMS Coverage */
     return get_mono_band_raw_raster_data_common (0, handle, cvg, 0, width,
-						 height, minx, miny, maxx, maxy,
-						 x_res, y_res, buffer, buf_size,
-						 mono_band, no_data);
+						 height, minx, miny, maxx,
+						 maxy, x_res, y_res, buffer,
+						 buf_size, mono_band, no_data);
 }
 
 RL2_DECLARE int
-rl2_get_section_mono_band_raw_raster_data (sqlite3 * handle, rl2CoveragePtr cvg,
+rl2_get_section_mono_band_raw_raster_data (sqlite3 * handle,
+					   rl2CoveragePtr cvg,
 					   sqlite3_int64 section_id,
 					   unsigned int width,
 					   unsigned int height, double minx,
@@ -5295,12 +5307,14 @@ rl2_get_section_mono_band_raw_raster_data (sqlite3 * handle, rl2CoveragePtr cvg,
 RL2_DECLARE int
 rl2_get_raw_raster_data_bgcolor (sqlite3 * handle, int max_threads,
 				 rl2CoveragePtr cvg, unsigned int width,
-				 unsigned int height, double minx, double miny,
-				 double maxx, double maxy, double x_res,
-				 double y_res, unsigned char **buffer,
-				 int *buf_size, rl2PalettePtr * palette,
-				 unsigned char *out_pixel, unsigned char bg_red,
-				 unsigned char bg_green, unsigned char bg_blue,
+				 unsigned int height, double minx,
+				 double miny, double maxx, double maxy,
+				 double x_res, double y_res,
+				 unsigned char **buffer, int *buf_size,
+				 rl2PalettePtr * palette,
+				 unsigned char *out_pixel,
+				 unsigned char bg_red, unsigned char bg_green,
+				 unsigned char bg_blue,
 				 rl2RasterSymbolizerPtr style,
 				 rl2RasterStatisticsPtr stats)
 {
@@ -5384,29 +5398,29 @@ rl2_get_raw_raster_data_bgcolor (sqlite3 * handle, int max_threads,
 		  {
 		  case RL2_SAMPLE_1_BIT:
 		      no_data =
-			  rl2_create_pixel (RL2_SAMPLE_1_BIT, RL2_PIXEL_PALETTE,
-					    1);
+			  rl2_create_pixel (RL2_SAMPLE_1_BIT,
+					    RL2_PIXEL_PALETTE, 1);
 		      rl2_set_pixel_sample_1bit (no_data,
 						 (unsigned char) index);
 		      break;
 		  case RL2_SAMPLE_2_BIT:
 		      no_data =
-			  rl2_create_pixel (RL2_SAMPLE_2_BIT, RL2_PIXEL_PALETTE,
-					    1);
+			  rl2_create_pixel (RL2_SAMPLE_2_BIT,
+					    RL2_PIXEL_PALETTE, 1);
 		      rl2_set_pixel_sample_2bit (no_data,
 						 (unsigned char) index);
 		      break;
 		  case RL2_SAMPLE_4_BIT:
 		      no_data =
-			  rl2_create_pixel (RL2_SAMPLE_4_BIT, RL2_PIXEL_PALETTE,
-					    1);
+			  rl2_create_pixel (RL2_SAMPLE_4_BIT,
+					    RL2_PIXEL_PALETTE, 1);
 		      rl2_set_pixel_sample_4bit (no_data,
 						 (unsigned char) index);
 		      break;
 		  case RL2_SAMPLE_UINT8:
 		      no_data =
-			  rl2_create_pixel (RL2_SAMPLE_UINT8, RL2_PIXEL_PALETTE,
-					    1);
+			  rl2_create_pixel (RL2_SAMPLE_UINT8,
+					    RL2_PIXEL_PALETTE, 1);
 		      rl2_set_pixel_sample_uint8 (no_data, RL2_PALETTE_BAND,
 						  (unsigned char) index);
 		      break;
@@ -5707,8 +5721,9 @@ rl2_update_dbms_palette (sqlite3 * handle, const char *coverage,
 	return RL2_ERROR;
 
     sql =
-	sqlite3_mprintf ("SELECT sample_type, pixel_type FROM raster_coverages "
-			 "WHERE Lower(coverage_name) = Lower(%Q)", coverage);
+	sqlite3_mprintf
+	("SELECT sample_type, pixel_type FROM raster_coverages "
+	 "WHERE Lower(coverage_name) = Lower(%Q)", coverage);
     ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
     sqlite3_free (sql);
     if (ret != SQLITE_OK)
@@ -6235,7 +6250,8 @@ rl2_create_coverage_style_from_dbms (sqlite3 * handle, const char *coverage,
 }
 
 RL2_DECLARE rl2FeatureTypeStylePtr
-rl2_create_feature_type_style_from_dbms (sqlite3 * handle, const char *coverage,
+rl2_create_feature_type_style_from_dbms (sqlite3 * handle,
+					 const char *coverage,
 					 const char *style)
 {
 /* attempting to load and parse a Feature Type Style */
@@ -6379,11 +6395,12 @@ test_named_style (sqlite3 * handle, const char *namedLayer,
     int ok = 0;
 /* testing if the Layer Style exists */
     char *sql =
-	sqlite3_mprintf ("SELECT style_name FROM SE_raster_styled_layers AS r "
-			 "JOIN SE_raster_styles AS s ON (r.style_id = s.style_id) "
-			 "WHERE Lower(r.coverage_name) = Lower(%Q) AND "
-			 "Lower(s.style_name) = Lower(%Q)", namedLayer,
-			 namedStyle);
+	sqlite3_mprintf
+	("SELECT style_name FROM SE_raster_styled_layers AS r "
+	 "JOIN SE_raster_styles AS s ON (r.style_id = s.style_id) "
+	 "WHERE Lower(r.coverage_name) = Lower(%Q) AND "
+	 "Lower(s.style_name) = Lower(%Q)", namedLayer,
+	 namedStyle);
     ret = sqlite3_get_table (handle, sql, &results, &rows, &columns, NULL);
     sqlite3_free (sql);
     if (ret != SQLITE_OK)
@@ -7005,6 +7022,7 @@ rl2_copy_raster_coverage (sqlite3 * sqlite, const char *db_prefix,
     char *abstract = NULL;
     unsigned char *statistics = NULL;
     int statistics_sz;
+    int ok_geo = 0;
     int ok_bbox = 0;
     double geo_minx;
     double geo_miny;
@@ -7403,29 +7421,28 @@ rl2_copy_raster_coverage (sqlite3 * sqlite, const char *db_prefix,
 		      statistics_sz = sqlite3_column_bytes (stmt, 18);
 		      statistics = malloc (statistics_sz);
 		      memcpy (statistics,
-			      (const unsigned char *) sqlite3_column_blob (stmt,
-									   18),
-			      statistics_sz);
+			      (const unsigned char *)
+			      sqlite3_column_blob (stmt, 18), statistics_sz);
 		  }
 		if (sqlite3_column_type (stmt, 19) == SQLITE_FLOAT)
 		  {
 		      geo_minx = sqlite3_column_double (stmt, 19);
-		      ok_bbox++;
+		      ok_geo++;
 		  }
 		if (sqlite3_column_type (stmt, 20) == SQLITE_FLOAT)
 		  {
 		      geo_miny = sqlite3_column_double (stmt, 20);
-		      ok_bbox++;
+		      ok_geo++;
 		  }
 		if (sqlite3_column_type (stmt, 21) == SQLITE_FLOAT)
 		  {
 		      geo_maxx = sqlite3_column_double (stmt, 21);
-		      ok_bbox++;
+		      ok_geo++;
 		  }
 		if (sqlite3_column_type (stmt, 22) == SQLITE_FLOAT)
 		  {
 		      geo_maxy = sqlite3_column_double (stmt, 22);
-		      ok_bbox++;
+		      ok_geo++;
 		  }
 		if (sqlite3_column_type (stmt, 23) == SQLITE_FLOAT)
 		  {
@@ -7485,11 +7502,14 @@ rl2_copy_raster_coverage (sqlite3 * sqlite, const char *db_prefix,
 		      palette = rl2_deserialize_dbms_palette (blob, blob_sz);
 		  }
 		if (ok_sample && ok_pixel && ok_num_bands && ok_compression
-		    && ok_quality && ok_tile_width && ok_tile_height && ok_x_res
-		    && ok_y_res && ok_srid && ok_nodata && ok_strict && ok_mixed
-		    && ok_paths && ok_md5 && ok_summary)
+		    && ok_quality && ok_tile_width && ok_tile_height
+		    && ok_x_res && ok_y_res && ok_srid && ok_nodata
+		    && ok_strict && ok_mixed && ok_paths && ok_md5
+		    && ok_summary)
 		    ok = 1;
-		if (ok_bbox != 8)
+		if (ok_geo != 4)
+		    ok_geo = 0;
+		if (ok_bbox != 4)
 		    ok_bbox = 0;
 	    }
       }
@@ -7508,10 +7528,10 @@ rl2_copy_raster_coverage (sqlite3 * sqlite, const char *db_prefix,
 				    strict_resolution, mixed_resolutions,
 				    section_paths, section_md5,
 				    section_summary);
-	if (no_data != NULL)
-	rl2_destroy_pixel(no_data);
-	if (palette != NULL)
-	rl2_destroy_palette(palette);
+    if (no_data != NULL)
+	rl2_destroy_pixel (no_data);
+    if (palette != NULL)
+	rl2_destroy_palette (palette);
     if (ret != RL2_OK)
 	goto error;
 
@@ -7542,16 +7562,12 @@ rl2_copy_raster_coverage (sqlite3 * sqlite, const char *db_prefix,
 	sqlite3_bind_null (stmt, 3);
     else
 	sqlite3_bind_blob (stmt, 3, statistics, statistics_sz, free);
-    if (ok_bbox)
+    if (ok_geo)
       {
 	  sqlite3_bind_double (stmt, 4, geo_minx);
 	  sqlite3_bind_double (stmt, 5, geo_miny);
 	  sqlite3_bind_double (stmt, 6, geo_maxx);
 	  sqlite3_bind_double (stmt, 7, geo_maxy);
-	  sqlite3_bind_double (stmt, 8, ext_minx);
-	  sqlite3_bind_double (stmt, 9, ext_miny);
-	  sqlite3_bind_double (stmt, 10, ext_maxx);
-	  sqlite3_bind_double (stmt, 11, ext_maxy);
       }
     else
       {
@@ -7559,6 +7575,16 @@ rl2_copy_raster_coverage (sqlite3 * sqlite, const char *db_prefix,
 	  sqlite3_bind_null (stmt, 5);
 	  sqlite3_bind_null (stmt, 6);
 	  sqlite3_bind_null (stmt, 7);
+      }
+    if (ok_bbox)
+      {
+	  sqlite3_bind_double (stmt, 8, ext_minx);
+	  sqlite3_bind_double (stmt, 9, ext_miny);
+	  sqlite3_bind_double (stmt, 10, ext_maxx);
+	  sqlite3_bind_double (stmt, 11, ext_maxy);
+      }
+    else
+      {
 	  sqlite3_bind_null (stmt, 8);
 	  sqlite3_bind_null (stmt, 9);
 	  sqlite3_bind_null (stmt, 10);
@@ -7591,7 +7617,7 @@ rl2_copy_raster_coverage (sqlite3 * sqlite, const char *db_prefix,
     sqlite3_bind_text (stmt, 18, coverage_name, strlen (coverage_name),
 		       SQLITE_STATIC);
     ret = sqlite3_step (stmt);
-    sqlite3_finalize(stmt);
+    sqlite3_finalize (stmt);
     stmt = NULL;
     if (ret == SQLITE_DONE || ret == SQLITE_ROW)
 	goto ok_continue;
@@ -7614,7 +7640,7 @@ rl2_copy_raster_coverage (sqlite3 * sqlite, const char *db_prefix,
 			   xdb, xxcoverage);
     free (xxcoverage);
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, NULL);
-    sqlite3_free(sql);
+    sqlite3_free (sql);
     if (ret != SQLITE_OK)
 	goto error;
 
@@ -7622,14 +7648,15 @@ rl2_copy_raster_coverage (sqlite3 * sqlite, const char *db_prefix,
     xcoverage = sqlite3_mprintf ("%s_sections", coverage_name);
     xxcoverage = rl2_double_quoted_sql (xcoverage);
     sqlite3_free (xcoverage);
-    sql = sqlite3_mprintf ("INSERT INTO main.\"%s\" (section_id, section_name, "
-			   "width, height, file_path, md5_checksum, summary, statistics, geometry) "
-			   "SELECT section_id, section_name, width, height, file_path, md5_checksum, "
-			   "summary, statistics, geometry FROM \"%s\".\"%s\"",
-			   xxcoverage, xdb, xxcoverage);
+    sql =
+	sqlite3_mprintf ("INSERT INTO main.\"%s\" (section_id, section_name, "
+			 "width, height, file_path, md5_checksum, summary, statistics, geometry) "
+			 "SELECT section_id, section_name, width, height, file_path, md5_checksum, "
+			 "summary, statistics, geometry FROM \"%s\".\"%s\"",
+			 xxcoverage, xdb, xxcoverage);
     free (xxcoverage);
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, NULL);
-    sqlite3_free(sql);
+    sqlite3_free (sql);
     if (ret != SQLITE_OK)
 	goto error;
 
@@ -7642,7 +7669,7 @@ rl2_copy_raster_coverage (sqlite3 * sqlite, const char *db_prefix,
 			   "FROM \"%s\".\"%s\"", xxcoverage, xdb, xxcoverage);
     free (xxcoverage);
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, NULL);
-    sqlite3_free(sql);
+    sqlite3_free (sql);
     if (ret != SQLITE_OK)
 	goto error;
 
@@ -7655,7 +7682,7 @@ rl2_copy_raster_coverage (sqlite3 * sqlite, const char *db_prefix,
 			   "FROM \"%s\".\"%s\"", xxcoverage, xdb, xxcoverage);
     free (xxcoverage);
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, NULL);
-    sqlite3_free(sql);
+    sqlite3_free (sql);
     if (ret != SQLITE_OK)
 	goto error;
 
@@ -7664,7 +7691,7 @@ rl2_copy_raster_coverage (sqlite3 * sqlite, const char *db_prefix,
 			   "(coverage_name, keyword) SELECT coverage_name, keyword "
 			   "FROM \"%s\".raster_coverages_keyword", xdb);
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, NULL);
-    sqlite3_free(sql);
+    sqlite3_free (sql);
     if (ret != SQLITE_OK)
 	goto error;
 
@@ -7674,7 +7701,7 @@ rl2_copy_raster_coverage (sqlite3 * sqlite, const char *db_prefix,
 			   "SELECT coverage_name, srid, extent_minx, extent_miny, extent_maxx, extent_maxx "
 			   "FROM \"%s\".raster_coverages_srid", xdb);
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, NULL);
-    sqlite3_free(sql);
+    sqlite3_free (sql);
     if (ret != SQLITE_OK)
 	goto error;
 

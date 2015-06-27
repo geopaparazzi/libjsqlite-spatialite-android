@@ -230,7 +230,8 @@ rl2_jpeg_src (j_decompress_ptr cinfo,
     if (cinfo->src == NULL)
       {				/* first time for this JPEG object? */
 	  cinfo->src = (struct jpeg_source_mgr *)
-	      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
+	      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo,
+					  JPOOL_PERMANENT,
 					  sizeof (struct jpeg_source_mgr));
       }
 
@@ -265,7 +266,8 @@ rl2_jpeg_dest (j_compress_ptr cinfo,
     if (cinfo->dest == NULL)
       {				/* first time for this JPEG object? */
 	  cinfo->dest = (struct jpeg_destination_mgr *)
-	      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
+	      (*cinfo->mem->alloc_small) ((j_common_ptr) cinfo,
+					  JPOOL_PERMANENT,
 					  sizeof (jpeg_mem_destination_mgr));
 	  dest = (jpeg_mem_dest_ptr) cinfo->dest;
 	  dest->newbuffer = NULL;
@@ -757,8 +759,8 @@ rl2_raster_to_jpeg (rl2RasterPtr raster, unsigned char **jpeg, int *jpeg_size,
 
     if (rst == NULL)
 	return RL2_ERROR;
-    if (check_jpeg_compatibility (rst->sampleType, rst->pixelType, rst->nBands)
-	!= RL2_OK)
+    if (check_jpeg_compatibility
+	(rst->sampleType, rst->pixelType, rst->nBands) != RL2_OK)
 	return RL2_ERROR;
     if (rl2_data_to_jpeg
 	(rst->rasterBuffer, rst->maskBuffer, (rl2PalettePtr) (rst->Palette),
@@ -782,8 +784,8 @@ rl2_rgb_to_jpeg (unsigned int width, unsigned int height,
 	return RL2_ERROR;
 
     if (rl2_data_to_jpeg
-	(rgb, NULL, NULL, width, height, RL2_SAMPLE_UINT8, RL2_PIXEL_RGB, &blob,
-	 &blob_size, quality) != RL2_OK)
+	(rgb, NULL, NULL, width, height, RL2_SAMPLE_UINT8, RL2_PIXEL_RGB,
+	 &blob, &blob_size, quality) != RL2_OK)
 	return RL2_ERROR;
     *jpeg = blob;
     *jpeg_size = blob_size;
@@ -792,8 +794,8 @@ rl2_rgb_to_jpeg (unsigned int width, unsigned int height,
 
 RL2_DECLARE int
 rl2_gray_to_jpeg (unsigned int width, unsigned int height,
-		  const unsigned char *gray, int quality, unsigned char **jpeg,
-		  int *jpeg_size)
+		  const unsigned char *gray, int quality,
+		  unsigned char **jpeg, int *jpeg_size)
 {
 /* creating a PNG image from a Grayscale buffer */
     unsigned char *blob;
@@ -802,8 +804,8 @@ rl2_gray_to_jpeg (unsigned int width, unsigned int height,
 	return RL2_ERROR;
 
     if (rl2_data_to_jpeg
-	(gray, NULL, NULL, width, height, RL2_SAMPLE_UINT8, RL2_PIXEL_GRAYSCALE,
-	 &blob, &blob_size, quality) != RL2_OK)
+	(gray, NULL, NULL, width, height, RL2_SAMPLE_UINT8,
+	 RL2_PIXEL_GRAYSCALE, &blob, &blob_size, quality) != RL2_OK)
 	return RL2_ERROR;
     *jpeg = blob;
     *jpeg_size = blob_size;
@@ -851,8 +853,9 @@ rl2_section_from_jpeg (const char *path)
 
 /* creating the raster section */
     scn =
-	rl2_create_section (path, RL2_COMPRESSION_JPEG, RL2_TILESIZE_UNDEFINED,
-			    RL2_TILESIZE_UNDEFINED, rst);
+	rl2_create_section (path, RL2_COMPRESSION_JPEG,
+			    RL2_TILESIZE_UNDEFINED, RL2_TILESIZE_UNDEFINED,
+			    rst);
     return scn;
 }
 
@@ -878,8 +881,8 @@ rl2_raster_from_jpeg (const unsigned char *jpeg, int jpeg_size)
 
 /* creating the raster */
     rst =
-	rl2_create_raster (width, height, RL2_SAMPLE_UINT8, pixel_type, nBands,
-			   data, data_size, NULL, NULL, 0, NULL);
+	rl2_create_raster (width, height, RL2_SAMPLE_UINT8, pixel_type,
+			   nBands, data, data_size, NULL, NULL, 0, NULL);
     if (rst == NULL)
 	goto error;
     return rst;
@@ -893,8 +896,8 @@ rl2_raster_from_jpeg (const unsigned char *jpeg, int jpeg_size)
 }
 
 RL2_DECLARE int
-rl2_get_jpeg_infos (const char *path, unsigned int *width, unsigned int *height,
-		    unsigned char *pixel_type)
+rl2_get_jpeg_infos (const char *path, unsigned int *width,
+		    unsigned int *height, unsigned char *pixel_type)
 {
 /* attempting to retrieve basic infos from a JPEG image */
     int jpeg_size;
@@ -1064,8 +1067,8 @@ rl2_decode_jpeg_scaled (int scale, const unsigned char *jpeg, int jpeg_size,
 		JSAMPROW row = buffer[0];
 		for (i = 0; i < (int) (cinfo.output_width); i++)
 		  {
-		      CMYK2RGB (*(row + 0), *(row + 1), *(row + 2), *(row + 3),
-				inverted, p_data);
+		      CMYK2RGB (*(row + 0), *(row + 1), *(row + 2),
+				*(row + 3), inverted, p_data);
 		      row += 4;
 		      p_data += 3;
 		  }
@@ -1298,8 +1301,8 @@ eval_jpeg_origin_compatibility (rl2PrivCoveragePtr coverage,
 	&& coverage->pixelType == RL2_PIXEL_GRAYSCALE && coverage->nBands == 1)
       {
 	  if (raster->sampleType == RL2_SAMPLE_UINT8
-	      && raster->pixelType == RL2_PIXEL_GRAYSCALE && raster->nBands == 1
-	      && forced_conversion == RL2_CONVERT_NO)
+	      && raster->pixelType == RL2_PIXEL_GRAYSCALE
+	      && raster->nBands == 1 && forced_conversion == RL2_CONVERT_NO)
 	      return 1;
 	  if (raster->sampleType == RL2_SAMPLE_UINT8
 	      && raster->pixelType == RL2_PIXEL_RGB && raster->nBands == 3
@@ -1314,7 +1317,8 @@ eval_jpeg_origin_compatibility (rl2PrivCoveragePtr coverage,
 	      && forced_conversion == RL2_CONVERT_NO)
 	      return 1;
 	  if (raster->sampleType == RL2_SAMPLE_UINT8
-	      && raster->pixelType == RL2_PIXEL_GRAYSCALE && raster->nBands == 1
+	      && raster->pixelType == RL2_PIXEL_GRAYSCALE
+	      && raster->nBands == 1
 	      && forced_conversion == RL2_CONVERT_GRAYSCALE_TO_RGB)
 	      return 1;
       }
@@ -1532,8 +1536,9 @@ rl2_build_jpeg_xml_summary (unsigned int width, unsigned int height,
 	  sqlite3_free (prev);
 	  prev = xml;
 	  xml =
-	      sqlite3_mprintf ("%s<HorizontalExtent>%1.10f</HorizontalExtent>",
-			       prev, maxx - minx);
+	      sqlite3_mprintf
+	      ("%s<HorizontalExtent>%1.10f</HorizontalExtent>", prev,
+	       maxx - minx);
 	  sqlite3_free (prev);
 	  prev = xml;
 	  xml =

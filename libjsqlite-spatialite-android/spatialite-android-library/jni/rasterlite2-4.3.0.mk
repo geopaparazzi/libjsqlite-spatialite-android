@@ -32,7 +32,7 @@ spatialite_flags := \
 # comment out VERSION in config.h - manually set to avoid conflict with other packages
 rasterlite2_flags := \
  -DTARGET_CPU=\"$(TARGET_ARCH_ABI)\" \
- -DVERSION=\"0.9\" \
+ -DVERSION="\"1.0.0-rc1\"" \
  -O
 
 LOCAL_CFLAGS    := \

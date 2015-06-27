@@ -1419,7 +1419,8 @@ init_tiff_origin (const char *path, rl2PrivTiffOriginPtr origin)
     else
 	origin->planarConfig = value16;
 
-    if (origin->bitsPerSample == 16 && origin->sampleFormat == SAMPLEFORMAT_UINT
+    if (origin->bitsPerSample == 16
+	&& origin->sampleFormat == SAMPLEFORMAT_UINT
 	&& origin->planarConfig == PLANARCONFIG_SEPARATE)
 	;
     else if (origin->bitsPerSample == 8
@@ -2736,8 +2737,8 @@ read_raw_tiles (rl2PrivTiffOriginPtr origin, unsigned short width,
 		      /* skipping any not required tile */
 		      continue;
 		  }
-		if (TIFFReadTile (origin->in, tiff_tile, tile_x, tile_y, 0, 0) <
-		    0)
+		if (TIFFReadTile (origin->in, tiff_tile, tile_x, tile_y, 0, 0)
+		    < 0)
 		    goto error;
 		if (convert != RL2_CONVERT_NO)
 		  {
@@ -2766,8 +2767,8 @@ read_raw_tiles (rl2PrivTiffOriginPtr origin, unsigned short width,
 				  p_in_8 += x;
 				  p_out_8 = (char *) pixels;
 				  p_out_8 +=
-				      ((dest_y - startRow) * width) + (dest_x -
-								       startCol);
+				      ((dest_y - startRow) * width) +
+				      (dest_x - startCol);
 				  break;
 			      case RL2_SAMPLE_UINT8:
 				  p_in_u8 = (unsigned char *) tiff_tile;
@@ -2785,8 +2786,8 @@ read_raw_tiles (rl2PrivTiffOriginPtr origin, unsigned short width,
 				  p_in_16 += x;
 				  p_out_16 = (short *) pixels;
 				  p_out_16 +=
-				      ((dest_y - startRow) * width) + (dest_x -
-								       startCol);
+				      ((dest_y - startRow) * width) +
+				      (dest_x - startCol);
 				  break;
 			      case RL2_SAMPLE_UINT16:
 				  p_in_u16 = (unsigned short *) tiff_tile;
@@ -2804,8 +2805,8 @@ read_raw_tiles (rl2PrivTiffOriginPtr origin, unsigned short width,
 				  p_in_32 += x;
 				  p_out_32 = (int *) pixels;
 				  p_out_32 +=
-				      ((dest_y - startRow) * width) + (dest_x -
-								       startCol);
+				      ((dest_y - startRow) * width) +
+				      (dest_x - startCol);
 				  break;
 			      case RL2_SAMPLE_UINT32:
 				  p_in_u32 = (unsigned int *) tiff_tile;
@@ -2813,8 +2814,8 @@ read_raw_tiles (rl2PrivTiffOriginPtr origin, unsigned short width,
 				  p_in_u32 += x;
 				  p_out_u32 = (unsigned int *) pixels;
 				  p_out_u32 +=
-				      ((dest_y - startRow) * width) + (dest_x -
-								       startCol);
+				      ((dest_y - startRow) * width) +
+				      (dest_x - startCol);
 				  break;
 			      case RL2_SAMPLE_FLOAT:
 				  p_in_flt = (float *) tiff_tile;
@@ -2822,8 +2823,8 @@ read_raw_tiles (rl2PrivTiffOriginPtr origin, unsigned short width,
 				  p_in_flt += x;
 				  p_out_flt = (float *) pixels;
 				  p_out_flt +=
-				      ((dest_y - startRow) * width) + (dest_x -
-								       startCol);
+				      ((dest_y - startRow) * width) +
+				      (dest_x - startCol);
 				  break;
 			      case RL2_SAMPLE_DOUBLE:
 				  p_in_dbl = (double *) tiff_tile;
@@ -2831,8 +2832,8 @@ read_raw_tiles (rl2PrivTiffOriginPtr origin, unsigned short width,
 				  p_in_dbl += x;
 				  p_out_dbl = (double *) pixels;
 				  p_out_dbl +=
-				      ((dest_y - startRow) * width) + (dest_x -
-								       startCol);
+				      ((dest_y - startRow) * width) +
+				      (dest_x - startCol);
 				  break;
 			      };
 			    for (bnd = 0; bnd < num_bands; bnd++)
@@ -3645,8 +3646,8 @@ read_raw_separate_tiles (rl2PrivTiffOriginPtr origin, unsigned short width,
 					p_out_u16 +=
 					    ((dest_y -
 					      startRow) * width * num_bands) +
-					    ((dest_x - startCol) * num_bands) +
-					    band;
+					    ((dest_x -
+					      startCol) * num_bands) + band;
 					*p_out_u16 = *p_in_u16;
 				    }
 				  if (sample_type == RL2_SAMPLE_UINT8)
@@ -3658,8 +3659,8 @@ read_raw_separate_tiles (rl2PrivTiffOriginPtr origin, unsigned short width,
 					p_out_u8 +=
 					    ((dest_y -
 					      startRow) * width * num_bands) +
-					    ((dest_x - startCol) * num_bands) +
-					    band;
+					    ((dest_x -
+					      startCol) * num_bands) + band;
 					*p_out_u8 = *p_in_u8;
 				    }
 			      }
@@ -3677,8 +3678,9 @@ read_raw_separate_tiles (rl2PrivTiffOriginPtr origin, unsigned short width,
 }
 
 static int
-read_raw_separate_scanlines (rl2PrivTiffOriginPtr origin, unsigned short width,
-			     unsigned short height, unsigned char sample_type,
+read_raw_separate_scanlines (rl2PrivTiffOriginPtr origin,
+			     unsigned short width, unsigned short height,
+			     unsigned char sample_type,
 			     unsigned char num_bands, unsigned int startRow,
 			     unsigned int startCol, void *pixels)
 {
@@ -4176,7 +4178,8 @@ read_from_tiff (rl2PrivTiffOriginPtr origin, unsigned short width,
 	  /* contiguous planar configuration */
 	  if (origin->bitsPerSample <= 8
 	      && origin->sampleFormat == SAMPLEFORMAT_UINT
-	      && (origin->samplesPerPixel == 1 || origin->samplesPerPixel == 3)
+	      && (origin->samplesPerPixel == 1
+		  || origin->samplesPerPixel == 3)
 	      && (pixel_type == RL2_PIXEL_MONOCHROME
 		  || pixel_type == RL2_PIXEL_PALETTE
 		  || pixel_type == RL2_PIXEL_GRAYSCALE
@@ -4206,9 +4209,9 @@ read_from_tiff (rl2PrivTiffOriginPtr origin, unsigned short width,
 					bufPixels);
 		else
 		    ret =
-			read_raw_scanlines (origin, width, height, sample_type,
-					    num_bands, startRow, startCol,
-					    bufPixels);
+			read_raw_scanlines (origin, width, height,
+					    sample_type, num_bands, startRow,
+					    startCol, bufPixels);
 		if (ret != RL2_OK)
 		    goto error;
 	    }
@@ -4386,8 +4389,8 @@ rl2_get_tile_from_tiff_origin (rl2CoveragePtr cvg, rl2TiffOriginPtr tiff,
 /* attempting to create the tile */
     if (read_from_tiff
 	(origin, coverage->tileWidth, coverage->tileHeight,
-	 coverage->sampleType, coverage->pixelType, coverage->nBands, startRow,
-	 startCol, &pixels, &pixels_sz, palette) != RL2_OK)
+	 coverage->sampleType, coverage->pixelType, coverage->nBands,
+	 startRow, startCol, &pixels, &pixels_sz, palette) != RL2_OK)
 	goto error;
     if (startCol + coverage->tileWidth > origin->width)
 	unused_width = (startCol + coverage->tileWidth) - origin->width;
@@ -5082,9 +5085,10 @@ set_tiff_destination (rl2PrivTiffDestinationPtr destination,
 RL2_DECLARE rl2TiffDestinationPtr
 rl2_create_tiff_destination (const char *path, unsigned int width,
 			     unsigned int height, unsigned char sample_type,
-			     unsigned char pixel_type, unsigned char num_bands,
-			     rl2PalettePtr plt, unsigned char tiff_compression,
-			     int tiled, unsigned int tile_size)
+			     unsigned char pixel_type,
+			     unsigned char num_bands, rl2PalettePtr plt,
+			     unsigned char tiff_compression, int tiled,
+			     unsigned int tile_size)
 {
 /* attempting to create a file-based TIFF destination (no georeferencing) */
     rl2PrivTiffDestinationPtr destination = NULL;
@@ -5764,8 +5768,8 @@ tiff_write_strip_rgb (rl2PrivTiffDestinationPtr tiff, rl2PrivRasterPtr raster,
 }
 
 static int
-tiff_write_strip_gray (rl2PrivTiffDestinationPtr tiff, rl2PrivRasterPtr raster,
-		       unsigned int row)
+tiff_write_strip_gray (rl2PrivTiffDestinationPtr tiff,
+		       rl2PrivRasterPtr raster, unsigned int row)
 {
 /* writing a TIFF Grayscale scanline */
     unsigned int x;
@@ -6167,8 +6171,9 @@ tiff_write_tile_multiband16 (rl2PrivTiffDestinationPtr tiff,
 }
 
 static int
-tiff_write_tile_rgb_u8 (rl2PrivTiffDestinationPtr tiff, rl2PrivRasterPtr raster,
-			unsigned int row, unsigned int col)
+tiff_write_tile_rgb_u8 (rl2PrivTiffDestinationPtr tiff,
+			rl2PrivRasterPtr raster, unsigned int row,
+			unsigned int col)
 {
 /* writing a TIFF RGB tile - UINT8 */
     unsigned int y;
@@ -6543,7 +6548,8 @@ rl2_write_tiff_tile (rl2TiffDestinationPtr tiff, rl2RasterPtr raster,
 	    tiff_write_tile_multiband16 (destination, rst, startRow, startCol);
     else if (destination->sampleFormat == SAMPLEFORMAT_UINT
 	     && destination->samplesPerPixel == 1
-	     && destination->photometric < 2 && destination->bitsPerSample == 8
+	     && destination->photometric < 2
+	     && destination->bitsPerSample == 8
 	     && rst->sampleType == RL2_SAMPLE_UINT8
 	     && rst->pixelType == RL2_PIXEL_GRAYSCALE && rst->nBands == 1
 	     && destination->tileWidth == rst->width
@@ -6662,7 +6668,8 @@ rl2_write_tiff_worldfile (rl2TiffDestinationPtr tiff)
     tfw = fopen (destination->tfw_path, "w");
     if (tfw == NULL)
       {
-	  fprintf (stderr, "RL2-TIFF writer: unable to open Worldfile \"%s\"\n",
+	  fprintf (stderr,
+		   "RL2-TIFF writer: unable to open Worldfile \"%s\"\n",
 		   destination->tfw_path);
 	  return RL2_ERROR;
       }
@@ -6979,8 +6986,8 @@ rl2_decode_tiff_mono4 (const unsigned char *tiff, int tiff_sz,
 }
 
 static int
-rgb_tiff_common (TIFF * out, const unsigned char *buffer, unsigned short width,
-		 unsigned short height)
+rgb_tiff_common (TIFF * out, const unsigned char *buffer,
+		 unsigned short width, unsigned short height)
 {
 /* common implementation of RGB TIFF export */
     tsize_t buf_size;
@@ -7262,8 +7269,8 @@ static int
 output_palette_tiff (const unsigned char *buffer,
 		     unsigned short width,
 		     unsigned short height, unsigned char *red,
-		     unsigned char *green, unsigned char *blue, int max_palette,
-		     unsigned char **blob, int *blob_size)
+		     unsigned char *green, unsigned char *blue,
+		     int max_palette, unsigned char **blob, int *blob_size)
 {
 /* generating a PALETTE TIFF - actual work */
     struct memfile clientdata;
@@ -7511,8 +7518,8 @@ rl2_rgb_to_geotiff (unsigned int width, unsigned int height,
 }
 
 static int
-gray_tiff_common (TIFF * out, const unsigned char *buffer, unsigned short width,
-		  unsigned short height)
+gray_tiff_common (TIFF * out, const unsigned char *buffer,
+		  unsigned short width, unsigned short height)
 {
 /* common implementation of Grayscale TIFF export */
     tsize_t buf_size;
@@ -7991,8 +7998,8 @@ rl2_build_tiff_xml_summary (rl2TiffOriginPtr tiff)
     prev = xml;
     if (org->sampleFormat == SAMPLEFORMAT_UINT)
 	xml =
-	    sqlite3_mprintf ("%s<SampleFormat>unsigned integer</SampleFormat>",
-			     prev);
+	    sqlite3_mprintf
+	    ("%s<SampleFormat>unsigned integer</SampleFormat>", prev);
     else if (org->sampleFormat == SAMPLEFORMAT_INT)
 	xml =
 	    sqlite3_mprintf ("%s<SampleFormat>signed integer</SampleFormat>",
@@ -8086,8 +8093,9 @@ rl2_build_tiff_xml_summary (rl2TiffOriginPtr tiff)
 	  sqlite3_free (prev);
 	  prev = xml;
 	  xml =
-	      sqlite3_mprintf ("%s<HorizontalExtent>%1.10f</HorizontalExtent>",
-			       prev, org->maxX - org->minX);
+	      sqlite3_mprintf
+	      ("%s<HorizontalExtent>%1.10f</HorizontalExtent>", prev,
+	       org->maxX - org->minX);
 	  sqlite3_free (prev);
 	  prev = xml;
 	  xml =

@@ -228,11 +228,11 @@ compress_palette_png (const unsigned char *pixels, unsigned int width,
 }
 
 static int
-compress_grayscale_png8 (const unsigned char *pixels, const unsigned char *mask,
-			 double opacity, unsigned int width,
-			 unsigned int height, unsigned char sample_type,
-			 unsigned char pixel_type, unsigned char **png,
-			 int *png_size)
+compress_grayscale_png8 (const unsigned char *pixels,
+			 const unsigned char *mask, double opacity,
+			 unsigned int width, unsigned int height,
+			 unsigned char sample_type, unsigned char pixel_type,
+			 unsigned char **png, int *png_size)
 {
 /* compressing a PNG image of the GRAYSCALE type - 8 bits */
     png_structp png_ptr;
@@ -1084,8 +1084,9 @@ rl2_rgb_alpha_to_png (unsigned int width, unsigned int height,
 
 RL2_DECLARE int
 rl2_rgb_real_alpha_to_png (unsigned int width, unsigned int height,
-			   const unsigned char *rgb, const unsigned char *alpha,
-			   unsigned char **png, int *png_size)
+			   const unsigned char *rgb,
+			   const unsigned char *alpha, unsigned char **png,
+			   int *png_size)
 {
 /* creating a PNG image from two distinct RGB + Alpha buffer */
     unsigned char *blob;
@@ -1175,9 +1176,9 @@ rl2_data_to_png (const unsigned char *pixels, const unsigned char *mask,
 					    sample_type, &blob, &blob_size);
 	  else
 	      ret =
-		  compress_grayscale_png8 (pixels, mask, opacity, width, height,
-					   sample_type, pixel_type, &blob,
-					   &blob_size);
+		  compress_grayscale_png8 (pixels, mask, opacity, width,
+					   height, sample_type, pixel_type,
+					   &blob, &blob_size);
 	  break;
       case RL2_PIXEL_RGB:
 	  if (sample_type == RL2_SAMPLE_UINT8)
@@ -1193,8 +1194,8 @@ rl2_data_to_png (const unsigned char *pixels, const unsigned char *mask,
 	    {
 		if (num_bands == 3)
 		    ret =
-			compress_rgb_png8 (pixels, mask, opacity, width, height,
-					   &blob, &blob_size);
+			compress_rgb_png8 (pixels, mask, opacity, width,
+					   height, &blob, &blob_size);
 		else if (num_bands == 4)
 		    ret =
 			compress_4bands_png8 (pixels, width, height, &blob,
@@ -1415,8 +1416,9 @@ rl2_decode_png (const unsigned char *blob, int blob_size,
 	pixel_type = RL2_PIXEL_DATAGRID;
     if (pixel_type == RL2_PIXEL_PALETTE)
       {
-	  if (png_get_tRNS (png_ptr, info_ptr, &transp, &nTransp, &transpValues)
-	      == PNG_INFO_tRNS)
+	  if (png_get_tRNS
+	      (png_ptr, info_ptr, &transp, &nTransp,
+	       &transpValues) == PNG_INFO_tRNS)
 	    {
 		/* a Transparency palette is defined */
 		int i;

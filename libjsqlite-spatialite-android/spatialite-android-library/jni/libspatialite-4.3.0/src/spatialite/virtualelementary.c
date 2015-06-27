@@ -785,7 +785,7 @@ velem_filter (sqlite3_vtab_cursor * pCursor, int idxNum, const char *idxStr,
     if (ret != SQLITE_OK)
 	goto stop;
 /* binding stmt params [ROWID] */
-    sqlite3_bind_double (stmt, 1, rowid_value);
+    sqlite3_bind_int64 (stmt, 1, rowid_value);
     velem_reset_cache (cursor);
     cursor->eof = 0;
 /* caching the ResultSet */

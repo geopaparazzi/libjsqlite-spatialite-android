@@ -786,14 +786,16 @@ eval_filter (rl2PrivStyleRulePtr rule, rl2VariantArrayPtr variant)
 /* evaluating a Rule Filter */
     int i;
     rl2PrivVariantArrayPtr var = (rl2PrivVariantArrayPtr) variant;
-    if (rule == NULL || var == NULL)
-	return 1;
+    if (rule->column_name == NULL)
+	return 1;		/* there is no comparison: surely true */
+    if (var == NULL)
+	return 0;
     for (i = 0; i < var->count; i++)
       {
 	  rl2PrivVariantValuePtr val = *(var->array + i);
 	  if (val == NULL)
 	      return 0;
-	  if (rule->column_name == NULL || val->column_name == NULL)
+	  if (val->column_name == NULL)
 	      return 0;
 	  if (strcasecmp (rule->column_name, val->column_name) != 0)
 	      continue;
@@ -828,7 +830,8 @@ eval_filter (rl2PrivStyleRulePtr rule, rl2VariantArrayPtr variant)
 RL2_DECLARE rl2VectorSymbolizerPtr
 rl2_get_symbolizer_from_feature_type_style (rl2FeatureTypeStylePtr style,
 					    double scale,
-					    rl2VariantArrayPtr variant, int *scale_forbidden)
+					    rl2VariantArrayPtr variant,
+					    int *scale_forbidden)
 {
 /* return the VectorSymbolizer matching a given scale/filter from a FeatureTypeStyle */
     rl2PrivVectorSymbolizerPtr symbolizer = NULL;
@@ -849,8 +852,10 @@ rl2_get_symbolizer_from_feature_type_style (rl2FeatureTypeStylePtr style,
 		pR = pR->next;
 		continue;
 	    }
+
 	  if (eval_filter (pR, variant))
 	    {
+		*scale_forbidden = 0;
 		if (pR->min_scale != DBL_MAX && pR->max_scale != DBL_MAX)
 		  {
 		      if (scale >= pR->min_scale && scale < pR->max_scale)
@@ -868,15 +873,17 @@ rl2_get_symbolizer_from_feature_type_style (rl2FeatureTypeStylePtr style,
 		  }
 		else
 		    symbolizer = pR->style;
-		    if (symbolizer == NULL)
+		if (symbolizer == NULL)
 		    *scale_forbidden = 1;
-		return (rl2VectorSymbolizerPtr) symbolizer;
+		else
+		    return (rl2VectorSymbolizerPtr) symbolizer;
 	    }
 	  pR = pR->next;
       }
     if (stl->else_rule != NULL)
       {
 	  /* applyhing the ELSE rule */
+	  *scale_forbidden = 0;
 	  pR = stl->else_rule;
 	  if (pR->min_scale != DBL_MAX && pR->max_scale != DBL_MAX)
 	    {
@@ -895,8 +902,8 @@ rl2_get_symbolizer_from_feature_type_style (rl2FeatureTypeStylePtr style,
 	    }
 	  else
 	      symbolizer = pR->style;
-		    if (symbolizer == NULL)
-		    *scale_forbidden = 1;
+	  if (symbolizer == NULL)
+	      *scale_forbidden = 1;
       }
     return (rl2VectorSymbolizerPtr) symbolizer;
 }
@@ -911,6 +918,11 @@ rl2_is_visible_style (rl2FeatureTypeStylePtr style, double scale)
     rl2PrivFeatureTypeStylePtr stl = (rl2PrivFeatureTypeStylePtr) style;
     if (stl == NULL)
 	return 0;
+    if (stl->first_rule == NULL)
+      {
+	  /* there are no rules: unconditional visibility */
+	  return 1;
+      }
 
     pR = stl->first_rule;
     while (pR != NULL)
@@ -1106,9 +1118,10 @@ rl2_is_raster_symbolizer_mono_band_selected (rl2RasterSymbolizerPtr style,
 		*interpolate = 1;
 		return RL2_OK;
 	    }
-	  if (stl->contrastEnhancement == RL2_CONTRAST_ENHANCEMENT_NORMALIZE ||
-	      stl->contrastEnhancement == RL2_CONTRAST_ENHANCEMENT_HISTOGRAM ||
-	      stl->contrastEnhancement == RL2_CONTRAST_ENHANCEMENT_GAMMA)
+	  if (stl->contrastEnhancement == RL2_CONTRAST_ENHANCEMENT_NORMALIZE
+	      || stl->contrastEnhancement ==
+	      RL2_CONTRAST_ENHANCEMENT_HISTOGRAM
+	      || stl->contrastEnhancement == RL2_CONTRAST_ENHANCEMENT_GAMMA)
 	    {
 		/* Contrast Enhancement */
 		*selected = 1;
@@ -1175,9 +1188,10 @@ rl2_is_raster_symbolizer_triple_band_selected (rl2RasterSymbolizerPtr style,
 	return RL2_ERROR;
     if (stl->bandSelection == NULL)
       {
-	  if (stl->contrastEnhancement == RL2_CONTRAST_ENHANCEMENT_NORMALIZE ||
-	      stl->contrastEnhancement == RL2_CONTRAST_ENHANCEMENT_HISTOGRAM ||
-	      stl->contrastEnhancement == RL2_CONTRAST_ENHANCEMENT_GAMMA)
+	  if (stl->contrastEnhancement == RL2_CONTRAST_ENHANCEMENT_NORMALIZE
+	      || stl->contrastEnhancement ==
+	      RL2_CONTRAST_ENHANCEMENT_HISTOGRAM
+	      || stl->contrastEnhancement == RL2_CONTRAST_ENHANCEMENT_GAMMA)
 	    {
 		/* Contrast Enhancement */
 		*selected = 1;
@@ -1205,9 +1219,10 @@ rl2_get_raster_symbolizer_triple_band_selection (rl2RasterSymbolizerPtr style,
 	return RL2_ERROR;
     if (stl->bandSelection == NULL)
       {
-	  if (stl->contrastEnhancement == RL2_CONTRAST_ENHANCEMENT_NORMALIZE ||
-	      stl->contrastEnhancement == RL2_CONTRAST_ENHANCEMENT_HISTOGRAM ||
-	      stl->contrastEnhancement == RL2_CONTRAST_ENHANCEMENT_GAMMA)
+	  if (stl->contrastEnhancement == RL2_CONTRAST_ENHANCEMENT_NORMALIZE
+	      || stl->contrastEnhancement ==
+	      RL2_CONTRAST_ENHANCEMENT_HISTOGRAM
+	      || stl->contrastEnhancement == RL2_CONTRAST_ENHANCEMENT_GAMMA)
 	    {
 		/* Contrast Enhancement */
 		*red_band = 0;
@@ -1246,11 +1261,9 @@ rl2_get_raster_symbolizer_overall_contrast_enhancement (rl2RasterSymbolizerPtr
 }
 
 RL2_DECLARE int
-rl2_get_raster_symbolizer_red_band_contrast_enhancement (rl2RasterSymbolizerPtr
-							 style,
-							 unsigned char
-							 *contrast_enhancement,
-							 double *gamma_value)
+    rl2_get_raster_symbolizer_red_band_contrast_enhancement
+    (rl2RasterSymbolizerPtr style, unsigned char *contrast_enhancement,
+     double *gamma_value)
 {
 /* return the RasterSymbolizer RedBand ContrastEnhancement */
     rl2PrivRasterSymbolizerPtr stl = (rl2PrivRasterSymbolizerPtr) style;
@@ -1288,11 +1301,9 @@ RL2_DECLARE int
 }
 
 RL2_DECLARE int
-rl2_get_raster_symbolizer_blue_band_contrast_enhancement (rl2RasterSymbolizerPtr
-							  style,
-							  unsigned char
-							  *contrast_enhancement,
-							  double *gamma_value)
+    rl2_get_raster_symbolizer_blue_band_contrast_enhancement
+    (rl2RasterSymbolizerPtr style, unsigned char *contrast_enhancement,
+     double *gamma_value)
 {
 /* return the RasterSymbolizer BlueBand ContrastEnhancement */
     rl2PrivRasterSymbolizerPtr stl = (rl2PrivRasterSymbolizerPtr) style;
@@ -1310,11 +1321,9 @@ rl2_get_raster_symbolizer_blue_band_contrast_enhancement (rl2RasterSymbolizerPtr
 }
 
 RL2_DECLARE int
-rl2_get_raster_symbolizer_gray_band_contrast_enhancement (rl2RasterSymbolizerPtr
-							  style,
-							  unsigned char
-							  *contrast_enhancement,
-							  double *gamma_value)
+    rl2_get_raster_symbolizer_gray_band_contrast_enhancement
+    (rl2RasterSymbolizerPtr style, unsigned char *contrast_enhancement,
+     double *gamma_value)
 {
 /* return the RasterSymbolizer GrayBand ContrastEnhancement */
     rl2PrivRasterSymbolizerPtr stl = (rl2PrivRasterSymbolizerPtr) style;
@@ -1362,8 +1371,8 @@ rl2_get_raster_symbolizer_shaded_relief (rl2RasterSymbolizerPtr style,
 }
 
 RL2_DECLARE int
-rl2_has_raster_symbolizer_color_map_interpolated (rl2RasterSymbolizerPtr style,
-						  int *interpolated)
+rl2_has_raster_symbolizer_color_map_interpolated (rl2RasterSymbolizerPtr
+						  style, int *interpolated)
 {
 /* return if the RasterSymbolizer has an Interpolated ColorMap */
     rl2PrivRasterSymbolizerPtr stl = (rl2PrivRasterSymbolizerPtr) style;
@@ -1419,8 +1428,8 @@ rl2_get_raster_symbolizer_color_map_default (rl2RasterSymbolizerPtr style,
 }
 
 RL2_DECLARE int
-rl2_get_raster_symbolizer_color_map_category_base (rl2RasterSymbolizerPtr style,
-						   unsigned char *red,
+rl2_get_raster_symbolizer_color_map_category_base (rl2RasterSymbolizerPtr
+						   style, unsigned char *red,
 						   unsigned char *green,
 						   unsigned char *blue)
 {
@@ -2267,8 +2276,8 @@ rl2_polygon_symbolizer_get_graphic_stroke_href (rl2PolygonSymbolizerPtr
 }
 
 RL2_DECLARE int
-rl2_polygon_symbolizer_get_graphic_stroke_recode_count (rl2PolygonSymbolizerPtr
-							symbolizer, int *count)
+    rl2_polygon_symbolizer_get_graphic_stroke_recode_count
+    (rl2PolygonSymbolizerPtr symbolizer, int *count)
 {
 /* return how many ColorReplacement items are in a Graphic Stroke (PolygonSymbolizer) */
     rl2PrivPolygonSymbolizerPtr sym = (rl2PrivPolygonSymbolizerPtr) symbolizer;
@@ -2305,12 +2314,9 @@ rl2_polygon_symbolizer_get_graphic_stroke_recode_count (rl2PolygonSymbolizerPtr
 }
 
 RL2_DECLARE int
-rl2_polygon_symbolizer_get_graphic_stroke_recode_color (rl2PolygonSymbolizerPtr
-							symbolizer, int index,
-							int *color_index,
-							unsigned char *red,
-							unsigned char *green,
-							unsigned char *blue)
+    rl2_polygon_symbolizer_get_graphic_stroke_recode_color
+    (rl2PolygonSymbolizerPtr symbolizer, int index, int *color_index,
+     unsigned char *red, unsigned char *green, unsigned char *blue)
 {
 /* return a ColorReplacement item from a Graphic Stroke (PolygonSymbolizer) */
     rl2PrivPolygonSymbolizerPtr sym = (rl2PrivPolygonSymbolizerPtr) symbolizer;
@@ -2399,8 +2405,8 @@ rl2_polygon_symbolizer_get_stroke_width (rl2PolygonSymbolizerPtr symbolizer,
 }
 
 RL2_DECLARE int
-rl2_polygon_symbolizer_get_stroke_linejoin (rl2PolygonSymbolizerPtr symbolizer,
-					    unsigned char *linejoin)
+rl2_polygon_symbolizer_get_stroke_linejoin (rl2PolygonSymbolizerPtr
+					    symbolizer, unsigned char *linejoin)
 {
 /* return the Polygon Symbolizer Stroke Linejoin mode */
     rl2PrivPolygonSymbolizerPtr sym = (rl2PrivPolygonSymbolizerPtr) symbolizer;
@@ -2441,8 +2447,9 @@ rl2_polygon_symbolizer_get_stroke_dash_count (rl2PolygonSymbolizerPtr
 }
 
 RL2_DECLARE int
-rl2_polygon_symbolizer_get_stroke_dash_item (rl2PolygonSymbolizerPtr symbolizer,
-					     int index, double *item)
+rl2_polygon_symbolizer_get_stroke_dash_item (rl2PolygonSymbolizerPtr
+					     symbolizer, int index,
+					     double *item)
 {
 /* return a Polygon Symbolizer Stroke Dash item */
     rl2PrivPolygonSymbolizerPtr sym = (rl2PrivPolygonSymbolizerPtr) symbolizer;
@@ -3115,7 +3122,8 @@ rl2_point_symbolizer_get_graphic_href (rl2PointSymbolizerPtr symbolizer,
 RL2_DECLARE int
 rl2_point_symbolizer_get_graphic_recode_color (rl2PointSymbolizerPtr
 					       symbolizer, int index,
-					       int repl_index, int *color_index,
+					       int repl_index,
+					       int *color_index,
 					       unsigned char *red,
 					       unsigned char *green,
 					       unsigned char *blue)
@@ -3192,8 +3200,9 @@ rl2_point_symbolizer_is_mark (rl2PointSymbolizerPtr symbolizer, int index,
 }
 
 RL2_DECLARE int
-rl2_point_symbolizer_mark_get_well_known_type (rl2PointSymbolizerPtr symbolizer,
-					       int index, unsigned char *type)
+rl2_point_symbolizer_mark_get_well_known_type (rl2PointSymbolizerPtr
+					       symbolizer, int index,
+					       unsigned char *type)
 {
 /* return the Point Symbolizer Mark WellKnownType */
     int count = 0;
@@ -3340,8 +3349,8 @@ rl2_point_symbolizer_mark_get_stroke_width (rl2PointSymbolizerPtr symbolizer,
 }
 
 RL2_DECLARE int
-rl2_point_symbolizer_mark_get_stroke_linejoin (rl2PointSymbolizerPtr symbolizer,
-					       int index,
+rl2_point_symbolizer_mark_get_stroke_linejoin (rl2PointSymbolizerPtr
+					       symbolizer, int index,
 					       unsigned char *linejoin)
 {
 /* return the Point Symbolizer Mark Stroke Linejoin mode */
@@ -3374,8 +3383,9 @@ rl2_point_symbolizer_mark_get_stroke_linejoin (rl2PointSymbolizerPtr symbolizer,
 }
 
 RL2_DECLARE int
-rl2_point_symbolizer_mark_get_stroke_linecap (rl2PointSymbolizerPtr symbolizer,
-					      int index, unsigned char *linecap)
+rl2_point_symbolizer_mark_get_stroke_linecap (rl2PointSymbolizerPtr
+					      symbolizer, int index,
+					      unsigned char *linecap)
 {
 /* return the Point Symbolizer Stroke Mark Linecap mode */
     int count = 0;
@@ -3515,8 +3525,8 @@ rl2_point_symbolizer_mark_get_stroke_dash_offset (rl2PointSymbolizerPtr
 }
 
 RL2_DECLARE int
-rl2_point_symbolizer_mark_has_fill (rl2PointSymbolizerPtr symbolizer, int index,
-				    int *fill)
+rl2_point_symbolizer_mark_has_fill (rl2PointSymbolizerPtr symbolizer,
+				    int index, int *fill)
 {
 /* checks if a Point Symbolizer Mark has a Fill */
     int count = 0;
@@ -4198,8 +4208,8 @@ rl2_set_variant_int (rl2VariantArrayPtr variant, int index, const char *name,
 }
 
 RL2_DECLARE int
-rl2_set_variant_double (rl2VariantArrayPtr variant, int index, const char *name,
-			double value)
+rl2_set_variant_double (rl2VariantArrayPtr variant, int index,
+			const char *name, double value)
 {
 /* setting a DOUBLE VariantValue into a VariantArray object */
     rl2PrivVariantArrayPtr var = (rl2PrivVariantArrayPtr) variant;

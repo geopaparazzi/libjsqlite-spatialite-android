@@ -72,8 +72,8 @@ free_epsg_entry (struct epsg_entry *p)
 	free (p->srtext);
     if (p->spheroid)
 	free (p->spheroid);
-	if (p->prime_meridian)
-	free(p->prime_meridian);
+    if (p->prime_meridian)
+	free (p->prime_meridian);
     if (p->datum)
 	free (p->datum);
     if (p->projection)
@@ -112,7 +112,8 @@ static void
 epsg_insert (struct epsg_dict *epsg, int srid, int is_geographic,
 	     int flipped_axes, const char *unit, const char *axis_1,
 	     const char *orientation_1, const char *axis_2,
-	     const char *orientation_2, const char *spheroid, const char *prime_meridian, const char *datum,
+	     const char *orientation_2, const char *spheroid,
+	     const char *prime_meridian, const char *datum,
 	     const char *projection, const char *name, const char *proj4text,
 	     const char *srtext)
 {
@@ -149,9 +150,9 @@ epsg_insert (struct epsg_dict *epsg, int srid, int is_geographic,
     len = strlen (spheroid);
     p->spheroid = malloc (len + 1);
     strcpy (p->spheroid, spheroid);
-    len = strlen(prime_meridian);
-    p->prime_meridian = malloc(len + 1);
-    strcpy(p->prime_meridian, prime_meridian);
+    len = strlen (prime_meridian);
+    p->prime_meridian = malloc (len + 1);
+    strcpy (p->prime_meridian, prime_meridian);
     len = strlen (datum);
     p->datum = malloc (len + 1);
     strcpy (p->datum, datum);
@@ -260,8 +261,9 @@ parse_epsg (FILE * fl_epsg, struct epsg_dict *epsg)
 		if (!err)
 		    epsg_insert (epsg, atoi (srid), atoi (is_geographic),
 				 atoi (flipped_axes), unit, axis_1,
-				 orientation_1, axis_2, orientation_2, spheroid, prime_meridian,
-				 datum, projection, name, proj4text, srtext);
+				 orientation_1, axis_2, orientation_2, spheroid,
+				 prime_meridian, datum, projection, name,
+				 proj4text, srtext);
 		row_no++;
 		*srid = '\0';
 		*is_geographic = '\0';
@@ -1853,7 +1855,9 @@ do_header (FILE * out, int macro)
 	     "the provisions above, a recipient may use your version of this file under\n");
     fprintf (out,
 	     "the terms of any one of the MPL, the GPL or the LGPL.\n\n*/\n\n");
-    fprintf (out, "#include \"config.h\"\n\n");
+    fprintf (out, "#if defined(_WIN32) && !defined(__MINGW32__)\n");
+    fprintf (out, "#include \"config-msvc.h\"\n#else\n");
+    fprintf (out, "#include \"config.h\"\n#endif\n\n");
     fprintf (out, "#include <spatialite_private.h>\n\n");
 
     if (macro)
@@ -1936,8 +1940,7 @@ output_c_code (FILE * out, struct epsg_dict *epsg)
 		   "        \"%s\", %d, %d,\n",
 		   p->ref_sys_name, p->is_geographic, p->flipped_axes);
 	  fprintf (out,
-		   "        \"%s\", \"%s\",\n",
-		   p->spheroid, p->prime_meridian);
+		   "        \"%s\", \"%s\",\n", p->spheroid, p->prime_meridian);
 	  fprintf (out,
 		   "        \"%s\", \"%s\", \"%s\",\n",
 		   p->datum, p->projection, p->unit);
@@ -2071,8 +2074,7 @@ output_c_code (FILE * out, struct epsg_dict *epsg)
 		   "        \"%s\", %d, %d,\n",
 		   p->ref_sys_name, p->is_geographic, p->flipped_axes);
 	  fprintf (out,
-		   "        \"%s\", \"%s\",\n",
-		   p->spheroid, p->prime_meridian);
+		   "        \"%s\", \"%s\",\n", p->spheroid, p->prime_meridian);
 	  fprintf (out,
 		   "        \"%s\", \"%s\", \"%s\",\n",
 		   p->datum, p->projection, p->unit);

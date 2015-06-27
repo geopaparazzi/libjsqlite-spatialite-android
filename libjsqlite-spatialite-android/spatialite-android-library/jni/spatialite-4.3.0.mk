@@ -1,6 +1,6 @@
 include $(CLEAR_VARS)
 # ./configure  --enable-lwgeom=no --enable-gcp --enable-examples=no --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
-# 20150616.libspatialite-4.3.0-RC0
+# 20150626.libspatialite-4.3.0-RC1
 # 20150623: used when creating 'libjsqlite.so' with Android_4.3.0.mk
 LOCAL_MODULE    := spatialite
 

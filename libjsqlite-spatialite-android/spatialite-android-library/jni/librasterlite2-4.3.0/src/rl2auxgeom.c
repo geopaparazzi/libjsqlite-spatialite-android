@@ -126,11 +126,15 @@ rl2CreateLinestring (int vert)
     rl2LinestringPtr p = malloc (sizeof (rl2Linestring));
     p->coords = malloc (sizeof (double) * (vert * 2));
     p->points = vert;
+    p->minx = DBL_MAX;
+    p->miny = DBL_MAX;
+    p->maxx = 0.0 - DBL_MAX;
+    p->maxy = 0.0 - DBL_MAX;
     p->next = NULL;
     return p;
 }
 
-static void
+RL2_PRIVATE void
 rl2DestroyLinestring (rl2LinestringPtr ptr)
 {
 /* LINESTRING object desctructror */
@@ -142,6 +146,34 @@ rl2DestroyLinestring (rl2LinestringPtr ptr)
       }
 }
 
+RL2_PRIVATE rl2LinestringPtr
+rl2_linestring_to_image (rl2LinestringPtr line, int height, double minx,
+			 double miny, double x_res, double y_res)
+{
+/* creating a Linestring in image coordinates */
+    rl2LinestringPtr out = NULL;
+    int iv;
+    double x;
+    double y;
+    double dx;
+    double dy;
+
+    if (line == NULL)
+	return NULL;
+    out = rl2CreateLinestring (line->points);
+    if (out == NULL)
+	return out;
+    for (iv = 0; iv < line->points; iv++)
+      {
+	  /* populating the X and Y arrays */
+	  rl2GetPoint (line->coords, iv, &x, &y);
+	  dx = (x - minx) / x_res;
+	  dy = (double) height - ((y - miny) / y_res);
+	  rl2SetPoint (out->coords, iv, dx, dy);
+      }
+    return out;
+}
+
 static rl2RingPtr
 rl2CreateRing (int vert)
 {
@@ -149,11 +181,43 @@ rl2CreateRing (int vert)
     rl2RingPtr p = malloc (sizeof (rl2Ring));
     p->coords = malloc (sizeof (double) * (vert * 2));
     p->points = vert;
+    p->minx = DBL_MAX;
+    p->miny = DBL_MAX;
+    p->maxx = 0.0 - DBL_MAX;
+    p->maxy = 0.0 - DBL_MAX;
     p->next = NULL;
     return p;
 }
 
-static void
+RL2_PRIVATE rl2RingPtr
+rl2_ring_to_image (rl2RingPtr ring, int height, double minx, double miny,
+		   double x_res, double y_res)
+{
+/* creating a Ring in image coordinates */
+    rl2RingPtr out = NULL;
+    int iv;
+    double x;
+    double y;
+    double dx;
+    double dy;
+
+    if (ring == NULL)
+	return NULL;
+    out = rl2CreateRing (ring->points);
+    if (out == NULL)
+	return out;
+    for (iv = 0; iv < ring->points; iv++)
+      {
+	  /* populating the X and Y arrays */
+	  rl2GetPoint (ring->coords, iv, &x, &y);
+	  dx = (x - minx) / x_res;
+	  dy = (double) height - ((y - miny) / y_res);
+	  rl2SetPoint (out->coords, iv, dx, dy);
+      }
+    return out;
+}
+
+RL2_PRIVATE void
 rl2DestroyRing (rl2RingPtr ptr)
 {
 /* ring object destructor */
@@ -626,6 +690,14 @@ rl2ParseLine (rl2GeometryPtr geom, const unsigned char *blob, int size,
 	  x = rl2GeomImport64 (blob + *offset, endian, endian_arch);
 	  y = rl2GeomImport64 (blob + (*offset + 8), endian, endian_arch);
 	  rl2SetPoint (line->coords, iv, x, y);
+	  if (x < line->minx)
+	      line->minx = x;
+	  if (x > line->maxx)
+	      line->maxx = x;
+	  if (y < line->miny)
+	      line->miny = y;
+	  if (y > line->maxy)
+	      line->maxy = y;
 	  *offset += 16;
       }
 }
@@ -652,6 +724,14 @@ rl2ParseLineZ (rl2GeometryPtr geom, const unsigned char *blob, int size,
 	  x = rl2GeomImport64 (blob + *offset, endian, endian_arch);
 	  y = rl2GeomImport64 (blob + (*offset + 8), endian, endian_arch);
 	  rl2SetPoint (line->coords, iv, x, y);
+	  if (x < line->minx)
+	      line->minx = x;
+	  if (x > line->maxx)
+	      line->maxx = x;
+	  if (y < line->miny)
+	      line->miny = y;
+	  if (y > line->maxy)
+	      line->maxy = y;
 	  *offset += 24;
       }
 }
@@ -678,6 +758,14 @@ rl2ParseLineM (rl2GeometryPtr geom, const unsigned char *blob, int size,
 	  x = rl2GeomImport64 (blob + *offset, endian, endian_arch);
 	  y = rl2GeomImport64 (blob + (*offset + 8), endian, endian_arch);
 	  rl2SetPoint (line->coords, iv, x, y);
+	  if (x < line->minx)
+	      line->minx = x;
+	  if (x > line->maxx)
+	      line->maxx = x;
+	  if (y < line->miny)
+	      line->miny = y;
+	  if (y > line->maxy)
+	      line->maxy = y;
 	  *offset += 24;
       }
 }
@@ -704,6 +792,14 @@ rl2ParseLineZM (rl2GeometryPtr geom, const unsigned char *blob, int size,
 	  x = rl2GeomImport64 (blob + *offset, endian, endian_arch);
 	  y = rl2GeomImport64 (blob + (*offset + 8), endian, endian_arch);
 	  rl2SetPoint (line->coords, iv, x, y);
+	  if (x < line->minx)
+	      line->minx = x;
+	  if (x > line->maxx)
+	      line->maxx = x;
+	  if (y < line->miny)
+	      line->miny = y;
+	  if (y > line->maxy)
+	      line->maxy = y;
 	  *offset += 32;
       }
 }
@@ -769,6 +865,14 @@ rl2ParsePolygon (rl2GeometryPtr geom, const unsigned char *blob, int size,
 		y = rl2GeomImport64 (blob + (*offset + 8), endian, endian_arch);
 		*offset += 16;
 		rl2SetPoint (ring->coords, iv, x, y);
+		if (x < ring->minx)
+		    ring->minx = x;
+		if (x > ring->maxx)
+		    ring->maxx = x;
+		if (y < ring->miny)
+		    ring->miny = y;
+		if (y > ring->maxy)
+		    ring->maxy = y;
 	    }
       }
 }
@@ -811,6 +915,14 @@ rl2ParsePolygonZ (rl2GeometryPtr geom, const unsigned char *blob, int size,
 		y = rl2GeomImport64 (blob + (*offset + 8), endian, endian_arch);
 		*offset += 24;
 		rl2SetPoint (ring->coords, iv, x, y);
+		if (x < ring->minx)
+		    ring->minx = x;
+		if (x > ring->maxx)
+		    ring->maxx = x;
+		if (y < ring->miny)
+		    ring->miny = y;
+		if (y > ring->maxy)
+		    ring->maxy = y;
 	    }
       }
 }
@@ -853,6 +965,14 @@ rl2ParsePolygonM (rl2GeometryPtr geom, const unsigned char *blob, int size,
 		y = rl2GeomImport64 (blob + (*offset + 8), endian, endian_arch);
 		*offset += 24;
 		rl2SetPoint (ring->coords, iv, x, y);
+		if (x < ring->minx)
+		    ring->minx = x;
+		if (x > ring->maxx)
+		    ring->maxx = x;
+		if (y < ring->miny)
+		    ring->miny = y;
+		if (y > ring->maxy)
+		    ring->maxy = y;
 	    }
       }
 }
@@ -895,6 +1015,14 @@ rl2ParsePolygonZM (rl2GeometryPtr geom, const unsigned char *blob, int size,
 		y = rl2GeomImport64 (blob + (*offset + 8), endian, endian_arch);
 		*offset += 32;
 		rl2SetPoint (ring->coords, iv, x, y);
+		if (x < ring->minx)
+		    ring->minx = x;
+		if (x > ring->maxx)
+		    ring->maxx = x;
+		if (y < ring->miny)
+		    ring->miny = y;
+		if (y > ring->maxy)
+		    ring->maxy = y;
 	    }
       }
 }
@@ -940,6 +1068,14 @@ rl2ParseCompressedLine (rl2GeometryPtr geom, const unsigned char *blob,
 		*offset += 8;
 	    }
 	  rl2SetPoint (line->coords, iv, x, y);
+	  if (x < line->minx)
+	      line->minx = x;
+	  if (x > line->maxx)
+	      line->maxx = x;
+	  if (y < line->miny)
+	      line->miny = y;
+	  if (y > line->maxy)
+	      line->maxy = y;
 	  last_x = x;
 	  last_y = y;
       }
@@ -986,6 +1122,14 @@ rl2ParseCompressedLineZ (rl2GeometryPtr geom, const unsigned char *blob,
 		*offset += 12;
 	    }
 	  rl2SetPoint (line->coords, iv, x, y);
+	  if (x < line->minx)
+	      line->minx = x;
+	  if (x > line->maxx)
+	      line->maxx = x;
+	  if (y < line->miny)
+	      line->miny = y;
+	  if (y > line->maxy)
+	      line->maxy = y;
 	  last_x = x;
 	  last_y = y;
       }
@@ -1032,6 +1176,14 @@ rl2ParseCompressedLineM (rl2GeometryPtr geom, const unsigned char *blob,
 		*offset += 16;
 	    }
 	  rl2SetPoint (line->coords, iv, x, y);
+	  if (x < line->minx)
+	      line->minx = x;
+	  if (x > line->maxx)
+	      line->maxx = x;
+	  if (y < line->miny)
+	      line->miny = y;
+	  if (y > line->maxy)
+	      line->maxy = y;
 	  last_x = x;
 	  last_y = y;
       }
@@ -1078,6 +1230,14 @@ rl2ParseCompressedLineZM (rl2GeometryPtr geom, const unsigned char *blob,
 		*offset += 20;
 	    }
 	  rl2SetPoint (line->coords, iv, x, y);
+	  if (x < line->minx)
+	      line->minx = x;
+	  if (x > line->maxx)
+	      line->maxx = x;
+	  if (y < line->miny)
+	      line->miny = y;
+	  if (y > line->maxy)
+	      line->maxy = y;
 	  last_x = x;
 	  last_y = y;
       }
@@ -1141,6 +1301,14 @@ rl2ParseCompressedPolygon (rl2GeometryPtr geom, const unsigned char *blob,
 		      *offset += 8;
 		  }
 		rl2SetPoint (ring->coords, iv, x, y);
+		if (x < ring->minx)
+		    ring->minx = x;
+		if (x > ring->maxx)
+		    ring->maxx = x;
+		if (y < ring->miny)
+		    ring->miny = y;
+		if (y > ring->maxy)
+		    ring->maxy = y;
 		last_x = x;
 		last_y = y;
 	    }
@@ -1205,6 +1373,14 @@ rl2ParseCompressedPolygonZ (rl2GeometryPtr geom, const unsigned char *blob,
 		      *offset += 12;
 		  }
 		rl2SetPoint (ring->coords, iv, x, y);
+		if (x < ring->minx)
+		    ring->minx = x;
+		if (x > ring->maxx)
+		    ring->maxx = x;
+		if (y < ring->miny)
+		    ring->miny = y;
+		if (y > ring->maxy)
+		    ring->maxy = y;
 		last_x = x;
 		last_y = y;
 	    }
@@ -1269,6 +1445,14 @@ rl2ParseCompressedPolygonM (rl2GeometryPtr geom, const unsigned char *blob,
 		      *offset += 16;
 		  }
 		rl2SetPoint (ring->coords, iv, x, y);
+		if (x < ring->minx)
+		    ring->minx = x;
+		if (x > ring->maxx)
+		    ring->maxx = x;
+		if (y < ring->miny)
+		    ring->miny = y;
+		if (y > ring->maxy)
+		    ring->maxy = y;
 		last_x = x;
 		last_y = y;
 	    }
@@ -1333,6 +1517,14 @@ rl2ParseCompressedPolygonZM (rl2GeometryPtr geom, const unsigned char *blob,
 		      *offset += 20;
 		  }
 		rl2SetPoint (ring->coords, iv, x, y);
+		if (x < ring->minx)
+		    ring->minx = x;
+		if (x > ring->maxx)
+		    ring->maxx = x;
+		if (y < ring->miny)
+		    ring->miny = y;
+		if (y > ring->maxy)
+		    ring->maxy = y;
 		last_x = x;
 		last_y = y;
 	    }
@@ -1403,16 +1595,16 @@ rl2ParseGeometry (rl2GeometryPtr geom, const unsigned char *blob, int size,
 					offset);
 		break;
 	    case GAIA_COMPRESSED_LINESTRINGZ:
-		rl2ParseCompressedLineZ (geom, blob, size, endian, endian_arch,
-					 offset);
+		rl2ParseCompressedLineZ (geom, blob, size, endian,
+					 endian_arch, offset);
 		break;
 	    case GAIA_COMPRESSED_LINESTRINGM:
-		rl2ParseCompressedLineM (geom, blob, size, endian, endian_arch,
-					 offset);
+		rl2ParseCompressedLineM (geom, blob, size, endian,
+					 endian_arch, offset);
 		break;
 	    case GAIA_COMPRESSED_LINESTRINGZM:
-		rl2ParseCompressedLineZM (geom, blob, size, endian, endian_arch,
-					  offset);
+		rl2ParseCompressedLineZM (geom, blob, size, endian,
+					  endian_arch, offset);
 		break;
 	    case GAIA_COMPRESSED_POLYGON:
 		rl2ParseCompressedPolygon (geom, blob, size, endian,
@@ -1510,16 +1702,16 @@ rl2_geometry_from_blob (const unsigned char *blob, int size)
 			     &offset);
 	  break;
       case GAIA_COMPRESSED_LINESTRING:
-	  rl2ParseCompressedLine (geom, blob, size, little_endian, endian_arch,
-				  &offset);
+	  rl2ParseCompressedLine (geom, blob, size, little_endian,
+				  endian_arch, &offset);
 	  break;
       case GAIA_COMPRESSED_LINESTRINGZ:
-	  rl2ParseCompressedLineZ (geom, blob, size, little_endian, endian_arch,
-				   &offset);
+	  rl2ParseCompressedLineZ (geom, blob, size, little_endian,
+				   endian_arch, &offset);
 	  break;
       case GAIA_COMPRESSED_LINESTRINGM:
-	  rl2ParseCompressedLineM (geom, blob, size, little_endian, endian_arch,
-				   &offset);
+	  rl2ParseCompressedLineM (geom, blob, size, little_endian,
+				   endian_arch, &offset);
 	  break;
       case GAIA_COMPRESSED_LINESTRINGZM:
 	  rl2ParseCompressedLineZM (geom, blob, size, little_endian,
@@ -1724,6 +1916,67 @@ rl2_serialize_ring (rl2RingPtr ring, unsigned char **result, int *size)
     return 1;
 }
 
+RL2_PRIVATE int
+rl2_serialize_ring_as_linestring (rl2RingPtr ring, unsigned char **result,
+				  int *size)
+{
+/* serializing a BLOB Geometry - polygon ring as linestring */
+    int iv;
+    unsigned char *ptr;
+    int endian_arch = rl2GeomEndianArch ();
+    double minx = DBL_MAX;
+    double maxx = 0.0 - DBL_MAX;
+    double miny = DBL_MAX;
+    double maxy = 0.0 - DBL_MAX;
+    double x;
+    double y;
+
+    *result = NULL;
+    *size = 0;
+    if (ring == NULL)
+	return 0;
+
+/* computing the MBR */
+    for (iv = 0; iv < ring->points; iv++)
+      {
+	  rl2GetPoint (ring->coords, iv, &x, &y);
+	  if (x < minx)
+	      minx = x;
+	  if (x > maxx)
+	      maxx = x;
+	  if (y < miny)
+	      miny = y;
+	  if (y > maxy)
+	      maxy = y;
+      }
+/* computing the size of BLOB */
+    *size = 44;			/* header size */
+    *size += (4 + ((sizeof (double) * 2) * ring->points));	/* # points + [x,y] for each vertex */
+    *result = malloc (*size);
+    ptr = *result;
+/* building the BLOB */
+    *ptr = GAIA_MARK_START;	/* START signature */
+    *(ptr + 1) = GAIA_LITTLE_ENDIAN;	/* byte ordering */
+    rl2GeomExport32 (ptr + 2, 4326, 1, endian_arch);	/* the SRID */
+    rl2GeomExport64 (ptr + 6, minx, 1, endian_arch);	/* MBR - minimum X */
+    rl2GeomExport64 (ptr + 14, miny, 1, endian_arch);	/* MBR - minimum Y */
+    rl2GeomExport64 (ptr + 22, maxx, 1, endian_arch);	/* MBR - maximum X */
+    rl2GeomExport64 (ptr + 30, maxy, 1, endian_arch);	/* MBR - maximum Y */
+    *(ptr + 38) = GAIA_MARK_MBR;	/* MBR signature */
+    rl2GeomExport32 (ptr + 39, GAIA_LINESTRING, 1, endian_arch);	/* class LINESTRING */
+    rl2GeomExport32 (ptr + 43, ring->points, 1, endian_arch);	/* # points */
+    ptr += 47;
+    for (iv = 0; iv < ring->points; iv++)
+      {
+	  rl2GetPoint (ring->coords, iv, &x, &y);
+	  rl2GeomExport64 (ptr, x, 1, endian_arch);
+	  rl2GeomExport64 (ptr + 8, y, 1, endian_arch);
+	  ptr += 16;
+      }
+    *ptr = GAIA_MARK_END;	/* END signature */
+    return 1;
+}
+
 RL2_PRIVATE rl2GeometryPtr
 rl2_curve_from_XY (int points, double *x, double *y)
 {
@@ -1738,6 +1991,14 @@ rl2_curve_from_XY (int points, double *x, double *y)
     ln = rl2AddLinestringToGeometry (geom, points);
     for (iv = 0; iv < points; iv++)
 	rl2SetPoint (ln->coords, iv, *(x + iv), *(y + iv));
+    if (*(x + iv) < ln->minx)
+	ln->minx = *(x + iv);
+    if (*(x + iv) > ln->maxx)
+	ln->maxx = *(x + iv);
+    if (*(y + iv) < ln->miny)
+	ln->miny = *(y + iv);
+    if (*(y + iv) > ln->maxy)
+	ln->maxy = *(y + iv);
     return geom;
 }
 
@@ -1854,6 +2115,14 @@ rl2_clone_curve (rl2GeometryPtr in)
 	  double y;
 	  rl2GetPoint (ln_in->coords, iv, &x, &y);
 	  rl2SetPoint (ln_out->coords, iv, x, y);
+	  if (x < ln_out->minx)
+	      ln_out->minx = x;
+	  if (x > ln_out->maxx)
+	      ln_out->maxx = x;
+	  if (y < ln_out->miny)
+	      ln_out->miny = y;
+	  if (y > ln_out->maxy)
+	      ln_out->maxy = y;
       }
     return out;
 }
@@ -1874,6 +2143,14 @@ rl2_clone_linestring (rl2LinestringPtr in)
 	  double y;
 	  rl2GetPoint (in->coords, iv, &x, &y);
 	  rl2SetPoint (ln_out->coords, iv, x, y);
+	  if (x < ln_out->minx)
+	      ln_out->minx = x;
+	  if (x > ln_out->maxx)
+	      ln_out->maxx = x;
+	  if (y < ln_out->miny)
+	      ln_out->miny = y;
+	  if (y > ln_out->maxy)
+	      ln_out->maxy = y;
       }
     return out;
 }
@@ -1881,7 +2158,7 @@ rl2_clone_linestring (rl2LinestringPtr in)
 RL2_PRIVATE rl2GeometryPtr
 rl2_build_circle (double cx, double cy, double radius)
 {
-/* creating a cicrle */
+/* creating a circle */
     int iv = 0;
     double pi = 3.14159265359;
     double rads;
@@ -1895,6 +2172,14 @@ rl2_build_circle (double cx, double cy, double radius)
 	  x = cx + (radius * cos (rads));
 	  y = cy + (radius * sin (rads));
 	  rl2SetPoint (ln->coords, iv, x, y);
+	  if (x < ln->minx)
+	      ln->minx = x;
+	  if (x > ln->maxx)
+	      ln->maxx = x;
+	  if (y < ln->miny)
+	      ln->miny = y;
+	  if (y > ln->maxy)
+	      ln->maxy = y;
 	  iv++;
       }
     /* closure */

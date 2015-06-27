@@ -1101,6 +1101,10 @@ extern "C"
     {
 	int points;
 	double *coords;
+	double minx;
+	double miny;
+	double maxx;
+	double maxy;
 	struct rl2_linestring *next;
     } rl2Linestring;
     typedef rl2Linestring *rl2LinestringPtr;
@@ -1109,6 +1113,10 @@ extern "C"
     {
 	int points;
 	double *coords;
+	double minx;
+	double miny;
+	double maxx;
+	double maxy;
 	struct rl2_ring *next;
     } rl2Ring;
     typedef rl2Ring *rl2RingPtr;
@@ -1257,12 +1265,12 @@ extern "C"
 				    unsigned char **pixels, int *pixels_sz);
 
     RL2_PRIVATE int
-	rl2_data_to_png (const unsigned char *pixels, const unsigned char *mask,
-			 double opacity, rl2PalettePtr plt,
-			 unsigned int width, unsigned int height,
-			 unsigned char sample_type, unsigned char pixel_type,
-			 unsigned char num_bands, unsigned char **compr_data,
-			 int *compressed_size);
+	rl2_data_to_png (const unsigned char *pixels,
+			 const unsigned char *mask, double opacity,
+			 rl2PalettePtr plt, unsigned int width,
+			 unsigned int height, unsigned char sample_type,
+			 unsigned char pixel_type, unsigned char num_bands,
+			 unsigned char **compr_data, int *compressed_size);
 
     RL2_PRIVATE int
 	rl2_decode_png (const unsigned char *png, int png_sz,
@@ -1282,8 +1290,9 @@ extern "C"
 	rl2_decode_charls (const unsigned char *charls, int charls_sz,
 			   unsigned int *width, unsigned int *height,
 			   unsigned char *sample_type,
-			   unsigned char *pixel_type, unsigned char *num_bands,
-			   unsigned char **pixels, int *pixels_sz);
+			   unsigned char *pixel_type,
+			   unsigned char *num_bands, unsigned char **pixels,
+			   int *pixels_sz);
 
     RL2_PRIVATE int
 	rl2_data_to_gif (const unsigned char *pixels,
@@ -1347,9 +1356,9 @@ extern "C"
 					 unsigned char red_band_index,
 					 unsigned char nir_band_index,
 					 double x_res, double y_res,
-					 double minx, double miny, double maxx,
-					 double maxy, int level, int scale,
-					 rl2PalettePtr palette,
+					 double minx, double miny,
+					 double maxx, double maxy, int level,
+					 int scale, rl2PalettePtr palette,
 					 rl2PixelPtr no_data,
 					 rl2RasterSymbolizerPtr style,
 					 rl2RasterStatisticsPtr stats);
@@ -1451,7 +1460,8 @@ extern "C"
 						    const char *coverage,
 						    int by_section,
 						    sqlite3_int64 section_id,
-						    double x_res, double y_res,
+						    double x_res,
+						    double y_res,
 						    int *level_id, int *scale,
 						    int *real_scale,
 						    double *xx_res,
@@ -1501,13 +1511,17 @@ extern "C"
 
     RL2_PRIVATE int get_payload_from_palette_transparent (unsigned int width,
 							  unsigned int height,
-							  unsigned char *pixels,
-							  rl2PalettePtr palette,
-							  unsigned char format,
-							  int quality,
-							  unsigned char **image,
+							  unsigned char
+							  *pixels,
+							  rl2PalettePtr
+							  palette,
+							  unsigned char
+							  format, int quality,
+							  unsigned char
+							  **image,
 							  int *image_sz,
-							  unsigned char bg_red,
+							  unsigned char
+							  bg_red,
 							  unsigned char
 							  bg_green,
 							  unsigned char
@@ -1517,9 +1531,10 @@ extern "C"
     RL2_PRIVATE int get_payload_from_grayscale_opaque (unsigned int width,
 						       unsigned int height,
 						       sqlite3 * handle,
-						       double minx, double miny,
-						       double maxx, double maxy,
-						       int srid,
+						       double minx,
+						       double miny,
+						       double maxx,
+						       double maxy, int srid,
 						       unsigned char *pixels,
 						       unsigned char format,
 						       int quality,
@@ -1533,7 +1548,8 @@ extern "C"
 							    unsigned char
 							    *pixels,
 							    unsigned char
-							    format, int quality,
+							    format,
+							    int quality,
 							    unsigned char
 							    **image,
 							    int *image_sz,
@@ -1543,9 +1559,10 @@ extern "C"
 
     RL2_PRIVATE int get_payload_from_rgb_opaque (unsigned int width,
 						 unsigned int height,
-						 sqlite3 * handle, double minx,
-						 double miny, double maxx,
-						 double maxy, int srid,
+						 sqlite3 * handle,
+						 double minx, double miny,
+						 double maxx, double maxy,
+						 int srid,
 						 unsigned char *pixels,
 						 unsigned char format,
 						 int quality,
@@ -1578,7 +1595,8 @@ extern "C"
 
     RL2_PRIVATE int get_rgba_from_monochrome_transparent (unsigned int width,
 							  unsigned int height,
-							  unsigned char *pixels,
+							  unsigned char
+							  *pixels,
 							  unsigned char *rgba);
 
     RL2_PRIVATE int get_rgba_from_palette_mask (unsigned int base_width,
@@ -1618,7 +1636,8 @@ extern "C"
 
     RL2_PRIVATE int get_rgba_from_grayscale_transparent (unsigned int width,
 							 unsigned int height,
-							 unsigned char *pixels,
+							 unsigned char
+							 *pixels,
 							 unsigned char *rgba,
 							 unsigned char bg_gray);
 
@@ -1662,9 +1681,10 @@ extern "C"
     RL2_PRIVATE int get_payload_from_gray_rgba_opaque (unsigned int width,
 						       unsigned int height,
 						       sqlite3 * handle,
-						       double minx, double miny,
-						       double maxx, double maxy,
-						       int srid,
+						       double minx,
+						       double miny,
+						       double maxx,
+						       double maxy, int srid,
 						       unsigned char *rgb,
 						       unsigned char format,
 						       int quality,
@@ -1675,11 +1695,13 @@ extern "C"
 							    width,
 							    unsigned int
 							    height,
-							    unsigned char *rgb,
+							    unsigned char
+							    *rgb,
 							    unsigned char
 							    *alpha,
 							    unsigned char
-							    format, int quality,
+							    format,
+							    int quality,
 							    unsigned char
 							    **image,
 							    int *image_sz,
@@ -1688,9 +1710,10 @@ extern "C"
     RL2_PRIVATE int get_payload_from_rgb_rgba_opaque (unsigned int width,
 						      unsigned int height,
 						      sqlite3 * handle,
-						      double minx, double miny,
-						      double maxx, double maxy,
-						      int srid,
+						      double minx,
+						      double miny,
+						      double maxx,
+						      double maxy, int srid,
 						      unsigned char *rgb,
 						      unsigned char format,
 						      int quality,
@@ -1701,8 +1724,10 @@ extern "C"
 							   unsigned int
 							   height,
 							   unsigned char *rgb,
-							   unsigned char *alpha,
-							   unsigned char format,
+							   unsigned char
+							   *alpha,
+							   unsigned char
+							   format,
 							   int quality,
 							   unsigned char
 							   **image,
@@ -1713,7 +1738,8 @@ extern "C"
 
     RL2_PRIVATE int build_rgb_alpha (unsigned int width,
 				     unsigned int height, unsigned char *rgba,
-				     unsigned char **rgb, unsigned char **alpha,
+				     unsigned char **rgb,
+				     unsigned char **alpha,
 				     unsigned char bg_red,
 				     unsigned char bg_green,
 				     unsigned char bg_blue);
@@ -1746,7 +1772,8 @@ extern "C"
 							     unsigned char
 							     *xml);
 
-    RL2_PRIVATE rl2FeatureTypeStylePtr feature_type_style_from_xml (char *name,
+    RL2_PRIVATE rl2FeatureTypeStylePtr feature_type_style_from_xml (char
+								    *name,
 								    unsigned
 								    char *xml);
 
@@ -1835,8 +1862,8 @@ extern "C"
     RL2_PRIVATE void rl2_destroy_line_symbolizer (rl2PrivLineSymbolizerPtr
 						  symbolizer);
 
-    RL2_PRIVATE void rl2_destroy_polygon_symbolizer (rl2PrivPolygonSymbolizerPtr
-						     symbolizer);
+    RL2_PRIVATE void
+	rl2_destroy_polygon_symbolizer (rl2PrivPolygonSymbolizerPtr symbolizer);
 
     RL2_PRIVATE void rl2_destroy_text_symbolizer (rl2PrivTextSymbolizerPtr
 						  symbolizer);
@@ -1885,7 +1912,8 @@ extern "C"
 							   *pixels,
 							   int pixels_sz,
 							   unsigned int width,
-							   unsigned int height,
+							   unsigned int
+							   height,
 							   unsigned char
 							   sample_type,
 							   unsigned char
@@ -1914,15 +1942,24 @@ extern "C"
 					  const char *group_name);
 
     RL2_PRIVATE int rl2_rgba_raster_data (sqlite3 * handle,
-					  const char *coverage_name, void *ctx,
-					  int level, double minx, double miny,
-					  double maxx, double maxy,
-					  rl2PalettePtr palette,
+					  const char *coverage_name,
+					  void *ctx, int level, double minx,
+					  double miny, double maxx,
+					  double maxy, rl2PalettePtr palette,
 					  rl2PixelPtr no_data);
 
     RL2_PRIVATE int rl2_aux_render_image (struct aux_renderer *aux,
 					  unsigned char **ximage,
 					  int *ximage_size);
+
+    RL2_PRIVATE int rl2_aux_default_image (unsigned int width,
+					   unsigned int height,
+					   unsigned char red,
+					   unsigned char green,
+					   unsigned char blue, int format_id,
+					   int transparent, int quality,
+					   unsigned char **ximage,
+					   int *ximage_size);
 
     RL2_PRIVATE void rl2_aux_group_renderer (struct aux_group_renderer *auxgrp);
 
@@ -1954,7 +1991,8 @@ extern "C"
 						    unsigned int height,
 						    double minx, double miny,
 						    double maxx, double maxy,
-						    double x_res, double y_res,
+						    double x_res,
+						    double y_res,
 						    unsigned char **buffer,
 						    int *buf_size,
 						    rl2PalettePtr * palette,
@@ -1976,13 +2014,15 @@ extern "C"
 					     int blob_sz, double *x, double *y);
 
     RL2_PRIVATE int rl2_parse_bbox_srid (sqlite3 * sqlite,
-					 const unsigned char *blob, int blob_sz,
-					 int *srid, double *minx, double *miny,
-					 double *maxx, double *maxy);
+					 const unsigned char *blob,
+					 int blob_sz, int *srid, double *minx,
+					 double *miny, double *maxx,
+					 double *maxy);
 
-    RL2_PRIVATE int rl2_parse_bbox (sqlite3 * sqlite, const unsigned char *blob,
-				    int blob_sz, double *minx, double *miny,
-				    double *maxx, double *maxy);
+    RL2_PRIVATE int rl2_parse_bbox (sqlite3 * sqlite,
+				    const unsigned char *blob, int blob_sz,
+				    double *minx, double *miny, double *maxx,
+				    double *maxy);
 
     RL2_PRIVATE int rl2_build_bbox (sqlite3 * sqlite, int srid, double minx,
 				    double miny, double maxx, double maxy,
@@ -1994,7 +2034,8 @@ extern "C"
     RL2_PRIVATE int rl2_delta_decode (unsigned char *buffer, int size,
 				      int distance);
 
-    RL2_PRIVATE rl2PrivVariantValuePtr rl2_create_variant_int (const char *name,
+    RL2_PRIVATE rl2PrivVariantValuePtr rl2_create_variant_int (const char
+							       *name,
 							       sqlite3_int64
 							       value);
 
@@ -2016,10 +2057,12 @@ extern "C"
     RL2_PRIVATE void rl2_destroy_variant_value (rl2PrivVariantValuePtr value);
 
     RL2_PRIVATE void rl2_draw_vector_feature (void *ctx, sqlite3 * handle,
-					      rl2VectorSymbolizerPtr symbolizer,
-					      int height, double minx,
-					      double miny, double x_res,
-					      double y_res,
+					      const void *priv_data,
+					      rl2VectorSymbolizerPtr
+					      symbolizer, int height,
+					      double minx, double miny,
+					      double maxx, double maxy,
+					      double x_res, double y_res,
 					      rl2GeometryPtr geom,
 					      rl2VariantArrayPtr variant);
 
@@ -2038,11 +2081,15 @@ extern "C"
     RL2_PRIVATE int rl2_serialize_ring (rl2RingPtr ring, unsigned char **blob,
 					int *blob_sz);
 
+    RL2_PRIVATE int rl2_serialize_ring_as_linestring (rl2RingPtr ring,
+						      unsigned char **blob,
+						      int *blob_sz);
+
     RL2_PRIVATE double rl2_compute_curve_length (rl2GeometryPtr geom);
 
     RL2_PRIVATE rl2GeometryPtr
-	rl2_curve_substring (sqlite3 * handle, rl2GeometryPtr geom, double from,
-			     double to);
+	rl2_curve_substring (sqlite3 * handle, rl2GeometryPtr geom,
+			     double from, double to);
 
     RL2_PRIVATE rl2GeometryPtr rl2_clone_curve (rl2GeometryPtr in);
 
@@ -2057,6 +2104,21 @@ extern "C"
     RL2_PRIVATE int rl2_get_font_from_dbms (sqlite3 * handle,
 					    const char *facename,
 					    unsigned char **font, int *font_sz);
+
+    RL2_PRIVATE rl2LinestringPtr rl2_linestring_to_image (rl2LinestringPtr line,
+							  int height,
+							  double minx,
+							  double miny,
+							  double x_res,
+							  double y_res);
+
+    RL2_PRIVATE rl2RingPtr rl2_ring_to_image (rl2RingPtr ring, int height,
+					      double minx, double miny,
+					      double x_res, double y_res);
+
+    RL2_PRIVATE void rl2DestroyLinestring (rl2LinestringPtr ptr);
+
+    RL2_PRIVATE void rl2DestroyRing (rl2RingPtr ptr);
 
 #ifdef __cplusplus
 }

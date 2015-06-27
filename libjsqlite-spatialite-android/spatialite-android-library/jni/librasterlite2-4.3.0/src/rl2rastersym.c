@@ -694,7 +694,8 @@ copy_int8_raw_mono_pixels (const char *buffer,
 			{
 			    /* opaque pixel */
 			    p_out =
-				mono_int8_pixel_handler (p_in, p_out, mono_band,
+				mono_int8_pixel_handler (p_in, p_out,
+							 mono_band,
 							 mono_handling);
 			}
 		  }
@@ -711,7 +712,8 @@ copy_int8_raw_mono_pixels (const char *buffer,
 			{
 			    /* opaque pixel */
 			    p_out =
-				mono_int8_pixel_handler (p_in, p_out, mono_band,
+				mono_int8_pixel_handler (p_in, p_out,
+							 mono_band,
 							 mono_handling);
 			}
 		      else
@@ -762,7 +764,8 @@ copy_uint8_raw_pixels (const unsigned char *buffer, const unsigned char *mask,
 	      ignore_no_data = 1;
 	  if (nbands != num_bands)
 	      ignore_no_data = 1;
-	  if (sample_type == RL2_SAMPLE_1_BIT || sample_type == RL2_SAMPLE_2_BIT
+	  if (sample_type == RL2_SAMPLE_1_BIT
+	      || sample_type == RL2_SAMPLE_2_BIT
 	      || sample_type == RL2_SAMPLE_4_BIT
 	      || sample_type == RL2_SAMPLE_UINT8)
 	      ;
@@ -881,12 +884,13 @@ static void
 copy_uint8_raw_selected_pixels (const unsigned char *buffer,
 				const unsigned char *mask,
 				unsigned char *outbuf, unsigned short width,
-				unsigned short height, unsigned char num_bands,
-				double x_res, double y_res, double minx,
-				double maxy, double tile_minx, double tile_maxy,
+				unsigned short height,
+				unsigned char num_bands, double x_res,
+				double y_res, double minx, double maxy,
+				double tile_minx, double tile_maxy,
 				unsigned short tile_width,
-				unsigned short tile_height, rl2PixelPtr no_data,
-				unsigned char red_band,
+				unsigned short tile_height,
+				rl2PixelPtr no_data, unsigned char red_band,
 				unsigned char green_band,
 				unsigned char blue_band,
 				rl2BandHandlingPtr red_handling,
@@ -969,7 +973,8 @@ copy_uint8_raw_selected_pixels (const unsigned char *buffer,
 			{
 			    /* opaque pixel */
 			    p_out =
-				mono_uint8_pixel_handler (p_in, p_out, red_band,
+				mono_uint8_pixel_handler (p_in, p_out,
+							  red_band,
 							  red_handling);
 			    p_out =
 				mono_uint8_pixel_handler (p_in, p_out,
@@ -997,7 +1002,8 @@ copy_uint8_raw_selected_pixels (const unsigned char *buffer,
 			{
 			    /* opaque pixel */
 			    p_out =
-				mono_uint8_pixel_handler (p_in, p_out, red_band,
+				mono_uint8_pixel_handler (p_in, p_out,
+							  red_band,
 							  red_handling);
 			    p_out =
 				mono_uint8_pixel_handler (p_in, p_out,
@@ -1024,9 +1030,10 @@ copy_uint8_raw_mono_pixels (const unsigned char *buffer,
 			    const unsigned char *mask, unsigned char *outbuf,
 			    unsigned short width, unsigned short height,
 			    unsigned char out_num_bands,
-			    unsigned char num_bands, double x_res, double y_res,
-			    double minx, double maxy, double tile_minx,
-			    double tile_maxy, unsigned short tile_width,
+			    unsigned char num_bands, double x_res,
+			    double y_res, double minx, double maxy,
+			    double tile_minx, double tile_maxy,
+			    unsigned short tile_width,
 			    unsigned short tile_height, rl2PixelPtr no_data,
 			    unsigned char mono_band,
 			    rl2BandHandlingPtr mono_handling)
@@ -1397,13 +1404,13 @@ copy_int16_raw_mono_pixels (const short *buffer,
 }
 
 static void
-copy_uint16_raw_pixels (const unsigned short *buffer, const unsigned char *mask,
-			unsigned short *outbuf, unsigned short width,
-			unsigned short height, unsigned char num_bands,
-			double x_res, double y_res, double minx, double maxy,
-			double tile_minx, double tile_maxy,
-			unsigned short tile_width, unsigned short tile_height,
-			rl2PixelPtr no_data)
+copy_uint16_raw_pixels (const unsigned short *buffer,
+			const unsigned char *mask, unsigned short *outbuf,
+			unsigned short width, unsigned short height,
+			unsigned char num_bands, double x_res, double y_res,
+			double minx, double maxy, double tile_minx,
+			double tile_maxy, unsigned short tile_width,
+			unsigned short tile_height, rl2PixelPtr no_data)
 {
 /* copying UINT16 raw pixels from the DBMS tile into the output image */
     int x;
@@ -1534,10 +1541,11 @@ static void
 copy_uint16_raw_selected_pixels (const unsigned short *buffer,
 				 const unsigned char *mask,
 				 unsigned char *outbuf, unsigned short width,
-				 unsigned short height, unsigned char num_bands,
-				 double x_res, double y_res, double minx,
-				 double maxy, double tile_minx,
-				 double tile_maxy, unsigned short tile_width,
+				 unsigned short height,
+				 unsigned char num_bands, double x_res,
+				 double y_res, double minx, double maxy,
+				 double tile_minx, double tile_maxy,
+				 unsigned short tile_width,
 				 unsigned short tile_height,
 				 rl2PixelPtr no_data, unsigned char red_band,
 				 unsigned char green_band,
@@ -3079,8 +3087,8 @@ build_triple_band_handling (rl2PrivRasterSymbolizerPtr style,
 		      r->colorMap = NULL;
 		      r->contrastEnhancement =
 			  RL2_CONTRAST_ENHANCEMENT_NORMALIZE;
-		      compute_stretching (band, &(r->minValue), &(r->maxValue),
-					  &(r->scaleFactor));
+		      compute_stretching (band, &(r->minValue),
+					  &(r->maxValue), &(r->scaleFactor));
 		  }
 		else if (style->contrastEnhancement ==
 			 RL2_CONTRAST_ENHANCEMENT_NONE)
@@ -3165,8 +3173,8 @@ build_triple_band_handling (rl2PrivRasterSymbolizerPtr style,
 		      g->colorMap = NULL;
 		      g->contrastEnhancement =
 			  RL2_CONTRAST_ENHANCEMENT_NORMALIZE;
-		      compute_stretching (band, &(g->minValue), &(g->maxValue),
-					  &(g->scaleFactor));
+		      compute_stretching (band, &(g->minValue),
+					  &(g->maxValue), &(g->scaleFactor));
 		  }
 		else if (style->contrastEnhancement ==
 			 RL2_CONTRAST_ENHANCEMENT_NONE)
@@ -3251,8 +3259,8 @@ build_triple_band_handling (rl2PrivRasterSymbolizerPtr style,
 		      b->colorMap = NULL;
 		      b->contrastEnhancement =
 			  RL2_CONTRAST_ENHANCEMENT_NORMALIZE;
-		      compute_stretching (band, &(b->minValue), &(b->maxValue),
-					  &(b->scaleFactor));
+		      compute_stretching (band, &(b->minValue),
+					  &(b->maxValue), &(b->scaleFactor));
 		  }
 		else if (style->contrastEnhancement ==
 			 RL2_CONTRAST_ENHANCEMENT_NONE)
@@ -3603,8 +3611,8 @@ build_mono_band_handling (rl2PrivRasterSymbolizerPtr style,
 		      g->colorMap = NULL;
 		      g->contrastEnhancement =
 			  RL2_CONTRAST_ENHANCEMENT_NORMALIZE;
-		      compute_stretching (band, &(g->minValue), &(g->maxValue),
-					  &(g->scaleFactor));
+		      compute_stretching (band, &(g->minValue),
+					  &(g->maxValue), &(g->scaleFactor));
 		  }
 		else if (style->contrastEnhancement ==
 			 RL2_CONTRAST_ENHANCEMENT_NONE)
@@ -3897,9 +3905,10 @@ do_copy_raw_selected_pixels (rl2PrivRasterPtr rst, unsigned char *outbuf,
 			     unsigned int width, unsigned int height,
 			     double x_res, double y_res, double minx,
 			     double maxy, double tile_minx, double tile_maxy,
-			     unsigned int tile_width, unsigned int tile_height,
-			     rl2PixelPtr no_data, unsigned char red_band,
-			     unsigned char green_band, unsigned char blue_band,
+			     unsigned int tile_width,
+			     unsigned int tile_height, rl2PixelPtr no_data,
+			     unsigned char red_band, unsigned char green_band,
+			     unsigned char blue_band,
 			     rl2BandHandlingPtr red_handling,
 			     rl2BandHandlingPtr green_handling,
 			     rl2BandHandlingPtr blue_handling)
@@ -4163,8 +4172,9 @@ do_copy_raw_pixels (rl2PrivRasterPtr rst, unsigned char *outbuf,
 		    unsigned int width, unsigned int height,
 		    unsigned char sample_type, unsigned char num_bands,
 		    double x_res, double y_res, double minx, double maxy,
-		    double tile_minx, double tile_maxy, unsigned int tile_width,
-		    unsigned int tile_height, rl2PixelPtr no_data)
+		    double tile_minx, double tile_maxy,
+		    unsigned int tile_width, unsigned int tile_height,
+		    rl2PixelPtr no_data)
 {
 
 
@@ -4185,7 +4195,8 @@ do_copy_raw_pixels (rl2PrivRasterPtr rst, unsigned char *outbuf,
 				 tile_maxy, tile_width, tile_height, no_data);
 	  return 1;
       case RL2_SAMPLE_UINT16:
-	  copy_uint16_raw_pixels ((const unsigned short *) (rst->rasterBuffer),
+	  copy_uint16_raw_pixels ((const unsigned short
+				   *) (rst->rasterBuffer),
 				  (const unsigned char *) (rst->maskBuffer),
 				  (unsigned short *) outbuf, width, height,
 				  num_bands, x_res, y_res, minx, maxy,
@@ -4226,8 +4237,9 @@ do_copy_raw_pixels (rl2PrivRasterPtr rst, unsigned char *outbuf,
 	  copy_uint8_raw_pixels ((const unsigned char *) (rst->rasterBuffer),
 				 (const unsigned char *) (rst->maskBuffer),
 				 (unsigned char *) outbuf, width, height,
-				 num_bands, x_res, y_res, minx, maxy, tile_minx,
-				 tile_maxy, tile_width, tile_height, no_data);
+				 num_bands, x_res, y_res, minx, maxy,
+				 tile_minx, tile_maxy, tile_width,
+				 tile_height, no_data);
 	  return 1;
       };
     return 0;
@@ -4238,9 +4250,10 @@ rl2_copy_raw_pixels (rl2RasterPtr raster, unsigned char *outbuf,
 		     unsigned int width,
 		     unsigned int height, unsigned char sample_type,
 		     unsigned char num_bands, unsigned char auto_ndvi,
-		     unsigned char red_band_index, unsigned char nir_band_index,
-		     double x_res, double y_res, double minx, double maxy,
-		     double tile_minx, double tile_maxy, rl2PixelPtr no_data,
+		     unsigned char red_band_index,
+		     unsigned char nir_band_index, double x_res, double y_res,
+		     double minx, double maxy, double tile_minx,
+		     double tile_maxy, rl2PixelPtr no_data,
 		     rl2RasterSymbolizerPtr style, rl2RasterStatisticsPtr stats)
 {
 /* copying raw pixels into the output buffer */
@@ -4256,8 +4269,8 @@ rl2_copy_raw_pixels (rl2RasterPtr raster, unsigned char *outbuf,
 	  int yes_no;
 	  int categorize;
 	  int interpolate;
-	  if (rl2_is_raster_symbolizer_triple_band_selected (style, &yes_no) ==
-	      RL2_OK)
+	  if (rl2_is_raster_symbolizer_triple_band_selected (style, &yes_no)
+	      == RL2_OK)
 	    {
 		if ((rst->sampleType == RL2_SAMPLE_UINT8
 		     || rst->sampleType == RL2_SAMPLE_UINT16)
@@ -4291,10 +4304,11 @@ rl2_copy_raw_pixels (rl2RasterPtr raster, unsigned char *outbuf,
 			  || blue_handling == NULL)
 			  return 0;
 		      if (do_copy_raw_selected_pixels
-			  (rst, outbuf, width, height, x_res, y_res, minx, maxy,
-			   tile_minx, tile_maxy, tile_width, tile_height,
-			   no_data, red_band, green_band, blue_band,
-			   red_handling, green_handling, blue_handling))
+			  (rst, outbuf, width, height, x_res, y_res, minx,
+			   maxy, tile_minx, tile_maxy, tile_width,
+			   tile_height, no_data, red_band, green_band,
+			   blue_band, red_handling, green_handling,
+			   blue_handling))
 			  return 1;
 		      if (red_handling != NULL)
 			  free (red_handling);
@@ -4320,10 +4334,10 @@ rl2_copy_raw_pixels (rl2RasterPtr raster, unsigned char *outbuf,
 		      if (ndvi_handling == NULL)
 			  return 0;
 		      if (do_auto_ndvi_pixels
-			  (rst, outbuf, width, height, num_bands, x_res, y_res,
-			   minx, maxy, tile_minx, tile_maxy, tile_width,
-			   tile_height, no_data, red_band_index, nir_band_index,
-			   ndvi_handling))
+			  (rst, outbuf, width, height, num_bands, x_res,
+			   y_res, minx, maxy, tile_minx, tile_maxy,
+			   tile_width, tile_height, no_data, red_band_index,
+			   nir_band_index, ndvi_handling))
 			  return 1;
 		      if (ndvi_handling != NULL)
 			  destroy_ndvi_handling (ndvi_handling);
@@ -4348,9 +4362,10 @@ rl2_copy_raw_pixels (rl2RasterPtr raster, unsigned char *outbuf,
 		      if (mono_handling == NULL)
 			  return 0;
 		      if (do_copy_raw_mono_pixels
-			  (rst, outbuf, width, height, num_bands, x_res, y_res,
-			   minx, maxy, tile_minx, tile_maxy, tile_width,
-			   tile_height, no_data, mono_band, mono_handling))
+			  (rst, outbuf, width, height, num_bands, x_res,
+			   y_res, minx, maxy, tile_minx, tile_maxy,
+			   tile_width, tile_height, no_data, mono_band,
+			   mono_handling))
 			  return 1;
 		      if (mono_handling != NULL)
 			  destroy_mono_handling (mono_handling);
@@ -4359,8 +4374,8 @@ rl2_copy_raw_pixels (rl2RasterPtr raster, unsigned char *outbuf,
       }
 
     if (do_copy_raw_pixels
-	(rst, outbuf, width, height, sample_type, num_bands, x_res, y_res, minx,
-	 maxy, tile_minx, tile_maxy, tile_width, tile_height, no_data))
+	(rst, outbuf, width, height, sample_type, num_bands, x_res, y_res,
+	 minx, maxy, tile_minx, tile_maxy, tile_width, tile_height, no_data))
 	return 1;
 
     return 0;
@@ -4455,9 +4470,9 @@ get_uint8_ennuple (const unsigned char *rawbuf, unsigned short row,
 }
 
 static void
-get_int16_ennuple (const short *rawbuf, unsigned short row, unsigned short col,
-		   unsigned short row_stride, rl2PixelPtr no_data,
-		   double ennuple[], int *has_no_data)
+get_int16_ennuple (const short *rawbuf, unsigned short row,
+		   unsigned short col, unsigned short row_stride,
+		   rl2PixelPtr no_data, double ennuple[], int *has_no_data)
 {
 /* extracting a 3x3 "super-pixel" - INT16 */
     const short *p_in;
@@ -4631,9 +4646,9 @@ get_uint32_ennuple (const unsigned int *rawbuf, unsigned short row,
 }
 
 static void
-get_float_ennuple (const float *rawbuf, unsigned short row, unsigned short col,
-		   unsigned short row_stride, rl2PixelPtr no_data,
-		   double ennuple[], int *has_no_data)
+get_float_ennuple (const float *rawbuf, unsigned short row,
+		   unsigned short col, unsigned short row_stride,
+		   rl2PixelPtr no_data, double ennuple[], int *has_no_data)
 {
 /* extracting a 3x3 "super-pixel" - FLOAT */
     const float *p_in;
@@ -5000,12 +5015,11 @@ rl2_build_shaded_relief_mask (sqlite3 * handle, int max_threads,
     xtiles = sqlite3_mprintf ("%s_tiles", coverage);
     xxtiles = rl2_double_quoted_sql (xtiles);
     sql =
-	sqlite3_mprintf ("SELECT tile_id, MbrMinX(geometry), MbrMaxY(geometry) "
-			 "FROM \"%s\" "
-			 "WHERE pyramid_level = ? AND ROWID IN ( "
-			 "SELECT ROWID FROM SpatialIndex WHERE f_table_name = %Q "
-			 "AND search_frame = BuildMBR(?, ?, ?, ?))", xxtiles,
-			 xtiles);
+	sqlite3_mprintf
+	("SELECT tile_id, MbrMinX(geometry), MbrMaxY(geometry) "
+	 "FROM \"%s\" " "WHERE pyramid_level = ? AND ROWID IN ( "
+	 "SELECT ROWID FROM SpatialIndex WHERE f_table_name = %Q "
+	 "AND search_frame = BuildMBR(?, ?, ?, ?))", xxtiles, xtiles);
     sqlite3_free (xtiles);
     free (xxtiles);
     ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt_tiles, NULL);
@@ -5116,9 +5130,9 @@ rl2_build_shaded_relief_mask (sqlite3 * handle, int max_threads,
 		for (col = 0; col < width; col++)
 		    *p_out++ =
 			shaded_relief_value (relief_factor, scale_factor,
-					     altRadians, azRadians, rawbuf, row,
-					     col, row_stride, sample_type,
-					     no_data);
+					     altRadians, azRadians, rawbuf,
+					     row, col, row_stride,
+					     sample_type, no_data);
 	    }
       }
     else

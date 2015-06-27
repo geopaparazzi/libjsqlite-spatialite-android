@@ -85,8 +85,9 @@ get_coverage_sample_bands (sqlite3 * sqlite, const char *coverage,
     unsigned char xnum_bands = RL2_BANDS_UNKNOWN;
 
     sql =
-	sqlite3_mprintf ("SELECT sample_type, num_bands FROM raster_coverages "
-			 "WHERE Lower(coverage_name) = Lower(%Q)", coverage);
+	sqlite3_mprintf
+	("SELECT sample_type, num_bands FROM raster_coverages "
+	 "WHERE Lower(coverage_name) = Lower(%Q)", coverage);
     ret = sqlite3_get_table (sqlite, sql, &results, &rows, &columns, NULL);
     sqlite3_free (sql);
     if (ret != SQLITE_OK)
@@ -738,14 +739,15 @@ rl2_build_bbox (sqlite3 * handle, int srid, double minx, double miny,
 }
 
 static int
-do_insert_wms_tile (sqlite3 * handle, unsigned char *blob_odd, int blob_odd_sz,
-		    unsigned char *blob_even, int blob_even_sz,
-		    sqlite3_int64 section_id, int srid, double res_x,
-		    double res_y, unsigned int tile_w, unsigned int tile_h,
-		    double miny, double maxx, double tile_minx,
-		    double tile_miny, double tile_maxx, double tile_maxy,
-		    rl2PalettePtr aux_palette, rl2PixelPtr no_data,
-		    sqlite3_stmt * stmt_tils, sqlite3_stmt * stmt_data,
+do_insert_wms_tile (sqlite3 * handle, unsigned char *blob_odd,
+		    int blob_odd_sz, unsigned char *blob_even,
+		    int blob_even_sz, sqlite3_int64 section_id, int srid,
+		    double res_x, double res_y, unsigned int tile_w,
+		    unsigned int tile_h, double miny, double maxx,
+		    double tile_minx, double tile_miny, double tile_maxx,
+		    double tile_maxy, rl2PalettePtr aux_palette,
+		    rl2PixelPtr no_data, sqlite3_stmt * stmt_tils,
+		    sqlite3_stmt * stmt_data,
 		    rl2RasterStatisticsPtr section_stats)
 {
 /* INSERTing the tile */
@@ -1003,8 +1005,9 @@ rl2_do_insert_section (sqlite3 * handle, const char *src_path,
 		       const char *section, int srid, unsigned int width,
 		       unsigned int height, double minx, double miny,
 		       double maxx, double maxy, char *xml_summary,
-		       int section_paths, int section_md5, int section_summary,
-		       sqlite3_stmt * stmt_sect, sqlite3_int64 * id)
+		       int section_paths, int section_md5,
+		       int section_summary, sqlite3_stmt * stmt_sect,
+		       sqlite3_int64 * id)
 {
 /* INSERTing the section */
     int ret;
@@ -1055,8 +1058,8 @@ rl2_do_insert_section (sqlite3 * handle, const char *src_path,
       }
     sqlite3_bind_int (stmt_sect, 5, width);
     sqlite3_bind_int (stmt_sect, 6, height);
-    if (rl2_build_bbox (handle, srid, minx, miny, maxx, maxy, &blob, &blob_size)
-	!= RL2_OK)
+    if (rl2_build_bbox
+	(handle, srid, minx, miny, maxx, maxy, &blob, &blob_size) != RL2_OK)
 	goto error;
     sqlite3_bind_blob (stmt_sect, 7, blob, blob_size, free);
     ret = sqlite3_step (stmt_sect);
@@ -1217,8 +1220,8 @@ insert_wms_tile (InsertWmsPtr ptr, int *first,
     double base_res_x;
     double base_res_y;
 
-    if (rl2_get_coverage_resolution (ptr->coverage, &base_res_x, &base_res_y) !=
-	RL2_OK)
+    if (rl2_get_coverage_resolution (ptr->coverage, &base_res_x, &base_res_y)
+	!= RL2_OK)
 	goto error;
     if (*first)
       {
@@ -1227,8 +1230,9 @@ insert_wms_tile (InsertWmsPtr ptr, int *first,
 	  if (!rl2_do_insert_section
 	      (ptr->sqlite, "WMS Service", ptr->sect_name, ptr->srid,
 	       ptr->width, ptr->height, ptr->minx, ptr->miny, ptr->maxx,
-	       ptr->maxy, ptr->xml_summary, ptr->sectionPaths, ptr->sectionMD5,
-	       ptr->sectionSummary, ptr->stmt_sect, section_id))
+	       ptr->maxy, ptr->xml_summary, ptr->sectionPaths,
+	       ptr->sectionMD5, ptr->sectionSummary, ptr->stmt_sect,
+	       section_id))
 	      goto error;
 	  *section_stats =
 	      rl2_create_raster_statistics (ptr->sample_type, ptr->num_bands);
@@ -1275,9 +1279,9 @@ insert_wms_tile (InsertWmsPtr ptr, int *first,
     tile_miny = tile_maxy - ptr->tileh;
     if (!do_insert_wms_tile
 	(ptr->sqlite, blob_odd, blob_odd_sz, blob_even, blob_even_sz,
-	 *section_id, ptr->srid, ptr->horz_res, ptr->vert_res, ptr->tile_width,
-	 ptr->tile_height, ptr->miny, ptr->maxx, tile_minx, tile_miny,
-	 tile_maxx, tile_maxy, NULL, ptr->no_data, ptr->stmt_tils,
+	 *section_id, ptr->srid, ptr->horz_res, ptr->vert_res,
+	 ptr->tile_width, ptr->tile_height, ptr->miny, ptr->maxx, tile_minx,
+	 tile_miny, tile_maxx, tile_maxy, NULL, ptr->no_data, ptr->stmt_tils,
 	 ptr->stmt_data, *section_stats))
 	goto error;
     blob_odd = NULL;
@@ -1405,8 +1409,8 @@ rl2_find_best_resolution_level (sqlite3 * handle, const char *coverage,
 	      ("SELECT pyramid_level, x_resolution_1_8, y_resolution_1_8, "
 	       "x_resolution_1_4, y_resolution_1_4, x_resolution_1_2, y_resolution_1_2, "
 	       "x_resolution_1_1, y_resolution_1_1 FROM \"%s\" "
-	       "WHERE section_id = %s ORDER BY pyramid_level DESC", xxcoverage,
-	       sctn);
+	       "WHERE section_id = %s ORDER BY pyramid_level DESC",
+	       xxcoverage, sctn);
       }
     else
       {
@@ -1616,11 +1620,11 @@ rgb_to_rgba (unsigned int width, unsigned int height, unsigned char *rgb)
 
 RL2_PRIVATE int
 get_payload_from_monochrome_opaque (unsigned int width, unsigned int height,
-				    sqlite3 * handle, double minx, double miny,
-				    double maxx, double maxy, int srid,
-				    unsigned char *pixels, unsigned char format,
-				    int quality, unsigned char **image,
-				    int *image_sz)
+				    sqlite3 * handle, double minx,
+				    double miny, double maxx, double maxy,
+				    int srid, unsigned char *pixels,
+				    unsigned char format, int quality,
+				    unsigned char **image, int *image_sz)
 {
 /* input: Monochrome    output: Grayscale */
     int ret;
@@ -1664,8 +1668,8 @@ get_payload_from_monochrome_opaque (unsigned int width, unsigned int height,
 	  if (srid > 0)
 	    {
 		if (rl2_gray_to_geotiff
-		    (width, height, handle, minx, miny, maxx, maxy, srid, gray,
-		     image, image_sz) != RL2_OK)
+		    (width, height, handle, minx, miny, maxx, maxy, srid,
+		     gray, image, image_sz) != RL2_OK)
 		    goto error;
 	    }
 	  else
@@ -1833,14 +1837,14 @@ get_payload_from_palette_opaque (unsigned int width, unsigned int height,
 		if (srid > 0)
 		  {
 		      if (rl2_rgb_to_geotiff
-			  (width, height, handle, minx, miny, maxx, maxy, srid,
-			   rgb, image, image_sz) != RL2_OK)
+			  (width, height, handle, minx, miny, maxx, maxy,
+			   srid, rgb, image, image_sz) != RL2_OK)
 			  goto error;
 		  }
 		else
 		  {
-		      if (rl2_rgb_to_tiff (width, height, rgb, image, image_sz)
-			  != RL2_OK)
+		      if (rl2_rgb_to_tiff
+			  (width, height, rgb, image, image_sz) != RL2_OK)
 			  goto error;
 		  }
 	    }
@@ -1896,8 +1900,8 @@ get_payload_from_palette_opaque (unsigned int width, unsigned int height,
 		if (srid > 0)
 		  {
 		      if (rl2_gray_to_geotiff
-			  (width, height, handle, minx, miny, maxx, maxy, srid,
-			   gray, image, image_sz) != RL2_OK)
+			  (width, height, handle, minx, miny, maxx, maxy,
+			   srid, gray, image, image_sz) != RL2_OK)
 			  goto error;
 		  }
 		else
@@ -2074,9 +2078,9 @@ RL2_PRIVATE int
 get_payload_from_grayscale_opaque (unsigned int width, unsigned int height,
 				   sqlite3 * handle, double minx, double miny,
 				   double maxx, double maxy, int srid,
-				   unsigned char *pixels, unsigned char format,
-				   int quality, unsigned char **image,
-				   int *image_sz)
+				   unsigned char *pixels,
+				   unsigned char format, int quality,
+				   unsigned char **image, int *image_sz)
 {
 /* input: Grayscale    output: Grayscale */
     int ret;
@@ -2084,8 +2088,8 @@ get_payload_from_grayscale_opaque (unsigned int width, unsigned int height,
 
     if (format == RL2_OUTPUT_FORMAT_JPEG)
       {
-	  if (rl2_gray_to_jpeg (width, height, pixels, quality, image, image_sz)
-	      != RL2_OK)
+	  if (rl2_gray_to_jpeg
+	      (width, height, pixels, quality, image, image_sz) != RL2_OK)
 	      goto error;
       }
     else if (format == RL2_OUTPUT_FORMAT_PNG)
@@ -2105,8 +2109,8 @@ get_payload_from_grayscale_opaque (unsigned int width, unsigned int height,
 	    }
 	  else
 	    {
-		if (rl2_gray_to_tiff (width, height, pixels, image, image_sz) !=
-		    RL2_OK)
+		if (rl2_gray_to_tiff (width, height, pixels, image, image_sz)
+		    != RL2_OK)
 		    goto error;
 	    }
       }
@@ -2196,8 +2200,8 @@ get_payload_from_rgb_opaque (unsigned int width, unsigned int height,
 
     if (format == RL2_OUTPUT_FORMAT_JPEG)
       {
-	  if (rl2_rgb_to_jpeg (width, height, pixels, quality, image, image_sz)
-	      != RL2_OK)
+	  if (rl2_rgb_to_jpeg
+	      (width, height, pixels, quality, image, image_sz) != RL2_OK)
 	      goto error;
       }
     else if (format == RL2_OUTPUT_FORMAT_PNG)
@@ -2216,8 +2220,8 @@ get_payload_from_rgb_opaque (unsigned int width, unsigned int height,
 	    }
 	  else
 	    {
-		if (rl2_rgb_to_tiff (width, height, pixels, image, image_sz) !=
-		    RL2_OK)
+		if (rl2_rgb_to_tiff (width, height, pixels, image, image_sz)
+		    != RL2_OK)
 		    goto error;
 	    }
       }
@@ -2248,8 +2252,8 @@ get_payload_from_rgb_transparent (unsigned int width, unsigned int height,
 				  unsigned char *pixels, unsigned char format,
 				  int quality, unsigned char **image,
 				  int *image_sz, unsigned char bg_red,
-				  unsigned char bg_green, unsigned char bg_blue,
-				  double opacity)
+				  unsigned char bg_green,
+				  unsigned char bg_blue, double opacity)
 {
 /* input: RGB    output: RGB */
     unsigned char *p_in;
@@ -2772,8 +2776,9 @@ get_rgba_from_palette_opaque (unsigned int width, unsigned int height,
 
 RL2_PRIVATE int
 get_rgba_from_palette_transparent (unsigned int width, unsigned int height,
-				   unsigned char *pixels, rl2PalettePtr palette,
-				   unsigned char *rgba, unsigned char bg_red,
+				   unsigned char *pixels,
+				   rl2PalettePtr palette, unsigned char *rgba,
+				   unsigned char bg_red,
 				   unsigned char bg_green,
 				   unsigned char bg_blue)
 {
@@ -2929,8 +2934,8 @@ get_rgba_from_grayscale_opaque (unsigned int width, unsigned int height,
 RL2_PRIVATE int
 get_rgba_from_grayscale_transparent (unsigned int width,
 				     unsigned int height,
-				     unsigned char *pixels, unsigned char *rgba,
-				     unsigned char bg_gray)
+				     unsigned char *pixels,
+				     unsigned char *rgba, unsigned char bg_gray)
 {
 /* input: Grayscale    output: Grayscale */
     unsigned char *p_in;
@@ -3892,8 +3897,8 @@ rgba_from_float (unsigned int width, unsigned int height,
 
 RL2_PRIVATE int
 rgba_from_double (unsigned int width, unsigned int height,
-		  double *pixels, unsigned char *mask, rl2PrivPixelPtr no_data,
-		  unsigned char *rgba)
+		  double *pixels, unsigned char *mask,
+		  rl2PrivPixelPtr no_data, unsigned char *rgba)
 {
 /* input: DataGrid DOUBLE   output: Grayscale */
     double *p_in;
@@ -4063,8 +4068,8 @@ get_rgba_from_datagrid_mask (unsigned int width, unsigned int height,
 	  break;
       case RL2_SAMPLE_UINT16:
 	  ret =
-	      rgba_from_uint16 (width, height, (unsigned short *) pixels, mask,
-				no_data, rgba);
+	      rgba_from_uint16 (width, height, (unsigned short *) pixels,
+				mask, no_data, rgba);
 	  break;
       case RL2_SAMPLE_INT32:
 	  ret =
@@ -4083,8 +4088,8 @@ get_rgba_from_datagrid_mask (unsigned int width, unsigned int height,
 	  break;
       case RL2_SAMPLE_DOUBLE:
 	  ret =
-	      rgba_from_double (width, height, (double *) pixels, mask, no_data,
-				rgba);
+	      rgba_from_double (width, height, (double *) pixels, mask,
+				no_data, rgba);
 	  break;
       };
     return ret;
@@ -4309,8 +4314,8 @@ get_rgba_from_multiband_mask (unsigned int width, unsigned int height,
       case RL2_SAMPLE_UINT16:
 	  ret =
 	      rgba_from_multi_uint16 (width, height, num_bands,
-				      (unsigned short *) pixels, mask, no_data,
-				      rgba);
+				      (unsigned short *) pixels, mask,
+				      no_data, rgba);
 	  break;
       };
     return ret;
@@ -4361,8 +4366,8 @@ get_payload_from_gray_rgba_opaque (unsigned int width, unsigned int height,
 	  if (srid > 0)
 	    {
 		if (rl2_gray_to_geotiff
-		    (width, height, handle, minx, miny, maxx, maxy, srid, gray,
-		     image, image_sz) != RL2_OK)
+		    (width, height, handle, minx, miny, maxx, maxy, srid,
+		     gray, image, image_sz) != RL2_OK)
 		    goto error;
 	    }
 	  else
@@ -4468,8 +4473,8 @@ get_payload_from_rgb_rgba_opaque (unsigned int width, unsigned int height,
 
     if (format == RL2_OUTPUT_FORMAT_JPEG)
       {
-	  if (rl2_rgb_to_jpeg (width, height, rgb, quality, image, image_sz) !=
-	      RL2_OK)
+	  if (rl2_rgb_to_jpeg (width, height, rgb, quality, image, image_sz)
+	      != RL2_OK)
 	      goto error;
       }
     else if (format == RL2_OUTPUT_FORMAT_PNG)
@@ -4515,7 +4520,8 @@ get_payload_from_rgb_rgba_opaque (unsigned int width, unsigned int height,
 RL2_PRIVATE int
 get_payload_from_rgb_rgba_transparent (unsigned int width,
 				       unsigned int height,
-				       unsigned char *rgb, unsigned char *alpha,
+				       unsigned char *rgb,
+				       unsigned char *alpha,
 				       unsigned char format, int quality,
 				       unsigned char **image, int *image_sz,
 				       double opacity, int half_transparency)

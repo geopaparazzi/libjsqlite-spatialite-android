@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4
 
-AUTOMAKE_OPTIONS = dist-zip
+AUTOMAKE_OPTIONS = dist-zip foreign
 
 EXTRA_DIST = makefile.vc nmake.opt Android.mk Android_4.3.0.mk \
 	spatialite-4.3.0.mk mainpage.doxy README.coverage \

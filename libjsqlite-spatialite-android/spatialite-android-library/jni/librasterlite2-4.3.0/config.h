@@ -165,7 +165,7 @@
 #define PACKAGE_NAME "librasterlite2"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "librasterlite2 1.0.0-rc1"
+#define PACKAGE_STRING "librasterlite2 1.0.0-devel"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "librasterlite2"
@@ -174,13 +174,13 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.0.0-rc1"
+#define PACKAGE_VERSION "1.0.0-devel"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Should contain a text-string describing the intended target CPU */
-/* #define TARGET_CPU "x86_64-linux-gnu" */
+#define TARGET_CPU "x86_64-linux-gnu"
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #define TIME_WITH_SYS_TIME 1
@@ -189,7 +189,7 @@
 /* #undef TM_IN_SYS_TIME */
 
 /* Version number of package */
-#define VERSION "1.0.0-rc1"
+#define VERSION "1.0.0-devel"
 
 /* Must be =64 in order to enable huge-file support. */
 #define _FILE_OFFSET_BITS 64

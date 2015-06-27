@@ -292,8 +292,9 @@ copy_monochrome (unsigned char *rgba, unsigned int width, unsigned int height,
 
 static void
 copy_palette (unsigned char *rgba, unsigned int width, unsigned int height,
-	      unsigned char *inbuf, rl2PalettePtr palette, unsigned char bg_red,
-	      unsigned char bg_green, unsigned char bg_blue)
+	      unsigned char *inbuf, rl2PalettePtr palette,
+	      unsigned char bg_red, unsigned char bg_green,
+	      unsigned char bg_blue)
 {
 /* copying from Palette to RGBA */
     unsigned int x;
@@ -454,8 +455,8 @@ aux_render_composed_image (struct aux_renderer *aux, unsigned char *aggreg_rgba)
 	  if (aux->out_pixel == RL2_PIXEL_MONOCHROME)
 	    {
 		/* Monochrome */
-		copy_monochrome (aggreg_rgba, aux->base_width, aux->base_height,
-				 aux->outbuf);
+		copy_monochrome (aggreg_rgba, aux->base_width,
+				 aux->base_height, aux->outbuf);
 		aux->outbuf = NULL;
 	    }
 	  else if (aux->out_pixel == RL2_PIXEL_PALETTE)
@@ -469,8 +470,8 @@ aux_render_composed_image (struct aux_renderer *aux, unsigned char *aggreg_rgba)
 	  else if (aux->out_pixel == RL2_PIXEL_GRAYSCALE)
 	    {
 		/* Grayscale */
-		copy_grayscale (aggreg_rgba, aux->base_width, aux->base_height,
-				aux->outbuf, aux->bg_red);
+		copy_grayscale (aggreg_rgba, aux->base_width,
+				aux->base_height, aux->outbuf, aux->bg_red);
 		aux->outbuf = NULL;
 	    }
 	  else
@@ -611,8 +612,8 @@ rl2_aux_render_image (struct aux_renderer *aux, unsigned char **ximage,
 		      if (!get_payload_from_monochrome_opaque
 			  (aux->base_width, aux->base_height, aux->sqlite,
 			   aux->minx, aux->miny, aux->maxx, aux->maxy,
-			   aux->srid, aux->outbuf, aux->format_id, aux->quality,
-			   &image, &image_size))
+			   aux->srid, aux->outbuf, aux->format_id,
+			   aux->quality, &image, &image_size))
 			{
 			    aux->outbuf = NULL;
 			    goto error;
@@ -640,8 +641,8 @@ rl2_aux_render_image (struct aux_renderer *aux, unsigned char **ximage,
 		      if (!get_payload_from_palette_opaque
 			  (aux->base_width, aux->base_height, aux->sqlite,
 			   aux->minx, aux->miny, aux->maxx, aux->maxy,
-			   aux->srid, aux->outbuf, aux->palette, aux->format_id,
-			   aux->quality, &image, &image_size))
+			   aux->srid, aux->outbuf, aux->palette,
+			   aux->format_id, aux->quality, &image, &image_size))
 			{
 			    aux->outbuf = NULL;
 			    goto error;
@@ -668,8 +669,8 @@ rl2_aux_render_image (struct aux_renderer *aux, unsigned char **ximage,
 		      if (!get_payload_from_grayscale_opaque
 			  (aux->base_width, aux->base_height, aux->sqlite,
 			   aux->minx, aux->miny, aux->maxx, aux->maxy,
-			   aux->srid, aux->outbuf, aux->format_id, aux->quality,
-			   &image, &image_size))
+			   aux->srid, aux->outbuf, aux->format_id,
+			   aux->quality, &image, &image_size))
 			{
 			    aux->outbuf = NULL;
 			    goto error;
@@ -697,8 +698,8 @@ rl2_aux_render_image (struct aux_renderer *aux, unsigned char **ximage,
 		      if (!get_payload_from_rgb_opaque
 			  (aux->base_width, aux->base_height, aux->sqlite,
 			   aux->minx, aux->miny, aux->maxx, aux->maxy,
-			   aux->srid, aux->outbuf, aux->format_id, aux->quality,
-			   &image, &image_size))
+			   aux->srid, aux->outbuf, aux->format_id,
+			   aux->quality, &image, &image_size))
 			{
 			    aux->outbuf = NULL;
 			    goto error;
@@ -773,8 +774,8 @@ rl2_aux_render_image (struct aux_renderer *aux, unsigned char **ximage,
 		if (aux->transparent && aux->format_id == RL2_OUTPUT_FORMAT_PNG)
 		  {
 		      if (!get_rgba_from_grayscale_transparent
-			  (aux->base_width, aux->base_height, aux->outbuf, rgba,
-			   aux->bg_red))
+			  (aux->base_width, aux->base_height, aux->outbuf,
+			   rgba, aux->bg_red))
 			{
 			    aux->outbuf = NULL;
 			    goto error;
@@ -798,8 +799,8 @@ rl2_aux_render_image (struct aux_renderer *aux, unsigned char **ximage,
 		if (aux->transparent && aux->format_id == RL2_OUTPUT_FORMAT_PNG)
 		  {
 		      if (!get_rgba_from_rgb_transparent
-			  (aux->base_width, aux->base_height, aux->outbuf, rgba,
-			   aux->bg_red, aux->bg_green, aux->bg_blue))
+			  (aux->base_width, aux->base_height, aux->outbuf,
+			   rgba, aux->bg_red, aux->bg_green, aux->bg_blue))
 			{
 			    aux->outbuf = NULL;
 			    goto error;
@@ -842,8 +843,9 @@ rl2_aux_render_image (struct aux_renderer *aux, unsigned char **ximage,
 		      if (alpha == NULL)
 			  goto error;
 		      if (!get_payload_from_gray_rgba_transparent
-			  (aux->width, aux->height, rgb, alpha, aux->format_id,
-			   aux->quality, &image, &image_size, aux->opacity))
+			  (aux->width, aux->height, rgb, alpha,
+			   aux->format_id, aux->quality, &image, &image_size,
+			   aux->opacity))
 			  goto error;
 		  }
 		else
@@ -866,8 +868,9 @@ rl2_aux_render_image (struct aux_renderer *aux, unsigned char **ximage,
 		      if (alpha == NULL)
 			  goto error;
 		      if (!get_payload_from_rgb_rgba_transparent
-			  (aux->width, aux->height, rgb, alpha, aux->format_id,
-			   aux->quality, &image, &image_size, aux->opacity, 0))
+			  (aux->width, aux->height, rgb, alpha,
+			   aux->format_id, aux->quality, &image, &image_size,
+			   aux->opacity, 0))
 			  goto error;
 		  }
 		else
@@ -982,8 +985,8 @@ aux_shaded_relief_mask (struct aux_renderer *aux, double relief_factor,
 
     if (rl2_build_shaded_relief_mask
 	(aux->sqlite, aux->max_threads, aux->coverage, relief_factor,
-	 scale_factor, aux->base_width, aux->base_height, aux->minx, aux->miny,
-	 aux->maxx, aux->maxy, aux->xx_res, aux->yy_res, &shr_mask,
+	 scale_factor, aux->base_width, aux->base_height, aux->minx,
+	 aux->miny, aux->maxx, aux->maxy, aux->xx_res, aux->yy_res, &shr_mask,
 	 &shr_size) != RL2_OK)
 	return 0;
 
@@ -1538,7 +1541,8 @@ rl2_get_raw_raster_data_mixed_resolutions (sqlite3 * handle, int max_threads,
 					   unsigned int height, double minx,
 					   double miny, double maxx,
 					   double maxy, double x_res,
-					   double y_res, unsigned char **buffer,
+					   double y_res,
+					   unsigned char **buffer,
 					   int *buf_size,
 					   rl2PalettePtr * palette,
 					   unsigned char *out_pixel,
@@ -1749,10 +1753,27 @@ rl2_get_raw_raster_data_mixed_resolutions (sqlite3 * handle, int max_threads,
     return RL2_ERROR;
 }
 
+static int
+point_bbox_matches (rl2PointPtr point, double minx, double miny, double maxx,
+		    double maxy)
+{
+/* checks if the Point is visible */
+    if (minx > point->x)
+	return 0;
+    if (maxx < point->x)
+	return 0;
+    if (miny > point->y)
+	return 0;
+    if (maxy < point->y)
+	return 0;
+    return 1;
+}
+
 static void
 draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 	     rl2PrivVectorSymbolizerPtr sym, int height, double minx,
-	     double miny, double x_res, double y_res, rl2GeometryPtr geom)
+	     double miny, double maxx, double maxy, double x_res,
+	     double y_res, rl2GeometryPtr geom)
 {
 /* drawing Point-type features */
     rl2PrivVectorSymbolizerItemPtr item;
@@ -1974,8 +1995,9 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 						      {
 							  /* attempting to recolor the External Graphic resource */
 							  rl2_graph_pattern_recolor
-							      (pattern_stroke, red,
-							       green, blue);
+							      (pattern_stroke,
+							       red, green,
+							       blue);
 						      }
 						    if (mark->stroke->opacity <=
 							0.0)
@@ -2006,8 +2028,9 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 							     norm_opacity);
 						    if (pattern_stroke != NULL)
 						      {
-							  switch (mark->
-								  stroke->linecap)
+							  switch
+							      (mark->
+							       stroke->linecap)
 							    {
 							    case RL2_STROKE_LINECAP_ROUND:
 								pen_cap =
@@ -2022,8 +2045,9 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 								    RL2_PEN_CAP_BUTT;
 								break;
 							    };
-							  switch (mark->
-								  stroke->linejoin)
+							  switch
+							      (mark->
+							       stroke->linejoin)
 							    {
 							    case RL2_STROKE_LINEJOIN_BEVEL:
 								pen_join =
@@ -2126,18 +2150,20 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 									    mark->stroke->width,
 									    pen_cap,
 									    pen_join,
-									    mark->stroke->dash_count,
-									    mark->stroke->dash_list,
-									    mark->stroke->dash_offset);
+									    mark->
+									    stroke->dash_count,
+									    mark->
+									    stroke->dash_list,
+									    mark->
+									    stroke->dash_offset);
 					      else
-						  rl2_graph_set_solid_pen (ctx,
-									   mark->stroke->red,
-									   mark->stroke->green,
-									   mark->stroke->blue,
-									   norm_opacity,
-									   mark->stroke->width,
-									   pen_cap,
-									   pen_join);
+						  rl2_graph_set_solid_pen
+						      (ctx, mark->stroke->red,
+						       mark->stroke->green,
+						       mark->stroke->blue,
+						       norm_opacity,
+						       mark->stroke->width,
+						       pen_cap, pen_join);
 					      stroke = 1;
 					  }
 				    }
@@ -2208,8 +2234,7 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 				  if (norm_opacity < 1.0)
 				      rl2_graph_pattern_transparency
 					  (pattern, norm_opacity);
-				  rl2_graph_set_pattern_brush (ctx,
-							       pattern);
+				  rl2_graph_set_pattern_brush (ctx, pattern);
 			      }
 			    else
 			      {
@@ -2223,205 +2248,275 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 		      while (point)
 			{
 			    /* drawing a POINT */
-			    double x = (point->x - minx) / x_res;
-			    double y =
-				(double) height - ((point->y - miny) / y_res);
-			    double size2 = gr->size / 2.0;
-			    double size4 = gr->size / 4.0;
-			    double size6 = gr->size / 6.0;
-			    double size13 = gr->size / 3.0;
-			    double size23 = (gr->size / 3.0) * 2.0;
-			    int i;
-			    double rads;
-			    if (size2 <= 0.0)
-				size2 = 1.0;
-			    if (size4 <= 0.0)
-				size4 = 1.0;
-			    if (size6 <= 0.0)
-				size6 = 1.0;
-			    if (size13 <= 0.0)
-				size13 = 1.0;
-			    if (size23 <= 0.0)
-				size23 = 1.0;
-			    if (is_mark)
+			    if (point_bbox_matches
+				(point, minx, miny, maxx, maxy))
 			      {
-				  /* drawing a well-known Mark */
-				  switch (well_known_type)
+				  double x = (point->x - minx) / x_res;
+				  double y =
+				      (double) height -
+				      ((point->y - miny) / y_res);
+				  double size2 = gr->size / 2.0;
+				  double size4 = gr->size / 4.0;
+				  double size6 = gr->size / 6.0;
+				  double size13 = gr->size / 3.0;
+				  double size23 = (gr->size / 3.0) * 2.0;
+				  int i;
+				  double rads;
+				  if (size2 <= 0.0)
+				      size2 = 1.0;
+				  if (size4 <= 0.0)
+				      size4 = 1.0;
+				  if (size6 <= 0.0)
+				      size6 = 1.0;
+				  if (size13 <= 0.0)
+				      size13 = 1.0;
+				  if (size23 <= 0.0)
+				      size23 = 1.0;
+				  if (is_mark)
 				    {
-				    case RL2_GRAPHIC_MARK_CIRCLE:
-					rads = 0.0;
-					for (i = 0; i < 32; i++)
+					/* drawing a well-known Mark */
+					switch (well_known_type)
 					  {
-					      double tic = 6.28318530718 / 32.0;
-					      double cx =
-						  x + (size2 * sin (rads));
-					      double cy =
-						  y + (size2 * cos (rads));
-					      if (i == 0)
-						  rl2_graph_move_to_point (ctx,
-									   cx,
-									   cy);
-					      else
-						  rl2_graph_add_line_to_path
-						      (ctx, cx, cy);
-					      rads += tic;
-					  }
-					rl2_graph_close_subpath (ctx);
-					break;
-				    case RL2_GRAPHIC_MARK_TRIANGLE:
-					rl2_graph_move_to_point (ctx, x,
-								 y - size23);
-					rl2_graph_add_line_to_path (ctx,
-								    x - size2,
-								    y + size13);
-					rl2_graph_add_line_to_path (ctx,
-								    x + size2,
-								    y + size13);
-					rl2_graph_close_subpath (ctx);
-					break;
-				    case RL2_GRAPHIC_MARK_STAR:
-					rads = 3.14159265359;
-					for (i = 0; i < 10; i++)
+					  case RL2_GRAPHIC_MARK_CIRCLE:
+					      rads = 0.0;
+					      for (i = 0; i < 32; i++)
+						{
+						    double tic =
+							6.28318530718 / 32.0;
+						    double cx =
+							x +
+							(size2 * sin (rads));
+						    double cy =
+							y +
+							(size2 * cos (rads));
+						    if (i == 0)
+							rl2_graph_move_to_point
+							    (ctx, cx, cy);
+						    else
+							rl2_graph_add_line_to_path
+							    (ctx, cx, cy);
+						    rads += tic;
+						}
+					      rl2_graph_close_subpath (ctx);
+					      break;
+					  case RL2_GRAPHIC_MARK_TRIANGLE:
+					      rl2_graph_move_to_point (ctx, x,
+								       y -
+								       size23);
+					      rl2_graph_add_line_to_path (ctx,
+									  x -
+									  size2,
+									  y +
+									  size13);
+					      rl2_graph_add_line_to_path (ctx,
+									  x +
+									  size2,
+									  y +
+									  size13);
+					      rl2_graph_close_subpath (ctx);
+					      break;
+					  case RL2_GRAPHIC_MARK_STAR:
+					      rads = 3.14159265359;
+					      for (i = 0; i < 10; i++)
+						{
+						    double tic =
+							(i % 2) ? size6 : size2;
+						    double cx =
+							x + (tic * sin (rads));
+						    double cy =
+							y + (tic * cos (rads));
+						    if (i == 0)
+							rl2_graph_move_to_point
+							    (ctx, cx, cy);
+						    else
+							rl2_graph_add_line_to_path
+							    (ctx, cx, cy);
+						    rads += 0.628318530718;
+						}
+					      rl2_graph_close_subpath (ctx);
+					      break;
+					  case RL2_GRAPHIC_MARK_CROSS:
+					      rl2_graph_move_to_point (ctx,
+								       x -
+								       size6,
+								       y -
+								       size2);
+					      rl2_graph_add_line_to_path (ctx,
+									  x +
+									  size6,
+									  y -
+									  size2);
+					      rl2_graph_add_line_to_path (ctx,
+									  x +
+									  size6,
+									  y -
+									  size6);
+					      rl2_graph_add_line_to_path (ctx,
+									  x +
+									  size2,
+									  y -
+									  size6);
+					      rl2_graph_add_line_to_path (ctx,
+									  x +
+									  size2,
+									  y +
+									  size6);
+					      rl2_graph_add_line_to_path (ctx,
+									  x +
+									  size6,
+									  y +
+									  size6);
+					      rl2_graph_add_line_to_path (ctx,
+									  x +
+									  size6,
+									  y +
+									  size2);
+					      rl2_graph_add_line_to_path (ctx,
+									  x -
+									  size6,
+									  y +
+									  size2);
+					      rl2_graph_add_line_to_path (ctx,
+									  x -
+									  size6,
+									  y +
+									  size6);
+					      rl2_graph_add_line_to_path (ctx,
+									  x -
+									  size2,
+									  y +
+									  size6);
+					      rl2_graph_add_line_to_path (ctx,
+									  x -
+									  size2,
+									  y -
+									  size6);
+					      rl2_graph_add_line_to_path (ctx,
+									  x -
+									  size6,
+									  y -
+									  size6);
+					      rl2_graph_close_subpath (ctx);
+					      break;
+					  case RL2_GRAPHIC_MARK_X:
+					      rl2_graph_move_to_point (ctx,
+								       x -
+								       size2,
+								       y -
+								       size2);
+					      rl2_graph_add_line_to_path (ctx,
+									  x -
+									  size4,
+									  y -
+									  size2);
+					      rl2_graph_add_line_to_path (ctx,
+									  x,
+									  y -
+									  size6);
+					      rl2_graph_add_line_to_path (ctx,
+									  x +
+									  size6,
+									  y -
+									  size2);
+					      rl2_graph_add_line_to_path (ctx,
+									  x +
+									  size2,
+									  y -
+									  size2);
+					      rl2_graph_add_line_to_path (ctx,
+									  x +
+									  size4,
+									  y);
+					      rl2_graph_add_line_to_path (ctx,
+									  x +
+									  size2,
+									  y +
+									  size2);
+					      rl2_graph_add_line_to_path (ctx,
+									  x +
+									  size4,
+									  y +
+									  size2);
+					      rl2_graph_add_line_to_path (ctx,
+									  x,
+									  y +
+									  size6);
+					      rl2_graph_add_line_to_path (ctx,
+									  x -
+									  size6,
+									  y +
+									  size2);
+					      rl2_graph_add_line_to_path (ctx,
+									  x -
+									  size2,
+									  y +
+									  size2);
+					      rl2_graph_add_line_to_path (ctx,
+									  x -
+									  size4,
+									  y);
+					      rl2_graph_close_subpath (ctx);
+					      break;
+					  case RL2_GRAPHIC_MARK_SQUARE:
+					  default:
+					      rl2_graph_move_to_point (ctx,
+								       x -
+								       size2,
+								       y -
+								       size2);
+					      rl2_graph_add_line_to_path (ctx,
+									  x -
+									  size2,
+									  y +
+									  size2);
+					      rl2_graph_add_line_to_path (ctx,
+									  x +
+									  size2,
+									  y +
+									  size2);
+					      rl2_graph_add_line_to_path (ctx,
+									  x +
+									  size2,
+									  y -
+									  size2);
+					      rl2_graph_close_subpath (ctx);
+					      break;
+					  };
+					if (fill)
 					  {
-					      double tic =
-						  (i % 2) ? size6 : size2;
-					      double cx =
-						  x + (tic * sin (rads));
-					      double cy =
-						  y + (tic * cos (rads));
-					      if (i == 0)
-						  rl2_graph_move_to_point (ctx,
-									   cx,
-									   cy);
+					      if (stroke)
+						  rl2_graph_fill_path (ctx,
+								       RL2_PRESERVE_PATH);
 					      else
-						  rl2_graph_add_line_to_path
-						      (ctx, cx, cy);
-					      rads += 0.628318530718;
+						  rl2_graph_fill_path (ctx,
+								       RL2_CLEAR_PATH);
 					  }
-					rl2_graph_close_subpath (ctx);
-					break;
-				    case RL2_GRAPHIC_MARK_CROSS:
-					rl2_graph_move_to_point (ctx, x - size6,
-								 y - size2);
-					rl2_graph_add_line_to_path (ctx,
-								    x + size6,
-								    y - size2);
-					rl2_graph_add_line_to_path (ctx,
-								    x + size6,
-								    y - size6);
-					rl2_graph_add_line_to_path (ctx,
-								    x + size2,
-								    y - size6);
-					rl2_graph_add_line_to_path (ctx,
-								    x + size2,
-								    y + size6);
-					rl2_graph_add_line_to_path (ctx,
-								    x + size6,
-								    y + size6);
-					rl2_graph_add_line_to_path (ctx,
-								    x + size6,
-								    y + size2);
-					rl2_graph_add_line_to_path (ctx,
-								    x - size6,
-								    y + size2);
-					rl2_graph_add_line_to_path (ctx,
-								    x - size6,
-								    y + size6);
-					rl2_graph_add_line_to_path (ctx,
-								    x - size2,
-								    y + size6);
-					rl2_graph_add_line_to_path (ctx,
-								    x - size2,
-								    y - size6);
-					rl2_graph_add_line_to_path (ctx,
-								    x - size6,
-								    y - size6);
-					rl2_graph_close_subpath (ctx);
-					break;
-				    case RL2_GRAPHIC_MARK_X:
-					rl2_graph_move_to_point (ctx, x - size2,
-								 y - size2);
-					rl2_graph_add_line_to_path (ctx,
-								    x - size4,
-								    y - size2);
-					rl2_graph_add_line_to_path (ctx, x,
-								    y - size6);
-					rl2_graph_add_line_to_path (ctx,
-								    x + size6,
-								    y - size2);
-					rl2_graph_add_line_to_path (ctx,
-								    x + size2,
-								    y - size2);
-					rl2_graph_add_line_to_path (ctx,
-								    x + size4,
-								    y);
-					rl2_graph_add_line_to_path (ctx,
-								    x + size2,
-								    y + size2);
-					rl2_graph_add_line_to_path (ctx,
-								    x + size4,
-								    y + size2);
-					rl2_graph_add_line_to_path (ctx, x,
-								    y + size6);
-					rl2_graph_add_line_to_path (ctx,
-								    x - size6,
-								    y + size2);
-					rl2_graph_add_line_to_path (ctx,
-								    x - size2,
-								    y + size2);
-					rl2_graph_add_line_to_path (ctx,
-								    x - size4,
-								    y);
-					rl2_graph_close_subpath (ctx);
-					break;
-				    case RL2_GRAPHIC_MARK_SQUARE:
-				    default:
-					rl2_graph_move_to_point (ctx, x - size2,
-								 y - size2);
-					rl2_graph_add_line_to_path (ctx,
-								    x - size2,
-								    y + size2);
-					rl2_graph_add_line_to_path (ctx,
-								    x + size2,
-								    y + size2);
-					rl2_graph_add_line_to_path (ctx,
-								    x + size2,
-								    y - size2);
-					rl2_graph_close_subpath (ctx);
-					break;
-				    };
-				  if (fill)
-				    {
 					if (stroke)
-					    rl2_graph_fill_path (ctx,
-								 RL2_PRESERVE_PATH);
-					else
-					    rl2_graph_fill_path (ctx,
-								 RL2_CLEAR_PATH);
+					    rl2_graph_stroke_path (ctx,
+								   RL2_CLEAR_PATH);
 				    }
-				  if (stroke)
-				      rl2_graph_stroke_path (ctx,
-							     RL2_CLEAR_PATH);
-			      }
-			    if (is_external && pattern != NULL)
-			      {
-				  /* drawing an External Graphic pattern */
-				  unsigned int width;
-				  unsigned int height;
-				  rl2_graph_get_pattern_size (pattern, &width,
-							      &height);
-				  double out_width = width;
-				  double out_height = height;
-				  rl2_graph_draw_graphic_symbol (ctx, pattern,
-								 out_width,
-								 out_height,
-								 x +
-								 point_sym->graphic->displacement_x,
-								 y -
-								 point_sym->graphic->displacement_y,
-								 point_sym->graphic->rotation,
-								 point_sym->graphic->anchor_point_x,
-								 point_sym->graphic->anchor_point_y);
+				  if (is_external && pattern != NULL)
+				    {
+					/* drawing an External Graphic pattern */
+					unsigned int width;
+					unsigned int height;
+					rl2_graph_get_pattern_size (pattern,
+								    &width,
+								    &height);
+					double out_width = width;
+					double out_height = height;
+					rl2_graph_draw_graphic_symbol (ctx,
+								       pattern,
+								       out_width,
+								       out_height,
+								       x +
+								       point_sym->graphic->displacement_x,
+								       y -
+								       point_sym->graphic->displacement_y,
+								       point_sym->graphic->rotation,
+								       point_sym->graphic->anchor_point_x,
+								       point_sym->graphic->anchor_point_y);
+				    }
 			      }
 			    point = point->next;
 			}
@@ -2446,10 +2541,27 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
       }
 }
 
+static int
+linestring_bbox_matches (rl2LinestringPtr ring, double minx, double miny,
+			 double maxx, double maxy)
+{
+/* checks if the Linestring BBOX is visible */
+    if (minx > ring->maxx)
+	return 0;
+    if (maxx < ring->minx)
+	return 0;
+    if (miny > ring->maxy)
+	return 0;
+    if (maxy < ring->miny)
+	return 0;
+    return 1;
+}
+
 static void
 draw_lines (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 	    rl2PrivVectorSymbolizerPtr sym, int height, double minx,
-	    double miny, double x_res, double y_res, rl2GeometryPtr geom)
+	    double miny, double maxx, double maxy, double x_res, double y_res,
+	    rl2GeometryPtr geom)
 {
 /* drawing Linear-type features */
     rl2PrivVectorSymbolizerItemPtr item;
@@ -2632,101 +2744,123 @@ draw_lines (rl2GraphicsContextPtr ctx, sqlite3 * handle,
     while (line)
       {
 	  /* drawing a LINESTRING */
-	  rl2PrivMultiStrokeItemPtr stroke_item;
-	  int iv;
-	  double dx;
-	  double dy;
-	  int x;
-	  int y;
-	  int lastX = 0;
-	  int lastY = 0;
-	  for (iv = 0; iv < line->points; iv++)
+	  if (linestring_bbox_matches (line, minx, miny, maxx, maxy))
 	    {
-		rl2GetPoint (line->coords, iv, &dx, &dy);
-		x = (int) ((dx - minx) / x_res);
-		y = height - (int) ((dy - miny) / y_res);
-		if (iv == 0)
+		rl2PrivMultiStrokeItemPtr stroke_item;
+		int iv;
+		double dx;
+		double dy;
+		int x;
+		int y;
+		int lastX = 0;
+		int lastY = 0;
+		for (iv = 0; iv < line->points; iv++)
 		  {
-		      rl2_graph_move_to_point (ctx, x, y);
-		      lastX = x;
-		      lastY = y;
-		  }
-		else
-		  {
-		      if (x == lastX && y == lastY)
-			  ;
-		      else
+		      rl2GetPoint (line->coords, iv, &dx, &dy);
+		      x = (int) ((dx - minx) / x_res);
+		      y = height - (int) ((dy - miny) / y_res);
+		      if (iv == 0)
 			{
-			    rl2_graph_add_line_to_path (ctx, x, y);
+			    rl2_graph_move_to_point (ctx, x, y);
 			    lastX = x;
 			    lastY = y;
 			}
-		  }
-	    }
-	  stroke_item = multi_stroke->first;
-	  while (stroke_item != NULL)
-	    {
-		/* applying all strokes, one after the other */
-		if (stroke_item->dash_count > 0
-		    && stroke_item->dash_list != NULL)
-		  {
-		      if (stroke_item->pattern != NULL)
-			  rl2_graph_set_pattern_dashed_pen (ctx,
-							    stroke_item->pattern,
-							    stroke_item->width,
-							    stroke_item->pen_cap,
-							    stroke_item->pen_join,
-							    stroke_item->dash_count,
-							    stroke_item->dash_list,
-							    stroke_item->dash_offset);
 		      else
-			  rl2_graph_set_dashed_pen (ctx, stroke_item->red,
-						    stroke_item->green,
-						    stroke_item->blue,
-						    stroke_item->opacity,
-						    stroke_item->width,
-						    stroke_item->pen_cap,
-						    stroke_item->pen_join,
-						    stroke_item->dash_count,
-						    stroke_item->dash_list,
-						    stroke_item->dash_offset);
+			{
+			    if (x == lastX && y == lastY)
+				;
+			    else
+			      {
+				  rl2_graph_add_line_to_path (ctx, x, y);
+				  lastX = x;
+				  lastY = y;
+			      }
+			}
 		  }
-		else
+		stroke_item = multi_stroke->first;
+		while (stroke_item != NULL)
 		  {
-		      if (stroke_item->pattern != NULL)
-			  rl2_graph_set_pattern_solid_pen (ctx,
-							   stroke_item->pattern,
-							   stroke_item->width,
-							   stroke_item->pen_cap,
-							   stroke_item->pen_join);
+		      /* applying all strokes, one after the other */
+		      if (stroke_item->dash_count > 0
+			  && stroke_item->dash_list != NULL)
+			{
+			    if (stroke_item->pattern != NULL)
+				rl2_graph_set_pattern_dashed_pen (ctx,
+								  stroke_item->pattern,
+								  stroke_item->width,
+								  stroke_item->pen_cap,
+								  stroke_item->pen_join,
+								  stroke_item->dash_count,
+								  stroke_item->dash_list,
+								  stroke_item->dash_offset);
+			    else
+				rl2_graph_set_dashed_pen (ctx,
+							  stroke_item->red,
+							  stroke_item->green,
+							  stroke_item->blue,
+							  stroke_item->opacity,
+							  stroke_item->width,
+							  stroke_item->pen_cap,
+							  stroke_item->pen_join,
+							  stroke_item->dash_count,
+							  stroke_item->dash_list,
+							  stroke_item->dash_offset);
+			}
 		      else
-			  rl2_graph_set_solid_pen (ctx, stroke_item->red,
-						   stroke_item->green,
-						   stroke_item->blue,
-						   stroke_item->opacity,
-						   stroke_item->width,
-						   stroke_item->pen_cap,
-						   stroke_item->pen_join);
+			{
+			    if (stroke_item->pattern != NULL)
+				rl2_graph_set_pattern_solid_pen (ctx,
+								 stroke_item->pattern,
+								 stroke_item->width,
+								 stroke_item->pen_cap,
+								 stroke_item->pen_join);
+			    else
+				rl2_graph_set_solid_pen (ctx,
+							 stroke_item->red,
+							 stroke_item->green,
+							 stroke_item->blue,
+							 stroke_item->opacity,
+							 stroke_item->width,
+							 stroke_item->pen_cap,
+							 stroke_item->pen_join);
+			}
+
+		      if (stroke_item == multi_stroke->last)
+			  rl2_graph_stroke_path (ctx, RL2_CLEAR_PATH);
+		      else
+			  rl2_graph_stroke_path (ctx, RL2_PRESERVE_PATH);
+
+		      stroke_item = stroke_item->next;
+		      if (stroke_item == multi_stroke->last)
+			  rl2_graph_release_pattern_pen (ctx);
 		  }
-
-		if (stroke_item == multi_stroke->last)
-		    rl2_graph_stroke_path (ctx, RL2_CLEAR_PATH);
-		else
-		    rl2_graph_stroke_path (ctx, RL2_PRESERVE_PATH);
-
-		stroke_item = stroke_item->next;
-		if (stroke_item == multi_stroke->last)
-		    rl2_graph_release_pattern_pen (ctx);
 	    }
 	  line = line->next;
       }
     rl2_destroy_multi_stroke (multi_stroke);
 }
 
+static int
+ring_bbox_matches (rl2RingPtr ring, double minx, double miny, double maxx,
+		   double maxy)
+{
+/* checks if the Ring BBOX is visible */
+    if (minx > ring->maxx)
+	return 0;
+    if (maxx < ring->minx)
+	return 0;
+    if (miny > ring->maxy)
+	return 0;
+    if (maxy < ring->miny)
+	return 0;
+    return 1;
+}
+
 static void
 draw_polygons (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 	       rl2PrivVectorSymbolizerPtr sym, int height, double minx,
-	       double miny, double x_res, double y_res, rl2GeometryPtr geom)
+	       double miny, double maxx, double maxy, double x_res,
+	       double y_res, rl2GeometryPtr geom)
 {
 /* drawing Polygonal-type features */
     rl2PrivVectorSymbolizerItemPtr item;
@@ -2789,9 +2923,8 @@ draw_polygons (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 				  if (recolor)
 				    {
 					/* attempting to recolor the External Graphic resource */
-					rl2_graph_pattern_recolor (pattern_fill,
-								   red, green,
-								   blue);
+					rl2_graph_pattern_recolor
+					    (pattern_fill, red, green, blue);
 				    }
 				  if (polyg_sym->fill->opacity <= 0.0)
 				      norm_opacity = 0;
@@ -3010,34 +3143,8 @@ draw_polygons (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 		int ib;
 		rl2RingPtr ring = polyg->exterior;
 		/* exterior border */
-		for (iv = 0; iv < ring->points; iv++)
+		if (ring_bbox_matches (ring, minx, miny, maxx, maxy))
 		  {
-		      rl2GetPoint (ring->coords, iv, &dx, &dy);
-		      x = (int) ((dx - minx) / x_res);
-		      y = height - (int) ((dy - miny) / y_res);
-		      if (iv == 0)
-			{
-			    rl2_graph_move_to_point (ctx, x, y);
-			    lastX = x;
-			    lastY = y;
-			}
-		      else
-			{
-			    if (x == lastX && y == lastY)
-				;
-			    else
-			      {
-				  rl2_graph_add_line_to_path (ctx, x, y);
-				  lastX = x;
-				  lastY = y;
-			      }
-			}
-		  }
-		rl2_graph_close_subpath (ctx);
-		for (ib = 0; ib < polyg->num_interiors; ib++)
-		  {
-		      /* interior borders */
-		      ring = polyg->interiors + ib;
 		      for (iv = 0; iv < ring->points; iv++)
 			{
 			    rl2GetPoint (ring->coords, iv, &dx, &dy);
@@ -3062,6 +3169,45 @@ draw_polygons (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 			      }
 			}
 		      rl2_graph_close_subpath (ctx);
+		  }
+		else
+		  {
+		      /* if the exterior ring is invisible we'll ignore all internal rings */
+		      polyg = polyg->next;
+		      continue;
+		  }
+		for (ib = 0; ib < polyg->num_interiors; ib++)
+		  {
+		      /* interior borders */
+		      ring = polyg->interiors + ib;
+		      if (ring_bbox_matches (ring, minx, miny, maxx, maxy))
+			{
+			    for (iv = 0; iv < ring->points; iv++)
+			      {
+				  rl2GetPoint (ring->coords, iv, &dx, &dy);
+				  x = (int) ((dx - minx) / x_res);
+				  y = height - (int) ((dy - miny) / y_res);
+				  if (iv == 0)
+				    {
+					rl2_graph_move_to_point (ctx, x, y);
+					lastX = x;
+					lastY = y;
+				    }
+				  else
+				    {
+					if (x == lastX && y == lastY)
+					    ;
+					else
+					  {
+					      rl2_graph_add_line_to_path (ctx,
+									  x, y);
+					      lastX = x;
+					      lastY = y;
+					  }
+				    }
+			      }
+			    rl2_graph_close_subpath (ctx);
+			}
 		  }
 		if (fill)
 		  {
@@ -3089,8 +3235,8 @@ draw_polygons (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 }
 
 static int
-label_get_xy (sqlite3 * handle, const unsigned char *blob, int size, double *x,
-	      double *y)
+label_get_xy (sqlite3 * handle, const unsigned char *blob, int size,
+	      double *x, double *y)
 {
 /* resolving Point XY coords */
     const char *sql;
@@ -3161,7 +3307,8 @@ label_get_centroid (sqlite3 * handle, rl2PolygonPtr polyg, double *x, double *y)
 		if (sqlite3_column_type (stmt, 0) == SQLITE_BLOB)
 		  {
 		      const unsigned char *g_blob =
-			  (const unsigned char *) sqlite3_column_blob (stmt, 0);
+			  (const unsigned char *) sqlite3_column_blob (stmt,
+								       0);
 		      int g_size = sqlite3_column_bytes (stmt, 0);
 		      if (label_get_xy (handle, g_blob, g_size, x, y))
 			  ok = 1;
@@ -3208,7 +3355,8 @@ label_get_midpoint (sqlite3 * handle, rl2LinestringPtr line, double *x,
 		if (sqlite3_column_type (stmt, 0) == SQLITE_BLOB)
 		  {
 		      const unsigned char *g_blob =
-			  (const unsigned char *) sqlite3_column_blob (stmt, 0);
+			  (const unsigned char *) sqlite3_column_blob (stmt,
+								       0);
 		      int g_size = sqlite3_column_bytes (stmt, 0);
 		      if (label_get_xy (handle, g_blob, g_size, x, y))
 			  ok = 1;
@@ -3219,11 +3367,501 @@ label_get_midpoint (sqlite3 * handle, rl2LinestringPtr line, double *x,
     return ok;
 }
 
+static int
+label_get_ring_midpoint (sqlite3 * handle, rl2RingPtr ring, double *x,
+			 double *y)
+{
+/* computing a Ring MidPoint */
+    unsigned char *blob;
+    int blob_sz;
+    const char *sql;
+    int ret;
+    sqlite3_stmt *stmt = NULL;
+    int ok = 0;
+
+    if (ring == NULL)
+	return 0;
+    if (!rl2_serialize_ring_as_linestring (ring, &blob, &blob_sz))
+	return 0;
+
+    sql = "SELECT ST_Line_Interpolate_Point(?, 0.5)";
+    ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
+    if (ret != SQLITE_OK)
+	return 0;
+
+    sqlite3_reset (stmt);
+    sqlite3_clear_bindings (stmt);
+    sqlite3_bind_blob (stmt, 1, blob, blob_sz, free);
+    while (1)
+      {
+	  /* scrolling the result set rows */
+	  ret = sqlite3_step (stmt);
+	  if (ret == SQLITE_DONE)
+	      break;		/* end of result set */
+	  if (ret == SQLITE_ROW)
+	    {
+		if (sqlite3_column_type (stmt, 0) == SQLITE_BLOB)
+		  {
+		      const unsigned char *g_blob =
+			  (const unsigned char *) sqlite3_column_blob (stmt,
+								       0);
+		      int g_size = sqlite3_column_bytes (stmt, 0);
+		      if (label_get_xy (handle, g_blob, g_size, x, y))
+			  ok = 1;
+		  }
+	    }
+      }
+    sqlite3_finalize (stmt);
+    return ok;
+}
+
+static rl2GeometryPtr
+do_generalize_linestring (sqlite3 * handle, rl2LinestringPtr line,
+			  double generalize_factor)
+{
+/* simplifying a Linestring */
+    rl2GeometryPtr geom = NULL;
+    unsigned char *blob;
+    int blob_sz;
+    const char *sql;
+    int ret;
+    sqlite3_stmt *stmt = NULL;
+
+    if (line == NULL)
+	return NULL;
+    if (line->points < 2)
+	return NULL;
+    if (!rl2_serialize_linestring (line, &blob, &blob_sz))
+	return NULL;
+
+    sql = "SELECT ST_Simplify(?, ?)";
+    ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
+    if (ret != SQLITE_OK)
+	return NULL;
+
+    sqlite3_reset (stmt);
+    sqlite3_clear_bindings (stmt);
+    sqlite3_bind_blob (stmt, 1, blob, blob_sz, free);
+    sqlite3_bind_double (stmt, 2, generalize_factor);
+    while (1)
+      {
+	  /* scrolling the result set rows */
+	  ret = sqlite3_step (stmt);
+	  if (ret == SQLITE_DONE)
+	      break;		/* end of result set */
+	  if (ret == SQLITE_ROW)
+	    {
+		if (sqlite3_column_type (stmt, 0) == SQLITE_BLOB)
+		  {
+		      const unsigned char *g_blob =
+			  (const unsigned char *) sqlite3_column_blob (stmt,
+								       0);
+		      int g_blob_sz = sqlite3_column_bytes (stmt, 0);
+		      geom = rl2_geometry_from_blob (g_blob, g_blob_sz);
+		  }
+	    }
+      }
+    sqlite3_finalize (stmt);
+    return geom;
+}
+
+static rl2GeometryPtr
+do_generalize_ring (sqlite3 * handle, rl2RingPtr ring, double generalize_factor)
+{
+/* simplifying a Ring */
+    rl2GeometryPtr geom = NULL;
+    unsigned char *blob;
+    int blob_sz;
+    const char *sql;
+    int ret;
+    sqlite3_stmt *stmt = NULL;
+
+    if (ring == NULL)
+	return NULL;
+    if (ring->points < 2)
+	return NULL;
+    if (!rl2_serialize_ring (ring, &blob, &blob_sz))
+	return NULL;
+
+    sql = "SELECT ST_SimplifyPreserveTopology(?, ?)";
+    ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
+    if (ret != SQLITE_OK)
+	return NULL;
+
+    sqlite3_reset (stmt);
+    sqlite3_clear_bindings (stmt);
+    sqlite3_bind_blob (stmt, 1, blob, blob_sz, free);
+    sqlite3_bind_double (stmt, 2, generalize_factor);
+    while (1)
+      {
+	  /* scrolling the result set rows */
+	  ret = sqlite3_step (stmt);
+	  if (ret == SQLITE_DONE)
+	      break;		/* end of result set */
+	  if (ret == SQLITE_ROW)
+	    {
+		if (sqlite3_column_type (stmt, 0) == SQLITE_BLOB)
+		  {
+		      const unsigned char *g_blob =
+			  (const unsigned char *) sqlite3_column_blob (stmt,
+								       0);
+		      int g_blob_sz = sqlite3_column_bytes (stmt, 0);
+		      geom = rl2_geometry_from_blob (g_blob, g_blob_sz);
+		  }
+	    }
+      }
+    sqlite3_finalize (stmt);
+    return geom;
+}
+
+static int
+check_valid_line (rl2LinestringPtr line)
+{
+/* testing for a valid linestring */
+    int iv;
+    int pts = 0;
+    double x;
+    double y;
+    double x0;
+    double y0;
+
+    if (line == NULL)
+	return 0;
+    if (line->points < 2)
+	return 0;
+    rl2GetPoint (line->coords, 0, &x0, &y0);
+    for (iv = 1; iv < line->points; iv++)
+      {
+	  rl2GetPoint (line->coords, iv, &x, &y);
+	  if (x != x0 || y != y0)
+	    {
+		pts++;
+		break;
+	    }
+      }
+    if (pts == 0)
+	return 0;
+    return 1;
+}
+
+static rl2GeometryPtr
+do_offset_linestring (sqlite3 * handle, rl2LinestringPtr line,
+		      double perpendicular_offset)
+{
+/* Offest Curve (from Linestring) */
+    rl2GeometryPtr geom = NULL;
+    unsigned char *blob;
+    int blob_sz;
+    const char *sql;
+    int ret;
+    sqlite3_stmt *stmt = NULL;
+
+    if (!check_valid_line (line))
+	return NULL;
+    if (!rl2_serialize_linestring (line, &blob, &blob_sz))
+	return NULL;
+
+    sql = "SELECT ST_OffsetCurve(?, ?)";
+    ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
+    if (ret != SQLITE_OK)
+	return NULL;
+
+    sqlite3_reset (stmt);
+    sqlite3_clear_bindings (stmt);
+    sqlite3_bind_blob (stmt, 1, blob, blob_sz, free);
+    sqlite3_bind_double (stmt, 2, perpendicular_offset);
+    while (1)
+      {
+	  /* scrolling the result set rows */
+	  ret = sqlite3_step (stmt);
+	  if (ret == SQLITE_DONE)
+	      break;		/* end of result set */
+	  if (ret == SQLITE_ROW)
+	    {
+		if (sqlite3_column_type (stmt, 0) == SQLITE_BLOB)
+		  {
+		      const unsigned char *g_blob =
+			  (const unsigned char *) sqlite3_column_blob (stmt,
+								       0);
+		      int g_blob_sz = sqlite3_column_bytes (stmt, 0);
+		      geom = rl2_geometry_from_blob (g_blob, g_blob_sz);
+		  }
+	    }
+      }
+    sqlite3_finalize (stmt);
+    return geom;
+}
+
+static int
+check_valid_ring (rl2RingPtr ring)
+{
+/* testing for a valid ring */
+    int iv;
+    int pts = 0;
+    int last;
+    double x;
+    double y;
+    double x0;
+    double y0;
+    double x1;
+    double y1;
+
+    if (ring == NULL)
+	return 0;
+    if (ring->points < 4)
+	return 0;
+    rl2GetPoint (ring->coords, 0, &x0, &y0);
+    for (iv = 1; iv < ring->points; iv++)
+      {
+	  rl2GetPoint (ring->coords, iv, &x, &y);
+	  if (pts == 0)
+	    {
+		if (x != x0 || y != y0)
+		  {
+		      pts++;
+		      x1 = x;
+		      y1 = y;
+		  }
+	    }
+	  else
+	    {
+		if ((x != x0 || y != y0) && (x != x1 || y != y1))
+		  {
+		      pts++;
+		      break;
+		  }
+	    }
+      }
+    last = ring->points - 1;
+    rl2GetPoint (ring->coords, last, &x1, &y1);
+    if (pts == 2 && x0 == x1 && y0 == y1)
+	return 1;
+    return 0;
+}
+
+static rl2GeometryPtr
+do_buffered_ring (sqlite3 * handle, rl2RingPtr ring,
+		  double perpendicular_offset)
+{
+/* Buffer (from Ring) */
+    rl2GeometryPtr geom = NULL;
+    unsigned char *blob;
+    int blob_sz;
+    const char *sql;
+    int ret;
+    sqlite3_stmt *stmt = NULL;
+
+    if (!check_valid_ring (ring))
+	return NULL;
+    if (!rl2_serialize_ring (ring, &blob, &blob_sz))
+	return NULL;
+
+    sql = "SELECT ST_Buffer(?, ?)";
+    ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
+    if (ret != SQLITE_OK)
+	return NULL;
+
+    sqlite3_reset (stmt);
+    sqlite3_clear_bindings (stmt);
+    sqlite3_bind_blob (stmt, 1, blob, blob_sz, free);
+    sqlite3_bind_double (stmt, 2, perpendicular_offset);
+    while (1)
+      {
+	  /* scrolling the result set rows */
+	  ret = sqlite3_step (stmt);
+	  if (ret == SQLITE_DONE)
+	      break;		/* end of result set */
+	  if (ret == SQLITE_ROW)
+	    {
+		if (sqlite3_column_type (stmt, 0) == SQLITE_BLOB)
+		  {
+		      const unsigned char *g_blob =
+			  (const unsigned char *) sqlite3_column_blob (stmt,
+								       0);
+		      int g_blob_sz = sqlite3_column_bytes (stmt, 0);
+		      geom = rl2_geometry_from_blob (g_blob, g_blob_sz);
+		  }
+	    }
+      }
+    sqlite3_finalize (stmt);
+    return geom;
+}
+
+static void
+create_line_array_from_linestring (sqlite3 * handle, rl2LinestringPtr line,
+				   double perpendicular_offset, int *points,
+				   double **x_array, double **y_array,
+				   int generalize_line,
+				   double generalize_factor, int height,
+				   double minx, double miny, double x_res,
+				   double y_res)
+{
+/* creating the X and Y arrays required by rl2_graph_draw_warped_text() */
+    rl2GeometryPtr geom = NULL;
+    rl2GeometryPtr geom2 = NULL;
+    rl2LinestringPtr aux_line;
+    rl2LinestringPtr in_line;
+    double *xx = NULL;
+    double *yy = NULL;
+    int iv;
+    double x;
+    double y;
+
+    *points = 0;
+    *x_array = NULL;
+    *y_array = NULL;
+    if (line == NULL)
+	goto error;
+
+    aux_line = rl2_linestring_to_image (line, height, minx, miny, x_res, y_res);
+    if (aux_line == NULL)
+	goto error;
+    in_line = aux_line;
+    if (generalize_line)
+      {
+	  geom = do_generalize_linestring (handle, in_line, generalize_factor);
+	  if (geom == NULL)
+	      goto error;
+	  in_line = geom->first_linestring;
+	  if (in_line == NULL)
+	      goto error;
+      }
+    if (perpendicular_offset != 0.0)
+      {
+	  geom2 = do_offset_linestring (handle, in_line, perpendicular_offset);
+	  if (geom2 == NULL)
+	      goto error;
+	  in_line = geom2->first_linestring;
+	  if (in_line == NULL)
+	      goto error;
+      }
+
+/* allocating the X and Y arrays */
+    if (in_line->points < 2)
+	goto error;
+    xx = malloc (sizeof (double) * in_line->points);
+    yy = malloc (sizeof (double) * in_line->points);
+    if (xx == NULL || yy == NULL)
+      {
+	  if (xx != NULL)
+	      free (xx);
+	  if (yy != NULL)
+	      free (yy);
+	  goto error;
+      }
+    for (iv = 0; iv < in_line->points; iv++)
+      {
+	  /* populating the X and Y arrays */
+	  rl2GetPoint (in_line->coords, iv, &x, &y);
+	  *(xx + iv) = x;
+	  *(yy + iv) = y;
+      }
+    *points = in_line->points;
+    *x_array = xx;
+    *y_array = yy;
+
+  error:
+    if (aux_line)
+	rl2DestroyLinestring (aux_line);
+    if (geom)
+	rl2_destroy_geometry (geom);
+    if (geom2)
+	rl2_destroy_geometry (geom2);
+}
+
+static void
+create_line_array_from_ring (sqlite3 * handle, rl2RingPtr ring,
+			     double perpendicular_offset, int *points,
+			     double **x_array, double **y_array,
+			     int generalize_line, double generalize_factor,
+			     int height, double minx, double miny, double x_res,
+			     double y_res)
+{
+/* creating the X and Y arrays required by rl2_graph_draw_warped_text() */
+    rl2GeometryPtr geom = NULL;
+    rl2GeometryPtr geom2 = NULL;
+    rl2PolygonPtr pg;
+    rl2RingPtr aux_ring;
+    rl2RingPtr in_ring;
+    double *xx = NULL;
+    double *yy = NULL;
+    int iv;
+    double x;
+    double y;
+
+    *points = 0;
+    *x_array = NULL;
+    *y_array = NULL;
+    if (ring == NULL)
+	goto error;
+
+    aux_ring = rl2_ring_to_image (ring, height, minx, miny, x_res, y_res);
+    if (aux_ring == NULL)
+	goto error;
+    in_ring = aux_ring;
+    if (generalize_line)
+      {
+	  geom = do_generalize_ring (handle, in_ring, generalize_factor);
+	  if (geom == NULL)
+	      goto error;
+	  pg = geom->first_polygon;
+	  if (pg == NULL)
+	      goto error;
+	  in_ring = pg->exterior;
+	  if (in_ring == NULL)
+	      goto error;
+      }
+    if (perpendicular_offset != 0.0)
+      {
+	  geom2 = do_buffered_ring (handle, in_ring, perpendicular_offset);
+	  if (geom2 == NULL)
+	      goto error;
+	  pg = geom2->first_polygon;
+	  if (pg == NULL)
+	      goto error;
+	  in_ring = pg->exterior;
+	  if (in_ring == NULL)
+	      goto error;
+      }
+
+/* allocating the X and Y arrays */
+    if (in_ring->points < 2)
+	goto error;
+    xx = malloc (sizeof (double) * in_ring->points);
+    yy = malloc (sizeof (double) * in_ring->points);
+    if (xx == NULL || yy == NULL)
+      {
+	  if (xx != NULL)
+	      free (xx);
+	  if (yy != NULL)
+	      free (yy);
+	  goto error;
+      }
+    for (iv = 0; iv < in_ring->points; iv++)
+      {
+	  /* populating the X and Y arrays */
+	  rl2GetPoint (in_ring->coords, iv, &x, &y);
+	  *(xx + iv) = x;
+	  *(yy + iv) = y;
+      }
+    *points = in_ring->points;
+    *x_array = xx;
+    *y_array = yy;
+
+  error:
+    if (aux_ring)
+	rl2DestroyRing (aux_ring);
+    if (geom)
+	rl2_destroy_geometry (geom);
+    if (geom2)
+	rl2_destroy_geometry (geom2);
+}
+
 static void
 draw_labels (rl2GraphicsContextPtr ctx, sqlite3 * handle,
-	     rl2PrivTextSymbolizerPtr sym, int height, double minx, double miny,
-	     double x_res, double y_res, rl2GeometryPtr geom,
-	     rl2PrivVariantValuePtr value)
+	     const void *priv_data, rl2PrivTextSymbolizerPtr sym, int height,
+	     double minx, double miny, double maxx, double maxy, double x_res,
+	     double y_res, rl2GeometryPtr geom, rl2PrivVariantValuePtr value)
 {
 /* drawing TextLabels */
     rl2GraphicsFontPtr font = NULL;
@@ -3236,6 +3874,18 @@ draw_labels (rl2GraphicsContextPtr ctx, sqlite3 * handle,
     rl2PointPtr point;
     rl2LinestringPtr line;
     rl2PolygonPtr polyg;
+    double rotation = 0.0;
+    double anchor_point_x = 0.0;
+    double anchor_point_y = 0.0;
+    double displacement_x = 0.0;
+    double displacement_y = 0.0;
+    double perpendicular_offset = 0.0;
+    int is_repeated = 0;
+    double initial_gap = 0.0;
+    double gap = 0.0;
+    int is_aligned = 0;
+    int generalize_line = 0;
+    int i;
 
 /* preparing the Text */
     if (value->sqlite3_type == SQLITE_INTEGER)
@@ -3282,9 +3932,24 @@ draw_labels (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 	  font_weight = RL2_FONTWEIGHT_NORMAL;
 	  break;
       };
-    font =
-	rl2_graph_create_toy_font (NULL, sym->font_size, font_style,
-				   font_weight);
+    for (i = 0; i < RL2_MAX_FONT_FAMILIES; i++)
+      {
+	  const char *facename = sym->font_families[i];
+	  if (facename != NULL)
+	      font =
+		  rl2_search_TrueType_font (handle, priv_data, facename,
+					    sym->font_size);
+	  if (font != NULL)
+	      break;
+      }
+    if (font == NULL)
+      {
+	  /* defaulting to a toy font */
+	  fprintf (stderr, "default toy font\n");
+	  font =
+	      rl2_graph_create_toy_font (NULL, sym->font_size, font_style,
+					 font_weight);
+      }
     if (font == NULL)
 	goto stop;
     if (sym->fill != NULL)
@@ -3323,97 +3988,300 @@ draw_labels (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 		    norm_opacity = opacity;
 	    }
 	  rl2_graph_font_set_halo (font, sym->halo->radius,
-				   sym->halo->fill->red, sym->halo->fill->green,
+				   sym->halo->fill->red,
+				   sym->halo->fill->green,
 				   sym->halo->fill->blue, norm_opacity);
       }
     rl2_graph_set_font (ctx, font);
 
-    polyg = geom->first_polygon;
-    while (polyg)
+    if (sym->label_placement_type == RL2_LABEL_PLACEMENT_POINT)
       {
-	  /* drawing a POLYGON-based text label */
-	  double pre_x;
-	  double pre_y;
-	  double lbl_width = 0.0;
-	  double lbl_height = 0.0;
-	  double post_x;
-	  double post_y;
-	  double shift_x;
-	  double shift_y;
+	  /* retrieving eventual Point Placement arguments */
+	  rl2PrivPointPlacementPtr ptpl =
+	      (rl2PrivPointPlacementPtr) (sym->label_placement);
+	  if (ptpl != NULL)
+	    {
+		anchor_point_x = ptpl->anchor_point_x;
+		anchor_point_y = ptpl->anchor_point_y;
+		displacement_x = ptpl->displacement_x;
+		displacement_y = ptpl->displacement_y;
+		rotation = ptpl->rotation;
+	    }
+      }
+    else if (sym->label_placement_type == RL2_LABEL_PLACEMENT_LINE)
+      {
+	  /* retrieving eventual Lineo Placement arguments */
+	  rl2PrivLinePlacementPtr lnpl =
+	      (rl2PrivLinePlacementPtr) (sym->label_placement);
+	  if (lnpl != NULL)
+	    {
+		perpendicular_offset = lnpl->perpendicular_offset;
+		is_repeated = lnpl->is_repeated;
+		initial_gap = lnpl->initial_gap;
+		gap = lnpl->gap;
+		is_aligned = lnpl->is_aligned;
+		generalize_line = lnpl->generalize_line;
+	    }
+      }
+
+    if (sym->label_placement_type == RL2_LABEL_PLACEMENT_POINT)
+      {
+	  /* POINT PLACEMENT */
+	  rl2Point pt;
 	  double cx;
 	  double cy;
 	  double x;
 	  double y;
-	  if (!label_get_centroid (handle, polyg, &cx, &cy))
+
+	  polyg = geom->first_polygon;
+	  while (polyg)
 	    {
+		/* drawing a POLYGON-based text label */
+		if (!label_get_centroid (handle, polyg, &cx, &cy))
+		  {
+		      polyg = polyg->next;
+		      continue;
+		  }
+		pt.x = cx;
+		pt.y = cy;
+		if (point_bbox_matches (&pt, minx, miny, maxx, maxy))
+		  {
+		      x = (cx - minx) / x_res;
+		      y = (double) height - ((cy - miny) / y_res);
+		      rl2_graph_draw_text (ctx, label, x + displacement_x,
+					   y - displacement_y, rotation,
+					   anchor_point_x, anchor_point_y);
+		  }
 		polyg = polyg->next;
-		continue;
 	    }
-	  x = (cx - minx) / x_res;
-	  y = (double) height - ((cy - miny) / y_res);
-	  rl2_graph_get_text_extent (ctx, label, &pre_x, &pre_y, &lbl_width,
-				     &lbl_height, &post_x, &post_y);
-	  shift_x = 0.0 - (lbl_width / 2.0);
-	  shift_y = 0.0 + (lbl_height / 2.0);
-	  rl2_graph_draw_text (ctx, label, x + shift_x, y + shift_y, 0.0, 0.0,
-			       0.0);
-	  polyg = polyg->next;
-      }
 
-    line = geom->first_linestring;
-    while (line)
+	  line = geom->first_linestring;
+	  while (line)
+	    {
+		/* drawing a LINESTRING-based text label */
+		label_get_midpoint (handle, line, &cx, &cy);
+		pt.x = cx;
+		pt.y = cy;
+		if (point_bbox_matches (&pt, minx, miny, maxx, maxy))
+		  {
+		      x = (cx - minx) / x_res;
+		      y = (double) height - ((cy - miny) / y_res);
+		      rl2_graph_draw_text (ctx, label, x + displacement_x,
+					   y - displacement_y, rotation,
+					   anchor_point_x, anchor_point_y);
+		  }
+		line = line->next;
+	    }
+
+	  point = geom->first_point;
+	  while (point)
+	    {
+		/* drawing a POINT-based text label */
+		if (point_bbox_matches (point, minx, miny, maxx, maxy))
+		  {
+		      double x = (point->x - minx) / x_res;
+		      double y = (double) height - ((point->y - miny) / y_res);
+		      rl2_graph_draw_text (ctx, label, x + displacement_x,
+					   y - displacement_y, rotation,
+					   anchor_point_x, anchor_point_y);
+		  }
+		point = point->next;
+	    }
+
+      }
+    else if (sym->label_placement_type == RL2_LABEL_PLACEMENT_LINE)
       {
-	  /* drawing a LINESTRING-based text label */
-	  double pre_x;
-	  double pre_y;
-	  double lbl_width = 0.0;
-	  double lbl_height = 0.0;
-	  double post_x;
-	  double post_y;
-	  double shift_x;
-	  double shift_y;
+	  /* LINE PLACEMENT */
+	  rl2Point pt;
+	  int ib;
 	  double cx;
 	  double cy;
 	  double x;
 	  double y;
-	  label_get_midpoint (handle, line, &cx, &cy);
-	  if (!rl2_graph_get_text_extent
-	      (ctx, label, &pre_x, &pre_y, &lbl_width, &lbl_height, &post_x,
-	       &post_y))
-	    {
-		line = line->next;
-		continue;
-	    }
-	  x = (cx - minx) / x_res;
-	  y = (double) height - ((cy - miny) / y_res);
-	  shift_x = 0.0 - (lbl_width / 2.0);
-	  shift_y = 0.0 + (lbl_height / 2.0);
-	  rl2_graph_draw_text (ctx, label, x + shift_x, y + shift_y, 0.0, 0.0,
-			       0.0);
-	  line = line->next;
-      }
+	  double generalize_factor = 8.0;
 
-    point = geom->first_point;
-    while (point)
-      {
-	  /* drawing a POINT-based text label */
-	  double pre_x;
-	  double pre_y;
-	  double lbl_width = 0.0;
-	  double lbl_height = 0.0;
-	  double post_x;
-	  double post_y;
-	  double shift_x;
-	  double shift_y;
-	  double x = (point->x - minx) / x_res;
-	  double y = (double) height - ((point->y - miny) / y_res);
-	  rl2_graph_get_text_extent (ctx, label, &pre_x, &pre_y, &lbl_width,
-				     &lbl_height, &post_x, &post_y);
-	  shift_x = 0.0 - (lbl_width / 2.0);
-	  shift_y = 0.0 + (lbl_height / 2.0);
-	  rl2_graph_draw_text (ctx, label, x + shift_x, y + shift_y, 0.0, 0.0,
-			       0.0);
-	  point = point->next;
+	  line = geom->first_linestring;
+	  while (line)
+	    {
+		/* drawing a LINESTRING-based text label */
+		if (!is_aligned)
+		  {
+		      /* horizontal label aligned to center point */
+		      label_get_midpoint (handle, line, &cx, &cy);
+		      pt.x = cx;
+		      pt.y = cy;
+		      if (point_bbox_matches (&pt, minx, miny, maxx, maxy))
+			{
+			    x = (cx - minx) / x_res;
+			    y = (double) height - ((cy - miny) / y_res);
+			    rl2_graph_draw_text (ctx, label, x, y, 0.0, 0.5,
+						 0.5);
+			}
+		  }
+		else
+		  {
+		      /* label is warped along the line */
+		      double *x_array = NULL;
+		      double *y_array = NULL;
+		      int points;
+		      if (linestring_bbox_matches
+			  (line, minx, miny, maxx, maxy))
+			{
+			    create_line_array_from_linestring (handle, line,
+							       perpendicular_offset,
+							       &points,
+							       &x_array,
+							       &y_array,
+							       generalize_line,
+							       generalize_factor,
+							       height, minx,
+							       miny, x_res,
+							       y_res);
+			    if (x_array != NULL && y_array != NULL)
+				rl2_graph_draw_warped_text (handle, ctx, label,
+							    points, x_array,
+							    y_array,
+							    initial_gap, gap,
+							    is_repeated);
+			    if (x_array)
+				free (x_array);
+			    if (y_array)
+				free (y_array);
+			}
+		  }
+		line = line->next;
+	    }
+
+	  polyg = geom->first_polygon;
+	  while (polyg)
+	    {
+		/* drawing a POLYGON-based text label */
+		rl2RingPtr ring = polyg->exterior;
+		/* exterior border */
+		if (ring_bbox_matches (ring, minx, miny, maxx, maxy))
+		  {
+		      if (!is_aligned)
+			{
+			    /* horizontal label aligned to Ring's center point */
+			    label_get_ring_midpoint (handle, ring, &cx, &cy);
+			    pt.x = cx;
+			    pt.y = cy;
+			    if (point_bbox_matches
+				(&pt, minx, miny, maxx, maxy))
+			      {
+				  x = (cx - minx) / x_res;
+				  y = (double) height - ((cy - miny) / y_res);
+				  rl2_graph_draw_text (ctx, label, x, y, 0.0,
+						       0.5, 0.5);
+			      }
+			}
+		      else
+			{
+			    /* label is warped along the Ring */
+			    double *x_array = NULL;
+			    double *y_array = NULL;
+			    int points;
+			    if (ring_bbox_matches
+				(ring, minx, miny, maxx, maxy))
+			      {
+				  create_line_array_from_ring (handle, ring,
+							       perpendicular_offset,
+							       &points,
+							       &x_array,
+							       &y_array,
+							       generalize_line,
+							       generalize_factor,
+							       height, minx,
+							       miny, x_res,
+							       y_res);
+				  if (x_array != NULL && y_array != NULL)
+				    {
+					rl2_graph_draw_warped_text (handle, ctx,
+								    label,
+								    points,
+								    x_array,
+								    y_array,
+								    initial_gap,
+								    gap,
+								    is_repeated);
+				    }
+				  if (x_array)
+				      free (x_array);
+				  if (y_array)
+				      free (y_array);
+			      }
+			}
+		  }
+		else
+		  {
+		      /* if the exterior ring is invisible we'll ignore all internal rings */
+		      polyg = polyg->next;
+		      continue;
+		  }
+		for (ib = 0; ib < polyg->num_interiors; ib++)
+		  {
+		      /* interior borders */
+		      ring = polyg->interiors + ib;
+		      if (ring_bbox_matches (ring, minx, miny, maxx, maxy))
+			{
+			    if (!is_aligned)
+			      {
+				  /* horizontal label aligned to Ring's center point */
+				  label_get_ring_midpoint (handle, ring, &cx,
+							   &cy);
+				  pt.x = cx;
+				  pt.y = cy;
+				  if (point_bbox_matches
+				      (&pt, minx, miny, maxx, maxy))
+				    {
+					x = (cx - minx) / x_res;
+					y = (double) height -
+					    ((cy - miny) / y_res);
+					rl2_graph_draw_text (ctx, label, x, y,
+							     0.0, 0.5, 0.5);
+				    }
+			      }
+			    else
+			      {
+				  /* label is warped along the Ring */
+				  double *x_array = NULL;
+				  double *y_array = NULL;
+				  int points;
+				  if (ring_bbox_matches
+				      (ring, minx, miny, maxx, maxy))
+				    {
+					create_line_array_from_ring (handle,
+								     ring,
+								     perpendicular_offset,
+								     &points,
+								     &x_array,
+								     &y_array,
+								     generalize_line,
+								     generalize_factor,
+								     height,
+								     minx, miny,
+								     x_res,
+								     y_res);
+					if (x_array != NULL && y_array != NULL)
+					    rl2_graph_draw_warped_text (handle,
+									ctx,
+									label,
+									points,
+									x_array,
+									y_array,
+									initial_gap,
+									gap,
+									is_repeated);
+					if (x_array)
+					    free (x_array);
+					if (y_array)
+					    free (y_array);
+				    }
+			      }
+			}
+		  }
+		polyg = polyg->next;
+	    }
       }
 
 /* final cleanup - relasing resources */
@@ -3425,10 +4293,11 @@ draw_labels (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 }
 
 RL2_PRIVATE void
-rl2_draw_vector_feature (void *p_ctx, sqlite3 * handle,
+rl2_draw_vector_feature (void *p_ctx, sqlite3 * handle, const void *priv_data,
 			 rl2VectorSymbolizerPtr symbolizer, int height,
-			 double minx, double miny, double x_res, double y_res,
-			 rl2GeometryPtr geom, rl2VariantArrayPtr variant)
+			 double minx, double miny, double maxx, double maxy,
+			 double x_res, double y_res, rl2GeometryPtr geom,
+			 rl2VariantArrayPtr variant)
 {
 /* drawing a vector feature on the current canvass */
     rl2PrivVectorSymbolizerItemPtr item;
@@ -3519,12 +4388,14 @@ rl2_draw_vector_feature (void *p_ctx, sqlite3 * handle,
 
 /* we'll render all geometries first */
     if (geom->first_polygon != NULL)
-	draw_polygons (ctx, handle, sym, height, minx, miny, x_res, y_res,
-		       geom);
+	draw_polygons (ctx, handle, sym, height, minx, miny, maxx, maxy,
+		       x_res, y_res, geom);
     if (geom->first_linestring != NULL)
-	draw_lines (ctx, handle, sym, height, minx, miny, x_res, y_res, geom);
+	draw_lines (ctx, handle, sym, height, minx, miny, maxx, maxy, x_res,
+		    y_res, geom);
     if (geom->first_point != NULL)
-	draw_points (ctx, handle, sym, height, minx, miny, x_res, y_res, geom);
+	draw_points (ctx, handle, sym, height, minx, miny, maxx, maxy, x_res,
+		     y_res, geom);
 
     if (sym != NULL)
       {
@@ -3542,19 +4413,25 @@ rl2_draw_vector_feature (void *p_ctx, sqlite3 * handle,
 			    int v;
 			    rl2PrivVariantArrayPtr var =
 				(rl2PrivVariantArrayPtr) variant;
-			    for (v = 0; v < var->count; v++)
+			    if (var != NULL)
 			      {
-				  rl2PrivVariantValuePtr val =
-				      *(var->array + v);
-				  if (val == NULL)
-				      continue;
-				  if (val->column_name == NULL)
-				      continue;
-				  if (strcasecmp (text->label, val->column_name)
-				      != 0)
-				      continue;
-				  draw_labels (ctx, handle, text, height, minx,
-					       miny, x_res, y_res, geom, val);
+				  for (v = 0; v < var->count; v++)
+				    {
+					rl2PrivVariantValuePtr val =
+					    *(var->array + v);
+					if (val == NULL)
+					    continue;
+					if (val->column_name == NULL)
+					    continue;
+					if (strcasecmp
+					    (text->label,
+					     val->column_name) != 0)
+					    continue;
+					draw_labels (ctx, handle, priv_data,
+						     text, height, minx, miny,
+						     maxx, maxy, x_res, y_res,
+						     geom, val);
+				    }
 			      }
 			}
 		  }
@@ -3564,4 +4441,84 @@ rl2_draw_vector_feature (void *p_ctx, sqlite3 * handle,
 
     if (default_symbolizer != NULL)
 	rl2_destroy_vector_symbolizer (default_symbolizer);
+}
+
+RL2_PRIVATE int
+rl2_aux_default_image (unsigned int width, unsigned int height,
+		       unsigned char red, unsigned char green,
+		       unsigned char blue, int format, int transparent,
+		       int quality, unsigned char **ximage, int *ximage_sz)
+{
+/* creating a default image */
+    unsigned int x;
+    unsigned int y;
+    unsigned char *pixels = malloc (width * height * 3);
+    unsigned char *po = pixels;
+    unsigned char *mask = NULL;
+    unsigned char *pm;
+
+    *ximage = NULL;
+    *ximage_sz = 0;
+    if (pixels == NULL)
+	return 0;
+
+    mask = malloc (width * height);
+    if (mask == NULL)
+	goto error;
+    pm = mask;
+
+/* priming the image buffer to background color */
+    for (y = 0; y < height; y++)
+      {
+	  for (x = 0; x < width; x++)
+	    {
+		*po++ = red;
+		*po++ = green;
+		*po++ = blue;
+		if (mask != NULL)
+		    *pm++ = 0;
+	    }
+      }
+
+    if (format == RL2_OUTPUT_FORMAT_PNG)
+      {
+	  if (transparent)
+	    {
+		if (rl2_rgb_alpha_to_png
+		    (width, height, pixels, mask, ximage, ximage_sz,
+		     1.0) != RL2_OK)
+		    goto error;
+	    }
+	  else
+	    {
+		if (rl2_rgb_to_png (width, height, pixels, ximage, ximage_sz)
+		    != RL2_OK)
+		    goto error;
+	    }
+      }
+    else if (format == RL2_OUTPUT_FORMAT_JPEG)
+      {
+	  if (rl2_rgb_to_jpeg
+	      (width, height, pixels, quality, ximage, ximage_sz) != RL2_OK)
+	      goto error;
+      }
+    else if (format == RL2_OUTPUT_FORMAT_TIFF)
+      {
+	  if (rl2_rgb_to_tiff (width, height, pixels, ximage, ximage_sz) !=
+	      RL2_OK)
+	      goto error;
+      }
+    else
+	goto error;
+    free (pixels);
+    if (mask != NULL)
+	free (mask);
+    return 1;
+
+  error:
+    if (pixels != NULL)
+	free (pixels);
+    if (mask != NULL)
+	free (mask);
+    return 0;
 }

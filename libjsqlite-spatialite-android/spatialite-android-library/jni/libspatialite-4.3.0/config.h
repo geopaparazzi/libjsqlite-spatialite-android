@@ -186,7 +186,7 @@
 #define PACKAGE_NAME "libspatialite"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "libspatialite 4.3.0-RC0"
+#define PACKAGE_STRING "libspatialite 4.3.0-RC1"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "libspatialite"
@@ -195,7 +195,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "4.3.0-RC0"
+#define PACKAGE_VERSION "4.3.0-RC1"
 
 /* Should be defined when linking liblwgeom from PostGIS 2.1 (or later). */
 /* #undef POSTGIS_2_1 */
@@ -213,7 +213,7 @@
 /* #undef TM_IN_SYS_TIME */
 
 /* Version number of package */
-#define VERSION "4.3.0-RC0"
+#define VERSION "4.3.0-RC1"
 
 /* Must be =64 in order to enable huge-file support. */
 #define _FILE_OFFSET_BITS 64

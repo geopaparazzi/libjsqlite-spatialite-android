@@ -2022,9 +2022,10 @@ odd_even_rows (rl2PrivRasterPtr raster, int *odd_rows, int *row_stride_odd,
 }
 
 RL2_DECLARE int
-rl2_raster_encode (rl2RasterPtr rst, int compression, unsigned char **blob_odd,
-		   int *blob_odd_sz, unsigned char **blob_even,
-		   int *blob_even_sz, int quality, int little_endian)
+rl2_raster_encode (rl2RasterPtr rst, int compression,
+		   unsigned char **blob_odd, int *blob_odd_sz,
+		   unsigned char **blob_even, int *blob_even_sz, int quality,
+		   int little_endian)
 {
 /* encoding a Raster into the internal RL2 binary format */
     rl2PrivRasterPtr raster = (rl2PrivRasterPtr) rst;
@@ -2126,8 +2127,8 @@ rl2_raster_encode (rl2RasterPtr rst, int compression, unsigned char **blob_odd,
 	    {
 		/* packing 1-BIT data */
 		if (!pack_1bit_rows
-		    (raster, raster->rasterBuffer, &row_stride_odd, &pixels_odd,
-		     &size_odd))
+		    (raster, raster->rasterBuffer, &row_stride_odd,
+		     &pixels_odd, &size_odd))
 		    return RL2_ERROR;
 		odd_rows = raster->height;
 	    }
@@ -2151,9 +2152,9 @@ rl2_raster_encode (rl2RasterPtr rst, int compression, unsigned char **blob_odd,
 	    {
 		/* Odd/Even raster */
 		if (!odd_even_rows
-		    (raster, &odd_rows, &row_stride_odd, &pixels_odd, &size_odd,
-		     &even_rows, &row_stride_even, &pixels_even, &size_even,
-		     little_endian))
+		    (raster, &odd_rows, &row_stride_odd, &pixels_odd,
+		     &size_odd, &even_rows, &row_stride_even, &pixels_even,
+		     &size_even, little_endian))
 		    return RL2_ERROR;
 	    }
       }
@@ -2169,9 +2170,9 @@ rl2_raster_encode (rl2RasterPtr rst, int compression, unsigned char **blob_odd,
 	    {
 		/* Odd/Even raster */
 		if (!odd_even_rows
-		    (raster, &odd_rows, &row_stride_odd, &pixels_odd, &size_odd,
-		     &even_rows, &row_stride_even, &pixels_even, &size_even,
-		     little_endian))
+		    (raster, &odd_rows, &row_stride_odd, &pixels_odd,
+		     &size_odd, &even_rows, &row_stride_even, &pixels_even,
+		     &size_even, little_endian))
 		    return RL2_ERROR;
 	    }
       }
@@ -2471,8 +2472,8 @@ rl2_raster_encode (rl2RasterPtr rst, int compression, unsigned char **blob_odd,
       {
 #ifndef OMIT_WEBP		/* only if WebP is enabled */
 	  /* compressing as lossy WEBP */
-	  if (rl2_raster_to_lossy_webp (rst, &compr_data, &compressed, quality)
-	      == RL2_OK)
+	  if (rl2_raster_to_lossy_webp
+	      (rst, &compr_data, &compressed, quality) == RL2_OK)
 	    {
 		/* ok, lossy WEBP compression was successful */
 		uncompressed = raster->width * raster->height * raster->nBands;
@@ -2591,8 +2592,8 @@ rl2_raster_encode (rl2RasterPtr rst, int compression, unsigned char **blob_odd,
       {
 #ifndef OMIT_OPENJPEG		/* only if OpenJpeg is enabled */
 	  /* compressing as lossless Jpeg2000 */
-	  if (rl2_raster_to_lossless_jpeg2000 (rst, &compr_data, &compressed) ==
-	      RL2_OK)
+	  if (rl2_raster_to_lossless_jpeg2000 (rst, &compr_data, &compressed)
+	      == RL2_OK)
 	    {
 		/* ok, lossless Jpeg2000 compression was successful */
 		uncompressed = raster->width * raster->height * raster->nBands;
@@ -2723,8 +2724,8 @@ rl2_raster_encode (rl2RasterPtr rst, int compression, unsigned char **blob_odd,
 		else if (ret == Z_BUF_ERROR)
 		  {
 		      /* ZIP compression actually causes inflation: saving uncompressed data */
-		      if (rl2_delta_decode (pixels_even, size_even, delta_dist)
-			  != RL2_OK)
+		      if (rl2_delta_decode
+			  (pixels_even, size_even, delta_dist) != RL2_OK)
 			  goto error;
 		      uncompressed = size_even;
 		      compressed = size_even;
@@ -3133,10 +3134,11 @@ check_blob_odd (const unsigned char *blob, int blob_sz, unsigned int *xwidth,
 }
 
 static int
-check_blob_even (const unsigned char *blob, int blob_sz, unsigned short xwidth,
-		 unsigned short xheight, unsigned char xsample_type,
-		 unsigned char xpixel_type, unsigned char xnum_bands,
-		 unsigned char xcompression, uLong xcrc)
+check_blob_even (const unsigned char *blob, int blob_sz,
+		 unsigned short xwidth, unsigned short xheight,
+		 unsigned char xsample_type, unsigned char xpixel_type,
+		 unsigned char xnum_bands, unsigned char xcompression,
+		 uLong xcrc)
 {
 /* checking the EvenBlock for validity */
     const unsigned char *ptr;
@@ -3218,7 +3220,8 @@ check_scale (int scale, unsigned char sample_type, unsigned char compression,
     switch (scale)
       {
       case RL2_SCALE_1:
-	  if (sample_type == RL2_SAMPLE_1_BIT || sample_type == RL2_SAMPLE_2_BIT
+	  if (sample_type == RL2_SAMPLE_1_BIT
+	      || sample_type == RL2_SAMPLE_2_BIT
 	      || sample_type == RL2_SAMPLE_4_BIT)
 	      ;
 	  else if (compression == RL2_COMPRESSION_JPEG
@@ -4194,9 +4197,10 @@ do_copy_int32 (int swap, const int *p_odd, const int *p_even, int *buf,
 }
 
 static void
-do_copy_uint32 (int swap, const unsigned int *p_odd, const unsigned int *p_even,
-		unsigned int *buf, unsigned short width,
-		unsigned short odd_rows, unsigned short even_rows)
+do_copy_uint32 (int swap, const unsigned int *p_odd,
+		const unsigned int *p_even, unsigned int *buf,
+		unsigned short width, unsigned short odd_rows,
+		unsigned short even_rows)
 {
 /* reassembling an UINT32 raster - scale 1:1 */
     int row;
@@ -4882,8 +4886,8 @@ RL2_DECLARE int
 rl2_is_valid_dbms_raster_tile (unsigned short level, unsigned int tile_width,
 			       unsigned int tile_height,
 			       const unsigned char *blob_odd, int blob_odd_sz,
-			       const unsigned char *blob_even, int blob_even_sz,
-			       unsigned char sample_type,
+			       const unsigned char *blob_even,
+			       int blob_even_sz, unsigned char sample_type,
 			       unsigned char pixel_type,
 			       unsigned char num_bands,
 			       unsigned char compression)
@@ -4941,8 +4945,8 @@ rl2_is_valid_dbms_raster_tile (unsigned short level, unsigned int tile_width,
 		    && xcompression == RL2_COMPRESSION_PNG)
 		    return RL2_OK;
 	    }
-	  if (sample_type == RL2_SAMPLE_UINT8 && pixel_type == RL2_PIXEL_PALETTE
-	      && num_bands == 1)
+	  if (sample_type == RL2_SAMPLE_UINT8
+	      && pixel_type == RL2_PIXEL_PALETTE && num_bands == 1)
 	    {
 		/* PALETTE 8bits: expecting an RGB/PNG Pyramid tile */
 		if (xsample_type == RL2_SAMPLE_UINT8
@@ -5014,8 +5018,8 @@ rl2_raster_decode (int scale, const unsigned char *blob_odd,
     if (blob_even != NULL)
       {
 	  if (!check_blob_even
-	      (blob_even, blob_even_sz, width, height, sample_type, pixel_type,
-	       num_bands, compression, crc))
+	      (blob_even, blob_even_sz, width, height, sample_type,
+	       pixel_type, num_bands, compression, crc))
 	      return NULL;
       }
     if (!check_scale (scale, sample_type, compression, blob_even))
@@ -5150,8 +5154,8 @@ rl2_raster_decode (int scale, const unsigned char *blob_odd,
 		if (uncompress (even_data, &refLen, in, compressed_even) !=
 		    Z_OK)
 		    goto error;
-		if (rl2_delta_decode (even_data, uncompressed_even, delta_dist)
-		    != RL2_OK)
+		if (rl2_delta_decode
+		    (even_data, uncompressed_even, delta_dist) != RL2_OK)
 		    goto error;
 		pixels_even = even_data;
 	    }
@@ -5308,26 +5312,26 @@ rl2_raster_decode (int scale, const unsigned char *blob_odd,
 	    case RL2_SCALE_1:
 		ret =
 		    rl2_decode_jpeg_scaled (1, pixels_odd, compressed_odd,
-					    &width, &height, &pix_typ, &pixels,
-					    &pixels_sz);
+					    &width, &height, &pix_typ,
+					    &pixels, &pixels_sz);
 		break;
 	    case RL2_SCALE_2:
 		ret =
 		    rl2_decode_jpeg_scaled (2, pixels_odd, compressed_odd,
-					    &width, &height, &pix_typ, &pixels,
-					    &pixels_sz);
+					    &width, &height, &pix_typ,
+					    &pixels, &pixels_sz);
 		break;
 	    case RL2_SCALE_4:
 		ret =
 		    rl2_decode_jpeg_scaled (4, pixels_odd, compressed_odd,
-					    &width, &height, &pix_typ, &pixels,
-					    &pixels_sz);
+					    &width, &height, &pix_typ,
+					    &pixels, &pixels_sz);
 		break;
 	    case RL2_SCALE_8:
 		ret =
 		    rl2_decode_jpeg_scaled (8, pixels_odd, compressed_odd,
-					    &width, &height, &pix_typ, &pixels,
-					    &pixels_sz);
+					    &width, &height, &pix_typ,
+					    &pixels, &pixels_sz);
 		break;
 	    };
 	  if (ret != RL2_OK)
@@ -5384,7 +5388,8 @@ rl2_raster_decode (int scale, const unsigned char *blob_odd,
       {
 	  /* decompressing from PNG */
 	  int ret;
-	  if (sample_type == RL2_SAMPLE_1_BIT || sample_type == RL2_SAMPLE_2_BIT
+	  if (sample_type == RL2_SAMPLE_1_BIT
+	      || sample_type == RL2_SAMPLE_2_BIT
 	      || sample_type == RL2_SAMPLE_4_BIT)
 	    {
 		/* Palette or Grayscale - 1,2 or 4 bit isn't scalable */
@@ -5392,9 +5397,9 @@ rl2_raster_decode (int scale, const unsigned char *blob_odd,
 		    goto error;
 		ret =
 		    rl2_decode_png (pixels_odd, compressed_odd,
-				    &width, &height, &sample_type, &pixel_type,
-				    &num_bands, &pixels, &pixels_sz, &mask,
-				    &mask_sz, &palette, 0);
+				    &width, &height, &sample_type,
+				    &pixel_type, &num_bands, &pixels,
+				    &pixels_sz, &mask, &mask_sz, &palette, 0);
 		if (ret != RL2_OK)
 		    goto error;
 		goto done;
@@ -5413,9 +5418,10 @@ rl2_raster_decode (int scale, const unsigned char *blob_odd,
 		  {
 		      ret = rl2_decode_png (pixels_even, compressed_even,
 					    &width, &even_rows, &sample_type,
-					    &pixel_type, &num_bands, &even_data,
-					    &pixels_sz, &even_mask,
-					    &even_mask_sz, &palette2, 0);
+					    &pixel_type, &num_bands,
+					    &even_data, &pixels_sz,
+					    &even_mask, &even_mask_sz,
+					    &palette2, 0);
 		      if (ret != RL2_OK)
 			  goto error;
 		      rl2_destroy_palette (palette2);
@@ -5486,29 +5492,29 @@ rl2_raster_decode (int scale, const unsigned char *blob_odd,
 		ret =
 		    rl2_decode_jpeg2000_scaled (1, pixels_odd, compressed_odd,
 						&width, &height, sample_type,
-						pixel_type, num_bands, &pixels,
-						&pixels_sz);
+						pixel_type, num_bands,
+						&pixels, &pixels_sz);
 		break;
 	    case RL2_SCALE_2:
 		ret =
 		    rl2_decode_jpeg2000_scaled (2, pixels_odd, compressed_odd,
 						&width, &height, sample_type,
-						pixel_type, num_bands, &pixels,
-						&pixels_sz);
+						pixel_type, num_bands,
+						&pixels, &pixels_sz);
 		break;
 	    case RL2_SCALE_4:
 		ret =
 		    rl2_decode_jpeg2000_scaled (4, pixels_odd, compressed_odd,
 						&width, &height, sample_type,
-						pixel_type, num_bands, &pixels,
-						&pixels_sz);
+						pixel_type, num_bands,
+						&pixels, &pixels_sz);
 		break;
 	    case RL2_SCALE_8:
 		ret =
 		    rl2_decode_jpeg2000_scaled (8, pixels_odd, compressed_odd,
 						&width, &height, sample_type,
-						pixel_type, num_bands, &pixels,
-						&pixels_sz);
+						pixel_type, num_bands,
+						&pixels, &pixels_sz);
 		break;
 	    };
 	  if (ret != RL2_OK)
@@ -5562,8 +5568,8 @@ rl2_raster_decode (int scale, const unsigned char *blob_odd,
 	  if (uncompressed_mask != (mask_width * mask_height))
 	      goto error;
 	  if (!unpack_rle
-	      (mask_width, mask_height, pixels_mask, compressed_mask, &mask_pix,
-	       &mask_pix_sz))
+	      (mask_width, mask_height, pixels_mask, compressed_mask,
+	       &mask_pix, &mask_pix_sz))
 	      goto error;
 	  if (!rescale_mask
 	      (scale, &mask_width, &mask_height, mask_pix, &mask, &mask_sz))
@@ -5887,7 +5893,8 @@ update_uint8_stats (unsigned short width, unsigned short height,
 	      ignore_no_data = 1;
 	  if (nbands != num_bands)
 	      ignore_no_data = 1;
-	  if (sample_type == RL2_SAMPLE_1_BIT || sample_type == RL2_SAMPLE_2_BIT
+	  if (sample_type == RL2_SAMPLE_1_BIT
+	      || sample_type == RL2_SAMPLE_2_BIT
 	      || sample_type == RL2_SAMPLE_4_BIT
 	      || sample_type == RL2_SAMPLE_UINT8)
 	      ;
@@ -6497,7 +6504,8 @@ update_int32_stats (unsigned short width, unsigned short height,
 
 static void
 compute_uint32_histogram (unsigned short width, unsigned short height,
-			  const unsigned int *pixels, const unsigned char *mask,
+			  const unsigned int *pixels,
+			  const unsigned char *mask,
 			  rl2PrivRasterStatisticsPtr st, rl2PixelPtr no_data)
 {
 /* computing INT16 tile histogram */

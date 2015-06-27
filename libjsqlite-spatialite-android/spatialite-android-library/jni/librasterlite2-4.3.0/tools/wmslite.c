@@ -4445,7 +4445,7 @@ get_raster_styles (sqlite3 * handle, struct wms_list *list)
     int ret;
     sqlite3_stmt *stmt;
     const char *sql = "SELECT coverage_name, name, title, abstract "
-	"FROM SE_raster_styled_layers_view ORDER BY coverage_name, style_id";
+	"FROM SE_raster_styled_layers_view ORDER BY coverage_name, name";
     ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
     if (ret != SQLITE_OK)
 	return;
@@ -4480,7 +4480,7 @@ get_vector_styles (sqlite3 * handle, struct wms_list *list)
     int ret;
     sqlite3_stmt *stmt;
     const char *sql = "SELECT coverage_name, name, title, abstract "
-	"FROM SE_vector_styled_layers_view ORDER BY coverage_name, style_id";
+	"FROM SE_vector_styled_layers_view ORDER BY coverage_name, name";
     ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
     if (ret != SQLITE_OK)
 	return;

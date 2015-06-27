@@ -320,8 +320,8 @@ rl2_create_ascii_grid_origin (const char *path, int srid,
       }
 
     ascii =
-	alloc_ascii_origin (path, srid, sample_type, width, height, minx, miny,
-			    maxx, maxy, xres, yres, no_data);
+	alloc_ascii_origin (path, srid, sample_type, width, height, minx,
+			    miny, maxx, maxy, xres, yres, no_data);
     if (ascii == NULL)
 	goto error;
 
@@ -618,8 +618,8 @@ rl2_eval_ascii_grid_origin_compatibility (rl2CoveragePtr cvg,
 	      fprintf (stderr, "Mismatching SRID !!!\n");
 	  return RL2_FALSE;
       }
-    if (rl2_get_ascii_grid_origin_resolution (ascii, &hResolution, &vResolution)
-	!= RL2_OK)
+    if (rl2_get_ascii_grid_origin_resolution
+	(ascii, &hResolution, &vResolution) != RL2_OK)
 	return RL2_FALSE;
     confidence = coverage->hResolution / 100.0;
     if (hResolution < (coverage->hResolution - confidence)
@@ -752,8 +752,8 @@ read_ascii_uint16 (rl2PrivAsciiOriginPtr origin, unsigned int width,
 	       x++, col++)
 	    {
 		unsigned short uint16;
-		if (fread (&uint16, sizeof (unsigned short), 1, origin->tmp) <=
-		    0)
+		if (fread (&uint16, sizeof (unsigned short), 1, origin->tmp)
+		    <= 0)
 		    return 0;
 		*p_out++ = uint16;
 	    }
@@ -1072,8 +1072,8 @@ rl2_get_tile_from_ascii_grid_origin (rl2CoveragePtr cvg,
       }
     raster =
 	rl2_create_raster (coverage->tileWidth, coverage->tileHeight,
-			   coverage->sampleType, RL2_PIXEL_DATAGRID, 1, pixels,
-			   pixels_sz, NULL, mask, mask_size, NULL);
+			   coverage->sampleType, RL2_PIXEL_DATAGRID, 1,
+			   pixels, pixels_sz, NULL, mask, mask_size, NULL);
     if (raster == NULL)
 	goto error;
     return raster;

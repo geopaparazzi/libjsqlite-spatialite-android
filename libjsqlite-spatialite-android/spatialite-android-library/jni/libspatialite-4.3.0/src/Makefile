@@ -340,10 +340,10 @@ OTOOL64 =
 PACKAGE = libspatialite
 PACKAGE_BUGREPORT = a.furieri@lqt.it
 PACKAGE_NAME = libspatialite
-PACKAGE_STRING = libspatialite 4.3.0-RC0
+PACKAGE_STRING = libspatialite 4.3.0-RC1
 PACKAGE_TARNAME = libspatialite
 PACKAGE_URL = 
-PACKAGE_VERSION = 4.3.0-RC0
+PACKAGE_VERSION = 4.3.0-RC1
 PATH_SEPARATOR = :
 PKG_CONFIG = /usr/bin/pkg-config
 PKG_CONFIG_LIBDIR = 
@@ -353,7 +353,7 @@ SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/bash
 STRIP = strip
-VERSION = 4.3.0-RC0
+VERSION = 4.3.0-RC1
 abs_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.3.0/src
 abs_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.3.0/src
 abs_top_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.3.0
@@ -434,8 +434,8 @@ libspatialite_la_LIBADD = ./gaiaaux/libgaiaaux.la \
 	./connection_cache/libconnection_cache.la \
 	./virtualtext/libvirtualtext.la ./wfs/libwfs.la -lxml2  \
 	$(am__append_1) $(am__append_2) $(am__append_3)
-libspatialite_la_LDFLAGS = version-info 8:0:1
-#libspatialite_la_LDFLAGS = version-info 8:0:1
+libspatialite_la_LDFLAGS = -version-info 8:0:1
+#libspatialite_la_LDFLAGS = -version-info 8:0:1
 #libspatialite_la_LDFLAGS = -version-info 4:3:0 -no-undefined
 mod_spatialite_la_SOURCES = versioninfo/version.c
 mod_spatialite_la_LIBADD = ./gaiaaux/gaiaaux.la ./gaiaexif/gaiaexif.la \
@@ -448,8 +448,8 @@ mod_spatialite_la_LIBADD = ./gaiaaux/gaiaaux.la ./gaiaexif/gaiaexif.la \
 mod_spatialite_la_CPPFLAGS = -g -O2 -I$(top_srcdir)/src/headers -I. \
 	-DLOADABLE_EXTENSION
 mod_spatialite_la_LIBTOOLFLAGS = --tag=disable-static
-mod_spatialite_la_LDFLAGS = -module version-info 8:0:1
-#mod_spatialite_la_LDFLAGS = -module version-info 8:0:1
+mod_spatialite_la_LDFLAGS = -module -version-info 8:0:1
+#mod_spatialite_la_LDFLAGS = -module -version-info 8:0:1
 #mod_spatialite_la_LDFLAGS = -module -avoid-version -no-undefined
 MOSTLYCLEANFILES = *.gcna *.gcno *.gcda
 all: all-recursive

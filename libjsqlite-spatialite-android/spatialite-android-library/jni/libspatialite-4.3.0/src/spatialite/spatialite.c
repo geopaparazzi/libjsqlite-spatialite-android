@@ -28871,7 +28871,7 @@ scan_dxf_dir (sqlite3 * db_handle, struct splite_internal_cache *cache,
 		if ((c_file.attrib & _A_RDONLY) == _A_RDONLY
 		    || (c_file.attrib & _A_NORMAL) == _A_NORMAL)
 		  {
-		      if (is_dxf_file (entry->d_name))
+		      if (is_dxf_file (c_file.name))
 			{
 			    filepath =
 				sqlite3_mprintf ("%s/%s", dir_path,
@@ -28887,7 +28887,7 @@ scan_dxf_dir (sqlite3 * db_handle, struct splite_internal_cache *cache,
 		    break;
 	    };
 	  _findclose (hFile);
-      re}
+      }
 #else
 /* not Visual Studio .NET */
     struct dirent *entry;

@@ -772,8 +772,9 @@ rl2_graph_set_linear_gradient_solid_pen (rl2GraphicsContextPtr context,
 					 unsigned char red2,
 					 unsigned char green2,
 					 unsigned char blue2,
-					 unsigned char alpha2, double pen_width,
-					 int line_cap, int line_join)
+					 unsigned char alpha2,
+					 double pen_width, int line_cap,
+					 int line_join)
 {
 /* setting up a Linear Gradient Pen - solid style */
     double d_red = (double) red1 / 255.0;
@@ -1047,8 +1048,9 @@ RL2_DECLARE int
 rl2_graph_set_linear_gradient_brush (rl2GraphicsContextPtr context, double x,
 				     double y, double width, double height,
 				     unsigned char red1, unsigned char green1,
-				     unsigned char blue1, unsigned char alpha1,
-				     unsigned char red2, unsigned char green2,
+				     unsigned char blue1,
+				     unsigned char alpha1, unsigned char red2,
+				     unsigned char green2,
 				     unsigned char blue2, unsigned char alpha2)
 {
 /* setting up a Linear Gradient Brush */
@@ -1577,15 +1579,16 @@ rl2_graph_pattern_recolor (rl2GraphicsPatternPtr ptrn, unsigned char r,
       {
 	  for (x = 0; x < width; x++)
 	    {
-		aux_pattern_get_pixel (x, y, width, bitmap, &red, &green, &blue,
-				       &alpha);
+		aux_pattern_get_pixel (x, y, width, bitmap, &red, &green,
+				       &blue, &alpha);
 		if (alpha != 0)
 		  {
-			  if (red < 64 && green < 64 && blue < 64)
-			  has_black++; 
+		      if (red < 64 && green < 64 && blue < 64)
+			  has_black++;
 		      if (valid)
 			{
-			    if (xred == red && xgreen == green && xblue == blue && alpha == xalpha)
+			    if (xred == red && xgreen == green
+				&& xblue == blue && alpha == xalpha)
 				;
 			    else
 				goto not_mono;
@@ -1606,33 +1609,34 @@ rl2_graph_pattern_recolor (rl2GraphicsPatternPtr ptrn, unsigned char r,
       {
 	  for (x = 0; x < width; x++)
 	    {
-		aux_pattern_get_pixel (x, y, width, bitmap, &red, &green, &blue,
-				       &alpha);
+		aux_pattern_get_pixel (x, y, width, bitmap, &red, &green,
+				       &blue, &alpha);
 		if (alpha != 0)
-		    aux_pattern_set_pixel (x, y, width, bitmap, r, g, b, alpha);          
+		    aux_pattern_set_pixel (x, y, width, bitmap, r, g, b, alpha);
 	    }
       }
     cairo_surface_mark_dirty (pattern->bitmap);
     return RL2_OK;
-    
-not_mono:
-	if (has_black)
-	{
-	/* recoloring only the black pixels */
-    for (y = 0; y < height; y++)
+
+  not_mono:
+    if (has_black)
       {
-	  for (x = 0; x < width; x++)
+	  /* recoloring only the black pixels */
+	  for (y = 0; y < height; y++)
 	    {
-		aux_pattern_get_pixel (x, y, width, bitmap, &red, &green, &blue,
-				       &alpha);
-		if (red < 64 && green < 64 && blue < 64)
-		    aux_pattern_set_pixel (x, y, width, bitmap, r, g, b, alpha);          
+		for (x = 0; x < width; x++)
+		  {
+		      aux_pattern_get_pixel (x, y, width, bitmap, &red,
+					     &green, &blue, &alpha);
+		      if (red < 64 && green < 64 && blue < 64)
+			  aux_pattern_set_pixel (x, y, width, bitmap, r, g, b,
+						 alpha);
+		  }
 	    }
+	  cairo_surface_mark_dirty (pattern->bitmap);
+	  return RL2_OK;
       }
-    cairo_surface_mark_dirty (pattern->bitmap);
-    return RL2_OK;
-	}
-				return RL2_ERROR;
+    return RL2_ERROR;
 }
 
 RL2_DECLARE int
@@ -1663,8 +1667,8 @@ rl2_graph_pattern_transparency (rl2GraphicsPatternPtr ptrn, unsigned char aleph)
       {
 	  for (x = 0; x < width; x++)
 	    {
-		aux_pattern_get_pixel (x, y, width, bitmap, &red, &green, &blue,
-				       &alpha);
+		aux_pattern_get_pixel (x, y, width, bitmap, &red, &green,
+				       &blue, &alpha);
 		if (alpha != 0)
 		    aux_pattern_set_pixel (x, y, width, bitmap, red, green,
 					   blue, aleph);
@@ -1793,8 +1797,9 @@ rl2_font_destructor_callback (void *data)
 }
 
 RL2_DECLARE rl2GraphicsFontPtr
-rl2_graph_create_TrueType_font (const void *priv_data, const unsigned char *ttf,
-				int ttf_bytes, double size)
+rl2_graph_create_TrueType_font (const void *priv_data,
+				const unsigned char *ttf, int ttf_bytes,
+				double size)
 {
 /* creating a TrueType font */
     RL2GraphFontPtr fnt;
@@ -2290,8 +2295,8 @@ rl2_graph_draw_ellipse (rl2GraphicsContextPtr context, double x, double y,
 
 RL2_DECLARE int
 rl2_graph_draw_circle_sector (rl2GraphicsContextPtr context, double center_x,
-			      double center_y, double radius, double from_angle,
-			      double to_angle)
+			      double center_y, double radius,
+			      double from_angle, double to_angle)
 {
 /* drawing a filled circular sector */
     cairo_t *cairo;
@@ -2455,8 +2460,8 @@ rl2_graph_get_text_extent (rl2GraphicsContextPtr context, const char *text,
 }
 
 RL2_DECLARE int
-rl2_graph_draw_text (rl2GraphicsContextPtr context, const char *text, double x,
-		     double y, double angle, double anchor_point_x,
+rl2_graph_draw_text (rl2GraphicsContextPtr context, const char *text,
+		     double x, double y, double angle, double anchor_point_x,
 		     double anchor_point_y)
 {
 /* drawing a text string (using the current font) */
@@ -2637,8 +2642,8 @@ aux_is_discarded_portion (rl2LinestringPtr ln, double x, double y)
 }
 
 static rl2GeometryPtr
-aux_reduce_curve (sqlite3 * handle, rl2GeometryPtr geom, rl2GeometryPtr circle,
-		  double x, double y)
+aux_reduce_curve (sqlite3 * handle, rl2GeometryPtr geom,
+		  rl2GeometryPtr circle, double x, double y)
 {
 /* reducing a Curve by discarding the alreasdy processed portion */
     sqlite3_stmt *stmt = NULL;
@@ -2710,6 +2715,60 @@ aux_reduce_curve (sqlite3 * handle, rl2GeometryPtr geom, rl2GeometryPtr circle,
     return NULL;
 }
 
+static int
+check_reverse (rl2GeometryPtr geom)
+{
+/* testing for an inverse label */
+    rl2LinestringPtr ln;
+    double x0;
+    double y0;
+    double x1;
+    double y1;
+    double width;
+    double height;
+    int last;
+
+    if (geom == NULL)
+	return 0;
+    ln = geom->first_linestring;
+    if (ln == NULL)
+	return 0;
+    if (ln->points < 2)
+	return 0;
+    last = ln->points - 1;
+
+    rl2GetPoint (ln->coords, 0, &x0, &y0);
+    rl2GetPoint (ln->coords, last, &x1, &y1);
+    width = fabs (x0 - x1);
+    height = fabs (y0 - y1);
+    if (width > 3.0)
+      {
+	  if (x0 > x1)
+	      return 1;
+      }
+    else
+      {
+	  if (y0 > y1)
+	      return 1;
+      }
+    return 0;
+}
+
+static void
+reverse_text (const char *in, char *dest, int len)
+{
+/* reversing a text string */
+    char *out;
+    int n = 1;
+    while (*in != '\0')
+      {
+	  out = dest + len - n;
+	  *out = *in++;
+	  n++;
+      }
+    *(dest + len) = '\0';
+}
+
 static rl2GeometryPtr
 rl2_draw_wrapped_label (sqlite3 * handle, rl2GraphicsContextPtr context,
 			cairo_t * cairo, const char *text, rl2GeometryPtr geom)
@@ -2727,6 +2786,7 @@ rl2_draw_wrapped_label (sqlite3 * handle, rl2GraphicsContextPtr context,
     rl2GeometryPtr g2;
     rl2GeometryPtr g = rl2_clone_curve (geom);
     rl2GeometryPtr circle;
+    char *rev_text = NULL;
     const char *c = text;
     cairo_font_extents_t extents;
 
@@ -2734,6 +2794,14 @@ rl2_draw_wrapped_label (sqlite3 * handle, rl2GraphicsContextPtr context,
     radius =
 	sqrt ((extents.max_x_advance * extents.max_x_advance) +
 	      (extents.height * extents.height)) / 2.0;
+    if (check_reverse (g))
+      {
+	  /* reverse text */
+	  int len = strlen (text);
+	  rev_text = malloc (len + 1);
+	  reverse_text (text, rev_text, len);
+	  c = rev_text;
+      }
     while (*c != '\0' && g != NULL)
       {
 	  buf[0] = *c;
@@ -2750,7 +2818,7 @@ rl2_draw_wrapped_label (sqlite3 * handle, rl2GraphicsContextPtr context,
 	  m = (y1 - y0) / (x1 - x0);
 	  rads = atan (m);
 	  angle = rads / .0174532925199432958;
-	  if (x1 < x0)
+	  if (x1 < x0 && rev_text == NULL)
 	      angle += 180.0;
 	  rl2_graph_draw_text (context, buf, x0, y0, angle, 0.5, 0.5);
 	  c++;
@@ -2759,13 +2827,16 @@ rl2_draw_wrapped_label (sqlite3 * handle, rl2GraphicsContextPtr context,
 	  rl2_destroy_geometry (g);
 	  g = g2;
       }
+    if (rev_text)
+	free (rev_text);
     return g;
 }
 
 RL2_DECLARE int
 rl2_graph_draw_warped_text (sqlite3 * handle, rl2GraphicsContextPtr context,
-			    const char *text, int points, double *x, double *y,
-			    double initial_gap, double gap, int repeated)
+			    const char *text, int points, double *x,
+			    double *y, double initial_gap, double gap,
+			    int repeated)
 {
 /* drawing a text string warped along a modelling curve (using the current font) */
     double curve_len;
@@ -2793,7 +2864,7 @@ rl2_graph_draw_warped_text (sqlite3 * handle, rl2GraphicsContextPtr context,
 
     curve_len = rl2_compute_curve_length (geom);
     do_estimate_text_length (cairo, text, &text_len, &extra_len);
-    if ((text_len + (2.0 * extra_len)) > curve_len)
+    if ((initial_gap + text_len + (2.0 * extra_len)) > curve_len)
 	return 0;		/* not enough room to place the label */
 
     if (repeated)
@@ -2811,6 +2882,8 @@ rl2_graph_draw_warped_text (sqlite3 * handle, rl2GraphicsContextPtr context,
 		else
 		    start = gap + extra_len;
 		curve_len = rl2_compute_curve_length (geom3);
+		if ((start + text_len + extra_len) > curve_len)
+		    break;	/* not enough room to place the label */
 		from = start / curve_len;
 		/* extracting the sub-path modelling the label */
 		geom2 = rl2_curve_substring (handle, geom3, from, 1.0);

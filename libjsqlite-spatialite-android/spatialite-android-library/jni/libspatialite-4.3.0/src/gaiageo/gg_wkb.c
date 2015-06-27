@@ -1388,8 +1388,10 @@ gaiaToSpatiaLiteBlobWkbEx (gaiaGeomCollPtr geom, unsigned char **result,
 
     if (gpkg_mode)
       {
+#ifdef ENABLE_GEOPACKAGE	/* only if GeoPackage support is enabled */
 	  /* GeoPackage Mode enabled */
 	  gaiaToGPB (geom, result, size);
+#endif /* end GEOPACKAGE conditional */
 	  return;
       }
 

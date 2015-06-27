@@ -544,8 +544,8 @@ parse_hex (unsigned char hi, unsigned char lo, unsigned char *val)
 }
 
 static int
-parse_sld_se_color (const char *color, unsigned char *red, unsigned char *green,
-		    unsigned char *blue)
+parse_sld_se_color (const char *color, unsigned char *red,
+		    unsigned char *green, unsigned char *blue)
 {
 /* attempting to parse a #RRGGBB hexadecimal color */
     unsigned char r;
@@ -664,9 +664,8 @@ parse_sld_se_categorize (xmlNodePtr node, rl2PrivRasterSymbolizerPtr style)
 						{
 						    style->categorize->baseRed =
 							red;
-						    style->
-							categorize->baseGreen =
-							green;
+						    style->categorize->baseGreen
+							= green;
 						    style->
 							categorize->baseBlue =
 							blue;
@@ -980,8 +979,8 @@ parse_sld_se_shaded_relief (xmlNodePtr node, rl2PrivRasterSymbolizerPtr style)
 							(const char
 							 *) (text->content);
 						    if (value != NULL)
-							style->brightnessOnly =
-							    atoi (value);
+							style->brightnessOnly
+							    = atoi (value);
 						}
 					      text = text->next;
 					  }
@@ -1060,7 +1059,8 @@ parse_coverage_style (xmlNodePtr node, rl2PrivCoverageStylePtr style)
 				    {
 					rl2PrivStyleRulePtr rule =
 					    rl2_create_default_style_rule ();
-					rl2PrivRasterSymbolizerPtr symbolizer =
+					rl2PrivRasterSymbolizerPtr symbolizer
+					    =
 					    rl2_create_default_raster_symbolizer
 					    ();
 					if (symbolizer == NULL || rule == NULL)
@@ -1376,8 +1376,8 @@ parse_graphic_map_item (xmlNodePtr node, rl2PrivColorReplacementPtr repl)
 			    unsigned char green;
 			    unsigned char blue;
 			    if (parse_sld_se_color
-				((const char *) (child->content), &red, &green,
-				 &blue))
+				((const char *) (child->content), &red,
+				 &green, &blue))
 			      {
 				  repl->red = red;
 				  repl->green = green;
@@ -1550,35 +1550,35 @@ parse_mark_stroke (xmlNodePtr node, rl2PrivMarkPtr mark)
 						    mark->stroke->blue = blue;
 						}
 					  }
-					if (strcmp (svg_name, "stroke-width") ==
-					    0)
+					if (strcmp (svg_name, "stroke-width")
+					    == 0)
 					    mark->stroke->width =
 						atof ((const char *) svg_value);
-					if (strcmp (svg_name, "stroke-linejoin")
-					    == 0)
+					if (strcmp
+					    (svg_name, "stroke-linejoin") == 0)
 					  {
-					      if (strcmp (svg_value, "mitre") ==
-						  0)
+					      if (strcmp (svg_value, "mitre")
+						  == 0)
 						  mark->stroke->linejoin =
 						      RL2_STROKE_LINEJOIN_MITRE;
-					      if (strcmp (svg_value, "round") ==
-						  0)
+					      if (strcmp (svg_value, "round")
+						  == 0)
 						  mark->stroke->linejoin =
 						      RL2_STROKE_LINEJOIN_ROUND;
-					      if (strcmp (svg_value, "bevel") ==
-						  0)
+					      if (strcmp (svg_value, "bevel")
+						  == 0)
 						  mark->stroke->linejoin =
 						      RL2_STROKE_LINEJOIN_BEVEL;
 					  }
-					if (strcmp (svg_name, "stroke-linecap")
-					    == 0)
+					if (strcmp
+					    (svg_name, "stroke-linecap") == 0)
 					  {
-					      if (strcmp (svg_value, "butt") ==
-						  0)
+					      if (strcmp (svg_value, "butt")
+						  == 0)
 						  mark->stroke->linecap =
 						      RL2_STROKE_LINECAP_BUTT;
-					      if (strcmp (svg_value, "round") ==
-						  0)
+					      if (strcmp (svg_value, "round")
+						  == 0)
 						  mark->stroke->linecap =
 						      RL2_STROKE_LINECAP_ROUND;
 					      if (strcmp (svg_value, "square")
@@ -1829,39 +1829,39 @@ parse_line_stroke (xmlNodePtr node, rl2PrivLineSymbolizerPtr sym)
 						    sym->stroke->blue = blue;
 						}
 					  }
-					if (strcmp (svg_name, "stroke-opacity")
-					    == 0)
+					if (strcmp
+					    (svg_name, "stroke-opacity") == 0)
 					    sym->stroke->opacity =
 						atof ((const char *) svg_value);
-					if (strcmp (svg_name, "stroke-width") ==
-					    0)
+					if (strcmp (svg_name, "stroke-width")
+					    == 0)
 					    sym->stroke->width =
 						atof ((const char *) svg_value);
-					if (strcmp (svg_name, "stroke-linejoin")
-					    == 0)
+					if (strcmp
+					    (svg_name, "stroke-linejoin") == 0)
 					  {
-					      if (strcmp (svg_value, "mitre") ==
-						  0)
+					      if (strcmp (svg_value, "mitre")
+						  == 0)
 						  sym->stroke->linejoin =
 						      RL2_STROKE_LINEJOIN_MITRE;
-					      if (strcmp (svg_value, "round") ==
-						  0)
+					      if (strcmp (svg_value, "round")
+						  == 0)
 						  sym->stroke->linejoin =
 						      RL2_STROKE_LINEJOIN_ROUND;
-					      if (strcmp (svg_value, "bevel") ==
-						  0)
+					      if (strcmp (svg_value, "bevel")
+						  == 0)
 						  sym->stroke->linejoin =
 						      RL2_STROKE_LINEJOIN_BEVEL;
 					  }
-					if (strcmp (svg_name, "stroke-linecap")
-					    == 0)
+					if (strcmp
+					    (svg_name, "stroke-linecap") == 0)
 					  {
-					      if (strcmp (svg_value, "butt") ==
-						  0)
+					      if (strcmp (svg_value, "butt")
+						  == 0)
 						  sym->stroke->linecap =
 						      RL2_STROKE_LINECAP_BUTT;
-					      if (strcmp (svg_value, "round") ==
-						  0)
+					      if (strcmp (svg_value, "round")
+						  == 0)
 						  sym->stroke->linecap =
 						      RL2_STROKE_LINECAP_ROUND;
 					      if (strcmp (svg_value, "square")
@@ -2028,39 +2028,39 @@ parse_polygon_stroke (xmlNodePtr node, rl2PrivPolygonSymbolizerPtr sym)
 						    sym->stroke->blue = blue;
 						}
 					  }
-					if (strcmp (svg_name, "stroke-opacity")
-					    == 0)
+					if (strcmp
+					    (svg_name, "stroke-opacity") == 0)
 					    sym->stroke->opacity =
 						atof ((const char *) svg_value);
-					if (strcmp (svg_name, "stroke-width") ==
-					    0)
+					if (strcmp (svg_name, "stroke-width")
+					    == 0)
 					    sym->stroke->width =
 						atof ((const char *) svg_value);
-					if (strcmp (svg_name, "stroke-linejoin")
-					    == 0)
+					if (strcmp
+					    (svg_name, "stroke-linejoin") == 0)
 					  {
-					      if (strcmp (svg_value, "mitre") ==
-						  0)
+					      if (strcmp (svg_value, "mitre")
+						  == 0)
 						  sym->stroke->linejoin =
 						      RL2_STROKE_LINEJOIN_MITRE;
-					      if (strcmp (svg_value, "round") ==
-						  0)
+					      if (strcmp (svg_value, "round")
+						  == 0)
 						  sym->stroke->linejoin =
 						      RL2_STROKE_LINEJOIN_ROUND;
-					      if (strcmp (svg_value, "bevel") ==
-						  0)
+					      if (strcmp (svg_value, "bevel")
+						  == 0)
 						  sym->stroke->linejoin =
 						      RL2_STROKE_LINEJOIN_BEVEL;
 					  }
-					if (strcmp (svg_name, "stroke-linecap")
-					    == 0)
+					if (strcmp
+					    (svg_name, "stroke-linecap") == 0)
 					  {
-					      if (strcmp (svg_value, "butt") ==
-						  0)
+					      if (strcmp (svg_value, "butt")
+						  == 0)
 						  sym->stroke->linecap =
 						      RL2_STROKE_LINECAP_BUTT;
-					      if (strcmp (svg_value, "round") ==
-						  0)
+					      if (strcmp (svg_value, "round")
+						  == 0)
 						  sym->stroke->linecap =
 						      RL2_STROKE_LINECAP_ROUND;
 					      if (strcmp (svg_value, "square")
@@ -2170,8 +2170,8 @@ parse_polygon_fill (xmlNodePtr node, rl2PrivPolygonSymbolizerPtr sym)
 						    sym->fill->blue = blue;
 						}
 					  }
-					if (strcmp (svg_name, "fill-opacity") ==
-					    0)
+					if (strcmp (svg_name, "fill-opacity")
+					    == 0)
 					    sym->fill->opacity =
 						atof (svg_value);
 				    }
@@ -2621,8 +2621,8 @@ parse_text_font (xmlNodePtr node, rl2PrivTextSymbolizerPtr sym)
 					      child = child->next;
 					      continue;
 					  }
-					if (strcmp (svg_name, "font-family") ==
-					    0)
+					if (strcmp (svg_name, "font-family")
+					    == 0)
 					  {
 					      if (sym->font_families_count <
 						  RL2_MAX_FONT_FAMILIES)
@@ -2654,15 +2654,15 @@ parse_text_font (xmlNodePtr node, rl2PrivTextSymbolizerPtr sym)
 						  sym->font_style =
 						      RL2_FONT_STYLE_OBLIQUE;
 					  }
-					if (strcmp (svg_name, "font-weight") ==
-					    0)
+					if (strcmp (svg_name, "font-weight")
+					    == 0)
 					  {
 					      if (strcasecmp
 						  (svg_value, "normal") == 0)
 						  sym->font_weight =
 						      RL2_FONT_WEIGHT_NORMAL;
-					      if (strcasecmp (svg_value, "bold")
-						  == 0)
+					      if (strcasecmp
+						  (svg_value, "bold") == 0)
 						  sym->font_weight =
 						      RL2_FONT_WEIGHT_BOLD;
 					  }
@@ -3020,10 +3020,12 @@ parse_text_label_placement (xmlNodePtr node, rl2PrivTextSymbolizerPtr sym)
 		if (strcmp (name, "LabelPlacement") == 0)
 		  {
 		      xmlNodePtr child = node->children;
-		      if (sym->label_placement_type == RL2_LABEL_PLACEMENT_POINT
+		      if (sym->label_placement_type ==
+			  RL2_LABEL_PLACEMENT_POINT
 			  && sym->label_placement != NULL)
 			  rl2_destroy_point_placement ((rl2PrivPointPlacementPtr) (sym->label_placement));
-		      if (sym->label_placement_type == RL2_LABEL_PLACEMENT_LINE
+		      if (sym->label_placement_type ==
+			  RL2_LABEL_PLACEMENT_LINE
 			  && sym->label_placement != NULL)
 			  rl2_destroy_line_placement ((rl2PrivLinePlacementPtr)
 						      (sym->label_placement));
@@ -3997,25 +3999,22 @@ build_column_names_array (rl2PrivFeatureTypeStylePtr style)
       {
 	  /* counting max column names */
 	  if (pR->column_name != NULL)
+	      count++;
+	  if (pR->style_type == RL2_VECTOR_STYLE && pR->style != NULL)
 	    {
-		count++;
-		if (pR->style_type == RL2_VECTOR_STYLE && pR->style != NULL)
+		pV = (rl2PrivVectorSymbolizerPtr) (pR->style);
+		item = pV->first;
+		while (item != NULL)
 		  {
-		      pV = (rl2PrivVectorSymbolizerPtr) (pR->style);
-		      item = pV->first;
-		      while (item != NULL)
+		      if (item->symbolizer_type == RL2_TEXT_SYMBOLIZER
+			  && item->symbolizer != NULL)
 			{
-			    if (item->symbolizer_type == RL2_TEXT_SYMBOLIZER
-				&& item->symbolizer != NULL)
-			      {
-				  text =
-				      (rl2PrivTextSymbolizerPtr)
-				      (item->symbolizer);
-				  if (text->label != NULL)
-				      count++;
-			      }
-			    item = item->next;
+			    text =
+				(rl2PrivTextSymbolizerPtr) (item->symbolizer);
+			    if (text->label != NULL)
+				count++;
 			}
+		      item = item->next;
 		  }
 	    }
 	  pR = pR->next;
@@ -4024,25 +4023,22 @@ build_column_names_array (rl2PrivFeatureTypeStylePtr style)
     if (pR != NULL)
       {
 	  if (pR->column_name != NULL)
+	      count++;
+	  if (pR->style_type == RL2_VECTOR_STYLE && pR->style != NULL)
 	    {
-		count++;
-		if (pR->style_type == RL2_VECTOR_STYLE && pR->style != NULL)
+		pV = (rl2PrivVectorSymbolizerPtr) (pR->style);
+		item = pV->first;
+		while (item != NULL)
 		  {
-		      pV = (rl2PrivVectorSymbolizerPtr) (pR->style);
-		      item = pV->first;
-		      while (item != NULL)
+		      if (item->symbolizer_type == RL2_TEXT_SYMBOLIZER
+			  && item->symbolizer != NULL)
 			{
-			    if (item->symbolizer_type == RL2_TEXT_SYMBOLIZER
-				&& item->symbolizer != NULL)
-			      {
-				  text =
-				      (rl2PrivTextSymbolizerPtr)
-				      (item->symbolizer);
-				  if (text->label != NULL)
-				      count++;
-			      }
-			    item = item->next;
+			    text =
+				(rl2PrivTextSymbolizerPtr) (item->symbolizer);
+			    if (text->label != NULL)
+				count++;
 			}
+		      item = item->next;
 		  }
 	    }
       }
@@ -4063,29 +4059,28 @@ build_column_names_array (rl2PrivFeatureTypeStylePtr style)
 		strcpy (*(strings + i), pR->column_name);
 		*(dupl + i) = 'N';
 		i++;
-		if (pR->style_type == RL2_VECTOR_STYLE && pR->style != NULL)
+	    }
+	  if (pR->style_type == RL2_VECTOR_STYLE && pR->style != NULL)
+	    {
+		pV = (rl2PrivVectorSymbolizerPtr) (pR->style);
+		item = pV->first;
+		while (item != NULL)
 		  {
-		      pV = (rl2PrivVectorSymbolizerPtr) (pR->style);
-		      item = pV->first;
-		      while (item != NULL)
+		      if (item->symbolizer_type == RL2_TEXT_SYMBOLIZER
+			  && item->symbolizer != NULL)
 			{
-			    if (item->symbolizer_type == RL2_TEXT_SYMBOLIZER
-				&& item->symbolizer != NULL)
+			    text =
+				(rl2PrivTextSymbolizerPtr) (item->symbolizer);
+			    if (text->label != NULL)
 			      {
-				  text =
-				      (rl2PrivTextSymbolizerPtr)
-				      (item->symbolizer);
-				  if (text->label != NULL)
-				    {
-					len = strlen (text->label);
-					*(strings + i) = malloc (len + 1);
-					strcpy (*(strings + i), text->label);
-					*(dupl + i) = 'N';
-					i++;
-				    }
+				  len = strlen (text->label);
+				  *(strings + i) = malloc (len + 1);
+				  strcpy (*(strings + i), text->label);
+				  *(dupl + i) = 'N';
+				  i++;
 			      }
-			    item = item->next;
 			}
+		      item = item->next;
 		  }
 	    }
 	  pR = pR->next;
@@ -4100,29 +4095,28 @@ build_column_names_array (rl2PrivFeatureTypeStylePtr style)
 		strcpy (*(strings + i), pR->column_name);
 		*(dupl + i) = 'N';
 		i++;
-		if (pR->style_type == RL2_VECTOR_STYLE && pR->style != NULL)
+	    }
+	  if (pR->style_type == RL2_VECTOR_STYLE && pR->style != NULL)
+	    {
+		pV = (rl2PrivVectorSymbolizerPtr) (pR->style);
+		item = pV->first;
+		while (item != NULL)
 		  {
-		      pV = (rl2PrivVectorSymbolizerPtr) (pR->style);
-		      item = pV->first;
-		      while (item != NULL)
+		      if (item->symbolizer_type == RL2_TEXT_SYMBOLIZER
+			  && item->symbolizer != NULL)
 			{
-			    if (item->symbolizer_type == RL2_TEXT_SYMBOLIZER
-				&& item->symbolizer != NULL)
+			    text =
+				(rl2PrivTextSymbolizerPtr) (item->symbolizer);
+			    if (text->label != NULL)
 			      {
-				  text =
-				      (rl2PrivTextSymbolizerPtr)
-				      (item->symbolizer);
-				  if (text->label != NULL)
-				    {
-					len = strlen (text->label);
-					*(strings + i) = malloc (len + 1);
-					strcpy (*(strings + i), text->label);
-					*(dupl + i) = 'N';
-					i++;
-				    }
+				  len = strlen (text->label);
+				  *(strings + i) = malloc (len + 1);
+				  strcpy (*(strings + i), text->label);
+				  *(dupl + i) = 'N';
+				  i++;
 			      }
-			    item = item->next;
 			}
+		      item = item->next;
 		  }
 	    }
       }
@@ -4438,7 +4432,8 @@ rl2_alloc_group_renderer (int count)
 
 static int
 rl2_group_renderer_set_raster (rl2PrivGroupRendererPtr group, int index,
-			       const char *layer_name, rl2CoveragePtr coverage,
+			       const char *layer_name,
+			       rl2CoveragePtr coverage,
 			       sqlite3_int64 style_id,
 			       rl2RasterSymbolizerPtr symbolizer,
 			       rl2RasterStatisticsPtr stats)

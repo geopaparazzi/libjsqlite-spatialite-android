@@ -514,8 +514,9 @@ rl2_is_supported_codec (unsigned char compression)
 }
 
 static int
-check_coverage_no_data (rl2PrivPixelPtr pxl_no_data, unsigned char sample_type,
-			unsigned char pixel_type, unsigned char num_samples)
+check_coverage_no_data (rl2PrivPixelPtr pxl_no_data,
+			unsigned char sample_type, unsigned char pixel_type,
+			unsigned char num_samples)
 {
 /* checking if the NoData pixel is consistent with the Coverage */
     if (pxl_no_data == NULL)
@@ -1255,8 +1256,8 @@ RL2_DECLARE rl2RasterPtr
 rl2_create_raster (unsigned int width, unsigned int height,
 		   unsigned char sample_type, unsigned char pixel_type,
 		   unsigned char num_samples, unsigned char *bufpix,
-		   int bufpix_size, rl2PalettePtr palette, unsigned char *mask,
-		   int mask_size, rl2PixelPtr no_data)
+		   int bufpix_size, rl2PalettePtr palette,
+		   unsigned char *mask, int mask_size, rl2PixelPtr no_data)
 {
 /* allocating and initializing a Raster object with an optional Transparency Mask */
     return create_raster_common (width, height, sample_type, pixel_type,
@@ -1432,8 +1433,9 @@ rl2_raster_georeference_center (rl2RasterPtr ptr, int srid, double horz_res,
 }
 
 RL2_DECLARE int
-rl2_raster_georeference_upper_left (rl2RasterPtr ptr, int srid, double horz_res,
-				    double vert_res, double x, double y)
+rl2_raster_georeference_upper_left (rl2RasterPtr ptr, int srid,
+				    double horz_res, double vert_res,
+				    double x, double y)
 {
 /* setting the Raster's georeferencing infos - UpperLeft corner */
     rl2PrivRasterPtr rst = (rl2PrivRasterPtr) ptr;
@@ -1455,8 +1457,8 @@ rl2_raster_georeference_upper_left (rl2RasterPtr ptr, int srid, double horz_res,
 
 RL2_DECLARE int
 rl2_raster_georeference_upper_right (rl2RasterPtr ptr, int srid,
-				     double horz_res, double vert_res, double x,
-				     double y)
+				     double horz_res, double vert_res,
+				     double x, double y)
 {
 /* setting the Raster's georeferencing infos - UpperRight corner */
     rl2PrivRasterPtr rst = (rl2PrivRasterPtr) ptr;
@@ -1477,8 +1479,9 @@ rl2_raster_georeference_upper_right (rl2RasterPtr ptr, int srid,
 }
 
 RL2_DECLARE int
-rl2_raster_georeference_lower_left (rl2RasterPtr ptr, int srid, double horz_res,
-				    double vert_res, double x, double y)
+rl2_raster_georeference_lower_left (rl2RasterPtr ptr, int srid,
+				    double horz_res, double vert_res,
+				    double x, double y)
 {
 /* setting the Raster's georeferencing infos - LowerLeft corner */
     rl2PrivRasterPtr rst = (rl2PrivRasterPtr) ptr;
@@ -1500,8 +1503,8 @@ rl2_raster_georeference_lower_left (rl2RasterPtr ptr, int srid, double horz_res,
 
 RL2_DECLARE int
 rl2_raster_georeference_lower_right (rl2RasterPtr ptr, int srid,
-				     double horz_res, double vert_res, double x,
-				     double y)
+				     double horz_res, double vert_res,
+				     double x, double y)
 {
 /* setting the Raster's georeferencing infos - LowerRight corner */
     rl2PrivRasterPtr rst = (rl2PrivRasterPtr) ptr;
@@ -1807,8 +1810,8 @@ rl2_set_palette_color (rl2PalettePtr ptr, int index, unsigned char r,
 }
 
 RL2_DECLARE int
-rl2_get_palette_index (rl2PalettePtr ptr, unsigned char *index, unsigned char r,
-		       unsigned char g, unsigned char b)
+rl2_get_palette_index (rl2PalettePtr ptr, unsigned char *index,
+		       unsigned char r, unsigned char g, unsigned char b)
 {
 /* finding the index corresponding to the given color (if any) */
     int i;

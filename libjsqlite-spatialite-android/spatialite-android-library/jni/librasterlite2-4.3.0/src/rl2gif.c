@@ -606,8 +606,8 @@ rl2_raster_from_gif (const unsigned char *gif, int gif_size)
 RL2_PRIVATE int
 rl2_decode_gif (const unsigned char *gif, int gif_size, unsigned int *xwidth,
 		unsigned int *xheight, unsigned char *xsample_type,
-		unsigned char *xpixel_type, unsigned char **blob, int *blob_sz,
-		rl2PalettePtr * palette)
+		unsigned char *xpixel_type, unsigned char **blob,
+		int *blob_sz, rl2PalettePtr * palette)
 {
 /* attempting to create a raster from a GIF image - raw block */
     struct gif_memory_buffer membuf;

@@ -1076,7 +1076,7 @@ test_filter (sqlite3 * db_handle, const char *coverage,
 	  *retcode += 18;
 	  return 0;
       }
-    if (red != 0x00 || green != 0x00 || blue != 0xff)
+    if (red != 0x80 || green != 0x80 || blue != 0x80)
       {
 	  fprintf (stderr,
 		   "Unexpected Line Symbolizer GetStrokeColor #4: %02x%02x%02x\n",
@@ -1315,7 +1315,7 @@ test_filter (sqlite3 * db_handle, const char *coverage,
 	  *retcode += 48;
 	  return 0;
       }
-    if (red != 0x00 || green != 0x00 || blue != 0xff)
+    if (red != 0x80 || green != 0x80 || blue != 0x80)
       {
 	  fprintf (stderr,
 		   "Unexpected Line Symbolizer GetStrokeColor #9: %02x%02x%02x\n",
@@ -1363,7 +1363,7 @@ test_filter (sqlite3 * db_handle, const char *coverage,
 	  *retcode += 54;
 	  return 0;
       }
-    if (red != 0x00 || green != 0x00 || blue != 0xff)
+    if (red != 0x80 || green != 0x80 || blue != 0x80)
       {
 	  fprintf (stderr,
 		   "Unexpected Line Symbolizer GetStrokeColor #10: %02x%02x%02x\n",
@@ -1411,7 +1411,7 @@ test_filter (sqlite3 * db_handle, const char *coverage,
 	  *retcode += 60;
 	  return 0;
       }
-    if (red != 0x00 || green != 0x00 || blue != 0xff)
+    if (red != 0x80 || green != 0x80 || blue != 0x80)
       {
 	  fprintf (stderr,
 		   "Unexpected Line Symbolizer GetStrokeColor #11: %02x%02x%02x\n",

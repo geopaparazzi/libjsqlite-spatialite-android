@@ -286,8 +286,8 @@ from_ilv_buffer_16 (unsigned short *out, unsigned short *in, int width,
 }
 
 static void
-from_ilv_buffer_8 (unsigned char *out, unsigned char *in, int width, int height,
-		   int num_bands)
+from_ilv_buffer_8 (unsigned char *out, unsigned char *in, int width,
+		   int height, int num_bands)
 {
 /* rearranging pixels from separate LINE components - UINT 8 */
     int x;
@@ -457,8 +457,8 @@ rl2_decode_charls (const unsigned char *charls_buf, int charls_sz,
 				  *height, *num_bands);
 	  else
 	      from_ilv_buffer_8 ((unsigned char *) (*pixels),
-				 (unsigned char *) out_buffer, *width, *height,
-				 *num_bands);
+				 (unsigned char *) out_buffer, *width,
+				 *height, *num_bands);
       }
     free (out_buffer);
     return RL2_OK;

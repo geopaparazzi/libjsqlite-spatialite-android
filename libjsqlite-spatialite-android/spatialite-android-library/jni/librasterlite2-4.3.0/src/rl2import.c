@@ -104,8 +104,8 @@ doAuxImporterTileCleanup (rl2AuxImporterTilePtr tile)
 }
 
 static void
-addTile2AuxImporter (rl2AuxImporterPtr aux, unsigned int row, unsigned int col,
-		     double minx, double maxy)
+addTile2AuxImporter (rl2AuxImporterPtr aux, unsigned int row,
+		     unsigned int col, double minx, double maxy)
 {
 /* adding a Tile to some AuxImporter container */
     rl2AuxImporterTilePtr tile;
@@ -350,23 +350,26 @@ do_get_tile (rl2AuxImporterTilePtr tile)
 	  tile->raster =
 	      rl2_get_tile_from_ascii_grid_origin ((rl2CoveragePtr)
 						   (aux->coverage),
-						   ascii_grid_origin, tile->row,
-						   tile->col, aux->verbose);
+						   ascii_grid_origin,
+						   tile->row, tile->col,
+						   aux->verbose);
 	  break;
       case RL2_ORIGIN_JPEG:
 	  raster_origin = (rl2RasterPtr) (aux->origin);
 	  tile->raster =
 	      rl2_get_tile_from_jpeg_origin ((rl2CoveragePtr) (aux->coverage),
 					     raster_origin, tile->row,
-					     tile->col, aux->forced_conversion,
+					     tile->col,
+					     aux->forced_conversion,
 					     aux->verbose);
 	  break;
       case RL2_ORIGIN_JPEG2000:
 	  raster_origin = (rl2RasterPtr) (aux->origin);
 	  tile->raster =
 	      rl2_get_tile_from_jpeg2000_origin ((rl2CoveragePtr)
-						 (aux->coverage), raster_origin,
-						 tile->row, tile->col,
+						 (aux->coverage),
+						 raster_origin, tile->row,
+						 tile->col,
 						 aux->forced_conversion,
 						 aux->verbose);
 	  break;
@@ -374,8 +377,9 @@ do_get_tile (rl2AuxImporterTilePtr tile)
 	  tiff_origin = (rl2TiffOriginPtr) (aux->origin);
 	  tile->raster =
 	      rl2_get_tile_from_tiff_origin ((rl2CoveragePtr) (aux->coverage),
-					     tiff_origin, tile->row, tile->col,
-					     aux->srid, aux->verbose);
+					     tiff_origin, tile->row,
+					     tile->col, aux->srid,
+					     aux->verbose);
 	  break;
       case RL2_ORIGIN_RAW:
 	  raster_origin = (rl2RasterPtr) (aux->origin);
@@ -641,8 +645,8 @@ do_import_ascii_grid (sqlite3 * handle, int max_threads, const char *src_path,
 
 /* INSERTing the section */
     if (!rl2_do_insert_section
-	(handle, src_path, section, srid, width, height, minx, miny, maxx, maxy,
-	 xml_summary, coverage->sectionPaths, coverage->sectionMD5,
+	(handle, src_path, section, srid, width, height, minx, miny, maxx,
+	 maxy, xml_summary, coverage->sectionPaths, coverage->sectionMD5,
 	 coverage->sectionSummary, stmt_sect, &section_id))
 	goto error;
     section_stats = rl2_create_raster_statistics (sample_type, 1);
@@ -667,8 +671,8 @@ do_import_ascii_grid (sqlite3 * handle, int max_threads, const char *src_path,
 /* preparing all Tile Requests */
     aux =
 	createAuxImporter (coverage, srid, maxx, miny, tile_w, tile_h, res_x,
-			   res_y, RL2_ORIGIN_ASCII_GRID, origin, RL2_CONVERT_NO,
-			   verbose, compression, 100);
+			   res_y, RL2_ORIGIN_ASCII_GRID, origin,
+			   RL2_CONVERT_NO, verbose, compression, 100);
     tile_maxy = maxy;
     for (row = 0; row < height; row += tile_h)
       {
@@ -912,7 +916,8 @@ check_jpeg_origin_compatibility (rl2RasterPtr raster, rl2CoveragePtr coverage,
 static int
 check_jpeg2000_origin_compatibility (rl2RasterPtr raster,
 				     rl2CoveragePtr coverage,
-				     unsigned int *width, unsigned int *height,
+				     unsigned int *width,
+				     unsigned int *height,
 				     unsigned char *forced_conversion)
 {
 /* checking if the Jpeg2000 and the Coverage are mutually compatible */
@@ -998,8 +1003,8 @@ check_jpeg2000_origin_compatibility (rl2RasterPtr raster,
 		return 1;
 	    }
       }
-    if (rst->sampleType == RL2_SAMPLE_UINT16 && rst->pixelType == RL2_PIXEL_RGB
-	&& rst->nBands == 3)
+    if (rst->sampleType == RL2_SAMPLE_UINT16
+	&& rst->pixelType == RL2_PIXEL_RGB && rst->nBands == 3)
       {
 	  if (cvg->sampleType == RL2_SAMPLE_UINT16
 	      && cvg->pixelType == RL2_PIXEL_RGB && cvg->nBands == 3)
@@ -1233,8 +1238,8 @@ do_import_jpeg_image (sqlite3 * handle, int max_threads, const char *src_path,
     raster_in = (rl2PrivRasterPtr) rst_in;
     xml_summary =
 	rl2_build_jpeg_xml_summary (width, height, raster_in->pixelType,
-				    is_georeferenced, res_x, res_y, minx, miny,
-				    maxx, maxy);
+				    is_georeferenced, res_x, res_y, minx,
+				    miny, maxx, maxy);
 
     printf ("------------------\n");
     if (total > 1)
@@ -1313,8 +1318,8 @@ do_import_jpeg_image (sqlite3 * handle, int max_threads, const char *src_path,
 
 /* INSERTing the section */
     if (!rl2_do_insert_section
-	(handle, src_path, section, srid, width, height, minx, miny, maxx, maxy,
-	 xml_summary, coverage->sectionPaths, coverage->sectionMD5,
+	(handle, src_path, section, srid, width, height, minx, miny, maxx,
+	 maxy, xml_summary, coverage->sectionPaths, coverage->sectionMD5,
 	 coverage->sectionSummary, stmt_sect, &section_id))
 	goto error;
     section_stats = rl2_create_raster_statistics (sample_type, num_bands);
@@ -1681,10 +1686,10 @@ do_import_jpeg2000_image (sqlite3 * handle, int max_threads,
     raster_in = (rl2PrivRasterPtr) rst_in;
     xml_summary =
 	rl2_build_jpeg2000_xml_summary (width, height, raster_in->sampleType,
-					raster_in->pixelType, raster_in->nBands,
-					is_georeferenced, res_x, res_y, minx,
-					miny, maxx, maxy, tile_width,
-					tile_height);
+					raster_in->pixelType,
+					raster_in->nBands, is_georeferenced,
+					res_x, res_y, minx, miny, maxx, maxy,
+					tile_width, tile_height);
 
     printf ("------------------\n");
     if (total > 1)
@@ -1763,8 +1768,8 @@ do_import_jpeg2000_image (sqlite3 * handle, int max_threads,
 
 /* INSERTing the section */
     if (!rl2_do_insert_section
-	(handle, src_path, section, srid, width, height, minx, miny, maxx, maxy,
-	 xml_summary, coverage->sectionPaths, coverage->sectionMD5,
+	(handle, src_path, section, srid, width, height, minx, miny, maxx,
+	 maxy, xml_summary, coverage->sectionPaths, coverage->sectionMD5,
 	 coverage->sectionSummary, stmt_sect, &section_id))
 	goto error;
     section_stats = rl2_create_raster_statistics (sample_type, num_bands);
@@ -2074,16 +2079,17 @@ do_import_file (sqlite3 * handle, int max_threads, const char *src_path,
 	return do_import_ascii_grid (handle, max_threads, src_path, cvg,
 				     section, force_srid, tile_w, tile_h,
 				     pyramidize, sample_type, compression,
-				     stmt_data, stmt_tils, stmt_sect, stmt_levl,
-				     stmt_upd_sect, verbose, current, total);
+				     stmt_data, stmt_tils, stmt_sect,
+				     stmt_levl, stmt_upd_sect, verbose,
+				     current, total);
 
     if (is_jpeg_image (src_path))
 	return do_import_jpeg_image (handle, max_threads, src_path, cvg,
 				     section, force_srid, tile_w, tile_h,
 				     pyramidize, sample_type, num_bands,
-				     compression, quality, stmt_data, stmt_tils,
-				     stmt_sect, stmt_levl, stmt_upd_sect,
-				     verbose, current, total);
+				     compression, quality, stmt_data,
+				     stmt_tils, stmt_sect, stmt_levl,
+				     stmt_upd_sect, verbose, current, total);
 
 #ifndef OMIT_OPENJPEG		/* only if OpenJpeg is enabled */
     if (is_jpeg2000_image (src_path))
@@ -2223,8 +2229,8 @@ do_import_file (sqlite3 * handle, int max_threads, const char *src_path,
 	    }
       }
 
-    if (rl2_eval_tiff_origin_compatibility (cvg, origin, force_srid, verbose) !=
-	RL2_TRUE)
+    if (rl2_eval_tiff_origin_compatibility (cvg, origin, force_srid, verbose)
+	!= RL2_TRUE)
       {
 	  fprintf (stderr, "Coverage/TIFF mismatch\n");
 	  goto error;
@@ -2233,8 +2239,8 @@ do_import_file (sqlite3 * handle, int max_threads, const char *src_path,
 
 /* INSERTing the section */
     if (!rl2_do_insert_section
-	(handle, src_path, section, srid, width, height, minx, miny, maxx, maxy,
-	 xml_summary, coverage->sectionPaths, coverage->sectionMD5,
+	(handle, src_path, section, srid, width, height, minx, miny, maxx,
+	 maxy, xml_summary, coverage->sectionPaths, coverage->sectionMD5,
 	 coverage->sectionSummary, stmt_sect, &section_id))
 	goto error;
     section_stats = rl2_create_raster_statistics (sample_type, num_bands);
@@ -2538,14 +2544,16 @@ do_import_dir (sqlite3 * handle, int max_threads, const char *dir_path,
 				sqlite3_mprintf ("%s/%s", dir_path,
 						 c_file.name);
 			    ret =
-				do_import_file (handle, max_threads, path, cvg,
-						section, worldfile, force_srid,
-						pyramidize, sample_type,
-						pixel_type, num_bands, tile_w,
-						tile_h, compression, quality,
-						stmt_data, stmt_tils, stmt_sect,
-						stmt_levl, stmt_upd_sect,
-						verbose, cnt + 1, total);
+				do_import_file (handle, max_threads, path,
+						cvg, section, worldfile,
+						force_srid, pyramidize,
+						sample_type, pixel_type,
+						num_bands, tile_w, tile_h,
+						compression, quality,
+						stmt_data, stmt_tils,
+						stmt_sect, stmt_levl,
+						stmt_upd_sect, verbose,
+						cnt + 1, total);
 			    sqlite3_free (path);
 			    if (!ret)
 				goto error;
@@ -2776,10 +2784,10 @@ do_import_common (sqlite3 * handle, int max_threads, const char *src_path,
       {
 	  /* importing all Image files from a whole directory */
 	  if (!do_import_dir
-	      (handle, max_threads, dir_path, file_ext, cvg, section, worldfile,
-	       force_srid, pyramidize, sample_type, pixel_type, num_bands,
-	       tile_w, tile_h, compression, quality, stmt_data, stmt_tils,
-	       stmt_sect, stmt_levl, stmt_upd_sect, verbose))
+	      (handle, max_threads, dir_path, file_ext, cvg, section,
+	       worldfile, force_srid, pyramidize, sample_type, pixel_type,
+	       num_bands, tile_w, tile_h, compression, quality, stmt_data,
+	       stmt_tils, stmt_sect, stmt_levl, stmt_upd_sect, verbose))
 	      goto error;
       }
 
@@ -2965,12 +2973,11 @@ copy_int16_outbuf_to_tile (const short *outbuf, short *tile,
 }
 
 static void
-copy_uint16_outbuf_to_tile (const unsigned short *outbuf, unsigned short *tile,
-			    unsigned char num_bands, unsigned int width,
-			    unsigned int height,
-			    unsigned int tile_width,
-			    unsigned int tile_height, unsigned int base_y,
-			    unsigned int base_x)
+copy_uint16_outbuf_to_tile (const unsigned short *outbuf,
+			    unsigned short *tile, unsigned char num_bands,
+			    unsigned int width, unsigned int height,
+			    unsigned int tile_width, unsigned int tile_height,
+			    unsigned int base_y, unsigned int base_x)
 {
 /* copying UINT16 pixels from the output buffer into the tile */
     unsigned int x;
@@ -3144,8 +3151,8 @@ copy_from_outbuf_to_tile (const unsigned char *outbuf, unsigned char *tile,
 	  break;
       case RL2_SAMPLE_INT16:
 	  copy_int16_outbuf_to_tile ((short *) outbuf,
-				     (short *) tile, width, height, tile_width,
-				     tile_height, base_y, base_x);
+				     (short *) tile, width, height,
+				     tile_width, tile_height, base_y, base_x);
 	  break;
       case RL2_SAMPLE_UINT16:
 	  copy_uint16_outbuf_to_tile ((unsigned short *) outbuf,
@@ -3165,8 +3172,8 @@ copy_from_outbuf_to_tile (const unsigned char *outbuf, unsigned char *tile,
 	  break;
       case RL2_SAMPLE_FLOAT:
 	  copy_float_outbuf_to_tile ((float *) outbuf,
-				     (float *) tile, width, height, tile_width,
-				     tile_height, base_y, base_x);
+				     (float *) tile, width, height,
+				     tile_width, tile_height, base_y, base_x);
 	  break;
       case RL2_SAMPLE_DOUBLE:
 	  copy_double_outbuf_to_tile ((double *) outbuf,
@@ -3183,11 +3190,11 @@ copy_from_outbuf_to_tile (const unsigned char *outbuf, unsigned char *tile,
 }
 
 static int
-export_geotiff_common (sqlite3 * handle, int max_threads, const char *dst_path,
-		       rl2CoveragePtr cvg, int by_section,
-		       sqlite3_int64 section_id, double x_res, double y_res,
-		       double minx, double miny, double maxx, double maxy,
-		       unsigned int width, unsigned int height,
+export_geotiff_common (sqlite3 * handle, int max_threads,
+		       const char *dst_path, rl2CoveragePtr cvg,
+		       int by_section, sqlite3_int64 section_id, double x_res,
+		       double y_res, double minx, double miny, double maxx,
+		       double maxy, unsigned int width, unsigned int height,
 		       unsigned char compression, unsigned int tile_sz,
 		       int with_worldfile)
 {
@@ -3258,17 +3265,17 @@ export_geotiff_common (sqlite3 * handle, int max_threads, const char *dst_path,
       {
 	  /* just a single Section */
 	  if (rl2_get_section_raw_raster_data
-	      (handle, max_threads, cvg, section_id, width, height, minx, miny,
-	       maxx, maxy, xx_res, yy_res, &outbuf, &outbuf_size, &palette,
-	       pixel_type) != RL2_OK)
+	      (handle, max_threads, cvg, section_id, width, height, minx,
+	       miny, maxx, maxy, xx_res, yy_res, &outbuf, &outbuf_size,
+	       &palette, pixel_type) != RL2_OK)
 	      goto error;
       }
     else
       {
 	  /* whole Coverage */
 	  if (rl2_get_raw_raster_data
-	      (handle, max_threads, cvg, width, height, minx, miny, maxx, maxy,
-	       xx_res, yy_res, &outbuf, &outbuf_size, &palette,
+	      (handle, max_threads, cvg, width, height, minx, miny, maxx,
+	       maxy, xx_res, yy_res, &outbuf, &outbuf_size, &palette,
 	       pixel_type) != RL2_OK)
 	      goto error;
       }
@@ -3315,8 +3322,8 @@ export_geotiff_common (sqlite3 * handle, int max_threads, const char *dst_path,
 		    rl2_prime_void_tile_palette (bufpix, tile_sz, tile_sz,
 						 no_data);
 		else
-		    rl2_prime_void_tile (bufpix, tile_sz, tile_sz, sample_type,
-					 num_bands, no_data);
+		    rl2_prime_void_tile (bufpix, tile_sz, tile_sz,
+					 sample_type, num_bands, no_data);
 		copy_from_outbuf_to_tile (outbuf, bufpix, sample_type,
 					  num_bands, width, height, tile_sz,
 					  tile_sz, base_y, base_x);
@@ -3380,7 +3387,8 @@ rl2_export_geotiff_from_dbms (sqlite3 * handle, int max_threads,
 
 RL2_DECLARE int
 rl2_export_section_geotiff_from_dbms (sqlite3 * handle, int max_threads,
-				      const char *dst_path, rl2CoveragePtr cvg,
+				      const char *dst_path,
+				      rl2CoveragePtr cvg,
 				      sqlite3_int64 section_id, double x_res,
 				      double y_res, double minx, double miny,
 				      double maxx, double maxy,
@@ -3471,17 +3479,17 @@ export_tiff_worlfile_common (sqlite3 * handle, int max_threads,
       {
 	  /* just a single select Section */
 	  if (rl2_get_section_raw_raster_data
-	      (handle, max_threads, cvg, section_id, width, height, minx, miny,
-	       maxx, maxy, xx_res, yy_res, &outbuf, &outbuf_size, &palette,
-	       pixel_type) != RL2_OK)
+	      (handle, max_threads, cvg, section_id, width, height, minx,
+	       miny, maxx, maxy, xx_res, yy_res, &outbuf, &outbuf_size,
+	       &palette, pixel_type) != RL2_OK)
 	      goto error;
       }
     else
       {
 	  /* whole Coverage */
 	  if (rl2_get_raw_raster_data
-	      (handle, max_threads, cvg, width, height, minx, miny, maxx, maxy,
-	       xx_res, yy_res, &outbuf, &outbuf_size, &palette,
+	      (handle, max_threads, cvg, width, height, minx, miny, maxx,
+	       maxy, xx_res, yy_res, &outbuf, &outbuf_size, &palette,
 	       pixel_type) != RL2_OK)
 	      goto error;
       }
@@ -3506,9 +3514,10 @@ export_tiff_worlfile_common (sqlite3 * handle, int max_threads,
     tiff =
 	rl2_create_tiff_worldfile_destination (dst_path, width, height,
 					       sample_type, pixel_type,
-					       num_bands, palette, compression,
-					       1, tile_sz, srid, minx, miny,
-					       maxx, maxy, xx_res, yy_res);
+					       num_bands, palette,
+					       compression, 1, tile_sz, srid,
+					       minx, miny, maxx, maxy, xx_res,
+					       yy_res);
     if (tiff == NULL)
 	goto error;
     for (base_y = 0; base_y < height; base_y += tile_sz)
@@ -3528,8 +3537,8 @@ export_tiff_worlfile_common (sqlite3 * handle, int max_threads,
 		    rl2_prime_void_tile_palette (bufpix, tile_sz, tile_sz,
 						 no_data);
 		else
-		    rl2_prime_void_tile (bufpix, tile_sz, tile_sz, sample_type,
-					 num_bands, no_data);
+		    rl2_prime_void_tile (bufpix, tile_sz, tile_sz,
+					 sample_type, num_bands, no_data);
 		copy_from_outbuf_to_tile (outbuf, bufpix, sample_type,
 					  num_bands, width, height, tile_sz,
 					  tile_sz, base_y, base_x);
@@ -3584,12 +3593,14 @@ rl2_export_tiff_worldfile_from_dbms (sqlite3 * handle, int max_threads,
 {
 /* exporting a TIFF+TFW from the DBMS into the file-system */
     return export_tiff_worlfile_common (handle, max_threads, dst_path, cvg, 0,
-					0, x_res, y_res, minx, miny, maxx, maxy,
-					width, height, compression, tile_sz);
+					0, x_res, y_res, minx, miny, maxx,
+					maxy, width, height, compression,
+					tile_sz);
 }
 
 RL2_DECLARE int
-rl2_export_section_tiff_worldfile_from_dbms (sqlite3 * handle, int max_threads,
+rl2_export_section_tiff_worldfile_from_dbms (sqlite3 * handle,
+					     int max_threads,
 					     const char *dst_path,
 					     rl2CoveragePtr cvg,
 					     sqlite3_int64 section_id,
@@ -3604,8 +3615,8 @@ rl2_export_section_tiff_worldfile_from_dbms (sqlite3 * handle, int max_threads,
 /* exporting a TIFF+TFW - single Section */
     return export_tiff_worlfile_common (handle, max_threads, dst_path, cvg, 1,
 					section_id, x_res, y_res, minx, miny,
-					maxx, maxy, width, height, compression,
-					tile_sz);
+					maxx, maxy, width, height,
+					compression, tile_sz);
 }
 
 static int
@@ -3685,17 +3696,17 @@ export_tiff_common (sqlite3 * handle, int max_threads, const char *dst_path,
       {
 	  /* just a single Section */
 	  if (rl2_get_section_raw_raster_data
-	      (handle, max_threads, cvg, section_id, width, height, minx, miny,
-	       maxx, maxy, xx_res, yy_res, &outbuf, &outbuf_size, &palette,
-	       pixel_type) != RL2_OK)
+	      (handle, max_threads, cvg, section_id, width, height, minx,
+	       miny, maxx, maxy, xx_res, yy_res, &outbuf, &outbuf_size,
+	       &palette, pixel_type) != RL2_OK)
 	      goto error;
       }
     else
       {
 	  /* whole Coverage */
 	  if (rl2_get_raw_raster_data
-	      (handle, max_threads, cvg, width, height, minx, miny, maxx, maxy,
-	       xx_res, yy_res, &outbuf, &outbuf_size, &palette,
+	      (handle, max_threads, cvg, width, height, minx, miny, maxx,
+	       maxy, xx_res, yy_res, &outbuf, &outbuf_size, &palette,
 	       pixel_type) != RL2_OK)
 	      goto error;
       }
@@ -3740,8 +3751,8 @@ export_tiff_common (sqlite3 * handle, int max_threads, const char *dst_path,
 		    rl2_prime_void_tile_palette (bufpix, tile_sz, tile_sz,
 						 no_data);
 		else
-		    rl2_prime_void_tile (bufpix, tile_sz, tile_sz, sample_type,
-					 num_bands, no_data);
+		    rl2_prime_void_tile (bufpix, tile_sz, tile_sz,
+					 sample_type, num_bands, no_data);
 		copy_from_outbuf_to_tile (outbuf, bufpix, sample_type,
 					  num_bands, width, height, tile_sz,
 					  tile_sz, base_y, base_x);
@@ -3784,15 +3795,15 @@ export_tiff_common (sqlite3 * handle, int max_threads, const char *dst_path,
 RL2_DECLARE int
 rl2_export_tiff_from_dbms (sqlite3 * handle, int max_threads,
 			   const char *dst_path, rl2CoveragePtr cvg,
-			   double x_res, double y_res, double minx, double miny,
-			   double maxx, double maxy, unsigned int width,
-			   unsigned int height, unsigned char compression,
-			   unsigned int tile_sz)
+			   double x_res, double y_res, double minx,
+			   double miny, double maxx, double maxy,
+			   unsigned int width, unsigned int height,
+			   unsigned char compression, unsigned int tile_sz)
 {
 /* exporting a plain TIFF from the DBMS into the file-system */
-    return export_tiff_common (handle, max_threads, dst_path, cvg, 0, 0, x_res,
-			       y_res, minx, miny, maxx, maxy, width, height,
-			       compression, tile_sz);
+    return export_tiff_common (handle, max_threads, dst_path, cvg, 0, 0,
+			       x_res, y_res, minx, miny, maxx, maxy, width,
+			       height, compression, tile_sz);
 }
 
 RL2_DECLARE int
@@ -3800,23 +3811,24 @@ rl2_export_section_tiff_from_dbms (sqlite3 * handle, int max_threads,
 				   const char *dst_path, rl2CoveragePtr cvg,
 				   sqlite3_int64 section_id, double x_res,
 				   double y_res, double minx, double miny,
-				   double maxx, double maxy, unsigned int width,
-				   unsigned int height,
+				   double maxx, double maxy,
+				   unsigned int width, unsigned int height,
 				   unsigned char compression,
 				   unsigned int tile_sz)
 {
 /* exporting a plain TIFF - single Section*/
     return export_tiff_common (handle, max_threads, dst_path, cvg, 1,
-			       section_id, x_res, y_res, minx, miny, maxx, maxy,
-			       width, height, compression, tile_sz);
+			       section_id, x_res, y_res, minx, miny, maxx,
+			       maxy, width, height, compression, tile_sz);
 }
 
 static int
 export_triple_band_geotiff_common (int by_section, sqlite3 * handle,
 				   const char *dst_path,
-				   rl2CoveragePtr cvg, sqlite3_int64 section_id,
-				   double x_res, double y_res, double minx,
-				   double miny, double maxx, double maxy,
+				   rl2CoveragePtr cvg,
+				   sqlite3_int64 section_id, double x_res,
+				   double y_res, double minx, double miny,
+				   double maxx, double maxy,
 				   unsigned int width, unsigned int height,
 				   unsigned char red_band,
 				   unsigned char green_band,
@@ -3896,8 +3908,8 @@ export_triple_band_geotiff_common (int by_section, sqlite3 * handle,
 	rl2_create_geotiff_destination (dst_path, handle, width, height,
 					sample_type, RL2_PIXEL_RGB, 3,
 					NULL, compression, 1, tile_sz, srid,
-					minx, miny, maxx, maxy, xx_res, yy_res,
-					with_worldfile);
+					minx, miny, maxx, maxy, xx_res,
+					yy_res, with_worldfile);
     if (tiff == NULL)
 	goto error;
     for (base_y = 0; base_y < height; base_y += tile_sz)
@@ -4094,8 +4106,8 @@ export_mono_band_geotiff_common (int by_section, sqlite3 * handle,
 	rl2_create_geotiff_destination (dst_path, handle, width, height,
 					sample_type, out_pixel, 1,
 					NULL, compression, 1, tile_sz, srid,
-					minx, miny, maxx, maxy, xx_res, yy_res,
-					with_worldfile);
+					minx, miny, maxx, maxy, xx_res,
+					yy_res, with_worldfile);
     if (tiff == NULL)
 	goto error;
     for (base_y = 0; base_y < height; base_y += tile_sz)
@@ -4174,9 +4186,9 @@ rl2_export_mono_band_geotiff_from_dbms (sqlite3 * handle,
 					int with_worldfile)
 {
 /* exporting a Mono-Band GeoTIFF from the DBMS into the file-system */
-    return export_mono_band_geotiff_common (0, handle, dst_path, cvg, 0, x_res,
-					    y_res, minx, miny, maxx, maxy,
-					    width, height, mono_band,
+    return export_mono_band_geotiff_common (0, handle, dst_path, cvg, 0,
+					    x_res, y_res, minx, miny, maxx,
+					    maxy, width, height, mono_band,
 					    compression, tile_sz,
 					    with_worldfile);
 }
@@ -4210,8 +4222,9 @@ export_triple_band_tiff_worldfile_common (int by_section, sqlite3 * handle,
 					  rl2CoveragePtr cvg,
 					  sqlite3_int64 section_id,
 					  double x_res, double y_res,
-					  double minx, double miny, double maxx,
-					  double maxy, unsigned int width,
+					  double minx, double miny,
+					  double maxx, double maxy,
+					  unsigned int width,
 					  unsigned int height,
 					  unsigned char red_band,
 					  unsigned char green_band,
@@ -4290,9 +4303,9 @@ export_triple_band_tiff_worldfile_common (int by_section, sqlite3 * handle,
     tiff =
 	rl2_create_tiff_worldfile_destination (dst_path, width, height,
 					       sample_type, RL2_PIXEL_RGB,
-					       3, NULL, compression, 1, tile_sz,
-					       srid, minx, miny, maxx, maxy,
-					       xx_res, yy_res);
+					       3, NULL, compression, 1,
+					       tile_sz, srid, minx, miny,
+					       maxx, maxy, xx_res, yy_res);
     if (tiff == NULL)
 	goto error;
     for (base_y = 0; base_y < height; base_y += tile_sz)
@@ -4392,7 +4405,8 @@ rl2_export_section_triple_band_tiff_worldfile_from_dbms (sqlite3 * handle,
 							 double maxy,
 							 unsigned int width,
 							 unsigned int height,
-							 unsigned char red_band,
+							 unsigned char
+							 red_band,
 							 unsigned char
 							 green_band,
 							 unsigned char
@@ -4414,10 +4428,11 @@ static int
 export_mono_band_tiff_worldfile_common (int by_section, sqlite3 * handle,
 					const char *dst_path,
 					rl2CoveragePtr cvg,
-					sqlite3_int64 section_id, double x_res,
-					double y_res, double minx, double miny,
-					double maxx, double maxy,
-					unsigned int width, unsigned int height,
+					sqlite3_int64 section_id,
+					double x_res, double y_res,
+					double minx, double miny, double maxx,
+					double maxy, unsigned int width,
+					unsigned int height,
 					unsigned char mono_band,
 					unsigned char compression,
 					unsigned int tile_sz)
@@ -4492,9 +4507,9 @@ export_mono_band_tiff_worldfile_common (int by_section, sqlite3 * handle,
     tiff =
 	rl2_create_tiff_worldfile_destination (dst_path, width, height,
 					       sample_type, out_pixel,
-					       1, NULL, compression, 1, tile_sz,
-					       srid, minx, miny, maxx, maxy,
-					       xx_res, yy_res);
+					       1, NULL, compression, 1,
+					       tile_sz, srid, minx, miny,
+					       maxx, maxy, xx_res, yy_res);
     if (tiff == NULL)
 	goto error;
     for (base_y = 0; base_y < height; base_y += tile_sz)
@@ -4570,25 +4585,29 @@ rl2_export_mono_band_tiff_worldfile_from_dbms (sqlite3 * handle,
 					       unsigned int tile_sz)
 {
 /* exporting a Mono-Band TIFF+TFW from the DBMS into the file-system */
-    return export_mono_band_tiff_worldfile_common (0, handle, dst_path, cvg, 0,
-						   x_res, y_res, minx, miny,
-						   maxx, maxy, width, height,
-						   mono_band, compression,
-						   tile_sz);
+    return export_mono_band_tiff_worldfile_common (0, handle, dst_path, cvg,
+						   0, x_res, y_res, minx,
+						   miny, maxx, maxy, width,
+						   height, mono_band,
+						   compression, tile_sz);
 }
 
 RL2_DECLARE int
 rl2_export_section_mono_band_tiff_worldfile_from_dbms (sqlite3 * handle,
 						       const char *dst_path,
 						       rl2CoveragePtr cvg,
-						       sqlite3_int64 section_id,
+						       sqlite3_int64
+						       section_id,
 						       double x_res,
 						       double y_res,
-						       double minx, double miny,
-						       double maxx, double maxy,
+						       double minx,
+						       double miny,
+						       double maxx,
+						       double maxy,
 						       unsigned int width,
 						       unsigned int height,
-						       unsigned char mono_band,
+						       unsigned char
+						       mono_band,
 						       unsigned char
 						       compression,
 						       unsigned int tile_sz)
@@ -4756,9 +4775,10 @@ rl2_export_triple_band_tiff_from_dbms (sqlite3 * handle, const char *dst_path,
 {
 /* exporting a plain Band-Composed TIFF from the DBMS into the file-system */
     return export_triple_band_tiff_common (0, handle, dst_path, cvg, 0, x_res,
-					   y_res, minx, miny, maxx, maxy, width,
-					   height, red_band, green_band,
-					   blue_band, compression, tile_sz);
+					   y_res, minx, miny, maxx, maxy,
+					   width, height, red_band,
+					   green_band, blue_band, compression,
+					   tile_sz);
 }
 
 RL2_DECLARE int
@@ -4778,10 +4798,11 @@ rl2_export_section_triple_band_tiff_from_dbms (sqlite3 * handle,
 					       unsigned int tile_sz)
 {
 /* exporting a plain Band-Composed TIFF - Section */
-    return export_triple_band_tiff_common (1, handle, dst_path, cvg, section_id,
-					   x_res, y_res, minx, miny, maxx, maxy,
-					   width, height, red_band, green_band,
-					   blue_band, compression, tile_sz);
+    return export_triple_band_tiff_common (1, handle, dst_path, cvg,
+					   section_id, x_res, y_res, minx,
+					   miny, maxx, maxy, width, height,
+					   red_band, green_band, blue_band,
+					   compression, tile_sz);
 }
 
 static int
@@ -4956,8 +4977,8 @@ rl2_export_section_mono_band_tiff_from_dbms (sqlite3 * handle,
 /* exporting a plain Mono-Band TIFF from the DBMS - Section */
     return export_mono_band_tiff_common (1, handle, dst_path, cvg, section_id,
 					 x_res, y_res, minx, miny, maxx, maxy,
-					 width, height, mono_band, compression,
-					 tile_sz);
+					 width, height, mono_band,
+					 compression, tile_sz);
 }
 
 static int
@@ -5065,8 +5086,8 @@ export_ascii_grid_common (int by_section, sqlite3 * handle, int max_threads,
       {
 	  /* single Section */
 	  if (rl2_get_section_raw_raster_data
-	      (handle, max_threads, cvg, section_id, width, height, minx, miny,
-	       maxx, maxy, res, res, &pixels, &pixels_size, &palette,
+	      (handle, max_threads, cvg, section_id, width, height, minx,
+	       miny, maxx, maxy, res, res, &pixels, &pixels_size, &palette,
 	       RL2_PIXEL_DATAGRID) != RL2_OK)
 	      goto error;
       }
@@ -5074,8 +5095,8 @@ export_ascii_grid_common (int by_section, sqlite3 * handle, int max_threads,
       {
 	  /* whole Coverage */
 	  if (rl2_get_raw_raster_data
-	      (handle, max_threads, cvg, width, height, minx, miny, maxx, maxy,
-	       res, res, &pixels, &pixels_size, &palette,
+	      (handle, max_threads, cvg, width, height, minx, miny, maxx,
+	       maxy, res, res, &pixels, &pixels_size, &palette,
 	       RL2_PIXEL_DATAGRID) != RL2_OK)
 	      goto error;
       }
@@ -5124,8 +5145,8 @@ rl2_export_ascii_grid_from_dbms (sqlite3 * handle, int max_threads,
 {
 /* exporting an ASCII Grid from the DBMS into the file-system */
     return export_ascii_grid_common (0, handle, max_threads, dst_path, cvg, 0,
-				     res, minx, miny, maxx, maxy, width, height,
-				     is_centered, decimal_digits);
+				     res, minx, miny, maxx, maxy, width,
+				     height, is_centered, decimal_digits);
 }
 
 RL2_DECLARE int
@@ -5133,8 +5154,9 @@ rl2_export_section_ascii_grid_from_dbms (sqlite3 * handle, int max_threads,
 					 const char *dst_path,
 					 rl2CoveragePtr cvg,
 					 sqlite3_int64 section_id, double res,
-					 double minx, double miny, double maxx,
-					 double maxy, unsigned int width,
+					 double minx, double miny,
+					 double maxx, double maxy,
+					 unsigned int width,
 					 unsigned int height, int is_centered,
 					 int decimal_digits)
 {
@@ -5188,9 +5210,10 @@ is_ndvi_nodata_u16 (rl2PrivPixelPtr no_data, const unsigned short *p_in)
 }
 
 static float
-compute_ndvi (void *pixels, unsigned char sample_type, unsigned char num_bands,
-	      unsigned short width, unsigned char red_band,
-	      unsigned char nir_band, unsigned short row, unsigned short col,
+compute_ndvi (void *pixels, unsigned char sample_type,
+	      unsigned char num_bands, unsigned short width,
+	      unsigned char red_band, unsigned char nir_band,
+	      unsigned short row, unsigned short col,
 	      rl2PrivPixelPtr in_no_data, float out_no_data)
 {
 /* computing a Normalized Difference Vegetaion Index -NDVI */
@@ -5227,8 +5250,9 @@ export_ndvi_ascii_grid_common (int by_section, sqlite3 * handle,
 			       rl2CoveragePtr cvg, sqlite3_int64 section_id,
 			       double res, double minx, double miny,
 			       double maxx, double maxy, unsigned int width,
-			       unsigned int height, int red_band, int nir_band,
-			       int is_centered, int decimal_digits)
+			       unsigned int height, int red_band,
+			       int nir_band, int is_centered,
+			       int decimal_digits)
 {
 /* exporting an NDVI ASCII Grid common implementation */
     rl2PalettePtr palette = NULL;
@@ -5281,8 +5305,8 @@ export_ndvi_ascii_grid_common (int by_section, sqlite3 * handle,
       {
 	  /* single Section */
 	  if (rl2_get_section_raw_raster_data
-	      (handle, max_threads, cvg, section_id, width, height, minx, miny,
-	       maxx, maxy, res, res, &pixels, &pixels_size, &palette,
+	      (handle, max_threads, cvg, section_id, width, height, minx,
+	       miny, maxx, maxy, res, res, &pixels, &pixels_size, &palette,
 	       RL2_PIXEL_MULTIBAND) != RL2_OK)
 	      goto error;
       }
@@ -5290,8 +5314,8 @@ export_ndvi_ascii_grid_common (int by_section, sqlite3 * handle,
       {
 	  /* whole Coverage */
 	  if (rl2_get_raw_raster_data
-	      (handle, max_threads, cvg, width, height, minx, miny, maxx, maxy,
-	       res, res, &pixels, &pixels_size, &palette,
+	      (handle, max_threads, cvg, width, height, minx, miny, maxx,
+	       maxy, res, res, &pixels, &pixels_size, &palette,
 	       RL2_PIXEL_MULTIBAND) != RL2_OK)
 	      goto error;
       }
@@ -5307,8 +5331,8 @@ export_ndvi_ascii_grid_common (int by_section, sqlite3 * handle,
 	  /* computing NDVI */
 	  for (col = 0; col < width; col++)
 	      *po++ =
-		  compute_ndvi (pixels, sample_type, num_bands, width, red_band,
-				nir_band, row, col,
+		  compute_ndvi (pixels, sample_type, num_bands, width,
+				red_band, nir_band, row, col,
 				(rl2PrivPixelPtr) in_no_data, out_no_data);
       }
     free (pixels);
@@ -5351,36 +5375,39 @@ export_ndvi_ascii_grid_common (int by_section, sqlite3 * handle,
 
 RL2_DECLARE int
 rl2_export_ndvi_ascii_grid_from_dbms (sqlite3 * handle, int max_threads,
-				      const char *dst_path, rl2CoveragePtr cvg,
-				      double res, double minx, double miny,
-				      double maxx, double maxy,
-				      unsigned int width, unsigned int height,
-				      int red_band, int nir_band,
-				      int is_centered, int decimal_digits)
+				      const char *dst_path,
+				      rl2CoveragePtr cvg, double res,
+				      double minx, double miny, double maxx,
+				      double maxy, unsigned int width,
+				      unsigned int height, int red_band,
+				      int nir_band, int is_centered,
+				      int decimal_digits)
 {
 /* exporting an ASCII Grid from the DBMS into the file-system */
-    return export_ndvi_ascii_grid_common (0, handle, max_threads, dst_path, cvg,
-					  0, res, minx, miny, maxx, maxy, width,
-					  height, red_band, nir_band,
+    return export_ndvi_ascii_grid_common (0, handle, max_threads, dst_path,
+					  cvg, 0, res, minx, miny, maxx, maxy,
+					  width, height, red_band, nir_band,
 					  is_centered, decimal_digits);
 }
 
 RL2_DECLARE int
-rl2_export_section_ndvi_ascii_grid_from_dbms (sqlite3 * handle, int max_threads,
+rl2_export_section_ndvi_ascii_grid_from_dbms (sqlite3 * handle,
+					      int max_threads,
 					      const char *dst_path,
 					      rl2CoveragePtr cvg,
 					      sqlite3_int64 section_id,
 					      double res, double minx,
 					      double miny, double maxx,
 					      double maxy, unsigned int width,
-					      unsigned int height, int red_band,
-					      int nir_band, int is_centered,
+					      unsigned int height,
+					      int red_band, int nir_band,
+					      int is_centered,
 					      int decimal_digits)
 {
 /* exporting an ASCII Grid - Section */
-    return export_ndvi_ascii_grid_common (1, handle, max_threads, dst_path, cvg,
-					  section_id, res, minx, miny, maxx,
-					  maxy, width, height, red_band,
+    return export_ndvi_ascii_grid_common (1, handle, max_threads, dst_path,
+					  cvg, section_id, res, minx, miny,
+					  maxx, maxy, width, height, red_band,
 					  nir_band, is_centered,
 					  decimal_digits);
 }
@@ -5431,8 +5458,8 @@ export_jpeg_common (int by_section, sqlite3 * handle, int max_threads,
       {
 	  /* single Section */
 	  if (rl2_get_section_raw_raster_data
-	      (handle, max_threads, cvg, section_id, width, height, minx, miny,
-	       maxx, maxy, xx_res, yy_res, &outbuf, &outbuf_size, NULL,
+	      (handle, max_threads, cvg, section_id, width, height, minx,
+	       miny, maxx, maxy, xx_res, yy_res, &outbuf, &outbuf_size, NULL,
 	       pixel_type) != RL2_OK)
 	      goto error;
       }
@@ -5440,8 +5467,8 @@ export_jpeg_common (int by_section, sqlite3 * handle, int max_threads,
       {
 	  /* whole Coverage */
 	  if (rl2_get_raw_raster_data
-	      (handle, max_threads, cvg, width, height, minx, miny, maxx, maxy,
-	       xx_res, yy_res, &outbuf, &outbuf_size, NULL,
+	      (handle, max_threads, cvg, width, height, minx, miny, maxx,
+	       maxy, xx_res, yy_res, &outbuf, &outbuf_size, NULL,
 	       pixel_type) != RL2_OK)
 	      goto error;
       }
@@ -5482,14 +5509,15 @@ export_jpeg_common (int by_section, sqlite3 * handle, int max_threads,
 RL2_DECLARE int
 rl2_export_jpeg_from_dbms (sqlite3 * handle, int max_threads,
 			   const char *dst_path, rl2CoveragePtr cvg,
-			   double x_res, double y_res, double minx, double miny,
-			   double maxx, double maxy, unsigned int width,
-			   unsigned int height, int quality, int with_worldfile)
+			   double x_res, double y_res, double minx,
+			   double miny, double maxx, double maxy,
+			   unsigned int width, unsigned int height,
+			   int quality, int with_worldfile)
 {
 /* exporting a JPEG (with possible JGW) from the DBMS into the file-system */
-    return export_jpeg_common (0, handle, max_threads, dst_path, cvg, 0, x_res,
-			       y_res, minx, miny, maxx, maxy, width, height,
-			       quality, with_worldfile);
+    return export_jpeg_common (0, handle, max_threads, dst_path, cvg, 0,
+			       x_res, y_res, minx, miny, maxx, maxy, width,
+			       height, quality, with_worldfile);
 }
 
 RL2_DECLARE int
@@ -5497,23 +5525,23 @@ rl2_export_section_jpeg_from_dbms (sqlite3 * handle, int max_threads,
 				   const char *dst_path, rl2CoveragePtr cvg,
 				   sqlite3_int64 section_id, double x_res,
 				   double y_res, double minx, double miny,
-				   double maxx, double maxy, unsigned int width,
-				   unsigned int height, int quality,
-				   int with_worldfile)
+				   double maxx, double maxy,
+				   unsigned int width, unsigned int height,
+				   int quality, int with_worldfile)
 {
 /* exporting a JPEG (with possible JGW) - Section */
     return export_jpeg_common (1, handle, max_threads, dst_path, cvg,
-			       section_id, x_res, y_res, minx, miny, maxx, maxy,
-			       width, height, quality, with_worldfile);
+			       section_id, x_res, y_res, minx, miny, maxx,
+			       maxy, width, height, quality, with_worldfile);
 }
 
 static int
 export_raw_pixels_common (int by_section, sqlite3 * handle, int max_threads,
 			  rl2CoveragePtr cvg, sqlite3_int64 section_id,
-			  double x_res, double y_res, double minx, double miny,
-			  double maxx, double maxy, unsigned int width,
-			  unsigned int height, int big_endian,
-			  unsigned char **blob, int *blob_size)
+			  double x_res, double y_res, double minx,
+			  double miny, double maxx, double maxy,
+			  unsigned int width, unsigned int height,
+			  int big_endian, unsigned char **blob, int *blob_size)
 {
 /* common implementation for Export RAW pixels */
     unsigned char level;
@@ -5544,8 +5572,8 @@ export_raw_pixels_common (int by_section, sqlite3 * handle, int max_threads,
       {
 	  /* single Section */
 	  if (rl2_get_section_raw_raster_data
-	      (handle, max_threads, cvg, section_id, width, height, minx, miny,
-	       maxx, maxy, xx_res, yy_res, &outbuf, &outbuf_size, NULL,
+	      (handle, max_threads, cvg, section_id, width, height, minx,
+	       miny, maxx, maxy, xx_res, yy_res, &outbuf, &outbuf_size, NULL,
 	       pixel_type) != RL2_OK)
 	      goto error;
       }
@@ -5553,8 +5581,8 @@ export_raw_pixels_common (int by_section, sqlite3 * handle, int max_threads,
       {
 	  /* whole Coverage */
 	  if (rl2_get_raw_raster_data
-	      (handle, max_threads, cvg, width, height, minx, miny, maxx, maxy,
-	       xx_res, yy_res, &outbuf, &outbuf_size, NULL,
+	      (handle, max_threads, cvg, width, height, minx, miny, maxx,
+	       maxy, xx_res, yy_res, &outbuf, &outbuf_size, NULL,
 	       pixel_type) != RL2_OK)
 	      goto error;
       }
@@ -5584,9 +5612,10 @@ rl2_export_raw_pixels_from_dbms (sqlite3 * handle, int max_threads,
 				 unsigned char **blob, int *blob_size)
 {
 /* exporting RAW pixel buffer and Transparency Mask from the DBMS */
-    return export_raw_pixels_common (0, handle, max_threads, coverage, 0, x_res,
-				     y_res, minx, miny, maxx, maxy, width,
-				     height, big_endian, blob, blob_size);
+    return export_raw_pixels_common (0, handle, max_threads, coverage, 0,
+				     x_res, y_res, minx, miny, maxx, maxy,
+				     width, height, big_endian, blob,
+				     blob_size);
 }
 
 RL2_DECLARE int
@@ -5603,9 +5632,9 @@ rl2_export_section_raw_pixels_from_dbms (sqlite3 * handle, int max_threads,
 {
 /* exporting RAW pixel buffer and Transparency Mask - Section */
     return export_raw_pixels_common (1, handle, max_threads, coverage,
-				     section_id, x_res, y_res, minx, miny, maxx,
-				     maxy, width, height, big_endian, blob,
-				     blob_size);
+				     section_id, x_res, y_res, minx, miny,
+				     maxx, maxy, width, height, big_endian,
+				     blob, blob_size);
 }
 
 RL2_DECLARE int

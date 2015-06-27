@@ -506,11 +506,11 @@ extern "C"
 
     RL2_PRIVATE rl2PrivSvgLinePtr svg_clone_line (rl2PrivSvgLinePtr in);
 
-    RL2_PRIVATE rl2PrivSvgPolylinePtr svg_alloc_polyline (int points, double *x,
-							  double *y);
+    RL2_PRIVATE rl2PrivSvgPolylinePtr svg_alloc_polyline (int points,
+							  double *x, double *y);
 
-    RL2_PRIVATE rl2PrivSvgPolylinePtr svg_clone_polyline (rl2PrivSvgPolylinePtr
-							  in);
+    RL2_PRIVATE rl2PrivSvgPolylinePtr
+	svg_clone_polyline (rl2PrivSvgPolylinePtr in);
 
     RL2_PRIVATE rl2PrivSvgPolygonPtr svg_alloc_polygon (int points, double *x,
 							double *y);
@@ -520,8 +520,8 @@ extern "C"
 
     RL2_PRIVATE rl2PrivSvgPathMovePtr svg_alloc_path_move (double x, double y);
 
-    RL2_PRIVATE rl2PrivSvgPathMovePtr svg_clone_path_move (rl2PrivSvgPathMovePtr
-							   in);
+    RL2_PRIVATE rl2PrivSvgPathMovePtr
+	svg_clone_path_move (rl2PrivSvgPathMovePtr in);
 
     RL2_PRIVATE rl2PrivSvgPathBezierPtr svg_alloc_path_bezier (double x1,
 							       double y1,
@@ -610,8 +610,10 @@ extern "C"
     RL2_PRIVATE rl2PrivSvgGradientStopPtr svg_alloc_gradient_stop (double
 								   offset,
 								   double red,
-								   double green,
-								   double blue,
+								   double
+								   green,
+								   double
+								   blue,
 								   double
 								   opacity);
 
@@ -620,10 +622,9 @@ extern "C"
 
     RL2_PRIVATE rl2PrivSvgGradientPtr svg_alloc_gradient (void);
 
-    RL2_PRIVATE rl2PrivSvgGradientPtr svg_clone_gradient (rl2PrivSvgGradientPtr
-							  in,
-							  rl2PrivSvgGradientPtr
-							  old);
+    RL2_PRIVATE rl2PrivSvgGradientPtr
+	svg_clone_gradient (rl2PrivSvgGradientPtr in,
+			    rl2PrivSvgGradientPtr old);
 
     RL2_PRIVATE rl2PrivSvgDocumentPtr svg_alloc_document (void);
 
@@ -635,13 +636,14 @@ extern "C"
 
     RL2_PRIVATE void svg_insert_clip (rl2PrivSvgDocumentPtr svg_doc);
 
-    RL2_PRIVATE rl2PrivSvgUsePtr svg_insert_use (rl2PrivSvgDocumentPtr svg_doc,
+    RL2_PRIVATE rl2PrivSvgUsePtr svg_insert_use (rl2PrivSvgDocumentPtr
+						 svg_doc,
 						 const char *xlink_href,
 						 double x, double y,
 						 double width, double height);
 
-    RL2_PRIVATE void svg_insert_shape (rl2PrivSvgDocumentPtr svg_doc, int type,
-				       void *data);
+    RL2_PRIVATE void svg_insert_shape (rl2PrivSvgDocumentPtr svg_doc,
+				       int type, void *data);
 
     RL2_PRIVATE void svg_insert_gradient_stop (rl2PrivSvgGradientPtr gradient,
 					       double offset, double red,
@@ -651,20 +653,20 @@ extern "C"
     RL2_PRIVATE rl2PrivSvgGradientPtr
 	svg_insert_linear_gradient (rl2PrivSvgDocumentPtr svg_doc,
 				    const char *id, const char *xlink_href,
-				    double x1, double y1, double x2, double y2,
-				    int units);
+				    double x1, double y1, double x2,
+				    double y2, int units);
 
     RL2_PRIVATE rl2PrivSvgGradientPtr
 	svg_insert_radial_gradient (rl2PrivSvgDocumentPtr svg_doc,
 				    const char *id, const char *xlink_href,
-				    double cx, double cy, double fx, double fy,
-				    double r, int units);
+				    double cx, double cy, double fx,
+				    double fy, double r, int units);
 
     RL2_PRIVATE rl2PrivSvgGradientPtr
 	svg_insert_radial_gradient (rl2PrivSvgDocumentPtr svg_doc,
 				    const char *id, const char *xlink_href,
-				    double cx, double cy, double fx, double fy,
-				    double r, int units);
+				    double cx, double cy, double fx,
+				    double fy, double r, int units);
 
     RL2_PRIVATE void svg_init_style (rl2PrivSvgStylePtr style);
 

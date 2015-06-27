@@ -1608,9 +1608,9 @@ compute_max_dbl_length (double min, double max)
     int neg_len = 1;
     sqlite3_int64 value;
     if (max >= 0.0)
-	value = floor (max);
+	value = (sqlite3_int64) floor (max);
     else
-	value = ceil (max);
+	value = (sqlite3_int64) ceil (max);
     while (value != 0)
       {
 	  pos_len++;
@@ -1618,7 +1618,7 @@ compute_max_dbl_length (double min, double max)
       }
     if (min >= 0.0)
 	return pos_len + 7;
-    value = ceil (min);
+    value = (sqlite3_int64) ceil (min);
     while (value != 0)
       {
 	  neg_len++;

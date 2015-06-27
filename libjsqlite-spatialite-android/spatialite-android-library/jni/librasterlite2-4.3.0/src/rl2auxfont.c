@@ -694,8 +694,8 @@ rl2_get_font_from_dbms (sqlite3 * handle, const char *facename,
 			    free (xfont);
 			    xfont = NULL;
 			}
-		      if (rl2_font_decode (blob, blob_sz, &xfont, &xfont_sz) ==
-			  RL2_OK)
+		      if (rl2_font_decode (blob, blob_sz, &xfont, &xfont_sz)
+			  == RL2_OK)
 			{
 			    *font = xfont;
 			    *font_sz = xfont_sz;
@@ -727,7 +727,6 @@ rl2_get_TrueType_font (sqlite3 * handle, const char *facename,
     int ret;
     sqlite3_stmt *stmt = NULL;
     unsigned char *xfont = NULL;
-    int xfont_sz;
     if (facename == NULL)
 	return RL2_ERROR;
 

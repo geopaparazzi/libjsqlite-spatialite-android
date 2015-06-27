@@ -371,8 +371,8 @@ rl2_raster_data_to_RGBA (rl2RasterPtr ptr, unsigned char **buffer,
 				  &transpR, &transpG, &transpB);
 		break;
 	    case RL2_PIXEL_RGB:
-		rl2_get_pixel_sample_uint8 ((rl2PixelPtr) no_data, RL2_RED_BAND,
-					    &transpR);
+		rl2_get_pixel_sample_uint8 ((rl2PixelPtr) no_data,
+					    RL2_RED_BAND, &transpR);
 		rl2_get_pixel_sample_uint8 ((rl2PixelPtr) no_data,
 					    RL2_GREEN_BAND, &transpG);
 		rl2_get_pixel_sample_uint8 ((rl2PixelPtr) no_data,
@@ -605,8 +605,8 @@ rl2_raster_data_to_ARGB (rl2RasterPtr ptr, unsigned char **buffer,
 				  &transpR, &transpG, &transpB);
 		break;
 	    case RL2_PIXEL_RGB:
-		rl2_get_pixel_sample_uint8 ((rl2PixelPtr) no_data, RL2_RED_BAND,
-					    &transpR);
+		rl2_get_pixel_sample_uint8 ((rl2PixelPtr) no_data,
+					    RL2_RED_BAND, &transpR);
 		rl2_get_pixel_sample_uint8 ((rl2PixelPtr) no_data,
 					    RL2_GREEN_BAND, &transpG);
 		rl2_get_pixel_sample_uint8 ((rl2PixelPtr) no_data,
@@ -893,8 +893,8 @@ rl2_raster_data_to_BGRA (rl2RasterPtr ptr, unsigned char **buffer,
 				  &transpR, &transpG, &transpB);
 		break;
 	    case RL2_PIXEL_RGB:
-		rl2_get_pixel_sample_uint8 ((rl2PixelPtr) no_data, RL2_RED_BAND,
-					    &transpR);
+		rl2_get_pixel_sample_uint8 ((rl2PixelPtr) no_data,
+					    RL2_RED_BAND, &transpR);
 		rl2_get_pixel_sample_uint8 ((rl2PixelPtr) no_data,
 					    RL2_GREEN_BAND, &transpG);
 		rl2_get_pixel_sample_uint8 ((rl2PixelPtr) no_data,
@@ -1510,8 +1510,8 @@ rl2_raster_band_to_uint8 (rl2RasterPtr ptr, int band, unsigned char **buffer,
 }
 
 RL2_DECLARE int
-rl2_raster_band_to_uint16 (rl2RasterPtr ptr, int band, unsigned short **buffer,
-			   int *buf_size)
+rl2_raster_band_to_uint16 (rl2RasterPtr ptr, int band,
+			   unsigned short **buffer, int *buf_size)
 {
 /* attempting to export Raster BAND data as a UINT-16 array */
     unsigned short *buf;
@@ -1975,8 +1975,8 @@ copy_endian_raw_dbl (double *outbuf, const double *pixels, unsigned int width,
 RL2_PRIVATE unsigned char *
 rl2_copy_endian_raw_pixels (const unsigned char *pixels, int pixels_sz,
 			    unsigned int width, unsigned int height,
-			    unsigned char sample_type, unsigned char num_bands,
-			    int big_endian)
+			    unsigned char sample_type,
+			    unsigned char num_bands, int big_endian)
 {
 /* copying RAW pixels (in endian safe mode) */
     int sample_bytes = 0;
@@ -2026,8 +2026,8 @@ rl2_copy_endian_raw_pixels (const unsigned char *pixels, int pixels_sz,
 			      height, num_bands);
 	  break;
       case RL2_SAMPLE_INT16:
-	  copy_endian_raw_i16 ((short *) outbuf, (const short *) pixels, width,
-			       height, num_bands, big_endian);
+	  copy_endian_raw_i16 ((short *) outbuf, (const short *) pixels,
+			       width, height, num_bands, big_endian);
 	  break;
       case RL2_SAMPLE_UINT16:
 	  copy_endian_raw_u16 ((unsigned short *) outbuf,
@@ -2044,8 +2044,8 @@ rl2_copy_endian_raw_pixels (const unsigned char *pixels, int pixels_sz,
 			       num_bands, big_endian);
 	  break;
       case RL2_SAMPLE_FLOAT:
-	  copy_endian_raw_flt ((float *) outbuf, (const float *) pixels, width,
-			       height, num_bands, big_endian);
+	  copy_endian_raw_flt ((float *) outbuf, (const float *) pixels,
+			       width, height, num_bands, big_endian);
 	  break;
       case RL2_SAMPLE_DOUBLE:
 	  copy_endian_raw_dbl ((double *) outbuf, (const double *) pixels,
@@ -2069,10 +2069,10 @@ eval_raw_pixels_compatibility (rl2PrivCoveragePtr coverage,
 }
 
 static void
-copy_tile_raw_i8 (const char *in, unsigned int in_width, unsigned int in_height,
-		  unsigned int startRow, unsigned int startCol, char *out,
-		  unsigned int tileWidth, unsigned int tileHeight,
-		  unsigned char num_bands)
+copy_tile_raw_i8 (const char *in, unsigned int in_width,
+		  unsigned int in_height, unsigned int startRow,
+		  unsigned int startCol, char *out, unsigned int tileWidth,
+		  unsigned int tileHeight, unsigned char num_bands)
 {
 /* signed int8 */
     unsigned int x;
@@ -2191,10 +2191,10 @@ copy_tile_raw_u16 (const unsigned short *in, unsigned int in_width,
 }
 
 static void
-copy_tile_raw_i32 (const int *in, unsigned int in_width, unsigned int in_height,
-		   unsigned int startRow, unsigned int startCol, int *out,
-		   unsigned int tileWidth, unsigned int tileHeight,
-		   unsigned char num_bands)
+copy_tile_raw_i32 (const int *in, unsigned int in_width,
+		   unsigned int in_height, unsigned int startRow,
+		   unsigned int startCol, int *out, unsigned int tileWidth,
+		   unsigned int tileHeight, unsigned char num_bands)
 {
 /* signed int32 */
     unsigned int x;
@@ -2313,7 +2313,8 @@ copy_tile_raw_dbl (const double *in, unsigned int in_width,
 
 static int
 build_tile_from_raw_pixels (rl2PrivRasterPtr origin, unsigned int tileWidth,
-			    unsigned int tileHeight, unsigned char sample_type,
+			    unsigned int tileHeight,
+			    unsigned char sample_type,
 			    unsigned char num_bands, unsigned int startRow,
 			    unsigned int startCol, rl2PixelPtr no_data,
 			    unsigned char **pixels, int *pixels_sz)
@@ -2353,35 +2354,39 @@ build_tile_from_raw_pixels (rl2PrivRasterPtr origin, unsigned int tileWidth,
 	  break;
       case RL2_SAMPLE_INT16:
 	  copy_tile_raw_i16 ((const short *) (origin->rasterBuffer),
-			     origin->width, origin->height, startRow, startCol,
-			     (short *) out, tileWidth, tileHeight, num_bands);
+			     origin->width, origin->height, startRow,
+			     startCol, (short *) out, tileWidth, tileHeight,
+			     num_bands);
 	  break;
       case RL2_SAMPLE_UINT16:
 	  copy_tile_raw_u16 ((const unsigned short *) (origin->rasterBuffer),
-			     origin->width, origin->height, startRow, startCol,
-			     (unsigned short *) out, tileWidth, tileHeight,
-			     num_bands);
+			     origin->width, origin->height, startRow,
+			     startCol, (unsigned short *) out, tileWidth,
+			     tileHeight, num_bands);
 	  break;
       case RL2_SAMPLE_INT32:
 	  copy_tile_raw_i32 ((const int *) (origin->rasterBuffer),
-			     origin->width, origin->height, startRow, startCol,
-			     (int *) out, tileWidth, tileHeight, num_bands);
+			     origin->width, origin->height, startRow,
+			     startCol, (int *) out, tileWidth, tileHeight,
+			     num_bands);
 	  break;
       case RL2_SAMPLE_UINT32:
 	  copy_tile_raw_u32 ((const unsigned int *) (origin->rasterBuffer),
-			     origin->width, origin->height, startRow, startCol,
-			     (unsigned int *) out, tileWidth, tileHeight,
-			     num_bands);
+			     origin->width, origin->height, startRow,
+			     startCol, (unsigned int *) out, tileWidth,
+			     tileHeight, num_bands);
 	  break;
       case RL2_SAMPLE_FLOAT:
 	  copy_tile_raw_flt ((const float *) (origin->rasterBuffer),
-			     origin->width, origin->height, startRow, startCol,
-			     (float *) out, tileWidth, tileHeight, num_bands);
+			     origin->width, origin->height, startRow,
+			     startCol, (float *) out, tileWidth, tileHeight,
+			     num_bands);
 	  break;
       case RL2_SAMPLE_DOUBLE:
 	  copy_tile_raw_dbl ((const double *) (origin->rasterBuffer),
-			     origin->width, origin->height, startRow, startCol,
-			     (double *) out, tileWidth, tileHeight, num_bands);
+			     origin->width, origin->height, startRow,
+			     startCol, (double *) out, tileWidth, tileHeight,
+			     num_bands);
 	  break;
       default:
 	  copy_tile_raw_u8 ((const unsigned char *) (origin->rasterBuffer),

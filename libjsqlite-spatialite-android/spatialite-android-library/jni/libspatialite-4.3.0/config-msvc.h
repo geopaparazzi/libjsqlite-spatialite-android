@@ -5,6 +5,9 @@
 /         using the OsGeo4W libraries
 */
 
+/* Should be defined in order to enable GCP support. */
+/* #undef ENABLE_GCP */
+
 /* Should be defined in order to enable GeoPackage support. */
 /* #undef ENABLE_GEOPACKAGE */
 
@@ -21,13 +24,13 @@
 /* #undef GEOS_TRUNK */
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
-/* #undef HAVE_DLFCN_H */
+#define HAVE_DLFCN_H 1
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #define HAVE_FCNTL_H 1
 
 /* Define to 1 if you have the `fdatasync' function. */
-/* #undef HAVE_FDATASYNC */
+#define HAVE_FDATASYNC 1
 
 /* Define to 1 if you have the <float.h> header file. */
 #define HAVE_FLOAT_H 1
@@ -54,7 +57,7 @@
 #define HAVE_INTTYPES_H 1
 
 /* Define to 1 if you have the <liblwgeom.h> header file. */
-#define HAVE_LIBLWGEOM_H 1
+/* #undef HAVE_LIBLWGEOM_H */
 
 /* Define to 1 if you have the `sqlite3' library (-lsqlite3). */
 #define HAVE_LIBSQLITE3 1
@@ -63,11 +66,11 @@
 #define HAVE_LIBZ 1
 
 /* Define to 1 if you have the `localtime_r' function. */
-/* #undef HAVE_LOCALTIME_R */
+#define HAVE_LOCALTIME_R 1
 
 /* Define to 1 if `lstat' has the bug that it succeeds when given the
    zero-length file name argument. */
-#define HAVE_LSTAT_EMPTY_STRING_BUG 1
+/* #undef HAVE_LSTAT_EMPTY_STRING_BUG */
 
 /* Define to 1 if you have the <math.h> header file. */
 #define HAVE_MATH_H 1
@@ -91,7 +94,7 @@
 #define HAVE_SQLITE3_H 1
 
 /* Define to 1 if you have the `sqrt' function. */
-#define HAVE_SQRT 1
+/* #undef HAVE_SQRT */
 
 /* Define to 1 if `stat' has the bug that it succeeds when given the
    zero-length file name argument. */
@@ -110,7 +113,7 @@
 #define HAVE_STDLIB_H 1
 
 /* Define to 1 if you have the `strcasecmp' function. */
-/* #undef HAVE_STRCASECMP */
+#define HAVE_STRCASECMP 1
 
 /* Define to 1 if you have the `strerror' function. */
 #define HAVE_STRERROR 1
@@ -125,7 +128,7 @@
 #define HAVE_STRING_H 1
 
 /* Define to 1 if you have the `strncasecmp' function. */
-/* #undef HAVE_STRNCASECMP */
+#define HAVE_STRNCASECMP 1
 
 /* Define to 1 if you have the `strstr' function. */
 #define HAVE_STRSTR 1
@@ -147,7 +150,7 @@
 
 /* Define to 1 if `lstat' dereferences a symlink specified with a trailing
    slash. */
-/* #undef LSTAT_FOLLOWS_SLASHED_SYMLINK */
+#define LSTAT_FOLLOWS_SLASHED_SYMLINK 1
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
@@ -187,7 +190,7 @@
 #define PACKAGE_NAME "libspatialite"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "libspatialite 4.2.0"
+#define PACKAGE_STRING "libspatialite 4.3.0-RC1"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "libspatialite"
@@ -196,16 +199,16 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "4.2.0"
+#define PACKAGE_VERSION "4.3.0-RC1"
 
 /* Should be defined when linking liblwgeom from PostGIS 2.1 (or later). */
-/* #undef POSTGIS_2_1 1 */
+/* #undefine POSTGIS_2_1 */
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Should contain a text-string describing the intended target CPU */
-#define TARGET_CPU "msvc-32"
+#define TARGET_CPU "Win32"
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #define TIME_WITH_SYS_TIME 1
@@ -214,7 +217,7 @@
 /* #undef TM_IN_SYS_TIME */
 
 /* Version number of package */
-#define VERSION "4.2.0-rc2"
+#define VERSION "4.3.0-RC1"
 
 /* Must be =64 in order to enable huge-file support. */
 #define _FILE_OFFSET_BITS 64

@@ -539,7 +539,7 @@ check_vector_style_refs_by_name (sqlite3 * sqlite, const char *style_name,
       }
     sqlite3_reset (stmt);
     sqlite3_clear_bindings (stmt);
-    sqlite3_bind_int (stmt, 1, *id);
+    sqlite3_bind_int64 (stmt, 1, *id);
     while (1)
       {
 	  /* scrolling the result set rows */
@@ -1204,7 +1204,7 @@ check_raster_style_refs_by_name (sqlite3 * sqlite, const char *style_name,
       }
     sqlite3_reset (stmt);
     sqlite3_clear_bindings (stmt);
-    sqlite3_bind_int (stmt, 1, *id);
+    sqlite3_bind_int64 (stmt, 1, *id);
     while (1)
       {
 	  /* scrolling the result set rows */
@@ -2623,7 +2623,7 @@ check_group_style_refs_by_name (sqlite3 * sqlite, const char *style_name,
       }
     sqlite3_reset (stmt);
     sqlite3_clear_bindings (stmt);
-    sqlite3_bind_int (stmt, 1, *id);
+    sqlite3_bind_int64 (stmt, 1, *id);
     while (1)
       {
 	  /* scrolling the result set rows */
@@ -5402,7 +5402,7 @@ register_iso_metadata (void *p_sqlite, const char *scope,
 	  /* update */
 	  sqlite3_bind_text (stmt, 1, scope, strlen (scope), SQLITE_STATIC);
 	  sqlite3_bind_blob (stmt, 2, p_blob, n_bytes, SQLITE_STATIC);
-	  sqlite3_bind_int (stmt, 3, id);
+	  sqlite3_bind_int64 (stmt, 3, id);
       }
     else
       {

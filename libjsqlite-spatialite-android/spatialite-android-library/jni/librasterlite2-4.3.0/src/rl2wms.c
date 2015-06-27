@@ -538,8 +538,8 @@ wmsCacheUpdate (wmsCachePtr cache)
 	  pos++;
 	  pI = pI->Next;
       }
-    qsort (cache->SortedByUrl, cache->NumCachedItems, sizeof (wmsCachedItemPtr),
-	   compare_url);
+    qsort (cache->SortedByUrl, cache->NumCachedItems,
+	   sizeof (wmsCachedItemPtr), compare_url);
 }
 
 static void
@@ -596,8 +596,8 @@ wmsAddCachedCapabilities (wmsCachePtr cache, const char *url,
 
 
 static void
-wmsAddCachedItem (wmsCachePtr cache, const char *url, const unsigned char *item,
-		  int size, const char *image_format)
+wmsAddCachedItem (wmsCachePtr cache, const char *url,
+		  const unsigned char *item, int size, const char *image_format)
 {
 /* adding a new WMS Cached Item */
     wmsCachedItemPtr ptr;
@@ -1103,8 +1103,8 @@ add_url_argument (wmsTilePatternPtr ptr, const char *pattern)
 }
 
 static void
-parse_pattern_bbox (const char *value, double *minx, double *miny, double *maxx,
-		    double *maxy)
+parse_pattern_bbox (const char *value, double *minx, double *miny,
+		    double *maxx, double *maxy)
 {
 /* parsing a BBOX arg [minx,miny,maxx,maxy] */
     int step = 0;
@@ -2031,11 +2031,11 @@ clean_xml (wmsMemBuffer * in)
 	    {
 		/* masking XML special characters */
 		if (*(p_in + i) == '<')
-		    wmsMemBufferAppend (&outbuf, (const unsigned char *) "&lt;",
-					4);
+		    wmsMemBufferAppend (&outbuf,
+					(const unsigned char *) "&lt;", 4);
 		else if (*(p_in + i) == '>')
-		    wmsMemBufferAppend (&outbuf, (const unsigned char *) "&gt;",
-					4);
+		    wmsMemBufferAppend (&outbuf,
+					(const unsigned char *) "&gt;", 4);
 		else if (*(p_in + i) == '&')
 		    wmsMemBufferAppend (&outbuf,
 					(const unsigned char *) "&amp;", 5);
@@ -2123,11 +2123,11 @@ clean_xml_str (const char *p_in)
 	    {
 		/* masking XML special characters */
 		if (*(p_in + i) == '<')
-		    wmsMemBufferAppend (&outbuf, (const unsigned char *) "&lt;",
-					4);
+		    wmsMemBufferAppend (&outbuf,
+					(const unsigned char *) "&lt;", 4);
 		else if (*(p_in + i) == '>')
-		    wmsMemBufferAppend (&outbuf, (const unsigned char *) "&gt;",
-					4);
+		    wmsMemBufferAppend (&outbuf,
+					(const unsigned char *) "&gt;", 4);
 		else if (*(p_in + i) == '&')
 		    wmsMemBufferAppend (&outbuf,
 					(const unsigned char *) "&amp;", 5);
@@ -2709,8 +2709,8 @@ parse_wms_contact_person (xmlNodePtr node, const char **contact_person,
 				    (const char *) (child_node->content);
 			}
 		  }
-		if (strcmp ((const char *) (cur_node->name), "ContactPerson") ==
-		    0)
+		if (strcmp ((const char *) (cur_node->name), "ContactPerson")
+		    == 0)
 		  {
 		      child_node = cur_node->children;
 		      if (child_node != NULL)
@@ -2756,8 +2756,8 @@ parse_wms_contact_address (xmlNodePtr node, const char **postal_address,
 				*city = (const char *) (child_node->content);
 			}
 		  }
-		if (strcmp ((const char *) (cur_node->name), "StateOrProvince")
-		    == 0)
+		if (strcmp
+		    ((const char *) (cur_node->name), "StateOrProvince") == 0)
 		  {
 		      child_node = cur_node->children;
 		      if (child_node != NULL)
@@ -2809,8 +2809,8 @@ parse_wms_contact_information (xmlNodePtr node, const char **contact_person,
       {
 	  if (cur_node->type == XML_ELEMENT_NODE)
 	    {
-		if (strcmp ((const char *) (cur_node->name), "ContactPosition")
-		    == 0)
+		if (strcmp
+		    ((const char *) (cur_node->name), "ContactPosition") == 0)
 		  {
 		      child_node = cur_node->children;
 		      if (child_node != NULL)
@@ -2938,8 +2938,9 @@ parse_wms_service (xmlNodePtr node, wmsCapabilitiesPtr cap)
 						   &contact_organization,
 						   &contact_position,
 						   &postal_address, &city,
-						   &state_province, &post_code,
-						   &country, &voice_telephone,
+						   &state_province,
+						   &post_code, &country,
+						   &voice_telephone,
 						   &fax_telephone,
 						   &email_address);
 		if (strcmp ((const char *) (cur_node->name), "Fees") == 0)
@@ -3249,8 +3250,9 @@ parse_wms_GetTileService_HTTP_Get (xmlNodePtr node, wmsCapabilitiesPtr cap)
 					      len = strlen (p);
 					      cap->GetTileServiceURLGet =
 						  malloc (len + 1);
-					      strcpy (cap->GetTileServiceURLGet,
-						      p);
+					      strcpy
+						  (cap->GetTileServiceURLGet,
+						   p);
 					  }
 				    }
 			      }
@@ -3288,8 +3290,8 @@ parse_wms_GetTileService_HTTP_Post (xmlNodePtr node, wmsCapabilitiesPtr cap)
 					xmlNodePtr text = attr->children;
 					if (text->type == XML_TEXT_NODE)
 					  {
-					      if (cap->GetTileServiceURLPost !=
-						  NULL)
+					      if (cap->GetTileServiceURLPost
+						  != NULL)
 						{
 						    free (cap->
 							  GetTileServiceURLPost);
@@ -3353,8 +3355,9 @@ parse_wms_GetInfo_HTTP_Get (xmlNodePtr node, wmsCapabilitiesPtr cap)
 					      len = strlen (p);
 					      cap->GetFeatureInfoURLGet =
 						  malloc (len + 1);
-					      strcpy (cap->GetFeatureInfoURLGet,
-						      p);
+					      strcpy
+						  (cap->GetFeatureInfoURLGet,
+						   p);
 					  }
 				    }
 			      }
@@ -3392,8 +3395,8 @@ parse_wms_GetInfo_HTTP_Post (xmlNodePtr node, wmsCapabilitiesPtr cap)
 					xmlNodePtr text = attr->children;
 					if (text->type == XML_TEXT_NODE)
 					  {
-					      if (cap->GetFeatureInfoURLPost !=
-						  NULL)
+					      if (cap->GetFeatureInfoURLPost
+						  != NULL)
 						{
 						    free (cap->GetFeatureInfoURLPost);
 						    cap->GetFeatureInfoURLPost =
@@ -3586,8 +3589,8 @@ parse_wms_getInfo (xmlNodePtr node, wmsCapabilitiesPtr cap)
 					    ok = 1;
 					if (strcmp
 					    (format,
-					     "application/vnd.ogc.gml/3.1.1") ==
-					    0)
+					     "application/vnd.ogc.gml/3.1.1")
+					    == 0)
 					    ok = 1;
 					if (ok)
 					  {
@@ -4381,8 +4384,8 @@ parse_tile_service (xmlNodePtr node, wmsCapabilitiesPtr cap)
 	    {
 		if (strcmp ((const char *) (cur_node->name), "Service") == 0)
 		    parse_tile_service_info (cur_node, cap);
-		if (strcmp ((const char *) (cur_node->name), "TiledPatterns") ==
-		    0)
+		if (strcmp ((const char *) (cur_node->name), "TiledPatterns")
+		    == 0)
 		    parse_tiled_patterns (cur_node, cap);
 	    }
       }
@@ -4763,8 +4766,8 @@ parse_feature_collection (xmlNodePtr node, wmsFeatureCollectionPtr coll)
       {
 	  if (cur_node->type == XML_ELEMENT_NODE)
 	    {
-		if (strcmp ((const char *) (cur_node->name), "featureMember") ==
-		    0)
+		if (strcmp ((const char *) (cur_node->name), "featureMember")
+		    == 0)
 		    parse_wms_feature_member (cur_node->children, coll);
 	    }
       }
@@ -4833,8 +4836,8 @@ parse_wms_feature_collection (const char *buf)
 }
 
 static int
-query_TileService (rl2WmsCachePtr cache_handle, wmsCapabilitiesPtr capabilities,
-		   const char *proxy)
+query_TileService (rl2WmsCachePtr cache_handle,
+		   wmsCapabilitiesPtr capabilities, const char *proxy)
 {
 /* attempting to get and parse a WMS GetTileService request */
     CURL *curl = NULL;
@@ -6949,7 +6952,8 @@ get_wms_feature_attribute_name (rl2WmsFeatureMemberPtr handle, int index)
 
 RL2_DECLARE int
 get_wms_feature_attribute_blob_geometry (rl2WmsFeatureMemberPtr handle,
-					 int index, const unsigned char **blob,
+					 int index,
+					 const unsigned char **blob,
 					 int *blob_size)
 {
 /* attempting to get the Nth FeatureAttribute (Geometry) from some WMS-FeatureMember object */
@@ -7067,18 +7071,18 @@ do_wms_GetMap_get (rl2WmsCachePtr cache_handle, const char *url,
 				   "&LAYERS=%s&%s=%s&BBOX=%1.6f,%1.6f,%1.6f,%1.6f"
 				   "&WIDTH=%d&HEIGHT=%d&STYLES=%s&FORMAT=%s"
 				   "&TRANSPARENT=%s&BGCOLOR=0xFFFFFF", url,
-				   version, layer, crs_prefix, crs, miny, minx,
-				   maxy, maxx, width, height, style, format,
-				   (opaque == 0) ? "TRUE" : "FALSE");
+				   version, layer, crs_prefix, crs, miny,
+				   minx, maxy, maxx, width, height, style,
+				   format, (opaque == 0) ? "TRUE" : "FALSE");
 	  else
 	      request =
 		  sqlite3_mprintf ("%s?SERVICE=WMS&REQUEST=GetMap&VERSION=%s"
 				   "&LAYERS=%s&%s=%s&BBOX=%1.6f,%1.6f,%1.6f,%1.6f"
 				   "&WIDTH=%d&HEIGHT=%d&STYLES=%s&FORMAT=%s"
 				   "&TRANSPARENT=%s&BGCOLOR=0xFFFFFF", url,
-				   version, layer, crs_prefix, crs, minx, miny,
-				   maxx, maxy, width, height, style, format,
-				   (opaque == 0) ? "TRUE" : "FALSE");
+				   version, layer, crs_prefix, crs, minx,
+				   miny, maxx, maxy, width, height, style,
+				   format, (opaque == 0) ? "TRUE" : "FALSE");
       }
     else
       {
@@ -7089,18 +7093,18 @@ do_wms_GetMap_get (rl2WmsCachePtr cache_handle, const char *url,
 				   "&LAYERS=%s&%s=%s&BBOX=%1.6f,%1.6f,%1.6f,%1.6f"
 				   "&WIDTH=%d&HEIGHT=%d&STYLES=%s&FORMAT=%s"
 				   "&TRANSPARENT=%s&BGCOLOR=0xFFFFFF", url,
-				   version, layer, crs_prefix, crs, miny, minx,
-				   maxy, maxx, width, height, style, format,
-				   (opaque == 0) ? "TRUE" : "FALSE");
+				   version, layer, crs_prefix, crs, miny,
+				   minx, maxy, maxx, width, height, style,
+				   format, (opaque == 0) ? "TRUE" : "FALSE");
 	  else
 	      request =
 		  sqlite3_mprintf ("%sSERVICE=WMS&REQUEST=GetMap&VERSION=%s"
 				   "&LAYERS=%s&%s=%s&BBOX=%1.6f,%1.6f,%1.6f,%1.6f"
 				   "&WIDTH=%d&HEIGHT=%d&STYLES=%s&FORMAT=%s"
 				   "&TRANSPARENT=%s&BGCOLOR=0xFFFFFF", url,
-				   version, layer, crs_prefix, crs, minx, miny,
-				   maxx, maxy, width, height, style, format,
-				   (opaque == 0) ? "TRUE" : "FALSE");
+				   version, layer, crs_prefix, crs, minx,
+				   miny, maxx, maxy, width, height, style,
+				   format, (opaque == 0) ? "TRUE" : "FALSE");
       }
 
     if (cache != NULL)
@@ -7275,11 +7279,11 @@ do_wms_GetMap_post (rl2WmsCachePtr cache_handle, const char *url,
 /* attempting to execute a WMS GepMap request [method POST] */
 
 /* not yet implemented: just a stupid placeholder always returning NULL */
-    if (cache_handle == NULL || url == NULL || proxy == NULL || version == NULL
-	|| layer == NULL || crs == NULL)
+    if (cache_handle == NULL || url == NULL || proxy == NULL
+	|| version == NULL || layer == NULL || crs == NULL)
 	return NULL;
-    if (minx == miny || maxx == maxy || width == height || opaque == from_cache
-	|| width == swap_xy)
+    if (minx == miny || maxx == maxy || width == height
+	|| opaque == from_cache || width == swap_xy)
 	return NULL;
     if (style == NULL || format == NULL || err_msg == NULL)
 	return NULL;
@@ -7533,18 +7537,18 @@ do_wms_GetFeatureInfo_get (const char *url, const char *proxy,
 		  ("%s?SERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=%s&LAYERS=%s"
 		   "&QUERY_LAYERS=%s&%s=%s&BBOX=%1.6f,%1.6f,%1.6f,%1.6f"
 		   "&WIDTH=%d&HEIGHT=%d&X=%d&Y=%d&INFO_FORMAT=%s"
-		   "&FEATURE_COUNT=50", url, version, layer, layer, crs_prefix,
-		   crs, miny, minx, maxy, maxx, width, height, mouse_x,
-		   mouse_y, format);
+		   "&FEATURE_COUNT=50", url, version, layer, layer,
+		   crs_prefix, crs, miny, minx, maxy, maxx, width, height,
+		   mouse_x, mouse_y, format);
 	  else
 	      request =
 		  sqlite3_mprintf
 		  ("%s?SERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=%s&LAYERS=%s"
 		   "&QUERY_LAYERS=%s&%s=%s&BBOX=%1.6f,%1.6f,%1.6f,%1.6f"
 		   "&WIDTH=%d&HEIGHT=%d&X=%d&Y=%d&INFO_FORMAT=%s"
-		   "&FEATURE_COUNT=50", url, version, layer, layer, crs_prefix,
-		   crs, minx, miny, maxx, maxy, width, height, mouse_x,
-		   mouse_y, format);
+		   "&FEATURE_COUNT=50", url, version, layer, layer,
+		   crs_prefix, crs, minx, miny, maxx, maxy, width, height,
+		   mouse_x, mouse_y, format);
       }
     else
       {
@@ -7554,18 +7558,18 @@ do_wms_GetFeatureInfo_get (const char *url, const char *proxy,
 		  ("%sSERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=%s&LAYERS=%s"
 		   "&QUERY_LAYERS=%s&%s=%s&BBOX=%1.6f,%1.6f,%1.6f,%1.6f"
 		   "&WIDTH=%d&HEIGHT=%d&X=%d&Y=%d&INFO_FORMAT=%s"
-		   "&FEATURE_COUNT=50", url, version, layer, layer, crs_prefix,
-		   crs, miny, minx, maxy, maxx, width, height, mouse_x,
-		   mouse_y, format);
+		   "&FEATURE_COUNT=50", url, version, layer, layer,
+		   crs_prefix, crs, miny, minx, maxy, maxx, width, height,
+		   mouse_x, mouse_y, format);
 	  else
 	      request =
 		  sqlite3_mprintf
 		  ("%sSERVICE=WMS&REQUEST=GetFeatureInfo&VERSION=%s&LAYERS=%s"
 		   "&QUERY_LAYERS=%s&%s=%s&BBOX=%1.6f,%1.6f,%1.6f,%1.6f"
 		   "&WIDTH=%d&HEIGHT=%d&X=%d&Y=%d&INFO_FORMAT=%s"
-		   "&FEATURE_COUNT=50", url, version, layer, layer, crs_prefix,
-		   crs, minx, miny, maxx, maxy, width, height, mouse_x,
-		   mouse_y, format);
+		   "&FEATURE_COUNT=50", url, version, layer, layer,
+		   crs_prefix, crs, minx, miny, maxx, maxy, width, height,
+		   mouse_x, mouse_y, format);
       }
 
     curl = curl_easy_init ();
@@ -7703,9 +7707,9 @@ RL2_DECLARE rl2WmsFeatureCollectionPtr
 do_wms_GetFeatureInfo_post (const char *url, const char *proxy,
 			    const char *version, const char *format,
 			    const char *layer, const char *crs, int swap_xy,
-			    double minx, double miny, double maxx, double maxy,
-			    int width, int height, int mouse_x, int mouse_y,
-			    char **err_msg)
+			    double minx, double miny, double maxx,
+			    double maxy, int width, int height, int mouse_x,
+			    int mouse_y, char **err_msg)
 {
 /* attempting to execute a WMS GepFeatureInfo request [method POST] */
 

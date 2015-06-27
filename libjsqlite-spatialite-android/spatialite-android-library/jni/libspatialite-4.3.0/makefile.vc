@@ -14,6 +14,7 @@ LIBOBJ = src\gaiaaux\gg_sqlaux.obj src\gaiaaux\gg_utf8.obj \
 	src\gaiageo\gg_transform.obj src\gaiageo\gg_vanuatu.obj \
 	src\gaiageo\gg_wkb.obj src\gaiageo\gg_wkt.obj \
 	src\gaiageo\gg_extras.obj src\gaiageo\gg_xml.obj \
+	src\gaiageo\gg_voronoj.obj src\gaiageo\gg_matrix.obj \
 	src\gaiageo\gg_relations_ext.obj src/connection_cache/alloc_cache.obj \
 	src\spatialite\mbrcache.obj src\shapefiles\shapefiles.obj \
 	src\spatialite\spatialite.obj src\spatialite\virtualdbf.obj \
@@ -22,7 +23,9 @@ LIBOBJ = src\gaiaaux\gg_sqlaux.obj src\gaiaaux\gg_utf8.obj \
 	src\spatialite\statistics.obj src\spatialite\metatables.obj \
 	src\spatialite\virtualXL.obj src\spatialite\extra_tables.obj \
 	src\spatialite\virtualxpath.obj src\spatialite\virtualbbox.obj \
-	src\spatialite\spatialite_init.obj src\gaiageo\gg_voronoj.obj \
+	src\spatialite\spatialite_init.obj src\spatialite\se_helpers.obj \
+	src\spatialite\srid_aux.obj src\spatialite\table_cloner.obj \
+	src\spatialite\virtualelementary.obj \
 	src\wfs\wfs_in.obj src\srsinit\srs_init.obj \
 	src\dxf\dxf_parser.obj src\dxf\dxf_loader.obj src\dxf\dxf_writer.obj \
 	src\dxf\dxf_load_distinct.obj src\dxf\dxf_load_mixed.obj \
@@ -50,7 +53,7 @@ LIBOBJ = src\gaiaaux\gg_sqlaux.obj src\gaiaaux\gg_utf8.obj \
 	src\srsinit\epsg_inlined_40.obj src\srsinit\epsg_inlined_41.obj \
 	src\srsinit\epsg_inlined_42.obj src\srsinit\epsg_inlined_43.obj \
 	src\srsinit\epsg_inlined_44.obj src\srsinit\epsg_inlined_45.obj \
-	src\srsinit\epsg_inlined_extra.obj \
+	src\srsinit\epsg_inlined_46.obj src\srsinit\epsg_inlined_extra.obj \
 	src\srsinit\epsg_inlined_prussian.obj \
 	src\srsinit\epsg_inlined_wgs84_00.obj src\srsinit\epsg_inlined_wgs84_01.obj \
 	src\versioninfo\version.obj src\virtualtext\virtualtext.obj

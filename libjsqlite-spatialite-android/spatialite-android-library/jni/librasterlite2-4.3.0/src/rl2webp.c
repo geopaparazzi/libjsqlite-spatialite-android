@@ -158,8 +158,8 @@ check_webp_compatibility (unsigned char sample_type, unsigned char pixel_type,
 }
 
 static void
-copy_pixels (unsigned char *out, const unsigned char *in, int width, int height,
-	     int num_bands)
+copy_pixels (unsigned char *out, const unsigned char *in, int width,
+	     int height, int num_bands)
 {
 /* copying pixels */
     int x;
@@ -297,8 +297,8 @@ compress_lossy_alpha_webp (rl2PrivRasterPtr rst, unsigned char **webp,
     if (quality < 0)
 	quality = 75;
     size =
-	WebPEncodeRGBA (rgba, rst->width, rst->height, rst->width * 4, quality,
-			&output);
+	WebPEncodeRGBA (rgba, rst->width, rst->height, rst->width * 4,
+			quality, &output);
     free (rgba);
     if (size == 0)
 	return RL2_ERROR;

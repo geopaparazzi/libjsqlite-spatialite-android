@@ -57,7 +57,7 @@ the terms of any one of the MPL, the GPL or the LGPL.
 
 #ifndef OMIT_OPENJPEG		/* only if OpenJpeg is enabled */
 
-#ifdef HAVE_OPENJPEG_2_1_OPENJPEG_H 
+#ifdef HAVE_OPENJPEG_2_1_OPENJPEG_H
 #include <openjpeg-2.1/openjpeg.h>
 #else
 #ifdef __ANDROID__		/* Android specific */
@@ -696,8 +696,9 @@ RL2_PRIVATE int
 rl2_decode_jpeg2000_scaled (int scale, const unsigned char *jpeg2000,
 			    int jpeg2000_sz, unsigned int *xwidth,
 			    unsigned int *xheight, unsigned char xsample_type,
-			    unsigned char xpixel_type, unsigned char xnum_bands,
-			    unsigned char **pixels, int *pixels_size)
+			    unsigned char xpixel_type,
+			    unsigned char xnum_bands, unsigned char **pixels,
+			    int *pixels_size)
 {
 /* attempting to create a raster from a Jpeg2000 image - supporting rescaled size */
     unsigned char *buf = NULL;
@@ -862,8 +863,9 @@ rl2_decode_jpeg2000_scaled (int scale, const unsigned char *jpeg2000,
 	  if (sample_type == RL2_SAMPLE_UINT16)
 	      save_tile_u16 ((unsigned short *) buf,
 			     (unsigned short *) jp2_data, tile_x0 / scale,
-			     tile_y0 / scale, tile_x1 / scale, tile_y1 / scale,
-			     num_bands, width / scale, height / scale);
+			     tile_y0 / scale, tile_x1 / scale,
+			     tile_y1 / scale, num_bands, width / scale,
+			     height / scale);
 	  else
 	      save_tile_u8 ((unsigned char *) buf, (unsigned char *) jp2_data,
 			    tile_x0 / scale, tile_y0 / scale, tile_x1 / scale,
@@ -905,8 +907,8 @@ eval_jpeg2000_origin_compatibility (rl2PrivCoveragePtr coverage,
 	&& coverage->pixelType == RL2_PIXEL_GRAYSCALE && coverage->nBands == 1)
       {
 	  if (raster->sampleType == RL2_SAMPLE_UINT8
-	      && raster->pixelType == RL2_PIXEL_GRAYSCALE && raster->nBands == 1
-	      && forced_conversion == RL2_CONVERT_NO)
+	      && raster->pixelType == RL2_PIXEL_GRAYSCALE
+	      && raster->nBands == 1 && forced_conversion == RL2_CONVERT_NO)
 	      return 1;
 	  if (raster->sampleType == RL2_SAMPLE_UINT8
 	      && raster->pixelType == RL2_PIXEL_RGB && raster->nBands == 3
@@ -921,7 +923,8 @@ eval_jpeg2000_origin_compatibility (rl2PrivCoveragePtr coverage,
 	      && forced_conversion == RL2_CONVERT_NO)
 	      return 1;
 	  if (raster->sampleType == RL2_SAMPLE_UINT8
-	      && raster->pixelType == RL2_PIXEL_GRAYSCALE && raster->nBands == 1
+	      && raster->pixelType == RL2_PIXEL_GRAYSCALE
+	      && raster->nBands == 1
 	      && forced_conversion == RL2_CONVERT_GRAYSCALE_TO_RGB)
 	      return 1;
       }
@@ -929,14 +932,13 @@ eval_jpeg2000_origin_compatibility (rl2PrivCoveragePtr coverage,
 	&& coverage->pixelType == RL2_PIXEL_DATAGRID && coverage->nBands == 1)
       {
 	  if (raster->sampleType == RL2_SAMPLE_UINT8
-	      && raster->pixelType == RL2_PIXEL_DATAGRID && raster->nBands == 1
-	      && forced_conversion == RL2_CONVERT_NO)
+	      && raster->pixelType == RL2_PIXEL_DATAGRID
+	      && raster->nBands == 1 && forced_conversion == RL2_CONVERT_NO)
 	      return 1;
       }
     if (coverage->sampleType == RL2_SAMPLE_UINT8
-	&& coverage->pixelType == RL2_PIXEL_MULTIBAND && (coverage->nBands == 3
-							  || coverage->nBands ==
-							  4))
+	&& coverage->pixelType == RL2_PIXEL_MULTIBAND
+	&& (coverage->nBands == 3 || coverage->nBands == 4))
       {
 	  if (raster->sampleType == RL2_SAMPLE_UINT8
 	      && raster->pixelType == RL2_PIXEL_MULTIBAND
@@ -948,8 +950,8 @@ eval_jpeg2000_origin_compatibility (rl2PrivCoveragePtr coverage,
 	&& coverage->pixelType == RL2_PIXEL_DATAGRID && coverage->nBands == 1)
       {
 	  if (raster->sampleType == RL2_SAMPLE_UINT16
-	      && raster->pixelType == RL2_PIXEL_DATAGRID && raster->nBands == 1
-	      && forced_conversion == RL2_CONVERT_NO)
+	      && raster->pixelType == RL2_PIXEL_DATAGRID
+	      && raster->nBands == 1 && forced_conversion == RL2_CONVERT_NO)
 	      return 1;
       }
     if (coverage->sampleType == RL2_SAMPLE_UINT16
@@ -961,9 +963,8 @@ eval_jpeg2000_origin_compatibility (rl2PrivCoveragePtr coverage,
 	      return 1;
       }
     if (coverage->sampleType == RL2_SAMPLE_UINT16
-	&& coverage->pixelType == RL2_PIXEL_MULTIBAND && (coverage->nBands == 3
-							  || coverage->nBands ==
-							  4))
+	&& coverage->pixelType == RL2_PIXEL_MULTIBAND
+	&& (coverage->nBands == 3 || coverage->nBands == 4))
       {
 	  if (raster->sampleType == RL2_SAMPLE_UINT16
 	      && raster->pixelType == RL2_PIXEL_MULTIBAND
@@ -977,8 +978,9 @@ eval_jpeg2000_origin_compatibility (rl2PrivCoveragePtr coverage,
 }
 
 static int
-read_jpeg2000_pixels_gray_to_rgb (rl2PrivRasterPtr origin, unsigned short width,
-				  unsigned short height, unsigned int startRow,
+read_jpeg2000_pixels_gray_to_rgb (rl2PrivRasterPtr origin,
+				  unsigned short width, unsigned short height,
+				  unsigned int startRow,
 				  unsigned int startCol, unsigned char *pixels)
 {
 /* Grayscale -> RGB */
@@ -1006,8 +1008,9 @@ read_jpeg2000_pixels_gray_to_rgb (rl2PrivRasterPtr origin, unsigned short width,
 }
 
 static int
-read_jpeg2000_pixels_rgb_to_gray (rl2PrivRasterPtr origin, unsigned short width,
-				  unsigned short height, unsigned int startRow,
+read_jpeg2000_pixels_rgb_to_gray (rl2PrivRasterPtr origin,
+				  unsigned short width, unsigned short height,
+				  unsigned int startRow,
 				  unsigned int startCol, unsigned char *pixels)
 {
 /* RGB -> Grayscale */
@@ -1194,7 +1197,8 @@ read_from_jpeg2000 (rl2PrivRasterPtr origin, unsigned short width,
 
 RL2_DECLARE rl2RasterPtr
 rl2_get_tile_from_jpeg2000_origin (rl2CoveragePtr cvg, rl2RasterPtr jpeg2000,
-				   unsigned int startRow, unsigned int startCol,
+				   unsigned int startRow,
+				   unsigned int startCol,
 				   unsigned char forced_conversion, int verbose)
 {
 /* attempting to create a Coverage-tile from a Jpeg2000 origin */
@@ -1608,8 +1612,9 @@ rl2_build_jpeg2000_xml_summary (unsigned int width, unsigned int height,
 	  sqlite3_free (prev);
 	  prev = xml;
 	  xml =
-	      sqlite3_mprintf ("%s<HorizontalExtent>%1.10f</HorizontalExtent>",
-			       prev, maxx - minx);
+	      sqlite3_mprintf
+	      ("%s<HorizontalExtent>%1.10f</HorizontalExtent>", prev,
+	       maxx - minx);
 	  sqlite3_free (prev);
 	  prev = xml;
 	  xml =
