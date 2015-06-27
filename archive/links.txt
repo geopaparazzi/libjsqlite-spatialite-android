@@ -28,6 +28,7 @@ wget http://www.gaia-gis.it/gaia-sins/spatialite-tools-sources/spatialite-tools-
 wget http://cairographics.org/releases/pixman-0.32.6.tar.gz
 wget http://cairographics.org/releases/cairo-1.14.2.tar.xz
 wget http://xmlsoft.org/sources/libxml2-2.9.2.tar.gz
+wget http://tukaani.org/xz/xz-5.2.1.tar.gz
 
  // http://www.mj10777.de/application/mbtiles_2.php?db=mbtiles/1870.Berlin_Umgebung.2_gb.mbtiles&z=17&x=70406&y=88084
 

@@ -70,6 +70,7 @@ LOCAL_SRC_FILES := \
  $(CAIRO_PATH)/cairo-image-info.c \
  $(CAIRO_PATH)/cairo-image-source.c \
  $(CAIRO_PATH)/cairo-image-surface.c \
+ $(CAIRO_PATH)/cairo-line.c \
  $(CAIRO_PATH)/cairo-lzw.c \
  $(CAIRO_PATH)/cairo-matrix.c \
  $(CAIRO_PATH)/cairo-mask-compositor.c \

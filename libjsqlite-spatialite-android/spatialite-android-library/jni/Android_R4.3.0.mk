@@ -2,6 +2,7 @@
 # Android_R4.3.0.mk
 # ndk-build clean
 # ndk-build
+# As of 2015-06-27
 # -------------------
 LOCAL_PATH := $(call my-dir)
 JSQLITE_PATH := javasqlite-20120209
@@ -15,16 +16,16 @@ GEOTIFF_PATH := libgeotiff-1.4.0
 TIFF_PATH := tiff-4.0.4/libtiff
 JPEG_PATH := jpeg-6b
 GIF_PATH := giflib-5.1.1/lib
-CAIRO_PATH := cairo-1.12.14/src
-FREETYPE_PATH := freetype-2.5.3
+CAIRO_PATH := cairo-1.14.2/src
+FREETYPE_PATH := freetype-2.6
 FONTCONFIG_PATH := fontconfig-2.11.1
 EXPAT_PATH := expat-2.1.0
-PIXMAN_PATH := pixman-0.32.4
+PIXMAN_PATH := pixman-0.32.6
 PNG_PATH := libpng-1.6.10
 WEBP_PATH := libwebp-0.4.0
 XML2_PATH := libxml2-2.9.2
 CURL_PATH := curl-7.36.0
-LZMA_PATH := xz-5.1.3alpha
+LZMA_PATH := xz-5.2.1
 CHARLS_PATH := charls-1.0
 OPENJPEG_PATH := openjpeg-2.0.0
 
@@ -41,14 +42,14 @@ include $(LOCAL_PATH)/giflib-5.1.1.mk
 include $(LOCAL_PATH)/libpng-1.6.10.mk
 include $(LOCAL_PATH)/libtiff-4.0.4.mk
 include $(LOCAL_PATH)/libwebp-0.4.0.mk
-include $(LOCAL_PATH)/pixman-0.32.4.mk
-include $(LOCAL_PATH)/freetype-2.5.3.mk
+include $(LOCAL_PATH)/pixman-0.32.6.mk
+include $(LOCAL_PATH)/freetype-2.6.mk
 include $(LOCAL_PATH)/fontconfig-2.11.1.mk
 include $(LOCAL_PATH)/expat-2.1.0.mk
-include $(LOCAL_PATH)/cairo-1.12.14.mk
+include $(LOCAL_PATH)/cairo-1.14.2.mk
 include $(LOCAL_PATH)/libgeotiff-1.4.0.mk
 include $(LOCAL_PATH)/libxml2-2.9.2.mk
 include $(LOCAL_PATH)/libcurl-7.36.0.mk
-include $(LOCAL_PATH)/lzma-xz-5.1.3a.mk
+include $(LOCAL_PATH)/lzma-xz-5.2.1.mk
 include $(LOCAL_PATH)/rasterlite2-4.3.0.mk
 $(call import-module,android/cpufeatures)

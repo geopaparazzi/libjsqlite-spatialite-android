@@ -24,7 +24,7 @@ PNG_PATH := libpng-1.6.10
 WEBP_PATH := libwebp-0.4.0
 XML2_PATH := libxml2-2.9.2
 CURL_PATH := curl-7.36.0
-LZMA_PATH := xz-5.1.3alpha
+LZMA_PATH := xz-5.2.1
 CHARLS_PATH := charls-1.0
 OPENJPEG_PATH := openjpeg-2.0.0
 
@@ -49,7 +49,7 @@ include $(LOCAL_PATH)/cairo-1.14.2.mk
 include $(LOCAL_PATH)/libgeotiff-1.4.0.mk
 include $(LOCAL_PATH)/libxml2-2.9.2.mk
 include $(LOCAL_PATH)/libcurl-7.36.0.mk
-include $(LOCAL_PATH)/lzma-xz-5.1.3a.mk
+include $(LOCAL_PATH)/lzma-xz-5.2.1.mk
 include $(LOCAL_PATH)/rasterlite2-4.3.0.mk
 $(call import-module,android/cpufeatures)
 
