@@ -2,12 +2,14 @@ include $(CLEAR_VARS)
 # ./configure  --enable-rttopo --enable-gcp  --enable-examples=no --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
 # 20170118.libspatialite-4.4.0-dev
 # -------------------
-# As of 2015-10-03 [4.4.0-t20160229]
+# As of 2017-01-18 
 # -------------------
 # changes:
-# - geos-3.5.0
+# - geos-3.6.1
+# - proj4-3.9.3
+# - rttopo 1.1.0-dev
 # - json-c-0.12
-# - json-c-0.12
+# - spatialite [4.4.0-20170118]
 # -------------------
 # Excluded files:
 # gaiageo/

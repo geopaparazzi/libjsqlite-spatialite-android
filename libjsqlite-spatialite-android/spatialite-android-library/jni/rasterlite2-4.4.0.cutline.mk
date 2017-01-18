@@ -1,14 +1,14 @@
 include $(CLEAR_VARS)
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
 # -------------------
-# As of 2015-10-03 
+# As of 2017-01-18 
 # -------------------
 # changes:
-# - geos-3.5.0
-# - liblwgeom
+# - geos-3.6.1
+# - proj4-3.9.3
+# - rttopo 1.1.0-dev
 # - json-c-0.12
-# - spatialite [4.4.0-topoalpha]
-# - rasterline2 with cutline [experimental]
+# - spatialite [4.4.0-20170118]
 # -------------------
 LOCAL_MODULE    := rasterlite2
 
@@ -35,7 +35,7 @@ spatialite_flags := \
  -DENABLE_GCP=1 \
  -DENABLE_GEOPACKAGE=1 \
  -DENABLE_LIBXML2=1 \
- -DENABLE_LWGEOM=1 \
+ -DENABLE_RTTOPO=1 \
  -DSQLITE_OMIT_BUILTIN_TEST=1
 
 # comment out TARGET_CPU in config.h - will be replaced with TARGET_ARCH_ABI
