@@ -1,0 +1,7 @@
+TopoGeo_Simplify - TEXT tolerance
+:memory: #use in-memory database
+SELECT TopoGeo_Simplify('topology', 'zero');
+1 # rows (not including the header row)
+1 # columns
+TopoGeo_Simplify('topology', 'zero')
+SQL/MM Spatial exception - invalid argument.

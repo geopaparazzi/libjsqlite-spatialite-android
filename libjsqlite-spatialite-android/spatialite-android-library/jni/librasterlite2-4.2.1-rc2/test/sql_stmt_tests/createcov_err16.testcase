@@ -1,0 +1,7 @@
+RL2_CreateCoverage - NULL SectionMD5
+:memory: #use in-memory database
+SELECT RL2_CreateCoverage('invalid', 'UINT8', 'GRAYSCALE', 1, 'NONE', 100, 512, 512, 3003, 1.0, 1.0, NULL, 0, 0, 0, NULL, 0);
+1 # rows (not including the header row)
+1 # columns
+RL2_CreateCoverage('invalid', 'UINT8', 'GRAYSCALE', 1, 'NONE', 100, 512, 512, 3003, 1.0, 1.0, NULL, 0, 0, 0, NULL, 0)
+-1

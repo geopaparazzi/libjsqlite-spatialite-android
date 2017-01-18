@@ -1,7 +1,14 @@
 include $(CLEAR_VARS)
-# ./configure  --enable-lwgeom=no --enable-gcp --enable-examples=no --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
+# ./configure  --enable-lwgeom=yes --enable-gcp --enable-examples=no --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
 # 20150626.libspatialite-4.3.0-RC1
 # 20150623: used when creating 'libjsqlite.so' with Android_4.3.0.mk
+# -------------------
+# As of 2015-10-02
+# -------------------
+# changes:
+# - geos-3.5.0
+# - liblwgeom
+# -------------------
 LOCAL_MODULE    := spatialite
 
 # SQLite flags copied from ASOP
@@ -28,6 +35,7 @@ spatialite_flags := \
  -DENABLE_GCP=1 \
  -DENABLE_GEOPACKAGE=1 \
  -DENABLE_LIBXML2=1 \
+ -DENABLE_LWGEOM=1 \
  -DSQLITE_OMIT_BUILTIN_TEST=1 
 
 LOCAL_CFLAGS    := \
@@ -53,6 +61,7 @@ LOCAL_C_INCLUDES := \
  $(ICONV_PATH)/libcharset/include \
  $(GEOS_PATH)/include \
  $(GEOS_PATH)/capi \
+ $(LWGEOM_PATH) \
  $(PROJ4_PATH)/src \
  $(LZMA_PATH)/src/liblzma/api \
  $(XML2_PATH)/include
@@ -185,5 +194,5 @@ LOCAL_SRC_FILES := \
  $(SPATIALITE_PATH)/src/virtualtext/virtualtext.c \
  $(SPATIALITE_PATH)/src/wfs/wfs_in.c
 # 'libjsqlite.so' specific settings
-LOCAL_STATIC_LIBRARIES := iconv proj geos libxml2
+LOCAL_STATIC_LIBRARIES := iconv proj geos libljson-c liblwgeom libxml2
 include $(BUILD_STATIC_LIBRARY)

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CoverageStyle version="1.1.0" xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/FeatureStyle.xsd" xmlns="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>coverage_style</Name>
+	<Description>
+		<Title>coverage title</Title>
+		<Abstract>coverage abstract</Abstract>
+	</Description>
+	<Rule>
+		<MaxScaleDenominator>1000000</MaxScaleDenominator>
+		<RasterSymbolizer>
+			<Name>coverage_ir_normalize</Name>
+			<Description>
+				<Title>False Color InfraRed - Normalize</Title>
+			</Description>
+			<Opacity>1.0</Opacity>
+			<ChannelSelection>
+				<RedChannel>
+					<SourceChannelName>4</SourceChannelName>
+				</RedChannel>
+				<GreenChannel>
+					<SourceChannelName>3</SourceChannelName>
+				</GreenChannel>
+				<BlueChannel>
+					<SourceChannelName>2</SourceChannelName>
+				</BlueChannel>
+			</ChannelSelection>
+			<ContrastEnhancement>
+				<Normalize/>
+			</ContrastEnhancement>
+		</RasterSymbolizer>
+	</Rule>
+	<Rule>
+		<Name> rule name</Name>
+		<Description>
+			<Title>rule title</Title>
+			<Abstract>rule abstract</Abstract>
+		</Description>
+		<MinScaleDenominator>1000000</MinScaleDenominator>
+		<MaxScaleDenominator>10000000</MaxScaleDenominator>
+		<RasterSymbolizer>
+			<Name>coverage_ir_normalize</Name>
+			<Description>
+				<Title>False Color InfraRed - Normalize</Title>
+				<Abstract>a styled 16-bit multi-band raster. False Colors: Infrared, Red, Green bands. Contrast Enhancement: Normalize method</Abstract>
+			</Description>
+			<Opacity>0.5</Opacity>
+			<ChannelSelection>
+				<RedChannel>
+					<SourceChannelName>4</SourceChannelName>
+				</RedChannel>
+				<GreenChannel>
+					<SourceChannelName>2</SourceChannelName>
+				</GreenChannel>
+				<BlueChannel>
+					<SourceChannelName>1</SourceChannelName>
+				</BlueChannel>
+			</ChannelSelection>
+			<ContrastEnhancement>
+				<Normalize/>
+			</ContrastEnhancement>
+		</RasterSymbolizer>
+	</Rule>
+	<Rule>
+		<MinScaleDenominator>10000000</MinScaleDenominator>
+		<RasterSymbolizer>
+			<Opacity>0.5</Opacity>
+			<ChannelSelection>
+				<RedChannel>
+					<SourceChannelName>3</SourceChannelName>
+				</RedChannel>
+				<GreenChannel>
+					<SourceChannelName>2</SourceChannelName>
+				</GreenChannel>
+				<BlueChannel>
+					<SourceChannelName>1</SourceChannelName>
+				</BlueChannel>
+			</ChannelSelection>
+			<ContrastEnhancement>
+				<Normalize/>
+			</ContrastEnhancement>
+		</RasterSymbolizer>
+	</Rule>
+</CoverageStyle>

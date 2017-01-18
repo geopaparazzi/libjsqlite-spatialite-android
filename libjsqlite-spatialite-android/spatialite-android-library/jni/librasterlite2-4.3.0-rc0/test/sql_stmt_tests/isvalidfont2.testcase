@@ -1,0 +1,7 @@
+IsValidFont - Text Font
+:memory: #use in-memory database
+SELECT RL2_IsValidFont('myfont');
+1 # rows (not including the header row)
+1 # columns
+RL2_IsValidFont('myfont')
+-1

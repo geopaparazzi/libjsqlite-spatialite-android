@@ -6176,7 +6176,7 @@ rl2_create_coverage_style_from_dbms (sqlite3 * handle, const char *coverage,
 	"FROM SE_raster_styled_layers AS r "
 	"JOIN SE_raster_styles AS s ON (r.style_id = s.style_id) "
 	"WHERE Lower(r.coverage_name) = Lower(?) AND "
-	"Lower(s.style_name) = Lower(?)";
+	"Lower(s.style_name) LIKE Lower(?)";
     ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
     if (ret != SQLITE_OK)
       {
@@ -6267,7 +6267,7 @@ rl2_create_feature_type_style_from_dbms (sqlite3 * handle,
 	"FROM SE_vector_styled_layers AS v "
 	"JOIN SE_vector_styles AS s ON (v.style_id = s.style_id) "
 	"WHERE Lower(v.coverage_name) = Lower(?) "
-	"AND Lower(s.style_name) = Lower(?)";
+	"AND Lower(s.style_name) LIKE Lower(?)";
     ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
     if (ret != SQLITE_OK)
       {

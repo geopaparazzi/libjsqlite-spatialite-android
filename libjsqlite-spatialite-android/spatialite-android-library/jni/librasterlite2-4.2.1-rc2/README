@@ -1,0 +1,34 @@
+librasterlite2 is an open source library that stores and retrieves huge 
+raster coverages using a SpatiaLite DBMS.
+
+Important notice: this is a brand new project intended to completely 
+replace the superseded librasterlite.
+The two projects are completely unrelated: the unique similarity 
+between both is just in covering the same identical application area.
+
+License: librasterlite2 (the library itself) is licensed under the 
+MPL tri-license terms; you are free to choose the best-fit license 
+between:
+
+    the MPL 1.1
+    the GPL v2.0 or any subsequent version
+    the LGPL v2.1 or any subsequent version
+
+Please note well: anyway the tools supporting the library (both 
+rl2tool and wmslite are licensed under the GPL v3 (or any subsequent 
+version) terms. 
+
+
+Coverage testing
+----------------
+librasterlite2 has coverage testing support. 
+You need to have gcov and lcov installed.
+
+Process:
+1. Use --enable-gcov=yes with configure script
+2. Clean and rebuild.
+3. make coverage-init
+4. make check (or whatever other tests you want to check coverage for)
+5. make coverage
+6. check summary on command line output.
+7. review detailed coverage results in covresults/index.html

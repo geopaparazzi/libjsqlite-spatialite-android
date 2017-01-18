@@ -1,0 +1,7 @@
+rl2_target_cpu 
+:memory: #use in-memory database
+SELECT rl2_target_cpu() IS NOT NULL;
+1 # rows (not including the header row)
+1 # columns
+rl2_target_cpu() IS NOT NULL
+1

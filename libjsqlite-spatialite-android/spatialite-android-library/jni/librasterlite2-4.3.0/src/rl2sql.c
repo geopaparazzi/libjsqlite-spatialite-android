@@ -7874,11 +7874,18 @@ fnct_GetMapImageFromRaster (sqlite3_context * context, int argc,
 	ok_style = 1;
     else
       {
+       if (strcasecmp (style, "*") == 0)
+	       style = "%";
 	  /* attempting to get a Coverage Style */
 	  cvg_stl =
 	      rl2_create_coverage_style_from_dbms (sqlite, cvg_name, style);
 	  if (cvg_stl == NULL)
+   {
+    if (strcasecmp (style, "%") == 0)
+	    ok_style = 1;
+     else     
 	      goto error;
+  }
 	  symbolizer =
 	      rl2_get_symbolizer_from_coverage_style (cvg_stl, map_scale);
 	  if (symbolizer == NULL)

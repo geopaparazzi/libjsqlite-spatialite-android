@@ -1,0 +1,10 @@
+#ifndef DOXYGEN_SKIP
+/* $Id: gdal_building.dox 25410 2012-12-31 11:56:53Z rouault $ */
+#endif /* DOXYGEN_SKIP */
+
+/*!
+\page gdal_building Building GDAL From Source
+
+This topic now lives in the wiki at: http://trac.osgeo.org/gdal/wiki/BuildHints
+
+*/

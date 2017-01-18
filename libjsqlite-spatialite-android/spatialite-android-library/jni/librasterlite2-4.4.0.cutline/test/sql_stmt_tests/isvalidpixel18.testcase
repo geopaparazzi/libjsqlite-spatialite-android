@@ -1,0 +1,7 @@
+IsValidPixel - DOUBLE DATAGRID
+:memory: #use in-memory database
+SELECT RL2_IsValidPixel(RL2_CreatePixel('DOUBLE', 'DATAGRID', 1), 'DOUBLE', 1);
+1 # rows (not including the header row)
+1 # columns
+RL2_IsValidPixel(RL2_CreatePixel('DOUBLE', 'DATAGRID', 1), 'DOUBLE', 1)
+1

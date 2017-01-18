@@ -1,0 +1,7 @@
+TestPixel - UINT8 Palette (ok)
+:memory: #use in-memory database
+SELECT RL2_GetPixelValue(RL2_SetPixelValue(RL2_CreatePixel('UINT8', 'PALETTE', 1), 0, 255), 0);
+1 # rows (not including the header row)
+1 # columns
+RL2_GetPixelValue(RL2_SetPixelValue(RL2_CreatePixel('UINT8', 'PALETTE', 1), 0, 255), 0)
+255

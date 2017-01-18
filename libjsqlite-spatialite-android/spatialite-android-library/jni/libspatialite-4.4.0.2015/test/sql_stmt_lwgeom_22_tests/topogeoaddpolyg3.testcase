@@ -1,0 +1,7 @@
+TopoGeo_AddPolygon - Double Topology
+:memory: #use in-memory database
+SELECT TopoGeo_AddPolygon(1.5, GeomFromText('POLYGON((0 0, 0 1, 1 1, 1 0, 0 0))', 4326), 0);
+1 # rows (not including the header row)
+1 # columns
+TopoGeo_AddPolygon(1.5, GeomFromText('POLYGON((0 0, 0 1, 1 1, 1 0, 0 0))', 4326), 0)
+SQL/MM Spatial exception - invalid argument.

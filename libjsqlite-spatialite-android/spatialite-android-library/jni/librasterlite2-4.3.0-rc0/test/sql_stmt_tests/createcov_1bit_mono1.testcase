@@ -1,0 +1,7 @@
+RL2_CreateRasterCoverage - 1-BIT MONOCHROME invalid Bands
+:memory: #use in-memory database
+SELECT RL2_CreateRasterCoverage('1bit_mono1', '1-BIT', 'MONOCHROME', 2, 'NONE', 100, 512, 512, 3003, 1.0, 1.0, NULL);
+1 # rows (not including the header row)
+1 # columns
+RL2_CreateRasterCoverage('1bit_mono1', '1-BIT', 'MONOCHROME', 2, 'NONE', 100, 512, 512, 3003, 1.0, 1.0, NULL)
+0

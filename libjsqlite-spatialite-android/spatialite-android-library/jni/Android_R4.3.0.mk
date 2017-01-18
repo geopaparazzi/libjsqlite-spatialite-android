@@ -2,12 +2,19 @@
 # Android_R4.3.0.mk
 # ndk-build clean
 # ndk-build
-# As of 2015-06-27
+# As of 2015-10-02
+# -------------------
+# changes:
+# - geos-3.5.0
+# - liblwgeom
+# - json-c-0.12
 # -------------------
 LOCAL_PATH := $(call my-dir)
 JSQLITE_PATH := javasqlite-20120209
 SPATIALITE_PATH := libspatialite-4.3.0
-GEOS_PATH := geos-3.4.2
+GEOS_PATH := geos-3.5.0
+JSONC_PATH := json-c-0.12
+LWGEOM_PATH := postgis-2.2.svn/liblwgeom
 PROJ4_PATH := proj-4.9.1
 SQLITE_PATH := sqlite-amalgamation-3081002
 ICONV_PATH := libiconv-1.13.1
@@ -34,7 +41,9 @@ include $(LOCAL_PATH)/jsqlite-R4.2.0.mk
 include $(LOCAL_PATH)/iconv-1.13.1.mk
 include $(LOCAL_PATH)/sqlite-3081002.mk
 include $(LOCAL_PATH)/proj4-4.9.1.mk
-include $(LOCAL_PATH)/geos-3.4.2.mk
+include $(LOCAL_PATH)/geos-3.5.0.mk
+include $(LOCAL_PATH)/json-c-0.12.mk
+include $(LOCAL_PATH)/liblwgeom-2.2.0.mk
 include $(LOCAL_PATH)/spatialite-4.3.0.mk
 include $(LOCAL_PATH)/libjpeg-6b.mk
 include $(LOCAL_PATH)/openjpeg-2.0.0.mk

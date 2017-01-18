@@ -2,7 +2,7 @@
 
  srid_aux.c -- SRID auxiliary functions
 
- version 4.2.1, 2014 December 4
+ version 4.3.0, 2014 December 4
 
  Author: Sandro Furieri a.furieri@lqt.it
 
@@ -24,7 +24,7 @@ The Original Code is the SpatiaLite library
 
 The Initial Developer of the Original Code is Alessandro Furieri
  
-Portions created by the Initial Developer are Copyright (C) 2014
+Portions created by the Initial Developer are Copyright (C) 2014-2015
 the Initial Developer. All Rights Reserved.
 
 Contributor(s):

@@ -1,0 +1,7 @@
+TopoGeo_AddPolygon - Int Geometry
+:memory: #use in-memory database
+SELECT TopoGeo_AddPolygon('topology', -1, 1);
+1 # rows (not including the header row)
+1 # columns
+TopoGeo_AddPolygon('topology', -1, 1)
+SQL/MM Spatial exception - invalid argument.

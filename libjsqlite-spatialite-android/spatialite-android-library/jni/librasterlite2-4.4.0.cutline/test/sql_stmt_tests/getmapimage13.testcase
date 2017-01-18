@@ -1,0 +1,7 @@
+RL2_GetMapImageFromRaster - Invalid width (too big)
+:memory: #use in-memory database
+SELECT RL2_GetMapImageFromRaster('landsat', BuildMbr(1, 1, 10, 10), 6666, 480, 'default', 'image/png', '#ffffff', 1, 100, 0);
+1 # rows (not including the header row)
+1 # columns
+RL2_GetMapImageFromRaster('landsat', BuildMbr(1, 1, 10, 10), 6666, 480, 'default', 'image/png', '#ffffff', 1, 100, 0)
+(NULL)

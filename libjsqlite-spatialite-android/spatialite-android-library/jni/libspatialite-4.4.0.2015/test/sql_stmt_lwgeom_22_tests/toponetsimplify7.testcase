@@ -1,0 +1,7 @@
+TopoNet_Simplify - TEXT tolerance
+:memory: #use in-memory database
+SELECT TopoNet_Simplify('network', 'zero');
+1 # rows (not including the header row)
+1 # columns
+TopoNet_Simplify('network', 'zero')
+SQL/MM Spatial exception - invalid argument.

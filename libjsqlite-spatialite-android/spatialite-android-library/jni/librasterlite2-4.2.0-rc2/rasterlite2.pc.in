@@ -1,0 +1,12 @@
+# Package Information for pkg-config
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: rasterlite2
+Description: a library supporting Rasters on DBMS
+Version: @VERSION@
+Libs: -L${libdir} -lrasterlite2 -lm
+Cflags: -I${includedir} 

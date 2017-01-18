@@ -1,0 +1,36 @@
+-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+-- 
+-- PostGIS - Spatial Types for PostgreSQL
+-- http://postgis.net
+--
+-- Copyright (C) 2011 Andrea Peri <aperi2007@gmail.com>
+--
+-- This is free software; you can redistribute and/or modify it under
+-- the terms of the GNU General Public Licence. See the COPYING file.
+--
+-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+--{
+--
+-- Andrea Peri (19 Jan 2011) creation
+-- Andrea Peri (14 Feb 2011) minor issues
+--
+-- GetEdgeByPoint(atopology, point, tol)
+--
+-- Retrieve an Edge ID given a POINT and a tolerance
+-- tolerance = 0 mean exactly intersection
+--
+-- Returns return the integer ID if there is an edge on the Point.
+--
+-- When the Point is even a Node it raise an exception. 
+-- This case is testable with the GetNodeByPoint(atopology, apoint, tol)
+--
+-- If there isn't any edge in the Point, GetEdgeByPoint return 0.
+--
+-- if near the point there are two or more edges it throw an exception.
+--
+CREATE OR REPLACE FUNCTION topology.GetEdgeByPoint(atopology varchar, apoint geometry, tol1 float8)
+	RETURNS int AS
+	'MODULE_PATHNAME', 'GetEdgeByPoint'
+	LANGUAGE 'c' STABLE STRICT;
+--} GetEdgeByPoint

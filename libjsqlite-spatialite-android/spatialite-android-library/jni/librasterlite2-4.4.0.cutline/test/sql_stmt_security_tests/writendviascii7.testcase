@@ -1,0 +1,7 @@
+RL2_WriteNdviAsciiGrid - NULL Geometry
+:memory: #use in-memory database
+SELECT RL2_WriteNdviAsciiGrid('alpha', './test.asc', 1024, 1024, 0, 3, NULL, 0.5);
+1 # rows (not including the header row)
+1 # columns
+RL2_WriteNdviAsciiGrid('alpha', './test.asc', 1024, 1024, 0, 3, NULL, 0.5)
+-1

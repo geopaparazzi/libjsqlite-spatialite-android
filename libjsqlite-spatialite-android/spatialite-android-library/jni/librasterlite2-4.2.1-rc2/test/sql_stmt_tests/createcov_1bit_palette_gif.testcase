@@ -1,0 +1,7 @@
+RL2_CreateCoverage - 1-BIT PALETTE GIF
+:memory: #use in-memory database
+SELECT RL2_CreateCoverage('1bit_palette_gif', '1-BIT', 'PALETTE', 1, 'GIF', 100, 256, 256, 3003, 1.0);
+1 # rows (not including the header row)
+1 # columns
+RL2_CreateCoverage('1bit_palette_gif', '1-BIT', 'PALETTE', 1, 'GIF', 100, 256, 256, 3003, 1.0)
+0

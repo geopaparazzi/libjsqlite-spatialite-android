@@ -1,0 +1,769 @@
+-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+-- 
+-- PostGIS - Spatial Types for PostgreSQL
+-- http://postgis.net
+--
+-- Copyright (C) 2010-2015 Sandro Santilli <strk@keybit.net>
+-- Copyright (C) 2005 Refractions Research Inc.
+--
+-- This is free software; you can redistribute and/or modify it under
+-- the terms of the GNU General Public Licence. See the COPYING file.
+--
+-- Author: Sandro Santilli <strk@keybit.net>
+--  
+-- 
+
+/* #define POSTGIS_TOPOLOGY_DEBUG 1 */
+
+--={ ----------------------------------------------------------------
+--  SQL/MM block
+--
+--  This part contains function in the SQL/MM specification
+--
+---------------------------------------------------------------------
+
+--
+-- Type returned by ST_GetFaceEdges
+--
+CREATE TYPE topology.GetFaceEdges_ReturnType AS (
+  sequence integer,
+  edge integer
+);
+
+
+--{
+-- Topo-Geo and Topo-Net 3: Routine Details
+-- X.3.5
+--
+--  ST_GetFaceEdges(atopology, aface)
+--
+--
+-- 
+CREATE OR REPLACE FUNCTION topology.ST_GetFaceEdges(toponame varchar, face_id integer)
+  RETURNS SETOF topology.GetFaceEdges_ReturnType AS
+	'MODULE_PATHNAME', 'ST_GetFaceEdges'
+  LANGUAGE 'c' STABLE;
+--} ST_GetFaceEdges
+
+--{
+-- Topo-Geo and Topo-Net 3: Routine Details
+-- X.3.10
+--
+--  ST_NewEdgeHeal(atopology, anedge, anotheredge)
+--
+-- Not in the specs:
+-- * Refuses to heal two edges if any of the two is closed 
+-- * Raise an exception when trying to heal an edge with itself
+-- * Raise an exception if any TopoGeometry is defined by only one
+--   of the two edges
+-- * Update references in the Relation table.
+-- 
+CREATE OR REPLACE FUNCTION topology.ST_NewEdgeHeal(toponame varchar, e1id integer, e2id integer)
+  RETURNS int AS
+  'MODULE_PATHNAME','ST_NewEdgeHeal'
+  LANGUAGE 'c' VOLATILE;
+--} ST_NewEdgeHeal
+
+--{
+-- Topo-Geo and Topo-Net 3: Routine Details
+-- X.3.11
+--
+--  ST_ModEdgeHeal(atopology, anedge, anotheredge)
+--
+-- Not in the specs:
+-- * Returns the id of the node being removed
+-- * Refuses to heal two edges if any of the two is closed 
+-- * Raise an exception when trying to heal an edge with itself
+-- * Raise an exception if any TopoGeometry is defined by only one
+--   of the two edges
+-- * Update references in the Relation table.
+-- {
+CREATE OR REPLACE FUNCTION topology.ST_ModEdgeHeal(toponame varchar, e1id integer, e2id integer)
+  RETURNS int AS
+  'MODULE_PATHNAME','ST_ModEdgeHeal'
+  LANGUAGE 'c' VOLATILE;
+--} ST_ModEdgeHeal
+
+--{
+-- Topo-Geo and Topo-Net 3: Routine Details
+-- X.3.14
+--
+--  ST_RemEdgeNewFace(atopology, anedge)
+--
+-- Not in the specs:
+-- * Raise an exception if any TopoGeometry is defined by only one
+--   of the two faces that will dissolve.
+-- * Raise an exception if any TopoGeometry is defined by 
+--   the edge being removed.
+-- * Properly set containg_face on nodes that remains isolated by the drop
+-- * Update containg_face for isolated nodes in the dissolved faces
+-- * Update references in the Relation table
+-- 
+-- }{
+CREATE OR REPLACE FUNCTION topology.ST_RemEdgeNewFace(toponame varchar, e1id integer)
+  RETURNS int AS
+	'MODULE_PATHNAME','ST_RemEdgeNewFace'
+  LANGUAGE 'c' VOLATILE;
+--} ST_RemEdgeNewFace
+
+--{
+-- Topo-Geo and Topo-Net 3: Routine Details
+-- X.3.15
+--
+--  ST_RemEdgeModFace(atopology, anedge)
+--
+-- Not in the specs:
+-- * Raise an exception if any TopoGeometry is defined by only one
+--   of the two faces that will dissolve.
+-- * Raise an exception if any TopoGeometry is defined by 
+--   the edge being removed.
+-- * Properly set containg_face on nodes that remains isolated by the drop
+-- * Update containg_face for isolated nodes in the dissolved faces
+-- * Update references in the Relation table
+-- * Return id of the face taking up the removed edge space
+--
+-- }{
+CREATE OR REPLACE FUNCTION topology.ST_RemEdgeModFace(toponame varchar, e1id integer)
+  RETURNS int AS
+	'MODULE_PATHNAME','ST_RemEdgeModFace'
+  LANGUAGE 'c' VOLATILE;
+--} ST_RemEdgeModFace
+
+
+--{
+-- Topo-Geo and Topo-Net 3: Routine Details
+-- X.3.16
+--
+--  ST_GetFaceGeometry(atopology, aface)
+-- 
+CREATE OR REPLACE FUNCTION topology.ST_GetFaceGeometry(toponame varchar, aface integer)
+  RETURNS GEOMETRY AS
+	'MODULE_PATHNAME', 'ST_GetFaceGeometry'
+  LANGUAGE 'c' STABLE;
+--} ST_GetFaceGeometry
+
+
+--{
+-- Topo-Geo and Topo-Net 3: Routine Details
+-- X.3.1 
+--
+--  ST_AddIsoNode(atopology, aface, apoint)
+--
+CREATE OR REPLACE FUNCTION topology.ST_AddIsoNode(atopology varchar, aface integer, apoint geometry)
+  RETURNS INTEGER AS
+	'MODULE_PATHNAME','ST_AddIsoNode'
+  LANGUAGE 'c' VOLATILE;
+--} ST_AddIsoNode
+
+--{
+-- Topo-Geo and Topo-Net 3: Routine Details
+-- X.3.2 
+--
+--  ST_MoveIsoNode(atopology, anode, apoint)
+--
+CREATE OR REPLACE FUNCTION topology.ST_MoveIsoNode(atopology character varying, anode integer, apoint geometry)
+  RETURNS text AS
+  'MODULE_PATHNAME','ST_MoveIsoNode'
+  LANGUAGE 'c' VOLATILE;
+--} ST_MoveIsoNode
+
+--{
+-- Topo-Geo and Topo-Net 3: Routine Details
+-- X.3.3 
+--
+--  ST_RemoveIsoNode(atopology, anode)
+--
+CREATE OR REPLACE FUNCTION topology.ST_RemoveIsoNode(atopology varchar, anode integer)
+  RETURNS TEXT AS
+	'MODULE_PATHNAME','ST_RemoveIsoNode'
+  LANGUAGE 'c' VOLATILE;
+--} ST_RemoveIsoNode
+
+--{
+-- According to http://trac.osgeo.org/postgis/ticket/798
+-- ST_RemoveIsoNode was renamed to ST_RemIsoNode in the final ISO
+-- document
+--
+CREATE OR REPLACE FUNCTION topology.ST_RemIsoNode(varchar, integer)
+  RETURNS TEXT AS
+	'MODULE_PATHNAME','ST_RemoveIsoNode'
+  LANGUAGE 'c' VOLATILE;
+--} ST_RemIsoNode
+
+--{
+-- Topo-Geo and Topo-Net 3: Routine Details
+-- X.3.7 
+--
+--  ST_RemoveIsoEdge(atopology, anedge)
+--
+CREATE OR REPLACE FUNCTION topology.ST_RemoveIsoEdge(atopology varchar, anedge integer)
+  RETURNS TEXT AS
+	'MODULE_PATHNAME','ST_RemIsoEdge'
+	LANGUAGE 'c' VOLATILE;
+--} ST_RemoveIsoEdge
+
+--{
+-- Topo-Geo and Topo-Net 3: Routine Details
+-- X.3.8 
+--
+--  ST_NewEdgesSplit(atopology, anedge, apoint)
+--
+-- Not in the specs:
+-- * Update references in the Relation table.
+--
+CREATE OR REPLACE FUNCTION topology.ST_NewEdgesSplit(atopology varchar, anedge integer, apoint geometry)
+  RETURNS INTEGER AS
+  'MODULE_PATHNAME','ST_NewEdgesSplit'
+  LANGUAGE 'c' VOLATILE;
+--} ST_NewEdgesSplit
+
+--{
+-- Topo-Geo and Topo-Net 3: Routine Details
+-- X.3.9 
+--
+--  ST_ModEdgeSplit(atopology, anedge, apoint)
+--
+-- Not in the specs:
+-- * Update references in the Relation table.
+--
+CREATE OR REPLACE FUNCTION topology.ST_ModEdgeSplit(atopology varchar, anedge integer, apoint geometry)
+  RETURNS INTEGER AS
+	'MODULE_PATHNAME','ST_ModEdgeSplit'
+  LANGUAGE 'c' VOLATILE;
+--} ST_ModEdgesSplit
+
+--{
+-- Topo-Geo and Topo-Net 3: Routine Details
+-- X.3.4 
+--
+--  ST_AddIsoEdge(atopology, anode, anothernode, acurve)
+-- 
+-- Not in the specs:
+-- * Reset containing_face for starting and ending point,
+--   as they stop being isolated nodes
+-- * Refuse to add a closed edge, as it would not be isolated
+--   (ie: would create a ring)
+--
+-- }{
+--
+CREATE OR REPLACE FUNCTION topology.ST_AddIsoEdge(atopology varchar, anode integer, anothernode integer, acurve geometry)
+  RETURNS INTEGER AS
+	'MODULE_PATHNAME','ST_AddIsoEdge'
+  LANGUAGE 'c' VOLATILE;
+--} ST_AddIsoEdge
+
+-- Internal function used by ST_ChangeEdgeGeom to compare
+-- adjacent edges of an edge endpoint
+--
+-- @param anode the node to use edge end star of
+-- @param anedge the directed edge to get adjacents from
+--        if positive `anode' is assumed to be its start node
+--        if negative `anode' is assumed to be its end node
+--      
+-- @todo DROP, NOT NEEDED ANYMORE (might need to go in some _drop, I guess)
+-- {
+CREATE OR REPLACE FUNCTION topology._ST_AdjacentEdges(atopology varchar, anode integer, anedge integer)
+RETURNS integer[] AS
+$$
+DECLARE
+  ret integer[];
+BEGIN
+  WITH edgestar AS (
+    SELECT *, count(*) over () AS cnt
+    FROM topology.GetNodeEdges(atopology, anode)
+  )
+  SELECT ARRAY[ (
+      SELECT p.edge AS prev FROM edgestar p
+      WHERE p.sequence = CASE WHEN m.sequence-1 < 1 THEN cnt
+                         ELSE m.sequence-1 END
+    ), (
+      SELECT p.edge AS prev FROM edgestar p WHERE p.sequence = ((m.sequence)%cnt)+1
+    ) ]
+  FROM edgestar m
+  WHERE edge = anedge
+  INTO ret;
+
+  RETURN ret;
+END
+$$
+LANGUAGE 'plpgsql' STABLE;
+--}
+
+--{
+-- Topo-Geo and Topo-Net 3: Routine Details
+-- X.3.6
+--
+--  ST_ChangeEdgeGeom(atopology, anedge, acurve)
+--
+-- Not in the specs:
+-- * Raise an exception if given a non-existent edge
+-- * Raise an exception if movement is not topologically isomorphic
+--
+-- }{
+CREATE OR REPLACE FUNCTION topology.ST_ChangeEdgeGeom(atopology varchar, anedge integer, acurve geometry)
+  RETURNS TEXT AS
+	'MODULE_PATHNAME','ST_ChangeEdgeGeom'
+  LANGUAGE 'c' VOLATILE;
+--} ST_ChangeEdgeGeom
+
+--
+-- _ST_AddFaceSplit
+--
+-- Add a split face by walking on the edge side.
+--
+-- @param atopology topology name
+-- @param anedge edge id and walking side (left:positive right:negative)
+-- @param oface the face in which the edge identifier is known to be
+-- @param mbr_only do not create a new face but update MBR of the current
+--
+-- The created face, if any, will be at the left hand of the walking path
+--
+-- Return:
+--  NULL: if mbr_only was requested
+--     0: if the edge does not form a ring
+--  NULL: if it is impossible to create a face on the requested side
+--        ( new face on the side is the universe )
+--   >0 : id of newly added face
+--
+-- {
+CREATE OR REPLACE FUNCTION topology._ST_AddFaceSplit(atopology varchar, anedge integer, oface integer, mbr_only bool)
+  RETURNS INTEGER AS
+$$
+DECLARE
+  fan RECORD;
+  newface INTEGER;
+  sql TEXT;
+  isccw BOOLEAN;
+  ishole BOOLEAN;
+
+BEGIN
+
+  IF oface = 0 AND mbr_only THEN
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+    RAISE DEBUG 'Universal face has no MBR, doing nothing';
+#endif
+    RETURN NULL;
+  END IF;
+
+  SELECT null::int[] as newring_edges,
+         null::geometry as shell
+  INTO fan;
+
+  SELECT array_agg(edge)
+  FROM topology.getringedges(atopology, anedge)
+  INTO STRICT fan.newring_edges;
+
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+  RAISE DEBUG 'ring: %', fan.newring_edges;
+#endif
+
+  -- You can't get to the other side of an edge forming a ring 
+  IF fan.newring_edges @> ARRAY[-anedge] THEN
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+    RAISE DEBUG 'not a ring';
+#endif
+    RETURN 0;
+  END IF;
+
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+  RAISE DEBUG 'Edge % split face %', anedge, oface;
+#endif
+
+  sql := 'WITH ids as ( select row_number() over () as seq, edge '
+    || 'from unnest($1) u(edge) ), edges AS ( select CASE WHEN i.edge < 0 '
+    || 'THEN ST_Reverse(e.geom) ELSE e.geom END as g FROM ids i left join '
+    || quote_ident(atopology) || '.edge_data e ON(e.edge_id = abs(i.edge)) '
+    || 'ORDER BY seq) SELECT ST_MakePolygon(ST_MakeLine(g.g)) FROM edges g';
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+  RAISE DEBUG '%', sql;
+#endif
+  EXECUTE sql INTO fan.shell USING
+    fan.newring_edges
+  ;
+
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+  RAISE DEBUG 'got shell'; 
+#endif
+
+  isccw := NOT ST_OrderingEquals(fan.shell, ST_ForceRHR(fan.shell));
+
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+  RAISE DEBUG 'winding: %', CASE WHEN isccw THEN 'CCW' ELSE 'CW' END;
+#endif
+
+  IF oface = 0 THEN
+    IF NOT isccw THEN
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+      RAISE DEBUG 'Not considering CW ring in universe face';
+#endif
+      RETURN NULL;
+    END IF;
+  END IF;
+
+  IF mbr_only AND oface != 0 THEN
+    -- Update old face mbr (nothing to do if we're opening an hole)
+    IF isccw THEN -- {
+      sql := 'UPDATE '
+        || quote_ident(atopology)
+        || '.face SET mbr = $1 WHERE face_id = $2';
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+    	RAISE DEBUG 'Updating old face mbr'; 
+#endif
+    	EXECUTE sql USING
+        ST_Envelope(fan.shell),
+        oface
+      ;
+    END IF; -- }
+    RETURN NULL;
+  END IF;
+
+  IF oface != 0 AND NOT isccw THEN -- {
+    -- Face created an hole in an outer face
+    sql := 'INSERT INTO '
+      || quote_ident(atopology) || '.face(mbr) SELECT mbr FROM '
+      || quote_ident(atopology)
+      || '.face WHERE face_id = ' || oface
+      || ' RETURNING face_id';
+  ELSE
+    sql := 'INSERT INTO '
+      || quote_ident(atopology) || '.face(mbr) VALUES ($1) RETURNING face_id';
+  END IF; -- }
+
+  -- Insert new face
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+  RAISE DEBUG 'Inserting new face'; 
+#endif
+  EXECUTE sql INTO STRICT newface USING ST_Envelope(fan.shell);
+
+  -- Update forward edges
+  sql := 'UPDATE ' || quote_ident(atopology) ||
+    '.edge_data SET left_face = $1 WHERE edge_id = ANY($3)'
+  ;
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+  RAISE DEBUG 'Updating backward and forward edges in new ring: %', sql;
+#endif
+  EXECUTE sql USING newface, oface,
+    array(select +x from unnest(fan.newring_edges) u(x) where x > 0)
+  ;
+
+  -- Update backward edges
+  sql := 'UPDATE ' || quote_ident(atopology) ||
+    '.edge_data SET right_face = $1 WHERE edge_id = ANY($3)'
+  ;
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+  RAISE DEBUG 'Updating backward edges in new ring: %', sql;
+#endif
+  EXECUTE sql USING newface, oface,
+    array(select -x from unnest(fan.newring_edges) u(x) where x < 0)
+  ;
+
+  IF oface != 0 AND NOT isccw THEN -- {
+    -- face shrinked, must update all non-contained edges and nodes
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+    RAISE DEBUG 'Updating rings in former shell';
+#endif
+    ishole := true;
+  ELSE
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+    RAISE DEBUG 'Updating contained edges';
+#endif
+    ishole := false;
+  END IF; -- }
+
+  -- Update edges bounding the old face
+  sql := 'UPDATE '
+    || quote_ident(atopology)
+    || '.edge_data SET left_face = CASE WHEN left_face = $2 THEN $3'
+    || ' ELSE left_face END, right_face = CASE WHEN right_face = $2 '
+    || ' THEN $3 ELSE right_face END WHERE ( left_face = $2 '
+    || ' OR right_face = $2 ) AND NOT edge_id = ANY ($4) AND ';
+  IF ishole THEN sql := sql || 'NOT '; END IF;
+  sql := sql || '($1 && geom AND _ST_Contains($1'
+    -- We only need to check a single point, but must not be an endpoint
+    || ', ST_LineInterpolatePoint(geom, 0.2)) )';
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+  RAISE DEBUG 'Updating edges bounding the old face: %', sql;
+#endif
+  EXECUTE sql USING fan.shell, oface, newface,
+    array(select abs(x) from unnest(fan.newring_edges) u(x));
+
+  -- Update isolated nodes in new new face 
+  sql := 'UPDATE '
+    || quote_ident(atopology) || '.node SET containing_face = $2 '
+    || ' WHERE containing_face = $3 AND ';
+  IF ishole THEN sql := sql || 'NOT '; END IF;
+  sql := sql || 'ST_Contains($1, geom)';
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+  RAISE DEBUG 'Updating isolated nodes in old face';
+#endif
+  EXECUTE sql USING fan.shell, newface, oface;
+
+  RETURN newface;
+
+END
+$$
+LANGUAGE 'plpgsql' VOLATILE;
+--}
+
+--{
+-- Topo-Geo and Topo-Net 3: Routine Details
+-- X.3.12
+--
+--  ST_AddEdgeNewFaces(atopology, anode, anothernode, acurve)
+--
+-- Not in the specs:
+-- * Reset containing_face for starting and ending point,
+--   as they stop being isolated nodes
+-- * Update references in the Relation table.
+--
+CREATE OR REPLACE FUNCTION topology.ST_AddEdgeNewFaces(atopology varchar, anode integer, anothernode integer, acurve geometry)
+  RETURNS INTEGER AS
+	'MODULE_PATHNAME','ST_AddEdgeNewFaces'
+  LANGUAGE 'c' VOLATILE;
+--} ST_AddEdgeNewFaces
+
+--{
+-- Topo-Geo and Topo-Net 3: Routine Details
+-- X.3.13
+--
+--  ST_AddEdgeModFace(atopology, anode, anothernode, acurve)
+--
+-- Not in the specs:
+-- * Reset containing_face for starting and ending point,
+--   as they stop being isolated nodes
+-- * Update references in the Relation table.
+--
+CREATE OR REPLACE FUNCTION topology.ST_AddEdgeModFace(atopology varchar, anode integer, anothernode integer, acurve geometry)
+  RETURNS INTEGER AS
+	'MODULE_PATHNAME','ST_AddEdgeModFace'
+  LANGUAGE 'c' VOLATILE;
+--} ST_AddEdgeModFace
+
+--{
+-- Topo-Geo and Topo-Net 3: Routine Details
+-- X.3.17
+--
+--  ST_InitTopoGeo(atopology)
+--
+CREATE OR REPLACE FUNCTION topology.ST_InitTopoGeo(atopology varchar)
+RETURNS text
+AS
+$$
+DECLARE
+  rec RECORD;
+  topology_id numeric;
+BEGIN
+  IF atopology IS NULL THEN
+    RAISE EXCEPTION 'SQL/MM Spatial exception - null argument';
+  END IF;
+
+  FOR rec IN SELECT * FROM pg_namespace WHERE text(nspname) = atopology
+  LOOP
+    RAISE EXCEPTION 'SQL/MM Spatial exception - schema already exists';
+  END LOOP;
+
+  FOR rec IN EXECUTE 'SELECT topology.CreateTopology('
+    ||quote_literal(atopology)|| ') as id'
+  LOOP
+    topology_id := rec.id;
+  END LOOP;
+
+  RETURN 'Topology-Geometry ' || quote_literal(atopology)
+    || ' (id:' || topology_id || ') created.';
+END
+$$
+LANGUAGE 'plpgsql' VOLATILE;
+--} ST_InitTopoGeo
+
+--{
+-- Topo-Geo and Topo-Net 3: Routine Details
+-- X.3.18
+--
+--  ST_CreateTopoGeo(atopology, acollection)
+--}{
+CREATE OR REPLACE FUNCTION topology.ST_CreateTopoGeo(atopology varchar, acollection geometry)
+RETURNS text
+AS
+$$
+DECLARE
+  typ char(4);
+  rec RECORD;
+  ret int;
+  nodededges GEOMETRY;
+  points GEOMETRY;
+  snode_id int;
+  enode_id int;
+  tolerance FLOAT8;
+  topoinfo RECORD;
+BEGIN
+
+  IF atopology IS NULL OR acollection IS NULL THEN
+    RAISE EXCEPTION 'SQL/MM Spatial exception - null argument';
+  END IF;
+
+  -- Get topology information
+  BEGIN
+    SELECT * FROM topology.topology
+      INTO STRICT topoinfo WHERE name = atopology;
+  EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+      RAISE EXCEPTION 'SQL/MM Spatial exception - invalid topology name';
+  END;
+
+  -- Check SRID compatibility
+  IF ST_SRID(acollection) != topoinfo.SRID THEN
+    RAISE EXCEPTION 'Geometry SRID (%) does not match topology SRID (%)',
+      ST_SRID(acollection), topoinfo.SRID;
+  END IF;
+
+  -- Verify pre-conditions (valid, empty topology schema exists)
+  BEGIN -- {
+
+    -- Verify the topology views in the topology schema to be empty
+    FOR rec in EXECUTE
+      'SELECT count(*) FROM '
+      || quote_ident(atopology) || '.edge_data '
+      || ' UNION ' ||
+      'SELECT count(*) FROM '
+      || quote_ident(atopology) || '.node '
+    LOOP
+      IF rec.count > 0 THEN
+    RAISE EXCEPTION 'SQL/MM Spatial exception - non-empty view';
+      END IF;
+    END LOOP;
+
+    -- face check is separated as it will contain a single (world)
+    -- face record
+    FOR rec in EXECUTE
+      'SELECT count(*) FROM '
+      || quote_ident(atopology) || '.face '
+    LOOP
+      IF rec.count != 1 THEN
+    RAISE EXCEPTION 'SQL/MM Spatial exception - non-empty face view';
+      END IF;
+    END LOOP;
+
+  EXCEPTION
+    WHEN INVALID_SCHEMA_NAME THEN
+      RAISE EXCEPTION 'SQL/MM Spatial exception - invalid topology name';
+    WHEN UNDEFINED_TABLE THEN
+      RAISE EXCEPTION 'SQL/MM Spatial exception - non-existent view';
+
+  END; -- }
+
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+  RAISE DEBUG 'Noding input linework';
+#endif
+
+  --
+  -- Node input linework with itself
+  --
+  WITH components AS ( SELECT geom FROM ST_Dump(acollection) )
+  SELECT ST_UnaryUnion(ST_Collect(geom)) FROM (
+    SELECT geom FROM components
+      WHERE ST_Dimension(geom) = 1
+    UNION ALL
+    SELECT ST_Boundary(geom) FROM components
+      WHERE ST_Dimension(geom) = 2
+  ) as linework INTO STRICT nodededges;
+
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+  RAISE DEBUG 'Computed % noded edges', ST_NumGeometries(nodededges);
+#endif
+
+  --
+  -- Linemerge the resulting edges, to reduce the working set
+  -- NOTE: this is more of a workaround for GEOS splitting overlapping
+  --       lines to each of the segments.
+  --
+  SELECT ST_LineMerge(nodededges) INTO STRICT nodededges;
+
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+  RAISE DEBUG 'Merged edges: %', ST_NumGeometries(nodededges);
+#endif
+
+
+  --
+  -- Collect input points and input lines endpoints
+  --
+  WITH components AS ( SELECT geom FROM ST_Dump(acollection) )
+  SELECT ST_Union(geom) FROM (
+    SELECT geom FROM components
+      WHERE ST_Dimension(geom) = 0
+    UNION ALL
+    SELECT ST_Boundary(geom) FROM components
+      WHERE ST_Dimension(geom) = 1
+  ) as nodes INTO STRICT points;
+
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+  RAISE DEBUG 'Collected % input points', ST_NumGeometries(points);
+#endif
+
+  --
+  -- Further split edges by points
+  -- TODO: optimize this adding ST_Split support for multiline/multipoint
+  --
+  FOR rec IN SELECT geom FROM ST_Dump(points)
+  LOOP
+    -- Use the node to split edges
+    SELECT ST_Collect(geom) 
+    FROM ST_Dump(ST_Split(nodededges, rec.geom))
+    INTO STRICT nodededges;
+  END LOOP;
+  SELECT ST_UnaryUnion(nodededges) INTO STRICT nodededges;
+
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+  RAISE DEBUG 'Noded edges became % after point-split',
+    ST_NumGeometries(nodededges);
+#endif
+
+  --
+  -- Collect all nodes (from points and noded linework endpoints)
+  --
+
+  WITH edges AS ( SELECT geom FROM ST_Dump(nodededges) )
+  SELECT ST_Union( -- TODO: ST_UnaryUnion ?
+          COALESCE(ST_UnaryUnion(ST_Collect(geom)), 
+            ST_SetSRID('POINT EMPTY'::geometry, topoinfo.SRID)),
+          COALESCE(points,
+            ST_SetSRID('POINT EMPTY'::geometry, topoinfo.SRID))
+         )
+  FROM (
+    SELECT ST_StartPoint(geom) as geom FROM edges
+      UNION ALL
+    SELECT ST_EndPoint(geom) FROM edges
+  ) as endpoints INTO points;
+
+#ifdef POSTGIS_TOPOLOGY_DEBUG
+  RAISE DEBUG 'Total nodes count: %', ST_NumGeometries(points);
+#endif
+
+  --
+  -- Add all nodes as isolated so that 
+  -- later calls to AddEdgeModFace will tweak their being
+  -- isolated or not...
+  --
+  FOR rec IN SELECT geom FROM ST_Dump(points)
+  LOOP
+    PERFORM topology.ST_AddIsoNode(atopology, 0, rec.geom);
+  END LOOP;
+  
+
+  FOR rec IN SELECT geom FROM ST_Dump(nodededges)
+  LOOP
+    SELECT topology.GetNodeByPoint(atopology, st_startpoint(rec.geom), 0)
+      INTO STRICT snode_id;
+    SELECT topology.GetNodeByPoint(atopology, st_endpoint(rec.geom), 0)
+      INTO STRICT enode_id;
+    PERFORM topology.ST_AddEdgeModFace(atopology, snode_id, enode_id, rec.geom);
+  END LOOP;
+
+  RETURN 'Topology ' || atopology || ' populated';
+
+END
+$$
+LANGUAGE 'plpgsql' VOLATILE;
+--} ST_CreateTopoGeo
+
+--=}  SQL/MM block
+

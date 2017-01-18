@@ -1,0 +1,7 @@
+CopyRasterCoverage - BLOB transaction
+:memory: #use in-memory database
+SELECT RL2_CopyRasterCoverage('prefix', 'coverage', zeroblob(4));
+1 # rows (not including the header row)
+1 # columns
+RL2_CopyRasterCoverage('prefix', 'coverage', zeroblob(4))
+-1

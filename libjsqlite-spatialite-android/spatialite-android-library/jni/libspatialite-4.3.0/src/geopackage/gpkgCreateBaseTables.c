@@ -18,7 +18,7 @@ The Original Code is GeoPackage Extensions
 
 The Initial Developer of the Original Code is Brad Hards (bradh@frogmouth.net)
  
-Portions created by the Initial Developer are Copyright (C) 2012
+Portions created by the Initial Developer are Copyright (C) 2012-2015
 the Initial Developer. All Rights Reserved.
 
 Contributor(s):

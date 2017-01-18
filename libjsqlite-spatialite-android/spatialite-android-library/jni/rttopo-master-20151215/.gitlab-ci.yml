@@ -1,0 +1,13 @@
+test:
+  script:
+    - apt-get update -qq
+    - apt-cache search libgeos
+    - apt-get install -y
+        build-essential autoconf libtool
+        libgeos-dev
+    - geos-config --version || true
+    - ./autogen.sh
+    - ./configure
+    - make
+    - make install
+    - make uninstall

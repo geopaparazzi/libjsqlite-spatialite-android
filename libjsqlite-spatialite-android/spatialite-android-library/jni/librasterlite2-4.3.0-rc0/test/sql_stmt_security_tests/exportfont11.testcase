@@ -1,0 +1,7 @@
+RL2_ExportFontToFile - DOUBLE path
+:memory: #use in-memory database
+SELECT RL2_ExportFontToFile('wonderfulFree-Regular', 1.1);
+1 # rows (not including the header row)
+1 # columns
+RL2_ExportFontToFile('wonderfulFree-Regular', 1.1)
+-1

@@ -1,0 +1,7 @@
+RL2_WriteJpeg - invalid width (too big)
+:memory: #use in-memory database
+SELECT RL2_WriteJpeg('alpha', './test.jpg', 1000004, 1024, MakePoint(1, 1), 0.5, 0.5, 80);
+1 # rows (not including the header row)
+1 # columns
+RL2_WriteJpeg('alpha', './test.jpg', 1000004, 1024, MakePoint(1, 1), 0.5, 0.5, 80)
+-1

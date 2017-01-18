@@ -11,7 +11,7 @@
 #define ENABLE_LIBXML2 1
 
 /* Should be defined in order to enable LWGEOM support. */
-/* #undef ENABLE_LWGEOM */
+#define ENABLE_LWGEOM 1
 
 /* Should be defined in order to enable GEOS_ADVANCED support. */
 #define GEOS_ADVANCED 1
@@ -53,7 +53,7 @@
 #define HAVE_INTTYPES_H 1
 
 /* Define to 1 if you have the <liblwgeom.h> header file. */
-/* #undef HAVE_LIBLWGEOM_H */
+#define HAVE_LIBLWGEOM_H 1
 
 /* Define to 1 if you have the `sqlite3' library (-lsqlite3). */
 #define HAVE_LIBSQLITE3 1
@@ -186,7 +186,7 @@
 #define PACKAGE_NAME "libspatialite"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "libspatialite 4.3.0-RC1"
+#define PACKAGE_STRING "libspatialite 4.3.0"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "libspatialite"
@@ -195,10 +195,10 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "4.3.0-RC1"
+#define PACKAGE_VERSION "4.3.0"
 
 /* Should be defined when linking liblwgeom from PostGIS 2.1 (or later). */
-/* #undef POSTGIS_2_1 */
+#define POSTGIS_2_1 1
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
@@ -213,7 +213,7 @@
 /* #undef TM_IN_SYS_TIME */
 
 /* Version number of package */
-#define VERSION "4.3.0-RC1"
+#define VERSION "4.3.0"
 
 /* Must be =64 in order to enable huge-file support. */
 #define _FILE_OFFSET_BITS 64

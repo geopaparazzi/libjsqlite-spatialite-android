@@ -1,0 +1,7 @@
+TopoNet_Simplify - Blob Network
+:memory: #use in-memory database
+SELECT TopoNet_Simplify(zeroblob(4), 1);
+1 # rows (not including the header row)
+1 # columns
+TopoNet_Simplify(zeroblob(4), 1)
+SQL/MM Spatial exception - invalid argument.

@@ -1,0 +1,7 @@
+RL2_WriteTiff - NULL Height
+:memory: #use in-memory database
+SELECT RL2_WriteTiff('alpha', './test.tif', 1024, NULL, MakePoint(1, 1), 1);
+1 # rows (not including the header row)
+1 # columns
+RL2_WriteTiff('alpha', './test.tif', 1024, NULL, MakePoint(1, 1), 1)
+-1

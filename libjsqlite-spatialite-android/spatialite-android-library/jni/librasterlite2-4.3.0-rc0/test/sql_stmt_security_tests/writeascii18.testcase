@@ -1,0 +1,7 @@
+RL2_WriteAsciiGrid - invalid decimal precision (too big)
+:memory: #use in-memory database
+SELECT RL2_WriteAsciiGrid('alpha', './test.asc', 1024, 1000000, BuildMbr(1, 1, 10, 10), 1, 1, 50);
+1 # rows (not including the header row)
+1 # columns
+RL2_WriteAsciiGrid('alpha', './test.asc', 1024, 1000000, BuildMbr(1, 1, 10, 10), 1, 1, 50)
+-1

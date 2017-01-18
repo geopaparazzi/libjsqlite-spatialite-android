@@ -1,0 +1,7 @@
+TopoNet_Simplify - BLOB tolerance
+:memory: #use in-memory database
+SELECT TopoNet_Simplify('network', zeroblob(4));
+1 # rows (not including the header row)
+1 # columns
+TopoNet_Simplify('network', zeroblob(4))
+SQL/MM Spatial exception - invalid argument.

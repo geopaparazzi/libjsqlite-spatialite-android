@@ -1,0 +1,7 @@
+TopoNet_Simplify - Double tolerance
+:memory: #use in-memory database
+SELECT TopoNet_Simplify('network', 1.2);
+1 # rows (not including the header row)
+1 # columns
+TopoNet_Simplify('network', 1.2)
+SQL/MM Spatial exception - invalid network name.

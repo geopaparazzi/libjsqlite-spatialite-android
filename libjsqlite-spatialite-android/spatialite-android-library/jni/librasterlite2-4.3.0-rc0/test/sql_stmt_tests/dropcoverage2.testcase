@@ -1,0 +1,7 @@
+DropRasterCoverage - NULL transaction
+:memory: #use in-memory database
+SELECT RL2_DropRasterCoverage('alpha', NULL);
+1 # rows (not including the header row)
+1 # columns
+RL2_DropRasterCoverage('alpha', NULL)
+-1

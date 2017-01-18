@@ -1,0 +1,36 @@
+-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+-- 
+-- PostGIS - Spatial Types for PostgreSQL
+-- http://postgis.net
+--
+-- Copyright (C) 2011 Andrea Peri <aperi2007@gmail.com>
+--
+-- This is free software; you can redistribute and/or modify it under
+-- the terms of the GNU General Public Licence. See the COPYING file.
+--
+-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+--{
+--
+-- Andrea Peri (27 Feb 2011) creation
+--
+-- GetFaceByPoint(atopology, point, tol)
+--
+-- Retrieve a Face ID given a POINT and a tolerance
+-- tolerance = 0 mean exactly intersection
+--
+-- Returns return the integer ID if there is a face on the Point.
+--
+-- When the Point is even a Node it raise an exception. 
+-- This case is testable with the GetNodeByPoint(atopology, apoint, tol)
+--
+-- If there isn't any face in the Point, GetFaceByPoint return 0.
+--
+-- if near the point there are two or more faces it throw an exception.
+--
+CREATE OR REPLACE FUNCTION topology.GetFaceByPoint(atopology varchar, apoint geometry, tol1 float8)
+	RETURNS int AS
+	'MODULE_PATHNAME', 'GetFaceByPoint'
+	LANGUAGE 'c' STABLE STRICT;
+--} GetFaceByPoint
+

@@ -1,0 +1,137 @@
+Basically you can build the demo C programs simply 
+using the C compiler alone [there is no need to use 
+a Makefile], as in:
+
+gcc -Wall demo1.c -o demo1
+
+but unhappily you can't follow a so simplistic approach
+
+Step 1:
+-------
+you have to instruct the C compiler about location 
+of any required header file and library to link; 
+you do this setting -Ipath_include and -Lpath_lib 
+directives [actual paths depends on your locale 
+file system layout]
+
+Step 2:
+-------
+you have to instruct the C compiler about location
+and type of external libraries you have to link.
+you can build an executable binary in two alternative
+ways:
+a) you can link STATIC libraries, thus obtaining a
+   monolithic executable, with no external dependencies
+   [this will produce a bigger sized executable, but
+    will strongly simplify following installation and
+    deployment steps]
+b) you can link DYNAMIC / SHARED libraries, thus
+   obtaining an executable requiring external dependencies
+   to be resolved at run time
+   [this will produce a smallest sized executable, but
+    you have then to face quite complex problems in the
+    installation and deployment steps]
+Both static and shared linkage modes have pros and cons;
+choosing the one or the other depends on your specific 
+needs.
+There are several way to set DYNAMIC or STATIC linkage,
+but the simplest one is:
+gcc -dynamic ...
+   or
+gcc -static ...
+The -dynamic option is the default one, so you simply can use:
+gcc ...
+in order to select DYNAMIC linkage.
+A different approach is to directly link the static libraries,
+directly referring their paths.
+
+>>>
+>>> following examples are assuming:
+>>> 1. that you have installed any required dependency for the 
+>>>    specific platform you are using to compile 
+>>> 2. you have placed all this stuff under /usr/local/include
+>>>    and /usr/local/lib
+>>>    if not, you have to accommodate paths in order to match
+>>>    your locale file system layout
+>>>
+
+Building on Linux systems:
+=================================================
+
+static linkage:
+---------------
+
+gcc -Wall -I/usr/local/include demo1.c -o demo1 \
+    /usr/local/lib/libspatialite.a \
+    /usr/local/lib/libsqlite3.a \
+    /usr/local/lib/libgeos_c.a \
+    /usr/local/lib/libgeos.a \
+    /usr/local/lib/libproj.a \
+    -lm -lstdc++ -lpthread -ldl
+
+dynamic linkage:
+----------------
+
+gcc -Wall -I/usr/local/include -L/usr/local/lib demo1.c \
+    -o demo1.exe -lspatialite
+
+ 
+Building on Windows systems:
+=================================================
+
+>>>
+>>> requires the MinGW compiler
+>>> and the MSys command shell
+>>>
+>>> on the standard MSys setup,
+>>>     /usr/local/ 
+>>> corresponds to
+>>>     C:\msys\1.0\local or C:\msys\local
+>>>
+
+static linkage:
+---------------
+
+gcc -static -Wall -I/usr/local/include -L/usr/local/lib \
+    demo1.c -o demo1.exe \
+    -lspatialite -liconv -lproj -lgeos_c -lgeos \
+    -lm -lstdc++
+
+dynamic linkage:
+----------------
+
+gcc -Wall -I/usr/local/include -L/usr/local/lib demo1.c \
+    -o demo1.exe -lspatialite
+
+
+
+Building on Mac OsX systems:
+=================================================
+
+static linkage:
+---------------
+
+gcc -Wall -I/usr/local/include demo1.c -o demo1 \
+    /usr/local/lib/libspatialite.a \
+    /usr/local/lib/libsqlite3.a \
+    /usr/local/lib/libgeos_c.a \
+    /usr/local/lib/libgeos.a \
+    /usr/local/lib/libproj.a \
+    -liconv -lm -lstdc++ -lpthread -ldl
+
+dynamic linkage:
+----------------
+
+gcc -Wall -I/usr/local/include -L/usr/local/lib demo1.c \
+    -o demo1 -lspatialite
+    
+=========================================================
+
+Some remarkable point to be noted:
+a) when using dynamic linkage you simply need to use 
+   the 'libspatialite' alone, because this latter will
+   automatically resolve any other required dependency
+b) but when using static linkage you need instead to 
+   resolve explicitly (by yourself) any required dependency.
+   And this explains why do you need to refer so many 
+   libraries (-lgeos_c, -lgeos, -lproj ....)

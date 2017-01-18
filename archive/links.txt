@@ -3,6 +3,7 @@ wget http://www.gaia-gis.it/gaia-sins/spatialite-android/spatialite-for-android-
 
 wget http://ftp.gnu.org/gnu/libiconv/libiconv-1.13.1.tar.gz
 wget http://download.osgeo.org/geos/geos-3.2.2.tar.bz2
+wget http://download.osgeo.org/geos/geos-3.5.0.tar.bz2
 
 http://www.sqlite.org/changes.html
 wget http://www.sqlite.org/2015/sqlite-amalgamation-3080801.zip
@@ -35,4 +36,13 @@ wget http://tukaani.org/xz/xz-5.2.1.tar.gz
 wget http://download.osgeo.org/gdal/2.0.0/gdal-2.0.0RC1.tar.gz
 
 wget http://download.osgeo.org/proj/proj-4.9.1.tar.gz
+wget http://download.osgeo.org/proj/proj-4.9.3.tar.gz
+wget http://download.osgeo.org/geos/geos-3.6.1.tar.bz2
+
+20151001.postgis-2.2.svn.zip
+https://gitlab.com/rttopo/rttopo
+20151215.rttopo-master.zip
+
+
+
 

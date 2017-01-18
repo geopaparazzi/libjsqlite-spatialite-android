@@ -2,7 +2,7 @@
 
  gg_lwgeom.c -- Gaia LWGEOM support
     
- version 4.2, 2014 July 25
+ version 4.3, 2015 June 29
 
  Author: Sandro Furieri a.furieri@lqt.it
 
@@ -24,7 +24,7 @@ The Original Code is the SpatiaLite library
 
 The Initial Developer of the Original Code is Alessandro Furieri
  
-Portions created by the Initial Developer are Copyright (C) 2012-2013
+Portions created by the Initial Developer are Copyright (C) 2012-2015
 the Initial Developer. All Rights Reserved.
 
 Contributor(s):
@@ -86,7 +86,7 @@ splite_lwgeom_version (void)
 {
     return splitelwgeomversion;
 }
-
+/*
 static void
 lwgaia_noticereporter (const char *fmt, va_list ap)
 {
@@ -100,7 +100,23 @@ lwgaia_noticereporter (const char *fmt, va_list ap)
     gaiaSetLwGeomWarningMsg (msg);
     free (msg);
 }
+*/
 
+static void
+lwgaia_noticereporter (const char *fmt, va_list ap)
+{
+    char *msg = sqlite3_vmprintf (fmt, ap);
+    if (msg == NULL)
+      {
+	  va_end (ap);
+	  return;
+      }
+    spatialite_e ("LWGEOM notice: %s\n", msg);
+    gaiaSetLwGeomWarningMsg (msg);
+    sqlite3_free (msg);
+}
+
+/*
 static void
 lwgaia_errorreporter (const char *fmt, va_list ap)
 {
@@ -113,6 +129,20 @@ lwgaia_errorreporter (const char *fmt, va_list ap)
     spatialite_e ("LWGEOM error: %s\n", msg);
     gaiaSetLwGeomErrorMsg (msg);
     free (msg);
+}
+*/
+static void
+lwgaia_errorreporter (const char *fmt, va_list ap)
+{
+    char *msg = sqlite3_vmprintf (fmt, ap);
+    if (msg == NULL)
+      {
+	  va_end (ap);
+	  return;
+      }
+    spatialite_e ("LWGEOM error: %s\n", msg);
+    gaiaSetLwGeomErrorMsg (msg);
+    sqlite3_free (msg);
 }
 
 #ifndef POSTGIS_2_1

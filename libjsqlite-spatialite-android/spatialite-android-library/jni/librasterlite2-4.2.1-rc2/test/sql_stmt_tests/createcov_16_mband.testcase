@@ -1,0 +1,7 @@
+RL2_CreateCoverage - UINT16 MULTIBAND
+:memory: #use in-memory database
+SELECT RL2_CreateCoverage('uint16_multiband', 'UINT16', 'MULTIBAND', 4, 'NONE', 100, 512, 512, 3003, 1.0);
+1 # rows (not including the header row)
+1 # columns
+RL2_CreateCoverage('uint16_multiband', 'UINT16', 'MULTIBAND', 4, 'NONE', 100, 512, 512, 3003, 1.0)
+1

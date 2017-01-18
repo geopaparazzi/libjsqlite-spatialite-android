@@ -1,0 +1,7 @@
+RL2_SetMaxThreads - 256
+:memory: #use in-memory database
+SELECT RL2_SetMaxThreads(256);
+1 # rows (not including the header row)
+1 # columns
+RL2_SetMaxThreads(256)
+64

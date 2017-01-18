@@ -1,0 +1,7 @@
+RL2_WriteSectionGeoTiff - not existing coverage (2)
+:memory: #use in-memory database
+SELECT RL2_WriteSectionGeoTiff('alpha', 1, './test.tif', 1024, 1024, BuildMbr(1, 1, 10, 10), 1, 1, 1, 'NONE', 256);
+1 # rows (not including the header row)
+1 # columns
+RL2_WriteSectionGeoTiff('alpha', 1, './test.tif', 1024, 1024, BuildMbr(1, 1, 10, 10), 1, 1, 1, 'NONE', 256)
+-1

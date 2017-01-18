@@ -1,0 +1,7 @@
+RL2_CreateRasterCoverage - 1-BIT MONOCHROME 
+:memory: #use in-memory database
+SELECT RL2_CreateRasterCoverage('1bit_mono', '1-BIT', 'MONOCHROME', 1, 'NONE', 100, 512, 512, 3003, 1.0, 1.0, RL2_SetPixelValue(RL2_CreatePixel('1-BIT', 'MONOCHROME', 1), 0, 1));
+1 # rows (not including the header row)
+1 # columns
+RL2_CreateRasterCoverage('1bit_mono', '1-BIT', 'MONOCHROME', 1, 'NONE', 100, 512, 512, 3003, 1.0, 1.0, RL2_SetPixelValue(RL2_CreatePixel('1-BIT', 'MONOCHROME', 1), 0, 1))
+1

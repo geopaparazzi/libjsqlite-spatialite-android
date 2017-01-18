@@ -1,0 +1,7 @@
+RL2_GetMapImageFromVector - not existing coverage
+:memory: #use in-memory database
+SELECT RL2_GetMapImageFromVector('landsat', BuildMbr(1, 1, 10, 10), 640, 480, 'default', 'image/jpeg', '#ffffff', 1, 80, 0);
+1 # rows (not including the header row)
+1 # columns
+RL2_GetMapImageFromVector('landsat', BuildMbr(1, 1, 10, 10), 640, 480, 'default', 'image/jpeg', '#ffffff', 1, 80, 0)
+(NULL)

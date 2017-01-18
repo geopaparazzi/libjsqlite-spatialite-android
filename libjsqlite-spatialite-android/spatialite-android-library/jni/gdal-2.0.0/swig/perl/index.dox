@@ -1,0 +1,198 @@
+/*! \mainpage Geo::GDAL
+
+\section index_version Version
+
+These pages document the development version of the GDAL Perl API,
+which is extended from the released versions APIs. Old versions: 
+<a href="../1.4/index.html">1.4</a>
+<a href="../1.5/index.html">1.5</a>
+<a href="../1.6/index.html">1.6</a>
+<a href="../1.7/index.html">1.7</a>
+<a href="../1.8/index.html">1.8</a>
+<a href="../1.9/index.html">1.9</a>
+<a href="../1.10/index.html">1.10</a>
+<a href="../1.11/index.html">1.11</a>
+
+\section index_intro Introduction
+
+The Geo::GDAL modules are the Perl bindings to the GDAL/OGR
+library. The modules allow you to use Perl to access and manipulate
+all geospatial data that the installed GDAL library is configured to
+access and manipulate.
+
+This documentation covers the Perl bindings. For more in-depth
+documentation see the main documentation of <a
+href="http://www.gdal.org/">GDAL</a>. This documentation also
+emphasizes the recommended Perl API. Some methods and aliases to
+method names are left out since they may skip some built-in usability
+or other additions.
+
+Some arguments are optional and have a default value. This is
+illustrated like this:
+
+SomeMethod(arg1, arg2 = 4);
+
+arg1 is a required argument.
+
+arg2 may be left out and if left out, will get the value 4 (in this
+case).
+
+Only the last argument or arguments can be optional.
+
+In some cases a method can be called in a traditional way and with
+named arguments (i.e. with a hash):
+
+\code
+$object->method(1, 2, 3);
+$object->method(number=>1, param=>2, other=>3);
+$object->method({number=>1, param=>2, other=>3});
+\endcode
+
+Note especially the difference between the second and the third
+versions. In some cases the named arguments must be given in an
+anonymous hash.
+
+In some cases a method may behave differently depending on the
+parameters that it gets:
+
+\code
+$object->method($hashref); # method called with a reference to a hash
+$object->method($arrayref); # method called with a reference to an array
+\endcode
+
+In some cases a method may examine the context in which it is called,
+and behave differently:
+
+\code
+$object->method(); # method called in void context
+$return = $object->method(); # method called in scalar context
+@return = $object->method(); # method called in list context
+\endcode
+
+Many of the methods may throw an error, which can be caught by putting
+the call into eval{}; and then examining the contents of $\@.
+
+\section class_methods_vs_object_methods Class methods and attributes vs object methods and attributes 
+
+Some methods are class methods and some methods are object
+methods. Object methods are always invoked for objects, i.e.
+
+\code
+$object->method();
+\endcode
+
+while class methods are invoked either as methods
+
+\code
+Geo::GDAL::Class->method();
+\endcode
+
+or as subroutines
+
+\code
+Geo::GDAL::Class::subroutine();
+\endcode
+
+The disctinction between class methods and subroutines is subtle but
+often important. The method invocation passes the class name as the
+first argument while the subroutine invocation does not. Especially
+constructor (new) must be called as a class method.
+
+Similar to methods, also attributes are either class attributes or
+object attributes. Class attributes are global variables that are
+associated with a class and object attributes are variables owned by
+each individual object. Class attributes are used for example for
+enumerated values. In some cases object attributes can be accessed
+as hash values
+
+\code
+$value = $object->{attribute};
+$object->{attribute} = $new_value;
+\endcode
+
+but this is mostly deprecated and class and object attributes should
+be accessed through methods.
+
+Class attributes are also used for maintaining, e.g., is_a_part_of
+relationships between objects. Because Band objects are a part of
+Dataset objects, there is a class attribute (a hash) in Dataset, which
+maintains these relationships and makes sure the Dataset object that
+owns a Band object is not destroyed before the Band object. Also,
+definition objects that are linked to feature and layer objects are
+read-only, and this constraint is enforced using class attributes.
+
+\section index_exceptions Exceptions
+
+Geo::GDAL uses the Perl exception mechanism. This means that
+exceptions that GDAL classifies as failures or fatal errors trigger a
+Perl exception, and an exception that is classified as a warning
+triggers a Perl warning.
+
+Perl exceptions can be caught by eval() and Perl warnings can be
+caught by signal \_\_WARN\_\_. Examples:
+
+\code
+eval {
+    $point = Geo::OGR::Geometry->new(WKT=>"POINTXX(1 1)");
+};
+print STDERR "Error: $@";
+\endcode
+
+Prints:
+\code
+Error: RuntimeError OGR Error: Unsupported geometry type
+\endcode
+
+and
+
+\code
+BEGIN { 
+    $SIG{__WARN__} = sub {  print STDERR "Warning: @_"; } 
+}
+Geo::GDAL::GetDriver('GTiff')->Create( Name => 'my.tiff', 
+                                       Width => 100, 
+                                       Height => 100, 
+                                       Type => 'Byte', 
+                                       Options => { my_unknown_option => 'b' } );
+\endcode
+
+Prints: 
+\code
+Warning: Driver GTiff does not support my_unknown_option creation option at site/lib/Geo/GDAL.pm line 771.
+\endcode
+
+\section index_progress Progress callback
+
+Some methods accept a callback function for reporting the
+progress. The progress subroutine is called with three arguments: a
+number, a string, and user defined data. The user defined data 
+is an argument to the method.
+
+\code
+sub progress {
+    my($progress, $message, $data) = @_;
+    my $terminate = 0;
+    ...
+    return $terminate ? 0 : 1;
+}
+\endcode
+
+\section index_footer Note
+
+This documentation is generated from files within the GDAL
+distribution (directory swig/perl) with Doxygen using a Perl module <a
+href="http://search.cpan.org/~jordan/Doxygen-Filter-Perl/">Doxygen::Filter::Perl</a>
+(see also <a
+href="https://rt.cpan.org/Public/Dist/Display.html?Name=Doxygen-Filter-Perl">the
+Doxygen::Filter::Perl bug reports</a>). A tailor made preprocessor in
+the GDAL distribution is used to process and put all Perl code and
+documentation into a single file (all.pm) for Doxygen.
+
+Many methods are just interfaces to non-Perl code in the bindings or
+GDAL and thus their code show as blank on these pages. The bindings
+are created with Swig, which adds some methods by default.
+
+Code examples in method pages contain dots ('.') to enforce
+indentation. This is due to a doxygen bug.
+
+*/

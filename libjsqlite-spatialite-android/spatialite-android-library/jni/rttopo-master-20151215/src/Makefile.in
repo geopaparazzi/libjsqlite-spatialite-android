@@ -1,0 +1,148 @@
+# **********************************************************************
+# *
+# * rttopo - topology library
+# * http://gitlab.com/rttopo/rttopo
+# * Copyright 2008 Mark Cave-Ayland
+# *
+# * This is free software; you can redistribute and/or modify it under
+# * the terms of the GNU General Public Licence. See the COPYING file.
+# *
+# **********************************************************************
+
+CC = @CC@
+CPPFLAGS = @CPPFLAGS@
+CFLAGS = @CFLAGS@ @PICFLAGS@ @WARNFLAGS@ @GEOS_CPPFLAGS@ @JSON_CPPFLAGS@
+LDFLAGS = @LDFLAGS@ @GEOS_LDFLAGS@ -lgeos_c @JSON_LDFLAGS@
+NUMERICFLAGS = @NUMERICFLAGS@
+top_builddir = @top_builddir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+libdir = @libdir@
+includedir = @includedir@
+SHELL = @SHELL@
+INSTALL = $(SHELL) ../install-sh
+LIBTOOL = @LIBTOOL@
+
+IFACE_CURRENT = @LIBRTGEOM_CURRENT@
+IFACE_AGE = @LIBRTGEOM_AGE@
+IFACE_REV = @LIBRTGEOM_REV@
+
+VERSION_INFO = $(IFACE_CURRENT):$(IFACE_REV):$(IFACE_AGE)
+
+
+YACC=@YACC@
+LEX=@LEX@
+
+# Standalone RTGEOM objects
+SA_OBJS = \
+	stringbuffer.o \
+	bytebuffer.o \
+	measures.o \
+	measures3d.o \
+	box2d.o \
+	ptarray.o \
+	rtgeom_api.o \
+	rtgeom.o \
+	rtpoint.o \
+	rtline.o \
+	rtpoly.o \
+	rttriangle.o \
+	rtmpoint.o \
+	rtmline.o \
+	rtmpoly.o \
+	rtcollection.o \
+	rtcircstring.o \
+	rtcompound.o \
+	rtcurvepoly.o \
+	rtmcurve.o \
+	rtmsurface.o \
+	rtpsurface.o \
+	rttin.o \
+	rtout_wkb.o \
+	rtin_geojson.o \
+	rtin_wkb.o \
+	rtin_twkb.o \
+	rtiterator.o \
+	rtout_wkt.o \
+	rtout_twkb.o \
+	rtutil.o \
+	rthomogenize.o \
+	rtalgorithm.o \
+	rtstroke.o \
+	rtlinearreferencing.o \
+	rtprint.o \
+	g_box.o \
+	g_serialized.o \
+	g_util.o \
+	rtgeodetic.o \
+	rtgeodetic_tree.o \
+	rttree.o \
+	rtout_gml.o \
+	rtout_kml.o \
+	rtout_geojson.o \
+	rtout_svg.o \
+	rtout_x3d.o \
+	rtgeom_debug.o \
+	rtgeom_geos.o \
+	rtgeom_geos_clean.o \
+	rtgeom_geos_node.o \
+	rtgeom_geos_split.o \
+	rtgeom_topo.o \
+	rtspheroid.o
+
+LDFLAGS += -no-undefined
+
+LT_SA_OBJS = $(SA_OBJS:.o=.lo)
+LT_OBJS = $(LT_SA_OBJS)
+
+SA_HEADERS = \
+	bytebuffer.h \
+	librtgeom.h \
+	librtgeom_internal.h \
+	rtgeodetic.h \
+	rtgeodetic_tree.h \
+	librtgeom_topo.h \
+	librtgeom_topo_internal.h \
+	rtgeom_log.h \
+	rtgeom_geos.h \
+	rtgeom_log.h \
+	rtout_twkb.h \
+	rttree.h \
+	measures3d.h \
+	measures.h \
+	stringbuffer.h \
+	varint.h
+
+all: librtgeom.la
+
+install: install-librtgeom
+
+uninstall: uninstall-librtgeom
+
+install-librtgeom: librtgeom.la
+	$(LIBTOOL) --mode=install $(INSTALL) librtgeom.la "$(DESTDIR)$(libdir)/librtgeom.la"
+	$(INSTALL) -m 0644 librtgeom.h "$(DESTDIR)$(includedir)/librtgeom.h"
+	$(INSTALL) -m 0644 librtgeom_topo.h "$(DESTDIR)$(includedir)/librtgeom_topo.h"
+
+uninstall-librtgeom:
+	$(LIBTOOL) --mode=uninstall rm -f "$(DESTDIR)$(libdir)/librtgeom.la"
+	$(LIBTOOL) --mode=uninstall rm -f "$(DESTDIR)$(includedir)/librtgeom.h"
+	$(LIBTOOL) --mode=uninstall rm -f "$(DESTDIR)$(includedir)/librtgeom_topo.h"
+
+$(LT_OBJS): rttopo_config.h $(SA_HEADERS)
+
+librtgeom.la: $(LT_OBJS)
+	$(LIBTOOL) --tag=CC --mode=link $(CC) -rpath $(libdir) $(LT_OBJS) \
+             -version-info $(VERSION_INFO) $(LDFLAGS) -o $@
+
+clean:
+	rm -f $(LT_OBJS) $(SA_OBJS)
+	rm -f librtgeom.la
+	rm -rf .libs
+
+distclean: clean
+	rm -f librtgeom.h Makefile
+
+# Command to build each of the .lo files
+$(LT_SA_OBJS): %.lo: %.c
+	$(LIBTOOL) --mode=compile $(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<

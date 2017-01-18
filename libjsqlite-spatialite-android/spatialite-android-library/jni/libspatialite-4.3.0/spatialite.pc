@@ -7,6 +7,6 @@ includedir=${prefix}/include
 
 Name: spatialite
 Description: Spatial SQL database engine based on SQLite
-Version: 4.3.0-RC1
+Version: 4.3.0
 Libs: -L${libdir} -lspatialite
 Cflags: -I${includedir}

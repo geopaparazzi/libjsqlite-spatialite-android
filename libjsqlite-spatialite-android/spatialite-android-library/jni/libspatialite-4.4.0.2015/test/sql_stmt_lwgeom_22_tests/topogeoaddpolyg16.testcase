@@ -1,0 +1,7 @@
+TopoGeo_AddPolygon - MULTIPOLYGON Geometry
+:memory: #use in-memory database
+SELECT TopoGeo_AddPolygon('topology', GeomFromText('MULTIPOLYGON(((0 0, 0 1, 1 1, 1 0, 0 0)), ((10 10, 10 11, 11 11, 11 10, 10 10)))', 4326), 0);
+1 # rows (not including the header row)
+1 # columns
+TopoGeo_AddPolygon('topology', GeomFromText('MULTIPOLYGON(((0 0, 0 1, 1 1, 1 0, 0 0)), ((10 10, 10 11, 11 11, 11 10, 10 10)))', 4326), 0)
+SQL/MM Spatial exception - invalid topology name.

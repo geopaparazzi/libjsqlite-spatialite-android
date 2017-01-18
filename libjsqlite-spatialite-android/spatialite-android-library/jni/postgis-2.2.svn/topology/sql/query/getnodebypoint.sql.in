@@ -1,0 +1,34 @@
+-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+-- 
+-- PostGIS - Spatial Types for PostgreSQL
+-- http://postgis.net
+--
+-- Copyright (C) 2011 Andrea Peri <aperi2007@gmail.com>
+--
+-- This is free software; you can redistribute and/or modify it under
+-- the terms of the GNU General Public Licence. See the COPYING file.
+--
+-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+-- {
+--
+-- Andrea Peri (19 Jan 2011) creation
+-- Andrea Peri (14 Feb 2011) minor issues
+--
+-- getnodebypoint(atopology, point, tolerance)
+--
+-- Retrieve a Node ID given a POINT and a tolerance
+-- tolerance = 0 mean exactly intersection
+--
+-- Returns the integer ID if there is a Node on the Point.
+--
+-- If there isn't any node in the Point, GetNodeByPoint return 0.
+--
+-- if near the point there are two or more nodes it throw an exception.
+--
+CREATE OR REPLACE FUNCTION topology.GetNodeByPoint(atopology varchar, apoint geometry, tol1 float8)
+	RETURNS int AS
+	'MODULE_PATHNAME', 'GetNodeByPoint'
+	LANGUAGE 'c' STABLE STRICT;
+--} GetNodeByPoint
+
