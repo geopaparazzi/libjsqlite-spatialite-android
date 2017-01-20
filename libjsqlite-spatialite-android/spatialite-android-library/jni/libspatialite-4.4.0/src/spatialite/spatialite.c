@@ -700,7 +700,7 @@ fnct_has_topology (sqlite3_context * context, int argc, sqlite3_value ** argv)
 / return 1 if built including GroundControlPoints support (GGP); otherwise 0
 */
     GAIA_UNUSED ();		/* LCOV_EXCL_LINE */
-#ifdef RTTOPO			/* RTTOPO is supported */
+#ifdef ENABLE_RTTOPO			/* RTTOPO is supported */
     sqlite3_result_int (context, 1);
 #else
     sqlite3_result_int (context, 0);

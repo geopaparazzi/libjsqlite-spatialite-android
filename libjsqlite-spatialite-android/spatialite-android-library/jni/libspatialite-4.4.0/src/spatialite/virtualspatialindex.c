@@ -173,7 +173,7 @@ vspidx_check_view_rtree (sqlite3 * sqlite, const char *table_name,
     sqlite3_finalize (stmt);
     if (count != 1)
 	return 0;
-    if (validateRowid (sqlite, table_name))
+    if (!validateRowid (sqlite, table_name))
       {
 	  free (rt);
 	  free (rg);
