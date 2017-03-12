@@ -14,6 +14,11 @@
 # - json-c-0.12
 # - spatialite [4.4.0-20170118]
 # -------------------
+# As of 2017-03-12
+# -------------------
+# - sqlite [3170000]
+# -------------------
+# -------------------
 LOCAL_PATH := $(call my-dir)
 JSQLITE_PATH := javasqlite-20120209
 SPATIALITE_PATH := libspatialite-4.4.0
@@ -21,10 +26,10 @@ GEOS_PATH := geos-3.6.1
 JSONC_PATH := json-c-0.12
 RTTOPO_PATH := librttopo-20161220
 PROJ4_PATH := proj-4.9.3
-SQLITE_PATH := sqlite-amalgamation-3081002
+SQLITE_PATH := sqlite-amalgamation-3170000
 ICONV_PATH := libiconv-1.13.1
 RASTERLITE2_PATH := librasterlite2-4.4.0.cutline
-GEOTIFF_PATH := libgeotiff-1.4.0
+GEOTIFF_PATH := libgeotiff-1.4.2
 TIFF_PATH := tiff-4.0.4/libtiff
 JPEG_PATH := jpeg-6b
 GIF_PATH := giflib-5.1.1/lib
@@ -44,7 +49,7 @@ OPENJPEG_PATH := openjpeg-2.0.0
 include $(LOCAL_PATH)/charls-1.0.mk
 include $(LOCAL_PATH)/jsqlite-R4.2.0.mk
 include $(LOCAL_PATH)/iconv-1.13.1.mk
-include $(LOCAL_PATH)/sqlite-3081002.mk
+include $(LOCAL_PATH)/sqlite-3170000.mk
 include $(LOCAL_PATH)/proj4-4.9.3.mk
 include $(LOCAL_PATH)/geos-3.6.1.mk
 include $(LOCAL_PATH)/json-c-0.12.mk
@@ -61,7 +66,7 @@ include $(LOCAL_PATH)/freetype-2.6.mk
 include $(LOCAL_PATH)/fontconfig-2.11.1.mk
 include $(LOCAL_PATH)/expat-2.1.0.mk
 include $(LOCAL_PATH)/cairo-1.14.2.mk
-include $(LOCAL_PATH)/libgeotiff-1.4.0.mk
+include $(LOCAL_PATH)/libgeotiff-1.4.2.mk
 include $(LOCAL_PATH)/libxml2-2.9.2.mk
 include $(LOCAL_PATH)/libcurl-7.36.0.mk
 include $(LOCAL_PATH)/lzma-xz-5.2.1.mk
