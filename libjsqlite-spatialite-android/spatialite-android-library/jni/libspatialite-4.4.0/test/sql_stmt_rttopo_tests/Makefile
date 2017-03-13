@@ -198,10 +198,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = strip
 VERSION = 4.4.0-RC1
-abs_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0/test/sql_stmt_rttopo_tests
-abs_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0/test/sql_stmt_rttopo_tests
-abs_top_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0
-abs_top_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0
+abs_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0/test/sql_stmt_rttopo_tests
+abs_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0/test/sql_stmt_rttopo_tests
+abs_top_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0
+abs_top_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -231,7 +231,7 @@ host_vendor = linux
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0/install-sh
+install_sh = ${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -388,6 +388,7 @@ EXTRA_DIST = addedgemodface1.testcase \
 	changelinkgeom6.testcase \
 	changelinkgeom7.testcase \
 	changelinkgeom8.testcase \
+	createtopotables.testcase \
 	createtopogeo1.testcase \
 	createtopogeo2.testcase \
 	createtopogeo3.testcase \
@@ -984,6 +985,11 @@ EXTRA_DIST = addedgemodface1.testcase \
 	snappedgeotable31.testcase \
 	snappedgeotable32.testcase \
 	snappedgeotable33.testcase \
+	snappedgeotable34.testcase \
+	snappedgeotable35.testcase \
+	snappedgeotable36.testcase \
+	snappedgeotable37.testcase \
+	snappedgeotable38.testcase \
 	spatnetfromtgeo1.testcase \
 	spatnetfromtgeo2.testcase \
 	spatnetfromtgeo3.testcase \
@@ -1231,11 +1237,62 @@ EXTRA_DIST = addedgemodface1.testcase \
 	topogeomodedgeheal3.testcase \
 	topogeomodedgeheal4.testcase \
 	topogeomodedgeheal5.testcase \
+	topogeomodedgessplit1.testcase \
+	topogeomodedgessplit2.testcase \
+	topogeomodedgessplit3.testcase \
+	topogeomodedgessplit4.testcase \
+	topogeomodedgessplit5.testcase \
+	topogeomodedgessplit6.testcase \
+	topogeomodedgessplit7.testcase \
+	topogeomodedgessplit8.testcase \
+	topogeomodedgessplit9.testcase \
+	topogeomodedgessplit10.testcase \
+	topogeomodedgessplit11.testcase \
+	topogeomodedgessplit12.testcase \
+	topogeomodedgessplit13.testcase \
+	topogeomodedgessplit14.testcase \
+	topogeomodedgessplit15.testcase \
 	topogeonewedgeheal1.testcase \
 	topogeonewedgeheal2.testcase \
 	topogeonewedgeheal3.testcase \
 	topogeonewedgeheal4.testcase \
 	topogeonewedgeheal5.testcase \
+	topogeonewedgessplit1.testcase \
+	topogeonewedgessplit2.testcase \
+	topogeonewedgessplit3.testcase \
+	topogeonewedgessplit4.testcase \
+	topogeonewedgessplit5.testcase \
+	topogeonewedgessplit6.testcase \
+	topogeonewedgessplit7.testcase \
+	topogeonewedgessplit8.testcase \
+	topogeonewedgessplit9.testcase \
+	topogeonewedgessplit10.testcase \
+	topogeonewedgessplit11.testcase \
+	topogeonewedgessplit12.testcase \
+	topogeonewedgessplit13.testcase \
+	topogeonewedgessplit14.testcase \
+	topogeonewedgessplit15.testcase \
+	polyfaceslist1.testcase \
+	polyfaceslist2.testcase \
+	polyfaceslist3.testcase \
+	polyfaceslist4.testcase \
+	polyfaceslist5.testcase \
+	polyfaceslist6.testcase \
+	polyfaceslist7.testcase \
+	polyfaceslist8.testcase \
+	polyfaceslist9.testcase \
+	polyfaceslist10.testcase \
+	polyfaceslist11.testcase \
+	polyfaceslist12.testcase \
+	polyfaceslist13.testcase \
+	polyfaceslist14.testcase \
+	polyfaceslist15.testcase \
+	polyfaceslist16.testcase \
+	polyfaceslist17.testcase \
+	polyfaceslist18.testcase \
+	polyfaceslist19.testcase \
+	polyfaceslist20.testcase \
+	polyfaceslist21.testcase \
 	topogeosplitline1.testcase \
 	topogeosplitline2.testcase \
 	topogeosplitline3.testcase \
@@ -1264,6 +1321,11 @@ EXTRA_DIST = addedgemodface1.testcase \
 	topogeoremovesmall7.testcase \
 	topogeoremovesmall8.testcase \
 	topogeoremovesmall9.testcase \
+	topogeoremovesmall10.testcase \
+	topogeoremovesmall11.testcase \
+	topogeoremovesmall12.testcase \
+	topogeoremovesmall13.testcase \
+	topogeoremovesmall14.testcase \
 	topogeoremoveedges1.testcase \
 	topogeoremoveedges2.testcase \
 	topogeoremoveedges3.testcase \
@@ -1451,6 +1513,11 @@ EXTRA_DIST = addedgemodface1.testcase \
 	toposnap22.testcase \
 	toposnap23.testcase \
 	toposnap24.testcase \
+	toposnap25.testcase \
+	toposnap26.testcase \
+	toposnap27.testcase \
+	toposnap28.testcase \
+	toposnap29.testcase \
 	validatetopogeo1.testcase \
 	validatetopogeo2.testcase \
 	validatetopogeo3.testcase \

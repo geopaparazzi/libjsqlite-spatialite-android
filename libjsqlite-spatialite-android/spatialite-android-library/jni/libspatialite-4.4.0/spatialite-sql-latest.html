@@ -58,6 +58,8 @@
 			<li><a href="#srid">SQL functions supporting SRID inspection</a></li>
 			<li><a href="#topology">SQL functions supporting Topology-Geometry</a></li>
 			<li><a href="#network">SQL functions supporting Topology-Network</a></li>
+			<li><a href="#wms">SQL functions supporting WMS datasources</a></li>
+			<li><a href="#datalic">SQL functions supporting Data Licenses</a></li>
 			<li><a href="#advanced">miscellaneous advanced SQL functions</a></li>
 		</ul>
 		<table bgcolor="#e2eae2" border="1" cellpadding="2" cellspacing="2" width="100%">
@@ -140,7 +142,7 @@
 				<td colspan="3">TRUE if the underlaying library was built enabling <b>Ground Control Points</b> support (<b>GGP</b>)</td></tr>
 			<tr><td><b>HasTopology</b></td>
 				<td>HasTopology( void ) : <i>Boolean</i></td>
-				<td colspan="3">TRUE if the underlaying library was built enabling <b>Topology</b> support</td></tr>
+				<td colspan="3">TRUE if the underlaying library was built enabling <b>Topology</b> (RTTOPO) support</td></tr>
 			<tr><td colspan="5" align="center" bgcolor="#f0e0c0">
 				<h3><a name="generic">Generic SQL functions</a></h3></td></tr>
 			<tr><th bgcolor="#d0d0d0">Function</th>
@@ -654,7 +656,7 @@
                                 The implicit default setting corresponds to a point every <u>10</u> degrees.</td></tr>
                         <tr><td><b>MakeEllipse</b></td>
 				<td>MakeEllipse( cx <i>Double precision</i> , cy <i>Double precision</i> ,
-				x_axis <i>Double precision</i> , y_axis <i>Double precisin</i> [ , SRID <i>Integer</i> [ , 
+				x_axis <i>Double precision</i> , y_axis <i>Double precision</i> [ , SRID <i>Integer</i> [ , 
                                 step <i>Double precision</i> ] ] ) : <i>Geometry</i></td>
 				<td></td>
 				<td align="center" bgcolor="#d0f0d0">base</td>
@@ -1664,6 +1666,31 @@ algorithm with given <i>tolerance</i> and respecting topology</td></tr>
 				<td>return the area of s (measured in meters).<br>
 If the <b>use_ellipsoid</b> argument is set to <b>TRUE</b> the precise (but slower) area will be computed on the Ellipsoid, otherwise will be computed on the Sphere (approximative, but faster).<hr>
 This function only supports Long/Lat coordinates, and will return NULL for any planar CRS</td></tr>
+			<tr><td rowspan="2"><b><a name="circularity">Circularity</a></b></td>
+				<td>Circularity( s <i>Surface</i> ) : <i>Double precision</i></td>
+				<td align="center" bgcolor="#d0f0d0">X</td>
+				<td align="center" bgcolor="#f0d0d0">GEOS</td>
+				<td>computes the Circularity Index from the given Geometry by applying the following formula:
+				    <ul>
+						<li><i>index = ( 4 * PI * Sum(area) ) / ( Sum(perimeter) * Sum(perimeter) )</i></li>
+				    </ul>
+				    <ul>
+						<li>it only applies to <i>Polygons</i> or <i>MultiPolygons</i> with the following interpretation:
+						<ul>
+							<li><b>1.0</b> corresponds to a perfectly circular shape.</li>
+							<li><b>very low</b> values (near zero) correspond to a threadlike shape.</li>
+							<li><b>intermediate</b> values correspond to a more or less flattened shape;  lower index values means a stronger flattening effect.</li>
+						</ul></li>
+						<li>if the given Geometry does not contains any <i>Polygon</i> but contains at least a <i>Linestring</i> the index will always assume a <b>0.0</b> value.</li>
+						<li>if the given Geometry only contains one or more <i>Points</i> the index will always assume a <b>NULL</b> value.</li>
+				    </ul>
+				    </td></tr>
+			<tr><td>Circularity( s <i>Surface</i> , use_ellipsoid <i>Boolean</i> ) : <i>Double precision</i></td>
+				<td align="center" bgcolor="#d0f0d0">X</td>
+				<td align="center" bgcolor="#f0d0f0">RTTOPO</td>
+				<td>same as the above Function, but in this case areas and perimeters will be measured in meters.<br>
+If the <b>use_ellipsoid</b> argument is set to <b>TRUE</b> the precise (but slower) values will be computed on the Ellipsoid, otherwise they'll be computed on the Sphere (approximative, but faster).<hr>
+This function only supports Long/Lat coordinates, and will return NULL for any planar CRS</td></tr>
 			<tr><td colspan="5" align="center" bgcolor="#f0f0c0">
 				<h3><a name="p9">SQL functions on type Polygon</a></h3></td></tr>
 			<tr><th bgcolor="#d0d0d0">Function</th>
@@ -1868,28 +1895,36 @@ This function only supports Long/Lat coordinates, and will return NULL for any p
 				<td>The return type is Integer, with a return value of 1 for TRUE, 0 for FALSE, 
 					and &#8211;1 for UNKNOWN corresponding to a function invocation on NULL arguments;<hr>
 					convenience predicate: TRUE if g1 is completely covered by g2</td></tr>
-			<tr><td><b>Relate</b></td>
-				<td>Relate( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> , patternMatrix <i>String</i> ) : <i>Integer</i><hr>
-					ST_Relate( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> , patternMatrix <i>Text</i> ) : <i>Integer</i><hr>
+			<tr><td rowspan="2"><b>Relate</b></td>
+				<td><h3>OGC canonical signature</h3>
+				    Relate( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> , patternMatrix <i>String</i> ) : <i>Integer</i><hr>
+					ST_Relate( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> , patternMatrix <i>Text</i> ) : <i>Integer</i></td>
+				<td align="center" bgcolor="#d0f0d0">X</td>
+				<td align="center" bgcolor="#f0d0d0">GEOS</td>
+					<td>For more informations about patternMatrix interpretation please read: <a href="https://en.wikipedia.org/wiki/DE-9IM">DE-9IM</a><br><br>
+					The return type is Integer, with a return value of 1 for TRUE, 0 for FALSE, 
+					and &#8211;1 for UNKNOWN corresponding to a function invocation on NULL arguments;<hr>
+					returns TRUE if the spatial relationship specified by the patternMatrix holds.</td></tr>
+			<tr><td><h3>non-canonical signature (PostGIS-like)</h3>
 				    Relate( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> ) : <i>Text</i><hr>
 					ST_Relate( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> ) : <i>Text</i><hr>
 				    Relate( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> , bnr <i>Integer</i> ) : <i>Text</i><hr>
 					ST_Relate( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> , bnr <i>Integer</i> ) : <i>Text</i></td>
-				<td align="center" bgcolor="#d0f0d0">X</td>
+				<td></td>
 				<td align="center" bgcolor="#f0d0d0">GEOS</td>
-				<td><h3>OGC canonical signature</h3>
-					The return type is Integer, with a return value of 1 for TRUE, 0 for FALSE, 
-					and &#8211;1 for UNKNOWN corresponding to a function invocation on NULL arguments;<hr>
-					returns TRUE if the spatial relationship specified by the patternMatrix holds.<hr>
-					<h3>non-canonical signature</h3>
-					The return type is Text, this corresponding to the serialized representation of some <b>[DE-9IM]</b> intersection matrix.<br>
+				<td>The return type is Text, this corresponding to the serialized representation of some <b>[DE-9IM]</b> intersection matrix.<br>
 					The optional argument <i>bnr</i> determines the Boundary Node Rule to be appiled, and has the following interpretation:
 					<ul>
 						<li><b>1</b>: OGC/MOD2 (this is the default case, and will be always assumed for any unknown value)</li>
 						<li><b>2</b>: Endpoint</li>
 						<li><b>3</b>: Multivalent Endpoint</li>
 						<li><b>4</b>: Monovalent Endpoint</li>
-					</ul><hr>
+					</ul>
+					A patternMatrix returned by this function is then expected to be evaluated later by <b>ST_RelateMatch()</b>.<br>
+					The main advantage in using this approach is that this way a comprehensive result (the patternMatrix itself) representing all possible intersection 
+					modes between two geometries will be be computed just once by <b>ST_Relate()</b> and could then be more precisely qualified by repeatedly calling <b>ST_RelateMatch()</b>;
+					the first operation is computationally heavy but the second is really fast, so an overall performance boot is usually expected when more than a single
+					intersection mode have to be checked at the same time, as e.g. <i>OVERLAPS OR TOUCHES OR INTERSECTS</i>.</b><hr>
 					Will return <b>NULL</b> on NULL or invalid geometries.
 					</td></tr>
 			<tr><td><b>RelateMatch</b></td>
@@ -2955,17 +2990,86 @@ the return type is Integer, with a return value of 1 for TRUE (success) or 0 for
 				</ul><hr>
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
 				returned on invalid arguments.<hr>
-<i>Please note</i>: will implicitly invoke <b>CreateRasterCoverages()</b> if the <b>raster_coverages</b> table has not yet been created.</td></tr>
+<i>Please note</i>: will implicitly invoke <b>CreateRasterCoveragesTable()</b> and <b>CreateVectorCoveragesTables()</b> so to create the corresponding tables if not already defined.</td></tr>
 		<tr><td><b>SE_RegisterVectorCoverage</b></td>
 				<td>SE_RegisterVectorCoverage( coverage_name <i>String</i> , f_table_name <i>String</i> , f_geometry_column <i>Sting</i> ) : <i>Integer</i><hr>
-					SE_RegisterVectorCoverage( coverage_name <i>String</i> , f_table_name <i>String</i> , f_geometry_column <i>Sting</i> , title <i>String</i> , abstract <i>String </i> ) : <i>Integer</i></td>
+					SE_RegisterVectorCoverage( coverage_name <i>String</i> , f_table_name <i>String</i> , f_geometry_column <i>Sting</i> , title <i>String</i> , abstract <i>String </i> ) : <i>Integer</i><hr>
+					SE_RegisterVectorCoverage( coverage_name <i>String</i> , f_table_name <i>String</i> , f_geometry_column <i>Sting</i> , title <i>String</i> , abstract <i>String </i> ,
+					is_queryable <i>Boolen</i> , is_editable <i>Boolean</i> ) : <i>Integer</i></td>
 				<td></td>
 				<td align="center" bgcolor="#99d099">libxml2</td>
 				<td>Creates a <b>Vector Coverage</b> based on an already existing Spatial Table.
 				<ul>
 					<li><b>coverage_name</b> is the symbolic name uniquely identifying each Vector Coverage (<i>Primary Key</i>).</li>
-					<li><b>f_table_name</b> and <b>f_geometry_column</b> are expected to match a corresponding entry in the <b>geometry_columns</b> table.</li>
+					<li><b>f_table_name</b> and <b>f_geometry_column</b> are expected to match a corresponding entry in the <i>geometry_columns</i> table.</li>
 					<li>the optional arguments <b>title</b> and <b>abstract</b> could be eventually specified for better human readability.</li>
+					<li>if both optional arguments <b>is_queryable</b> and <b>is_editable</b> are left unspecified the Vector Coverage will then be neither queryable nor editable.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_RegisterSpatialViewCoverage</b></td>
+				<td>SE_RegisterSpatialViewCoverage( coverage_name <i>String</i> , view_name <i>String</i> , view_geometry <i>Sting</i> ) : <i>Integer</i><hr>
+					SE_RegisterSpatialViewCoverage( coverage_name <i>String</i> , view_name <i>String</i> , view_geometry <i>Sting</i> , title <i>String</i> , abstract <i>String </i> ) : <i>Integer</i><hr>
+					SE_RegisterSpatialViewCoverage( coverage_name <i>String</i> , view_name <i>String</i> , view_geometry <i>Sting</i> , title <i>String</i> , abstract <i>String </i> ,
+					is_queryable <i>Boolen</i> , is_editable <i>Boolean</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Creates a <b>Vector Coverage</b> based on an already existing Spatial View.
+				<ul>
+					<li><b>coverage_name</b> is the symbolic name uniquely identifying each Vector Coverage (<i>Primary Key</i>).</li>
+					<li><b>view_name</b> and <b>view_geometry</b> are expected to match a corresponding entry in the <i>views_geometry_columns</i> table.</li>
+					<li>the optional arguments <b>title</b> and <b>abstract</b> could be eventually specified for better human readability.</li>
+					<li>if both optional arguments <b>is_queryable</b> and <b>is_editable</b> are left unspecified the Vector Coverage will then be neither queryable nor editable.</li>
+					<li><b>Note</b>: a Spatial View Coverage declared to be editable will not fully support editing operations if the underlaying Spatial View is of the <b>read-only</b> type.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_RegisterVirtualShapeCoverage</b></td>
+				<td>SE_RegisterVirtualShapeCoverage( coverage_name <i>String</i> , virt_name <i>String</i> , virt_geometry <i>Sting</i> ) : <i>Integer</i><hr>
+					SE_RegisterVirtualShapeCoverage( coverage_name <i>String</i> , virt_name <i>String</i> , virt_geometry <i>Sting</i> , title <i>String</i> , abstract <i>String </i> ) : <i>Integer</i><hr>
+					SE_RegisterVirtualShapeCoverage( coverage_name <i>String</i> , virt_name <i>String</i> , virt_geometry <i>Sting</i> , title <i>String</i> , abstract <i>String </i> ,
+					is_queryable <i>Boolen</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Creates a <b>Vector Coverage</b> based on an already existing VirtualShape Table.
+				<ul>
+					<li><b>coverage_name</b> is the symbolic name uniquely identifying each Vector Coverage (<i>Primary Key</i>).</li>
+					<li><b>virt_name</b> and <b>virt_geometry</b> are expected to match a corresponding entry in the <i>virts_geometry_columns</i> table.</li>
+					<li>the optional arguments <b>title</b> and <b>abstract</b> could be eventually specified for better human readability.</li>
+					<li>if the optional argument <b>is_queryable</b> is left unspecified tjem the Vector Coverage will not be queryable.</li>
+					<li><b>Note</b>: VirtualShape Coverages are always not editable.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_RegisterTopoGeoCoverage</b></td>
+				<td>SE_RegisterTopoGeoCoverage( coverage_name <i>String</i> , topology_name <i>String</i> ) : <i>Integer</i><hr>
+					SE_RegisterTopoGeoCoverage( coverage_name <i>String</i> , topology_name <i>String</i> , title <i>String</i> , abstract <i>String </i> ) : <i>Integer</i><hr>
+					SE_RegisterTopoGeoCoverage( coverage_name <i>String</i> , topology_name <i>String</i> , title <i>String</i> , abstract <i>String </i> ,
+					is_queryable <i>Boolen</i> , is_editable <i>Boolean</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Creates a <b>Vector Coverage</b> based on an already existing Topology-Geometry.
+				<ul>
+					<li><b>coverage_name</b> is the symbolic name uniquely identifying each Vector Coverage (<i>Primary Key</i>).</li>
+					<li><b>topogeo_name</b> is expected to match a corresponding entry in the <i>topologies</i> table.</li>
+					<li>the optional arguments <b>title</b> and <b>abstract</b> could be eventually specified for better human readability.</li>
+					<li>if both optional arguments <b>is_queryable</b> and <b>is_editable</b> are left unspecified the Vector Coverage will then be neither queryable nor editable.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_RegisterTopoNetCoverage</b></td>
+				<td>SE_RegisterTopoNetCoverage( coverage_name <i>String</i> , network_name <i>String</i> ) : <i>Integer</i><hr>
+					SE_RegisterTopoNetCoverage( coverage_name <i>String</i> , network_name <i>String</i> , title <i>String</i> , abstract <i>String </i> ) : <i>Integer</i><hr>
+					SE_RegisterTopoNetCoverage( coverage_name <i>String</i> , network_name <i>String</i> , title <i>String</i> , abstract <i>String </i> ,
+					is_queryable <i>Boolen</i> , is_editable <i>Boolean</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Creates a <b>Vector Coverage</b> based on an already existing Topology-Network.
+				<ul>
+					<li><b>coverage_name</b> is the symbolic name uniquely identifying each Vector Coverage (<i>Primary Key</i>).</li>
+					<li><b>toponet_name</b> is expected to match a corresponding entry in the <i>networks</i> table.</li>
+					<li>the optional arguments <b>title</b> and <b>abstract</b> could be eventually specified for better human readability.</li>
+					<li>if both optional arguments <b>is_queryable</b> and <b>is_editable</b> are left unspecified the Vector Coverage will then be neither queryable nor editable.</li>
 				</ul><hr>
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
 				returned on invalid arguments.</td></tr>
@@ -2980,13 +3084,28 @@ the return type is Integer, with a return value of 1 for TRUE (success) or 0 for
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
 				returned on invalid arguments.</td></tr>
 		<tr><td><b>SE_SetVectorCoverageInfos</b></td>
-				<td>SE_SetVectorCoverageInfos( coverage_name <i>String</i> , title <i>String</i> , abstract <i>String</i> ) : <i>Integer</i></td>
+				<td>SE_SetVectorCoverageInfos( coverage_name <i>String</i> , title <i>String</i> , abstract <i>String</i> ) : <i>Integer</i><hr>
+				    SE_SetVectorCoverageInfos( coverage_name <i>String</i> , title <i>String</i> , abstract <i>String</i> , is_queryable <i>Boolen</i> , is_editable <i>Boolean</i> ): <i>Integer</i></td>
 				<td></td>
 				<td align="center" bgcolor="#99d099">libxml2</td>
 				<td>Updates the descriptive infos associated to a <b>Vector Coverage</b>.
 				<ul>
 					<li><b>coverage_name</b> must identify an existing Vector Coverage.</li>
 					<li><b>title</b> and <b>abstract</b> represent the descriptive infos to be set.</li>
+					<li>the optional arguments <b>is_queryable</b> and <b>is_editable</b> can be explicitly set so to determine if the Vector Coverage is queryable and/or editable.</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.</td></tr>
+		<tr><td><b>SE_SetVectorCoverageCopyright</b></td>
+				<td>SE_SetVectorCoverageCopyright( coverage_name <i>String</i> , copyright <i>String</i> ) : <i>Integer</i><hr>
+				    SE_SetVectorCoverageCopyright( coverage_name <i>String</i> , copyright <i>String</i> , license <i>String</i> ): <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>Updates Copyright and License infos associated to a <b>Vector Coverage</b>.
+				<ul>
+					<li><b>coverage_name</b> must identify an existing Vector Coverage.</li>
+					<li><b>copyright</b> identifies the Copyright holder; if <b>NULL</b> the current value will be preserved.</li>
+					<li>the optional argument <b>license</b> must reference one the Data Licenses registered into the <b>data_licenses</b> table, as e.g. <i>CC0 1.0</i> or <i>CC BY 4.0</i>.</li>
 				</ul><hr>
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
 				returned on invalid arguments.</td></tr>
@@ -4152,6 +4271,12 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				<td align="center" bgcolor="#d0f0d0"></td>
 				<td align="center" bgcolor="#f0d0f0">RTTOPO</td>
 				<td colspan="3">Will return the most recent exception raised by this Topo-Geo, or <b>NULL</b> if no exception is currently pending.</td></tr>
+			<tr><td><b>CreateTopoTables</b></td>
+				<td>CreateTopoTables( ) : <i>Integer</i></td>
+				<td align="center" bgcolor="#d0f0d0"></td>
+				<td align="center" bgcolor="#f0d0f0">RTTOPO</td>
+				<td colspan="3">Will create both <b>topologies</b> and <b>networks</b> meta-tables.<hr>
+					Will return <i>1</i> on success) or <i>0</i> on failure (including already existing tables).</td></tr>
 			<tr><td><b>InitTopoGeo</b></td>
 				<td>ST_InitTopoGeo( toponame <i>Text</i> ) : <i>Integer</i></td>
 				<td align="center" bgcolor="#d0f0d0">X</td>
@@ -4345,23 +4470,23 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				    <ul><li>The optional argument <b>tolerance</b> if omitted will assume the corresponding value declared when creating the target Topology.</li></ul><hr>
 					Will return a comma separated list of all IDs of the corresponding Edges on success; an exception will be raised on failure.</td></tr>
 			<tr><td><b>TopoGeo_TopoSnap</b></td>
-				<td>TopoGeo_TopoSnap( toponame <i>Text</i> , input <i>Geometry</i> , iterate <i>Integer</i> , remove_vertices <i>Integer</i> ) : <i>Geometry</i><hr>
-				    TopoGeo_TopoSnap( toponame <i>Text</i> , input <i>Geometry</i> , iterate <i>Integer</i> , remove_vertices <i>Integer</i> , tolerance<i>Double precision</i> ) : <i>Geometry</i></td>
+				<td>TopoGeo_TopoSnap( toponame <i>Text</i> , input <i>Geometry</i> , iterate <i>Integer</i> ) : <i>Geometry</i><hr>
+				    TopoGeo_TopoSnap( toponame <i>Text</i> , input <i>Geometry</i> , tolerance_snap <i>Double precision</i>  , tolerance_removal <i>Double precision</i> , iterate <i>Integer</i> ) : <i>Geometry</i></td>
 				<td align="center" bgcolor="#d0f0d0"></td>
 				<td align="center" bgcolor="#f0d0f0">RTTOPO</td>
 				<td colspan="3">Will attempt to snap (i.e. renode) the <i>input</i> Geometry (any type) against the Topology identified by <i>toponame</i>.
 					<ul>
-						<li>both arguments <i>iterate</i> and <i>remove_vertices</i> are intended to be Boolean (<b>0</b> = <b>FALSE</b>, any other value = <b>TRUE</b>).</li>
-						<li>if argument <i>iterate</i> is set to <b>TRUE</b> the input Geometry will be iteratively processed until no more snaps are found.</li>
-						<li>if argument <i>remove_vertices</i> is set to <b>TRUE</b> any vertex falling within the <i>tolerance</i> radius will be removed.</li>
-						<li>The optional argument <i>tolerance</i> if omitted will assume the corresponding value declared when creating the target Topology.</li>
+						<li>the arguments <b>iterate</b> is intended to be Boolean (<b>0</b> = <b>FALSE</b>, any other value = <b>TRUE</b>);
+						    when set to <b>TRUE</b> the input Geometry will be iteratively processed until no more snaps are found.</li>
+						<li>The optional argument <b>tolerance_snap</b> if omitted will assume the corresponding value declared when creating the target Topology.</li>
+						<li>The optional argument <b>tolerance_removal</b> if omitted (or set to <b>NULL</b>) will suppress the removal phase.</li>
 					</ul><hr>
 					Will return a snapped Geometry on success; an exception will be raised on failure.</td></tr>
 			<tr><td><b>TopoGeo_SnappedGeoTable</b></td>
 				<td>TopoGeo_SnappedGeoTable( toponame <i>Text</i> , db-prefix <i>Text</i> , table-name <i>Text</i> , column-name <i>Text</i> , output-table <i>Text</i> ,
-				    iterate <i>Integer</i> , remove_vertices <i>Integer</i> ) : <i>Integer</i><hr>
+				    iterate <i>Integer</i> ) : <i>Integer</i><hr>
 				    TopoGeo_SnappedGeoTable( toponame <i>Text</i> , db-prefix <i>Text</i> , table-name <i>Text</i> , column-name <i>Text</i> , output-table <i>Text</i> ,
-				    iterate <i>Integer</i> , remove_vertices <i>Integer</i> , tolerance <i>Double precision</i> ) : <i>Integer</i></td>
+				    tolerance_snap <i>Double precision</i> , tolerance_removal <i>Double precision</i> , iterate <i>Integer</i> ) : <i>Integer</i></td>
 				<td align="center" bgcolor="#d0f0d0"></td>
 				<td align="center" bgcolor="#f0d0f0">RTTOPO</td>
 				<td colspan="3">Will attempt to create and populate an <i>output-table</i> by snapping against the Topology identified by <i>toponame</i> all Geometries 
@@ -4373,8 +4498,7 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 						<li>the input GeoTable must be properly registered and must match both <b>SRID</b> and <b>dimensions</b> declared by the target Topology.</li>
 						<li>this function accepts input Geometries of any class: <b>Point</b>, <b>MultiPoint</b>, <b>Linestring</b>, <b>MultiLinestring</b>,
 						<b>Polygon</b>, <b>MultiPolygon</b>, <b>GeometryCollection</b> and <b>Geometry</b>.</li>
-						<li>arguments <i>iterate</i> and <i>remove_vertices</i> will be interpreted in the same way adopted by <b>TopoGeo_TopoSnap()</b>.</li>
-				        <li>The optional argument <i>tolerance</i> if omitted will assume the corresponding value declared when creating the target Topology.</li>
+						<li>argument <b>iterate</b>, <b>tolerance_snap</b> and <b>tolerance_removal</b> will be interpreted exactly in the same way adopted by <b>TopoGeo_TopoSnap()</b>.</li>
 					</ul><hr>
 					Will return <b>1</b> on success; an exception will be raised on failure.</td></tr>
 			<tr><td><b>TopoGeo_SubdivideLines</b></td>
@@ -4497,10 +4621,17 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				huge Topology on a platform supporting a very limited amount of RAM will probably fail due to <b>insufficient memory</b> errors.<hr>
 					Will return <b>NULL</b> on full success; an exception will be raised on failure.</td></tr>
 			<tr><td><b>TopoGeo_RemoveSmallFaces</b></td>
-				<td>TopoGeo_RemoveSmallFaces( toponame <i>Text</i> , min-area <i>Double precision</i> ) : <i>Integer</i></td>
+				<td>TopoGeo_RemoveSmallFaces( toponame <i>Text</i> , min-circularity <i>Double precision</i> ) : <i>Integer</i><hr>
+				    TopoGeo_RemoveSmallFaces( toponame <i>Text</i> , min-circularity <i>Double precision</i> , min-area <i>Double precision</i> ) : <i>Integer</i></td>
 				<td align="center" bgcolor="#d0f0d0"></td>
 				<td align="center" bgcolor="#f0d0f0">RTTOPO</td>
-				<td colspan="3">Will remove from the given Topology all Faces presenting an area smaller than <i>min-area</i>.<hr>
+				<td colspan="3">Will remove from the given Topology all Faces presenting <b>both</b> a Circularity index smaller than <i>min-circularity</i> <b>and</b> an area smaller than <i>min-area</i>.
+				    <ul>
+						<li>for a formal definition of the Circularity index please see <a href="#circularity">Circularity()</a></li>
+						<li>the Circularity index ranges between <i>1.0</i> and <i>0.0</i>, so setting <b>min-circularity</b> to a value equal or greater than <i>1.0</i> will implicitly disable the
+						    corresponding check.</li>
+						<li>the <i>optional</i> argument <b>min-area</b> if not specified will assume a <i>0.0</i> value thus implicitly disabling the corresponding check.</li>
+				    </ul><hr>
 					Will return <b>1</b> on full success; an exception will be raised on failure.</td></tr>
 			<tr><td><b>TopoGeo_RemoveDanglingEdges</b></td>
 				<td>TopoGeo_RemoveDanglingEdges( toponame <i>Text</i> ) : <i>Integer</i></td>
@@ -4531,6 +4662,24 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				    An unnecessary Node is one connected to exactly two Edges whilst both Edges share the same two Faces; it's obvious that such a Node could be safely removed giving birth to a single Edge
 				    without altering in any way the Topological self-consistency.<br>
 				    All unnecessary Nodes identified by this function will be removed by implicitly calling <b>ST_ModEdgeHeal()</b><hr>
+					Will return <b>1</b> on full success; an exception will be raised on failure.</td></tr>
+			<tr><td><b>TopoGeo_NewEdgesSplit</b></td>
+				<td>TopoGeo_NewEdgesSplit( toponame <i>Text</i> , line_max_points <i>Integer</i> ) : <i>Integer</i><hr>
+				    TopoGeo_NewEdgesSplit( toponame <i>Text</i> , line_max_points <i>Integer</i> , line_max_length <i>Double precision</i> ) : <i>Integer</i></td>
+				<td align="center" bgcolor="#d0f0d0"></td>
+				<td align="center" bgcolor="#f0d0f0">RTTOPO</td>
+				<td colspan="3">Will attempt to split all <i>Edges</i> into a collection of shorter Edges fully respecting Topology consistency.<br>
+					The interpretation of <b>line_max_points</b> and <b>line_max_lenght</b> arguments is the same adopted by <b>TopoGeo_SubdivideLines()</b><br>
+				    Edges and Nodes will be handled by implicitly calling <b>ST_NewEdgesSplit()</b><hr>
+					Will return <b>1</b> on full success; an exception will be raised on failure.</td></tr>
+			<tr><td><b>TopoGeo_ModEdgeSplit</b></td>
+				<td>TopoGeo_ModEdgeSplit( toponame <i>Text</i> , line_max_points <i>Integer</i> ) : <i>Integer</i><hr>
+				    TopoGeo_ModEdgeSplit( toponame <i>Text</i> , line_max_points <i>Integer</i> , line_max_length <i>Double precision</i> ) : <i>Integer</i></td>
+				<td align="center" bgcolor="#d0f0d0"></td>
+				<td align="center" bgcolor="#f0d0f0">RTTOPO</td>
+				<td colspan="3">Will attempt to split all <i>Edges</i> into a collection of shorter Edges fully respecting Topology consistency.<br>
+					The interpretation of <b>line_max_points</b> and <b>line_max_lenght</b> arguments is the same adopted by <b>TopoGeo_SubdivideLines()</b><br>
+				    Edges and Nodes will be handled by implicitly calling <b>ST_ModEdgeSplit()</b><hr>
 					Will return <b>1</b> on full success; an exception will be raised on failure.</td></tr>
 			<tr><td><b>TopoGeo_Clone</b></td>
 				<td>TopoGeo_Clone( toponame <i>Text</i> , new-toponame <i>Text</i> ) : <i>Integer</i></td>
@@ -4571,6 +4720,21 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 					<ul>
 						<li>if the optional argument <i>incremental-mode</i> is set to TRUE an incremental update (faster) will be applied,
 						otherwise all persistent Seeds will be rebuilt from scratch (slower).</li>
+					</ul><hr>
+					Will return <b>1</b> on success; an exception will be raised on failure.</td></tr>
+			<tr><td><b>TopoGeo_PolyFacesList</b></td>
+				<td>TopoGeo_PolyFacesList( toponame <i>Text</i> , db-prefix <i>Text</i> , ref-table-name <i>Text</i> , ref-column-name <i>Text</i>, out-table <i>Text</i> ) : <i>Integer</i></td>
+				<td align="center" bgcolor="#d0f0d0"></td>
+				<td align="center" bgcolor="#f0d0f0">RTTOPO</td>
+				<td colspan="3">Will attempt to export into an output Table all relationships between the Faces of some Topology-Geometry and Polygons/Multipolygons found within a given
+				    Reference-GeoTable. 
+					<ul>
+						<li><i>db-prefix</i> can be <b>NULL</b>, and in this case the reference GeoTable is expected to be located within the <b>"MAIN"</b> database.</li>
+						<li><i>ref-column-name</i> too can be <b>NULL</b>, and in this case the name of the column containing Geometries will be automatically retrieved;
+						if <b>"db"."table"</b> does not contains any Geometry column, or if it contains two or more Geometries an exception will be raised.</li>
+						<li>the reference GeoTable must be properly registered and must match both <b>SRID</b> and <b>dimensions</b> declared by the target Topology.</li>
+						<li>this function accepts input Geometries only of the <b>Polygon</b> or <b>MultiPolygon</b> types.</li>
+						<li>the output Table will be always located on the <b>"MAIN"</b> DB and must not exists; it will be automatically created.</li>
 					</ul><hr>
 					Will return <b>1</b> on success; an exception will be raised on failure.</td></tr>
 			<tr><td><b>TopoGeo_ToGeoTable</b></td>
@@ -4906,6 +5070,205 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 						<li><i>tolerance</i> represents the approximation radius required by the Douglas-Peuker simplification algorithm.</li>
 					</ul><hr>
 					Will return <b>1</b> on success; an exception will be raised on failure.</td></tr>
+			<tr><td colspan="5" align="center" bgcolor="#f0e0c0">
+				<h3><a name="wms">SQL functions supporting WMS datasources</a></h3></td></tr>
+			<tr><th bgcolor="#d0d0d0">Function</th>
+				<th bgcolor="#d0d0d0">Syntax</th>
+				<th bgcolor="#d0d0d0" colspan="3">Summary</th></tr>
+			<tr><td><b>WMS_CreateTables</b></td>
+				<td>WMS_CreateTables() : <i>Integer</i></td>
+				<td colspan="3">Creates all DB Tables required for permanently egistering WMS datasources and their configurations.<hr>
+					Will return <b>1</b> on success; <b>0</b> on failure.</td></tr>
+			<tr><td><b>WMS_RegisterGetCapabilities</b></td>
+				<td>WMS_RegisterGetCapabilities( url <i>Text</i> ) : <i>Integer</i><hr>
+				    WMS_RegisterGetCapabilities( url <i>Text</i> , title <i>Text</i> , abstract <i>Text</i> ) : <i>Integer</i></td>
+				<td colspan="3">Registers a WMS server.<hr>
+					Will return <b>1</b> on success; <b>0</b> on failure; <b>-1</b> on invalid arguments.</td></tr>
+			<tr><td><b>WMS_UnRegisterGetCapabilities</b></td>
+				<td>WMS_UnRegisterGetCapabilities( url <i>Text</i> ) : <i>Integer</i></td>
+				<td colspan="3">Unregisters a WMS server (and all related children).<hr>
+					Will return <b>1</b> on success; <b>0</b> on failure; <b>-1</b> on invalid arguments.</td></tr>
+			<tr><td><b>WMS_SetGetCapabilitiesInfos</b></td>
+				<td>WMS_SetGetCapabilitiesInfos( url <i>Text</i> , title <i>Text</i> , abstract <i>Text</i> )</td>
+				<td colspan="3">Sets or updates the <b>Title</b> and <b>Abstract</b> for the WMS server identified by <b>url</b>.<hr>
+					Will return <b>1</b> on success; <b>0</b> on failure; <b>-1</b> on invalid arguments.</td></tr>
+			<tr><td><b>WMS_RegisterGetMap</b></td>
+				<td>WMS_RegisterGetMap( getcapabilitites_url <i>Text</i> , getmap_url <i>Text</i> , layer_name <i>Text</i> , version <i>Text</i>, ref_sys <i>Text</i> ,
+                    image_format <i>Text</i> , style <i>Text</i> , is_transparent <i>Boolean</i> , flip_axes <i>Boolean</i> ) : <i>Integer</i><hr>
+				    WMS_RegisterGetMap( getcapabilitites_url <i>Text</i> , getmap_url <i>Text</i> , layer_name <i>Text</i> , version <i>Text</i>, ref_sys <i>Text</i> ,
+                    image_format <i>Text</i> , style <i>Text</i> , is_transparent <i>Boolean</i> , flip_axes <i>Boolean</i> , is_tiled <i>Boolean</i> , 
+                    is_cached <i>Boolean</i> , tile_width <i>Integer</i> , tile_height <i>Integer</i> ) : <i>Integer</i><hr>
+				    WMS_RegisterGetMap( getcapabilitites_url <i>Text</i> , getmap_url <i>Text</i> , layer_name <i>Text</i> , title <i>Text</i> , abstract <i>Text</i> , 
+				    version <i>Text</i>, ref_sys <i>Text</i> , image_format <i>Text</i> , style <i>Text</i> , is_transparent <i>Boolean</i> , flip_axes <i>Boolean</i> , 
+				    is_tiled <i>Boolean</i> , is_cached <i>Boolean</i> , tile_width <i>Integer</i> , tile_height <i>Integer</i> , bgcolor <i>Text</i> ,
+				    is_queryable <i>Boolean</i> , getfeatureinfo_url <b>Text</b> ) : <i>Integer</i></td>
+				<td colspan="3">Registers a WMS layer.
+					<ul>
+						<li><b>getcapabilities_url</b>: URL referencing the parent <i>WMS GetCapabilities</i> request (must be already registered).</li>
+						<li><b>getmap_url</b>: base URL corresponding to the <i>WMS GetMap</i> request.</li>
+						<li><b>layer_name</b> name of the <i>WMS Layer</i>.</li>
+						<li><b>title</b> (<i>optional arg</i>): Title of the WMS Service.</li>
+						<li><b>abstract</b> (<i>optional arg</i>): Abstract of the WMS Service.</li>
+						<li><b>version</b>: version of the WMS protocol to be used for <i>GetMap</i> requests (e.g. <b>'1.1.1'</b> or <b>'1.3.0'</b>).</li>
+						<li><b>ref_sys</b>: reference system to be used for <i>GetMap</i> requests (e.g. <b>'EPSG:4326'</b> or <b>'EPSG:32632'</b>).</li>
+						<li><b>image_format</b>: MIME type of the image returned by a <i>WMS GetMap</i> request (e.g. <b>'image/png'</b> or <b>'image/jpeg'</b>).</li>
+						<li><b>style</b>: name of the style to be applied to the <i>WMS Layer</i> (could be <b>'default'</b>).</li>
+						<li><b>is_transparent</b>: if the image returned by a <i>WMS GetMap</i> request should be opaque or transparent.</li>
+						<li><b>flip_axes</b>: if a <i>WMS GetMap</i> request requires flipping the horizontal and vertical axes.</li>
+						<li><b>is_tiled</b> (<i>optional arg</i>): if <i>WMS GetMap</i> requests should be handled <i>by tiles</i> or not.</li>
+						<li><b>is_cached</b> (<i>optional arg</i>): if <i>WMS GetMap</i> results should be cached or not (applies only to <i>tiled</i> requests).</li>
+						<li><b>tile_width</b> (<i>optional arg</i>): tile width expressed in <i>pixels</i> (applies only to <i>tiled</i> requests).</li>
+						<li><b>tile_height</b> (<i>optional arg</i>): tile height expressed in <i>pixels</i> (applies only to <i>tiled</i> requests).</li>
+						<li><b>bgcolor</b> (<i>optional arg</i>): image background color (<i>Hex RGB color</i> as e.g. <b>'ff8000'</b> or <b>'A8A8A8'</b>).</li>
+						<li><b>is_queriable</b> (<i>optional arg</i>): if the <i>WMS Layer</i> supports or not <i>GetFeatureInfo</i> requests.</li>
+						<li><b>getfeatureinfo_url</b> (<i>optional arg</i>): base URL corresponding to a <i>WMS GetFeatureInfo</i> request.</li>
+					</ul><hr>
+					Will return <b>1</b> on success; <b>0</b> on failure; <b>-1</b> on invalid arguments.</td></tr>
+			<tr><td><b>WMS_UnRegisterGetMap</b></td>
+				<td>WMS_UnRegisterGetMap( getmap_url <i>Text</i> , layer_name <i>Text</i> ) : <i>Integer</i></td>
+				<td colspan="3">Unregisters a WMS Layer (and all related children).<hr>
+					Will return <b>1</b> on success; <b>0</b> on failure; <b>-1</b> on invalid arguments.</td></tr>
+			<tr><td><b>WMS_SetGetMapInfos</b></td>
+				<td>WMS_SetGetMapInfos( getmap_url <i>Text</i> , layer_name <i>Text</i> , title <i>Text</i> , abstract <i>Text</i> ) : <i>Integer</i></td>
+				<td colspan="3">Sets or updates the <b>Title</b> and <b>Abstract</b> for the WMS Layer identified by <b>getmap_url</b> and <b>layer_name</b>.<hr>
+					Will return <b>1</b> on success; <b>0</b> on failure; <b>-1</b> on invalid arguments.</td></tr>
+			<tr><td><b>WMS_SetGetMapCopyright</b></td>
+					<td>WMS_SetGetMapCopyright( getmap_url <i>Text</i> , layer_name <i>String</i> , copyright <i>String</i> ) : <i>Integer</i><hr>
+						WMS_SetGetMapCopyright( getmap_url <i>Text</i> , layer_name <i>String</i> , copyright <i>String</i> , license <i>String</i> ): <i>Integer</i></td>
+					<td colspan="3">Updates Copyright and License infos associated to a <b>WMS Layer</b>.
+					<ul>
+						<li><b>getmap_url</b> and <b>layer_name</b> must identify an existing WMS Layer.</li>
+						<li><b>copyright</b> identifies the Copyright holder; if <b>NULL</b> the current value will be preserved.</li>
+						<li>the optional argument <b>license</b> must reference one the Data Licenses registered into the <b>data_licenses</b> table, as e.g. <i>CC0 1.0</i> or <i>CC BY 4.0</i>.</li>
+					</ul><hr>
+						the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be returned on invalid arguments.</td></tr>
+			<tr><td><b>WMS_SetGetMapOptions</b></td>
+				<td>WMS_SetGetMapOptions( getmap_url <i>Text</i> , layer_name <i>Text</i> , transparent <i>Boolean</i> , flip_axes <i>Boolean</i> )<hr>
+				    WMS_SetGetMapOptions( getmap_url <i>Text</i> , layer_name <i>Text</i> , is_tiled <i>Boolean</i> , cached <i>Boolean</i> , tile_width <i>Integer</i> , tile_height <i>Integer</i>) : <i>Integer</i><hr>
+				    WMS_SetGetMapOptions( getmap_url <i>Text</i> , layer_name <i>Text</i> , is_queryable <i>Boolean</i> , getfeatureinfo_url <i>Text</i> ) : <i>Integer</i><hr>
+				    WMS_SetGetMapOptions( getmap_url <i>Text</i> , layer_name <i>Text</i> , bgcolor <i>Text</i> ) : <i>Integer</i></td>
+				<td colspan="3">Sets or updates configurable options for the WMS Layer identified by <b>getmap_url</b> and <b>layer_name</b>.<br>
+				    Please check <b>WMS_RegisterGetMap</b> for more informations about supported options.<hr>
+					Will return <b>1</b> on success; <b>0</b> on failure; <b>-1</b> on invalid arguments.</td></tr>
+			<tr><td><b>WMS_RegisterSetting</b></td>
+				<td>WMS_RegisterSetting( getmap_url <i>Text</i> , layer_name <i>Text</i> , key <i>Text</i> , value <i>Text</i> ) : <i>Integer</i><hr>
+				    WMS_RegisterSetting( getmap_url <i>Text</i> , layer_name <i>Text</i> , key <i>Text</i> , value <i>Text</i> , is_default <i>Boolean</i> ) : <i>Integer</i></td>
+				<td colspan="3">Registers an alternative setting for the WMS Layer identified by <b>getmap_url</b> and <b>layer_name</b>.
+					<ul>
+						<li><b>key</b>: identifies a specific multi-value setting, and should be one between <b>version</b>, <b>format</b> or <b>style</b>.</li>
+						<li><b>value</b>: an alternative setting value. Examples:
+							<ul>
+								<li><i>key</i> = <b>'version'</b> , <i>value</i> = '<b>'1.0.0'</b></li>
+								<li><i>key</i> = <b>'version'</b> , <i>value</i> = '<b>'1.1.0'</b></li>
+								<li><i>key</i> = <b>'version'</b> , <i>value</i> = '<b>'1.1.1'</b></li>
+								<li><i>key</i> = <b>'version'</b> , <i>value</i> = '<b>'1.3.0'</b></li>
+							</ul>
+						</li>
+						<li><b>is_default</b> (<i>optional arg</i>): if the corresponding value will become the standard setting for the corresponding WMS Layer (<b>FALSE</b> if undefined).</b></li>
+					</ul><hr>
+					Will return <b>1</b> on success; <b>0</b> on failure; <b>-1</b> on invalid arguments.</td></tr>
+			<tr><td><b>WMS_UnRegisterSetting</b></td>
+				<td>WMS_UnRegisterSetting( getmap_url <i>Text</i> , layer_name <i>Text</i> , key <i>Text</i> , value <i>Text</i> ) : <i>Integer</i></td>
+				<td colspan="3">Unregisters an alternative setting from the corresponding WMS Layer.<hr>
+					Will return <b>1</b> on success; <b>0</b> on failure; <b>-1</b> on invalid arguments.</td></tr>
+			<tr><td><b>WMS_DefaultSetting</b></td>
+				<td>WMS_DefaultSetting( getmap_url <i>Text</i> , layer_name <i>Text</i> , key <i>Text</i> , value <i>Text</i> ) : <i>Integer</i></td>
+				<td colspan="3">Makes an alternative setting to become the standard setting for the corresponding WMS Layer.<hr>
+					Will return <b>1</b> on success; <b>0</b> on failure; <b>-1</b> on invalid arguments.</td></tr>
+			<tr><td><b>WMS_RegisterRefSys</b></td>
+				<td>WMS_RegisterRefSys( getmap_url <i>Text</i> , layer_name <i>Text</i> , ref_sys <i>Text</i> , minx <i>Double</i> , miny <i>Double</i> ,
+				    maxx <i>Double</i> , maxy <i>Double</i> ) : <i>Integer</i><hr>
+				    WMS_RegisterRefSys( getmap_url <i>Text</i> , layer_name <i>Text</i> , ref_sys <i>Text</i> , minx <i>Double</i> , miny <i>Double</i> ,
+				    maxx <i>Double</i> , maxy <i>Double</i> , is_default <i>Boolean</i> ) : <i>Integer</i></td>
+				<td colspan="3">Registers an alternative Reference System for the WMS Layer identified by <b>getmap_url</b> and <b>layer_name</b>
+					<ul>
+						<li><b>ref_sys</b>: name of Reference System (e.g. <b>'EPSG:4326'</b> or <b>'EPSG:32632'</b>).</li>
+						<li><b>minx</b>, <b>miny</b>, <b>maxx</b> and <b>maxy</b>: the corresponding WMS Layer's Bounding Box (aka full extent).</li>
+						<li><b>is_default</b> (<i>optional arg</i>): if the corresponding SRS will become the standard Reference System for the corresponding WMS Layer (<b>FALSE</b> if undefined).</b></li>
+					</ul><hr>
+					Will return <b>1</b> on success; <b>0</b> on failure; <b>-1</b> on invalid arguments.</td></tr>
+			<tr><td><b>WMS_UnRegisterRefSys</b></td>
+				<td>WMS_UnRegisterRefSys( getmap_url <i>Text</i> , layer_name <i>Text</i> , ref_sys <i>Text</i> ) : <i>Integer</i></td>
+				<td colspan="3">Unregisters an alternative Reference System from the corresponding WMS Layer.<hr>
+					Will return <b>1</b> on success; <b>0</b> on failure; <b>-1</b> on invalid arguments.</td></tr>
+			<tr><td><b>WMS_DefaultRefSys</b></td>
+				<td>WMS_DefaultRefSys( getmap_url <i>Text</i> , layer_name <i>Text</i> , ref_sys <i>Text</i> ) : <i>Integer</i></td>
+				<td colspan="3">Makes an alternative SRS to become the standard Reference System for the corresponding WMS Layer.<hr>
+					Will return <b>1</b> on success; <b>0</b> on failure; <b>-1</b> on invalid arguments.</td></tr>
+			<tr><td><b>WMS_GetMapRequestURL</b></td>
+				<td>WMS_GetMapRequestURL( getmap_url <i>Text</i> , layer_name <i>Text</i> , width <i>Integer</i> , height <i>Integer</i> , minx <i>Double</i> , miny <i>Double</i> ,
+				    maxx <i>Double</i> , maxy <i>Double</i> ) : <i>Text</i></td>
+				<td colspan="3">Creates a <b>WMS GetMap</b> request URL for the WMS Layer identified by <b>getmap_url</b> and <b>layer_name</b> by applying the currently set options.
+				    <ul>
+						<li><b>width</b> and <b>height</b>: horizontal and vertical dimensions (expressed in pixels) of the returned map image.</li>
+						<li><b>minx</b>, <b>miny</b>, <b>maxx</b> and <b>maxy</b>: the Bounding Box coverred by the returned map image.</li>
+				    </ul><hr>
+					Will return a <b>request URL</b> on success; <b>NULL</b> on failure or on invalid arguments.</td></tr>
+			<tr><td><b>WMS_GetFeatureInfoRequestURL</b></td>
+				<td>WMS_GetFeatureInfoRequestURL( getmap_url <i>Text</i> , layer_name <i>Text</i> , width <i>Integer</i> , height <i>Integer</i> , x <i>Integer</i>, y <i>Integer</i> ,
+					minx <i>Double</i> , miny <i>Double</i> , maxx <i>Double</i> , maxy <i>Double</i> ) : <i>Text</i><hr>
+					WMS_GetFeatureInfoRequestURL( getmap_url <i>Text</i> , layer_name <i>Text</i> , width <i>Integer</i> , height <i>Integer</i> , x <i>Integer</i>, y <i>Integer</i> ,
+					minx <i>Double</i> , miny <i>Double</i> , maxx <i>Double</i> , maxy <i>Double</i> , feature_count <i>Integer</i> ) : <i>Text</i></td>
+				<td colspan="3">Creates a <b>WMS GetFeatureInfo</b> request URL for the WMS Layer identified by <b>getmap_url</b> and <b>layer_name</b> by applying the currently set options.
+				    <ul>
+						<li><b>width</b> and <b>height</b>: horizontal and vertical dimensions (expressed in pixels) of the map image.</li>
+						<li><b>x</b> and <b>y</b>: position of a Point on the map image to be queried: the map image coordidate origin <i>(0, 0)</i> is located on the
+						<i>upper left corner</i>, the X axis increases going towards the right, the Y axis increases going towards the bottom. </li>
+						<li><b>minx</b>, <b>miny</b>, <b>maxx</b> and <b>maxy</b>: the Bounding Box coverred by the map image.</li>
+						<li><b>feature_count</b> (<i>optional arg</i>): maximum number of features allowed (<i>1</i> if unspecified).</li>
+				    </ul><hr>
+					Will return a <b>request URL</b> on success; <b>NULL</b> on failure or on invalid arguments.</td></tr>
+			<tr><td colspan="5" align="center" bgcolor="#f0e0c0">
+				<h3><a name="datalic">SQL functions supporting Data Licenses</a></h3></td></tr>
+			<tr><th bgcolor="#d0d0d0">Function</th>
+				<th bgcolor="#d0d0d0">Syntax</th>
+				<th bgcolor="#d0d0d0" colspan="3">Summary</th></tr>
+			<tr><td><b>RegisterDataLicense</b></td>
+				<td>RegisterDataLicense( license_name <b>Text</b> ) : <i>Integer</i><hr>
+					RegisterDataLicense( license_name <b>Text</b> , url <b>Text</b> ) : <i>Integer</i></td>
+				<td colspan="3">Registers a Data License.
+				<ul>
+					<li><b>license_name</b> is expected to be a text string uniquely identifying a license/version.<br>
+					<u>Note</u>: the following licenses are always self-defined when creating a new DB:
+						<ul>
+							<li><i>Undefined</i></li>
+							<li><i>Proprietary - Non Free</i></li>
+							<li><i>PD - Public Domain</i></li>
+							<li><i>CC0 1.0</i></li>
+							<li><i>CC BY 3.0</i></li>
+							<li><i>CC BY 4.0</i></li>
+							<li><i>CC BY-SA 3.0</i></li>
+							<li><i>CC BY-SA 4.0</i></li>
+							<li><i>CC BY-SA-NC 3.0</i></li>
+							<li><i>CC BY-SA-NC 4.0</i></li>
+						</ul>
+					</li>
+					<li>the optional argument <b>url</b> may eventually contain an URL pointing to the license's legal terms and conditions.</li>
+				</ul><hr>
+					Will return <b>1</b> on success; <b>0</b> on failure; <b>-1</b> on invalid arguments.</td></tr>
+			<tr><td><b>UnRegisterDataLicense</b></td>
+				<td>UnRegisterDataLicense( license_name <b>Text</b> ) : <i>Integer</i></td>
+				<td colspan="3">Unregisters a Data License.
+				<ul>
+					<li><b>license_name</b> is expected to match an already registered license/version.</li>
+				</ul><hr>
+					Will return <b>1</b> on success; <b>0</b> on failure; <b>-1</b> on invalid argument.</td></tr>
+			<tr><td><b>RenameDataLicense</b></td>
+				<td>RenameDataLicense( old_name <b>Text</b> , new_name <b>Text</b> ) : <i>Integer</i></td>
+				<td colspan="3">Renames a Data License.
+				<ul>
+					<li><b>old_name</b> is expected to match an already registered license/version.</li>
+					<li><b>new_name</b> must not match any already registered license/version so to respect the unique constraint.</li>
+				</ul><hr>
+					Will return <b>1</b> on success; <b>0</b> on failure; <b>-1</b> on invalid arguments.</td></tr>
+			<tr><td><b>SetDataLicenseUrl</b></td>
+				<td>SetDataLicenseURL( license_name <b>Text</b> , url <b>Text</b> ) : <i>Integer</i></td>
+				<td colspan="3">Sets or updates the URL corresponding to a Data License.
+				<ul>
+					<li><b>license_name</b> is expected to match an already registered license/version.</li>
+					<li><b>url</b> is expected to be an URL pointing to the license's legal terms and conditions.</li>
+				</ul><hr>
+					Will return <b>1</b> on success; <b>0</b> on failure; <b>-1</b> on invalid arguments.</td></tr>
 			<tr><td colspan="5" align="center" bgcolor="#f0e0c0">
 				<h3><a name="advanced">miscellaneous advanced SQL functions</a></h3></td></tr>
 			<tr><th bgcolor="#d0d0d0">Function</th>

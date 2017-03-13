@@ -110,8 +110,9 @@ do_level1_tests (sqlite3 * handle, int *retcode)
 
 /* importing the sezcen_2001 GeoTable */
     ret = sqlite3_exec (handle,
-			"SELECT TopoGeo_AddLinestringNoFace('elba', LinesFromRings(TopoGeo_TopoSnap('elba', geometry, 1, 1, 0))) " 
-			"FROM ext.sezcen_2001", NULL, NULL, &err_msg);
+			"SELECT TopoGeo_AddLinestringNoFace('elba', LinesFromRings(TopoGeo_TopoSnap('elba', geometry, 1, 1, 0))) "
+			"FROM ext.sezcen_2001 WHERE rowid < 5", NULL, NULL,
+			&err_msg);
     if (ret != SQLITE_OK)
       {
 	  fprintf (stderr, "TopoGeo_AddLinestringNoFace() #1 error: %s\n",
@@ -196,6 +197,32 @@ do_level3_tests (sqlite3 * handle, int *retcode)
     int ret;
     char *err_msg = NULL;
 
+/* removing useless Nodes - mode Mod */
+    ret =
+	sqlite3_exec (handle,
+		      "SELECT TopoGeo_ModEdgeHeal('elba')", NULL, NULL,
+		      &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr, "TopoGeo_ModEdgeHeal() #1 error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  *retcode = -61;
+	  return 0;
+      }
+
+/* splitting Edges - mode Mod */
+    ret =
+	sqlite3_exec (handle,
+		      "SELECT TopoGeo_ModEdgeSplit('elba', 128)", NULL, NULL,
+		      &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr, "TopoGeo_ModEdgeSplit() #1 error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  *retcode = -62;
+	  return 0;
+      }
+
 /* removing useless Nodes - mode New */
     ret =
 	sqlite3_exec (handle,
@@ -205,7 +232,20 @@ do_level3_tests (sqlite3 * handle, int *retcode)
       {
 	  fprintf (stderr, "TopoGeo_NewEdgeHeal() #1 error: %s\n", err_msg);
 	  sqlite3_free (err_msg);
-	  *retcode = -61;
+	  *retcode = -63;
+	  return 0;
+      }
+
+/* splitting Edges - mode New */
+    ret =
+	sqlite3_exec (handle,
+		      "SELECT TopoGeo_NewEdgesSplit('elba', 256)", NULL, NULL,
+		      &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr, "TopoGeo_NewEdgesSplit() #1 error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  *retcode = -62;
 	  return 0;
       }
 
@@ -218,6 +258,9 @@ do_level4_tests (sqlite3 * handle, int *retcode)
 /* performing Level 4 tests */
     int ret;
     char *err_msg = NULL;
+
+/* disabled: indecently slow !!! */
+    return 1;
 
 /* testing TopoGeo_SnappedGeoTable */
     ret =
@@ -245,7 +288,7 @@ do_level5_tests (sqlite3 * handle, int *retcode)
 /* testing TopoGeo_SnappedGeoTable - invalid input table */
     ret =
 	sqlite3_exec (handle,
-		      "SELECT TopoGeo_SnappedGeoTable('elba', 'ext', 'sezcen_1234', NULL, 'snapped', 1, 1)",
+		      "SELECT TopoGeo_SnappedGeoTable('elba', 'ext', 'sezcen_1234', NULL, 'snapped', 1)",
 		      NULL, NULL, &err_msg);
     if (ret == SQLITE_OK)
       {
@@ -265,10 +308,11 @@ do_level5_tests (sqlite3 * handle, int *retcode)
       }
     sqlite3_free (err_msg);
 
-/* testing TopoGeo_SnappedGeoTable -already existing output table */
+/* testing TopoGeo_SnappedGeoTable -already existing output table
+ * disabled - indecently slow !!!
     ret =
 	sqlite3_exec (handle,
-		      "SELECT TopoGeo_SnappedGeoTable('elba', 'ext', 'sezcen_2001', NULL, 'snapped_2001', 1, 1)",
+		      "SELECT TopoGeo_SnappedGeoTable('elba', 'ext', 'sezcen_2001', NULL, 'snapped_2001', 1)",
 		      NULL, NULL, &err_msg);
     if (ret == SQLITE_OK)
       {
@@ -287,12 +331,13 @@ do_level5_tests (sqlite3 * handle, int *retcode)
 	  *retcode = -63;
 	  return 0;
       }
-    sqlite3_free (err_msg);
+    sqlite3_free (err_msg); 
+*/
 
 /* testing TopoGeo_SnappedGeoTable -invalid input SRID or dimensions */
     ret =
 	sqlite3_exec (handle,
-		      "SELECT TopoGeo_SnappedGeoTable('elba', 'ext', 'points', NULL, 'snapped', 1, 1)",
+		      "SELECT TopoGeo_SnappedGeoTable('elba', 'ext', 'points', NULL, 'snapped', 1)",
 		      NULL, NULL, &err_msg);
     if (ret == SQLITE_OK)
       {
@@ -354,7 +399,7 @@ do_level5_tests (sqlite3 * handle, int *retcode)
       }
     if (strcmp
 	(err_msg,
-	 "TopoGeo_NewEdgeHeal exception - inconsisten Topology; try executiong TopoGeo_Polygonize to recover.")
+	 "TopoGeo_NewEdgeHeal exception - inconsisten Topology; try executing TopoGeo_Polygonize to recover.")
 	!= 0)
       {
 	  fprintf (stderr,
@@ -379,13 +424,63 @@ do_level5_tests (sqlite3 * handle, int *retcode)
       }
     if (strcmp
 	(err_msg,
-	 "TopoGeo_ModEdgeHeal exception - inconsisten Topology; try executiong TopoGeo_Polygonize to recover.")
+	 "TopoGeo_ModEdgeHeal exception - inconsisten Topology; try executing TopoGeo_Polygonize to recover.")
 	!= 0)
       {
 	  fprintf (stderr,
 		   "TopoGeo_ModEdgeHeal() #2 - unexpected: %s\n", err_msg);
 	  sqlite3_free (err_msg);
 	  *retcode = -69;
+	  return 0;
+      }
+    sqlite3_free (err_msg);
+
+/* testing TopoGeo_NewEdgesSplit - inconsistent topology */
+    ret =
+	sqlite3_exec (handle,
+		      "SELECT TopoGeo_NewEdgesSplit('elba', 256)",
+		      NULL, NULL, &err_msg);
+    if (ret == SQLITE_OK)
+      {
+	  fprintf (stderr, "TopoGeo_NewEdgesSplit() #2 unexpected succes\n");
+	  sqlite3_free (err_msg);
+	  *retcode = -70;
+	  return 0;
+      }
+    if (strcmp
+	(err_msg,
+	 "TopoGeo_NewEdgesSplit exception - inconsisten Topology; try executing TopoGeo_Polygonize to recover.")
+	!= 0)
+      {
+	  fprintf (stderr,
+		   "TopoGeo_NewEdgesSplit() #2 - unexpected: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  *retcode = -71;
+	  return 0;
+      }
+    sqlite3_free (err_msg);
+
+/* testing ModEdgeSplit - inconsistent topology */
+    ret =
+	sqlite3_exec (handle,
+		      "SELECT TopoGeo_ModEdgeSplit('elba', 256)",
+		      NULL, NULL, &err_msg);
+    if (ret == SQLITE_OK)
+      {
+	  fprintf (stderr, "TopoGeo_ModEdgeSplit() #2 unexpected succes\n");
+	  sqlite3_free (err_msg);
+	  *retcode = -72;
+	  return 0;
+      }
+    if (strcmp
+	(err_msg,
+	 "TopoGeo_ModEdgeSplit exception - inconsisten Topology; try executing TopoGeo_Polygonize to recover.")
+	!= 0)
+      {
+	  fprintf (stderr,
+		   "TopoGeo_ModEdgeSplit() #2 - unexpected: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  *retcode = -73;
 	  return 0;
       }
     sqlite3_free (err_msg);
@@ -475,11 +570,10 @@ main (int argc, char *argv[])
 /*tests: level 0 */
     if (!do_level0_tests (handle, &retcode))
 	goto end;
-goto skip_toposnap;
 
 /*tests: level 1 */
     if (!do_level1_tests (handle, &retcode))
-	goto end; 
+	goto end;
 
 /*tests: level 2 */
     if (!do_level2_tests (handle, &retcode))
@@ -489,15 +583,13 @@ goto skip_toposnap;
     if (!do_level3_tests (handle, &retcode))
 	goto end;
 
-/*tests: level 4 */ 
+/*tests: level 4 */
     if (!do_level4_tests (handle, &retcode))
-	goto end; 
+	goto end;
 
 /*tests: level 5 */
     if (!do_level5_tests (handle, &retcode))
 	goto end;
-	
-skip_toposnap:
 
 /* detaching the external DB */
     ret = sqlite3_exec (handle, "DETACH DATABASE ext", NULL, NULL, &err_msg);

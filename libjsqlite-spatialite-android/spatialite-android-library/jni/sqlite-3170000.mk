@@ -1,4 +1,10 @@
 include $(CLEAR_VARS)
+# -------------------
+# As of 2017-02-13
+# -------------------
+# changes:
+# Approximately 25% better performance from the R-Tree extension.
+# -------------------
 LOCAL_MODULE    := sqlite
 
 # SQLite flags copied from ASOP

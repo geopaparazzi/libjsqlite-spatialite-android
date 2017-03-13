@@ -2,14 +2,18 @@ include $(CLEAR_VARS)
 # ./configure  --enable-rttopo --enable-gcp  --enable-examples=no --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
 # 20170118.libspatialite-4.4.0-dev
 # -------------------
-# As of 2017-01-18 
+# As of 2017-01-18
 # -------------------
 # changes:
 # - geos-3.6.1
 # - proj4-3.9.3
 # - rttopo 1.1.0-dev
 # - json-c-0.12
-# - spatialite [4.4.0-20170118]
+# -------------------
+# As of 2017-03-12
+# -------------------
+# - sqlite [3170000]
+# - spatialite [4.4.0-20170309]
 # -------------------
 # Excluded files:
 # gaiageo/
@@ -48,7 +52,7 @@ spatialite_flags := \
  -DENABLE_GEOPACKAGE=1 \
  -DENABLE_LIBXML2=1 \
  -DENABLE_RTTOPO=1 \
- -DSQLITE_OMIT_BUILTIN_TEST=1 
+ -DSQLITE_OMIT_BUILTIN_TEST=1
 
 LOCAL_CFLAGS    := \
  $(common_sqlite_flags) \

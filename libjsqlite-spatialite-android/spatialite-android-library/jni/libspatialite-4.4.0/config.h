@@ -23,7 +23,7 @@
 #define GEOS_REENTRANT 1
 
 /* depending on SQLite library version. */
-/* #undef HAVE_DECL_SQLITE_INDEX_CONSTRAINT_LIKE */
+#define HAVE_DECL_SQLITE_INDEX_CONSTRAINT_LIKE 1
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1

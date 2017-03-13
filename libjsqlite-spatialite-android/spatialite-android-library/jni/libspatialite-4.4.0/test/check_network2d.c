@@ -52,6 +52,70 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #include "spatialite.h"
 
 static int
+do_level3_tests (sqlite3 * handle, int *retcode)
+{
+/* performing basic tests: level 3 */
+    int ret;
+    char *err_msg = NULL;
+
+/* testing RegisterTopoNetCoverage */
+    ret =
+	sqlite3_exec (handle,
+		      "SELECT CreateStylingTables(1)", NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr, "CreateStylingTables() #1 error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  *retcode = -240;
+	  return 0;
+      }
+
+/* testing RegisterTopoNetCoverage - short form */
+    ret =
+	sqlite3_exec (handle,
+		      "SELECT SE_RegisterTopoNetCoverage('net', 'roads')",
+		      NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr, "SE_RegisterTopoNetCoverage() #1 error: %s\n",
+		   err_msg);
+	  sqlite3_free (err_msg);
+	  *retcode = -241;
+	  return 0;
+      }
+
+/* testing UnRegisterVectorCoverage */
+    ret =
+	sqlite3_exec (handle,
+		      "SELECT SE_UnRegisterVectorCoverage('net')",
+		      NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr, "SE_RegisterVectorCoverage() #1 error: %s\n",
+		   err_msg);
+	  sqlite3_free (err_msg);
+	  *retcode = -342;
+	  return 0;
+      }
+
+/* testing RegisterTopoNetCoverage - long form */
+    ret =
+	sqlite3_exec (handle,
+		      "SELECT SE_RegisterTopoNetCoverage('net', 'roads', 'title', 'abstract', 1, 1)",
+		      NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr, "SE_RegisterTopoNetCoverage() #2 error: %s\n",
+		   err_msg);
+	  sqlite3_free (err_msg);
+	  *retcode = -241;
+	  return 0;
+      }
+
+    return 1;
+}
+
+static int
 do_level2_tests (sqlite3 * handle, int *retcode)
 {
 /* performing basic tests: Level 2 */
@@ -2261,6 +2325,14 @@ main (int argc, char *argv[])
 /* basic tests: level 2 */
     if (!do_level2_tests (handle, &retcode))
 	goto end;
+
+#ifdef ENABLE_LIBXML2		/* only if LIBXML2 is supported */
+
+/* testing RegisterTopoGeoCoverage */
+    if (!do_level3_tests (handle, &retcode))
+	goto end;
+
+#endif
 
 /* dropping the Network 2D */
     ret =

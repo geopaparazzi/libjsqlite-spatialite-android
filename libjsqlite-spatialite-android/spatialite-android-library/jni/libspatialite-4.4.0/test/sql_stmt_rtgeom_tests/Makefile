@@ -198,10 +198,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = strip
 VERSION = 4.4.0-RC1
-abs_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0/test/sql_stmt_rtgeom_tests
-abs_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0/test/sql_stmt_rtgeom_tests
-abs_top_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0
-abs_top_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0
+abs_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0/test/sql_stmt_rtgeom_tests
+abs_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0/test/sql_stmt_rtgeom_tests
+abs_top_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0
+abs_top_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -231,7 +231,7 @@ host_vendor = linux
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0/install-sh
+install_sh = ${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -279,6 +279,15 @@ EXTRA_DIST = 3ddistance10.testcase \
 	3dmaxdistance7.testcase \
 	3dmaxdistance8.testcase \
 	3dmaxdistance9.testcase \
+	circularity10.testcase \
+	circularity11.testcase \
+	circularity12.testcase \
+	circularity13.testcase \
+	circularity14.testcase \
+	circularity15.testcase \
+	circularity16.testcase \
+	circularity17.testcase \
+	circularity18.testcase \
 	maxdistance10.testcase \
 	maxdistance1.testcase \
 	maxdistance2.testcase \

@@ -312,10 +312,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = strip
 VERSION = 4.4.0-RC1
-abs_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0
-abs_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0
-abs_top_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0
-abs_top_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0
+abs_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0
+abs_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0
+abs_top_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0
+abs_top_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -345,7 +345,7 @@ host_vendor = linux
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0/install-sh
+install_sh = ${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -637,7 +637,7 @@ distdir: $(DISTFILES)
 	  ! -type d ! -perm -444 -exec $(install_sh) -c -m a+r {} {} \; \
 	|| chmod -R a+r "$(distdir)"
 dist-gzip: distdir
-	tardir=$(distdir) && $(am__tar) | GZIP=$(GZIP_ENV) gzip -c >$(distdir).tar.gz
+	tardir=$(distdir) && $(am__tar) | eval GZIP= gzip $(GZIP_ENV) -c >$(distdir).tar.gz
 	$(am__post_remove_distdir)
 
 dist-bzip2: distdir
@@ -663,7 +663,7 @@ dist-shar: distdir
 	@echo WARNING: "Support for shar distribution archives is" \
 	               "deprecated." >&2
 	@echo WARNING: "It will be removed altogether in Automake 2.0" >&2
-	shar $(distdir) | GZIP=$(GZIP_ENV) gzip -c >$(distdir).shar.gz
+	shar $(distdir) | eval GZIP= gzip $(GZIP_ENV) -c >$(distdir).shar.gz
 	$(am__post_remove_distdir)
 dist-zip: distdir
 	-rm -f $(distdir).zip
@@ -680,7 +680,7 @@ dist dist-all:
 distcheck: dist
 	case '$(DIST_ARCHIVES)' in \
 	*.tar.gz*) \
-	  GZIP=$(GZIP_ENV) gzip -dc $(distdir).tar.gz | $(am__untar) ;;\
+	  eval GZIP= gzip $(GZIP_ENV) -dc $(distdir).tar.gz | $(am__untar) ;;\
 	*.tar.bz2*) \
 	  bzip2 -dc $(distdir).tar.bz2 | $(am__untar) ;;\
 	*.tar.lz*) \
@@ -690,7 +690,7 @@ distcheck: dist
 	*.tar.Z*) \
 	  uncompress -c $(distdir).tar.Z | $(am__untar) ;;\
 	*.shar.gz*) \
-	  GZIP=$(GZIP_ENV) gzip -dc $(distdir).shar.gz | unshar ;;\
+	  eval GZIP= gzip $(GZIP_ENV) -dc $(distdir).shar.gz | unshar ;;\
 	*.zip*) \
 	  unzip $(distdir).zip ;;\
 	esac

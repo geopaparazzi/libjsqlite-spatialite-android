@@ -2193,6 +2193,134 @@ create_geometry_columns_views (sqlite3 * sqlite)
     return 1;
 }
 
+static int
+create_data_licenses (sqlite3 * sqlite)
+{
+    char sql[4186];
+    char *errMsg = NULL;
+    int ret;
+/* creating the DATA_LICENSES table */
+    strcpy (sql, "CREATE TABLE IF NOT EXISTS data_licenses (\n");
+    strcat (sql, "\tid INTEGER PRIMARY KEY AUTOINCREMENT,\n");
+    strcat (sql, "\tname TEXT NOT NULL UNIQUE,\n");
+    strcat (sql, "\turl TEXT)");
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &errMsg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s: %s\n", sql, errMsg);
+	  sqlite3_free (errMsg);
+	  return 0;
+      }
+/* inserting the UNDEFINED license */
+    strcpy (sql, "INSERT OR IGNORE INTO data_licenses (id, name, url) ");
+    strcat (sql, "VALUES (0, 'Undefined', NULL)");
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &errMsg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s: %s\n", sql, errMsg);
+	  sqlite3_free (errMsg);
+	  return 0;
+      }
+/* inserting the PROPRIETARY license */
+    strcpy (sql, "INSERT OR IGNORE INTO data_licenses (id, name, url) ");
+    strcat (sql, "VALUES (1, 'Proprietary - Non Free', NULL)");
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &errMsg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s: %s\n", sql, errMsg);
+	  sqlite3_free (errMsg);
+	  return 0;
+      }
+/* inserting the PUBLIC DOMAIN license */
+    strcpy (sql, "INSERT OR IGNORE INTO data_licenses (id, name, url) ");
+    strcat (sql, "VALUES (2, 'PD - Public Domain', NULL)");
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &errMsg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s: %s\n", sql, errMsg);
+	  sqlite3_free (errMsg);
+	  return 0;
+      }
+/* inserting the CC0 1.0 license */
+    strcpy (sql, "INSERT OR IGNORE INTO data_licenses (id, name, url) ");
+    strcat (sql,
+	    "VALUES (3, 'CC0 1.0', 'https://creativecommons.org/publicdomain/zero/1.0/legalcode.txt')");
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &errMsg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s: %s\n", sql, errMsg);
+	  sqlite3_free (errMsg);
+	  return 0;
+      }
+/* inserting the CC BY 3.0 license */
+    strcpy (sql, "INSERT OR IGNORE INTO data_licenses (id, name, url) ");
+    strcat (sql,
+	    "VALUES (4, 'CC BY 3.0', 'https://creativecommons.org/licenses/by/3.0/legalcode.txt')");
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &errMsg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s: %s\n", sql, errMsg);
+	  sqlite3_free (errMsg);
+	  return 0;
+      }
+/* inserting the CC BY 4.0 license */
+    strcpy (sql, "INSERT OR IGNORE INTO data_licenses (id, name, url) ");
+    strcat (sql,
+	    "VALUES (5, 'CC BY 4.0', 'https://creativecommons.org/licenses/by/4.0/legalcode.txt')");
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &errMsg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s: %s\n", sql, errMsg);
+	  sqlite3_free (errMsg);
+	  return 0;
+      }
+/* inserting the CC BY-SA 3.0 license */
+    strcpy (sql, "INSERT OR IGNORE INTO data_licenses (id, name, url) ");
+    strcat (sql,
+	    "VALUES (6, 'CC BY-SA 3.0', 'https://creativecommons.org/licenses/by-sa/3.0/legalcode.txt')");
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &errMsg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s: %s\n", sql, errMsg);
+	  sqlite3_free (errMsg);
+	  return 0;
+      }
+/* inserting the CC BY-SA 4.0 license */
+    strcpy (sql, "INSERT OR IGNORE INTO data_licenses (id, name, url) ");
+    strcat (sql,
+	    "VALUES (7, 'CC BY-SA 4.0', 'https://creativecommons.org/licenses/by-sa/4.0/legalcode.txt')");
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &errMsg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s: %s\n", sql, errMsg);
+	  sqlite3_free (errMsg);
+	  return 0;
+      }
+/* inserting the CC BY-SA-NC 3.0 license */
+    strcpy (sql, "INSERT OR IGNORE INTO data_licenses (id, name, url) ");
+    strcat (sql,
+	    "VALUES (8, 'CC BY-SA-NC 3.0', 'https://creativecommons.org/licenses/by-nc-sa/3.0/legalcode.txt')");
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &errMsg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s: %s\n", sql, errMsg);
+	  sqlite3_free (errMsg);
+	  return 0;
+      }
+/* inserting the CC BY-SA-NC 4.0 license */
+    strcpy (sql, "INSERT OR IGNORE INTO data_licenses (id, name, url) ");
+    strcat (sql,
+	    "VALUES (9, 'CC BY-SA-NC 4.0', 'https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.txt')");
+    ret = sqlite3_exec (sqlite, sql, NULL, NULL, &errMsg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s: %s\n", sql, errMsg);
+	  sqlite3_free (errMsg);
+	  return 0;
+      }
+    return 1;
+}
+
 SPATIALITE_PRIVATE int
 check_layer_statistics (void *p_sqlite)
 {
@@ -2548,6 +2676,8 @@ createAdvancedMetaData (void *p_sqlite)
     if (!create_virts_geometry_columns_auth (sqlite))
 	return 0;
     if (!create_geometry_columns_views (sqlite))
+	return 0;
+    if (!create_data_licenses (sqlite))
 	return 0;
     if (!create_sql_statements_log (sqlite))
 	return 0;
@@ -3816,6 +3946,11 @@ validateRowid (void *p_sqlite, const char *table)
     char *sql;
     int ret;
     const char *name;
+    const char *type;
+    const char *pk;
+    int rowid_pk = 0;
+    int int_pk = 0;
+    int pk_cols = 0;
     int i;
     char **results;
     int rows;
@@ -3836,11 +3971,24 @@ validateRowid (void *p_sqlite, const char *table)
 		name = results[(i * columns) + 1];
 		if (strcasecmp (name, "rowid") == 0)
 		    rowid = 1;
+		type = results[(i * columns) + 2];
+		if (strcasecmp (type, "INTEGER") == 0)
+		    int_pk = 1;
+		pk = results[(i * columns) + 5];
+		if (atoi (pk) != 0)
+		    pk_cols++;
+		if (strcasecmp (name, "rowid") == 0 && atoi (pk) != 0)
+		    rowid_pk = 1;
 	    }
       }
     sqlite3_free_table (results);
     if (rowid == 0)
 	return 1;
+    if (rowid_pk == 1 && pk_cols == 1 && int_pk == 1)
+      {
+	  /* OK, found: ROWID INTEGER PRIMARY KEY */
+	  return 1;
+      }
     return 0;
 }
 

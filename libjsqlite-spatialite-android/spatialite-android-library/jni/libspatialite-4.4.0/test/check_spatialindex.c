@@ -1338,7 +1338,7 @@ do_test_rowid (sqlite3 * handle)
     columns = 0;
     ret =
 	sqlite3_get_table (handle,
-			   "SELECT CheckSpatialIndex('Councils', 'geom');",
+			   "SELECT RecoverSpatialIndex('Councils', 'geom');",
 			   &results, &rows, &columns, &err_msg);
     if (ret != SQLITE_OK)
       {
@@ -1425,7 +1425,7 @@ do_test_rowid (sqlite3 * handle)
     columns = 0;
     ret =
 	sqlite3_get_table (handle,
-			   "SELECT CheckSpatialIndex('Councils', 'geom');",
+			   "SELECT RecoverSpatialIndex('Councils', 'geom');",
 			   &results, &rows, &columns, &err_msg);
     if (ret != SQLITE_OK)
       {

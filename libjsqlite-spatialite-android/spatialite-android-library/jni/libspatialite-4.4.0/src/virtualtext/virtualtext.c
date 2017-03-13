@@ -1723,6 +1723,8 @@ gaiaTextReaderGetRow (gaiaTextReaderPtr txt, int line_no)
     int fld = 0;
     int offset = 0;
     struct vrttxt_row *p_row;
+    if (txt == NULL)
+	return 0;
     txt->current_line_ready = 0;
     txt->max_current_field = 0;
     if (line_no < 0 || line_no >= txt->num_rows || txt->rows == NULL)
@@ -1734,6 +1736,7 @@ gaiaTextReaderGetRow (gaiaTextReaderPtr txt, int line_no)
 	(unsigned int) (p_row->len))
 	return 0;
     txt->field_offsets[0] = 0;
+
     for (i = 0; i < p_row->len; i++)
       {
 	  /* parsing Fields */

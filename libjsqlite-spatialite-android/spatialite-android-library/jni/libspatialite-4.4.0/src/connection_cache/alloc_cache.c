@@ -342,7 +342,7 @@ invalidate (int i)
 #endif /* END obsolete partially thread-safe mode */
 
 static void
-init_splite_internal_cache(struct splite_internal_cache *cache)
+init_splite_internal_cache (struct splite_internal_cache *cache)
 {
 /* common initialization of the internal cache */
     gaiaOutBufferPtr out;
@@ -350,8 +350,8 @@ init_splite_internal_cache(struct splite_internal_cache *cache)
     struct splite_geos_cache_item *p;
     struct splite_xmlSchema_cache_item *p_xmlSchema;
     if (cache == NULL)
-	return;  
-	
+	return;
+
     cache->magic1 = SPATIALITE_CACHE_MAGIC1;
     cache->magic2 = SPATIALITE_CACHE_MAGIC2;
     cache->gpkg_mode = 0;
@@ -435,7 +435,7 @@ spatialite_alloc_reentrant ()
     cache = malloc (sizeof (struct splite_internal_cache));
     if (cache == NULL)
 	goto done;
-	init_splite_internal_cache(cache);
+    init_splite_internal_cache (cache);
 
 /* initializing GEOS and PROJ.4 handles */
 
@@ -490,7 +490,7 @@ spatialite_alloc_connection ()
 	  invalidate (pool_index);
 	  goto done;
       }
-	init_splite_internal_cache(cache);
+    init_splite_internal_cache (cache);
     cache->pool_index = pool_index;
     confirm (pool_index, cache);
 
@@ -616,12 +616,6 @@ free_internal_cache (struct splite_internal_cache *cache)
     cache->PROJ_handle = NULL;
 #endif
 
-#ifdef ENABLE_RTTOPO
-    if (cache->RTTOPO_handle != NULL)
-	rtgeom_finish (cache->RTTOPO_handle);
-    cache->RTTOPO_handle = NULL;
-#endif
-
 /* freeing GEOS error buffers */
     if (cache->gaia_geos_error_msg)
 	free (cache->gaia_geos_error_msg);
@@ -664,6 +658,12 @@ free_internal_cache (struct splite_internal_cache *cache)
     free_sequences (cache);
 
     spatialite_finalize_topologies (cache);
+
+#ifdef ENABLE_RTTOPO
+    if (cache->RTTOPO_handle != NULL)
+	rtgeom_finish (cache->RTTOPO_handle);
+    cache->RTTOPO_handle = NULL;
+#endif
 
 #ifndef GEOS_REENTRANT		/* only partially thread-safe mode */
 /* releasing the connection pool object */

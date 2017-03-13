@@ -207,7 +207,9 @@ TOPOLOGY_PRIVATE int auxtopo_insert_into_topology (GaiaTopologyAccessorPtr
 						   gaiaGeomCollPtr geom,
 						   double tolerance,
 						   int line_max_points,
-						   double max_length, int mode);
+						   double max_length, int mode,
+						   gaiaGeomCollPtr *
+						   failing_geometry);
 
 
 /* prototypes for functions creating some SQL prepared statement */

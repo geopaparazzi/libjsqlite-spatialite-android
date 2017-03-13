@@ -1,4 +1,4 @@
-TopoGeo_RemoveSmallFaces - TEXT min-area
+TopoGeo_RemoveSmallFaces - TEXT min-circularity
 :memory: #use in-memory database
 SELECT TopoGeo_RemoveSmallFaces('topology', 'a');
 1 # rows (not including the header row)

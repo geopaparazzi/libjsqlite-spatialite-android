@@ -437,7 +437,7 @@ Copyright (C) 2012 Free Software Foundation, Inc.
 This config.status script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it."
 
-ac_pwd='/home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0'
+ac_pwd='/home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0'
 srcdir='.'
 INSTALL='/usr/bin/install -c'
 MKDIR_P='/bin/mkdir -p'
@@ -1014,7 +1014,7 @@ S["MKDIR_P"]="/bin/mkdir -p"
 S["INSTALL_STRIP_PROGRAM"]="$(install_sh) -c -s"
 S["STRIP"]="strip"
 S["install_sh"]="${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library"\
-"/jni/libspatialite.4.4.0/install-sh"
+"/jni/libspatialite-4.4.0/install-sh"
 S["MAKEINFO"]="makeinfo"
 S["AUTOHEADER"]="autoheader"
 S["AUTOMAKE"]="automake-1.15"
@@ -1177,6 +1177,7 @@ D["HAVE_LIBRTTOPO_H"]=" 1"
 D["ENABLE_RTTOPO"]=" 1"
 D["ENABLE_LIBXML2"]=" 1"
 D["ENABLE_GEOPACKAGE"]=" 1"
+D["HAVE_DECL_SQLITE_INDEX_CONSTRAINT_LIKE"]=" 1"
   for (key in D) D_is_set[key] = 1
   FS = ""
 }

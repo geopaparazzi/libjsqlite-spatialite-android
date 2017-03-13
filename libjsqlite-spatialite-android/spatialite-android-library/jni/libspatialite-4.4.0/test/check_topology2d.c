@@ -52,6 +52,70 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #include "spatialite.h"
 
 static int
+do_level7_tests (sqlite3 * handle, int *retcode)
+{
+/* performing basic tests: level 7 */
+    int ret;
+    char *err_msg = NULL;
+
+/* testing RegisterTopoGeoCoverage */
+    ret =
+	sqlite3_exec (handle,
+		      "SELECT CreateStylingTables(1)", NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr, "CreateStylingTables() #1 error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  *retcode = -340;
+	  return 0;
+      }
+
+/* testing RegisterTopoGeoCoverage - short form */
+    ret =
+	sqlite3_exec (handle,
+		      "SELECT SE_RegisterTopoGeoCoverage('topo', 'topo')",
+		      NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr, "SE_RegisterTopoGeoCoverage() #1 error: %s\n",
+		   err_msg);
+	  sqlite3_free (err_msg);
+	  *retcode = -341;
+	  return 0;
+      }
+
+/* testing UnRegisterVectorCoverage */
+    ret =
+	sqlite3_exec (handle,
+		      "SELECT SE_UnRegisterVectorCoverage('topo')",
+		      NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr, "SE_RegisterVectorCoverage() #1 error: %s\n",
+		   err_msg);
+	  sqlite3_free (err_msg);
+	  *retcode = -342;
+	  return 0;
+      }
+
+/* testing RegisterTopoGeoCoverage - long form */
+    ret =
+	sqlite3_exec (handle,
+		      "SELECT SE_RegisterTopoGeoCoverage('topo', 'topo', 'title', 'abstract', 1, 1)",
+		      NULL, NULL, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr, "SE_RegisterTopoGeoCoverage() #2 error: %s\n",
+		   err_msg);
+	  sqlite3_free (err_msg);
+	  *retcode = -343;
+	  return 0;
+      }
+
+    return 1;
+}
+
+static int
 do_level6_tests (sqlite3 * handle, int *retcode)
 {
 /* performing basic tests: Level 6 */
@@ -3056,6 +3120,14 @@ main (int argc, char *argv[])
 /* basic tests: level 6 */
     if (!do_level6_tests (handle, &retcode))
 	goto end;
+
+#ifdef ENABLE_LIBXML2		/* only if LIBXML2 is supported */
+
+/* testing RegisterTopoGeoCoverage */
+    if (!do_level7_tests (handle, &retcode))
+	goto end;
+
+#endif
 
 /* dropping the Topology 2D */
     ret =

@@ -389,7 +389,7 @@ vknn_flush_levels (VKnnContextPtr ctx)
       {
 	  pLn = pL->next;
 	  vknn_flush_bboxes (pL);
-	  free(pL);
+	  free (pL);
 	  pL = pLn;
       }
     ctx->first = NULL;
@@ -766,19 +766,19 @@ vknn_query_callback (sqlite3_rtree_query_info * info)
 
     if (pB == NULL)
       {
-		  /* this BBOX Node was never visited until now */
+	  /* this BBOX Node was never visited until now */
 	  int mode = vknn_check_mbr (ctx, rtree_minx, rtree_miny, rtree_maxx,
 				     rtree_maxy);
 	  if (mode == FULLY_WITHIN || mode == PARTLY_WITHIN)
 	    {
-			/* overlaps the currenct reference frame; to be further expanded */
+		/* overlaps the currenct reference frame; to be further expanded */
 		vknn_add_bbox (pL, rtree_minx, rtree_miny, rtree_maxx,
 			       rtree_maxy);
 		ctx->changed = 1;
 	    }
 	  else
 	    {
-			/* searching any BBOX nearest to the current reference frame */
+		/* searching any BBOX nearest to the current reference frame */
 		double dist =
 		    vknn_rect_distance (ctx, rtree_minx, rtree_miny, rtree_maxx,
 					rtree_maxy);
@@ -790,28 +790,28 @@ vknn_query_callback (sqlite3_rtree_query_info * info)
       }
     else
       {
-		  /* handling a BBOX node already inserted into the list */
+	  /* handling a BBOX node already inserted into the list */
 	  if (pL->level == 1)
 	    {
-			/* 
-			 * this is the Tree Level immediately preceding Terminal Nodes
-			 * (aka Leaves): i.e. it's the direct parent of candidate
-			 * features to be evaluated by the KNN search
-			 */
+		/* 
+		 * this is the Tree Level immediately preceding Terminal Nodes
+		 * (aka Leaves): i.e. it's the direct parent of candidate
+		 * features to be evaluated by the KNN search
+		 */
 		if (pB->visited != 0)
 		    info->eWithin = NOT_WITHIN;	/* ignoring - already visited */
 		else
 		  {
-			  /* to be further expanded so to get all Leave Children */
+		      /* to be further expanded so to get all Leave Children */
 		      pB->visited = 1;
 		      info->eWithin = FULLY_WITHIN;
 		  }
 	    }
 	  else
-	  {
-		  /* unconditionally expanding higher level parent nodes */
-	      info->eWithin = FULLY_WITHIN;
-	  }
+	    {
+		/* unconditionally expanding higher level parent nodes */
+		info->eWithin = FULLY_WITHIN;
+	    }
       }
     return SQLITE_OK;
 }
@@ -1274,7 +1274,6 @@ vknn_best_index (sqlite3_vtab * pVTab, sqlite3_index_info * pIdxInfo)
 {
 /* best index selection */
     int i;
-    int errors = 0;
     int err = 1;
     int table = 0;
     int geom_col = 0;
@@ -1296,12 +1295,10 @@ vknn_best_index (sqlite3_vtab * pVTab, sqlite3_index_info * pIdxInfo)
 		    ref_geom++;
 		else if (p->iColumn == 3 && p->op == SQLITE_INDEX_CONSTRAINT_EQ)
 		    max_items++;
-		else
-		    errors++;
 	    }
       }
     if (table == 1 && (geom_col == 0 || geom_col == 1) && ref_geom == 1
-	&& (max_items == 0 || max_items == 1) && errors == 0)
+	&& (max_items == 0 || max_items == 1))
       {
 	  /* this one is a valid KNN query */
 	  if (geom_col == 1)
@@ -1635,7 +1632,7 @@ vknn_filter (sqlite3_vtab_cursor * pCursor, int idxNum, const char *idxStr,
 	  /* recovering the non-overlapping nearest BBOXes */
 	  if (vknn_recover_nearest (vknn_context))
 	      continue;
-	  /* expanding the reference BBOX and staring a new full cycle */
+	  /* expanding the reference BBOX and starting a new full cycle */
 	  if (!vknn_expand_bbox (vknn_context))
 	      break;
       }

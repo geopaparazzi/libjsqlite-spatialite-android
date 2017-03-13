@@ -999,8 +999,8 @@ configure:17311: gcc -o conftest -g -O2   conftest.c  >&5
 conftest.c:70:6: warning: conflicting types for built-in function 'sqrt'
  char sqrt ();
       ^
-/tmp/ccFaBo05.o: In function `main':
-/home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0/conftest.c:81: undefined reference to `sqrt'
+/tmp/ccmii74n.o: In function `main':
+/home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0/conftest.c:81: undefined reference to `sqrt'
 collect2: error: ld returned 1 exit status
 configure:17311: $? = 1
 configure: failed program was:
@@ -1167,8 +1167,8 @@ configure:17585: checking for proj_api.h
 configure:17585: result: yes
 configure:17597: checking for library containing pj_init_plus
 configure:17628: gcc -o conftest -g -O2   conftest.c -lsqlite3 -lz -lsqlite3  >&5
-/tmp/cc6yXdsi.o: In function `main':
-/home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0/conftest.c:75: undefined reference to `pj_init_plus'
+/tmp/ccOqI72H.o: In function `main':
+/home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0/conftest.c:75: undefined reference to `pj_init_plus'
 collect2: error: ld returned 1 exit status
 configure:17628: $? = 1
 configure: failed program was:
@@ -1273,8 +1273,8 @@ configure:17777: $? = 0
 configure:17794: result: none required
 configure:17861: checking for library containing locale_charset
 configure:17892: gcc -o conftest -g -O2   conftest.c -lproj -lsqlite3 -lz -lsqlite3  >&5
-/tmp/ccGlf3ah.o: In function `main':
-/home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0/conftest.c:76: undefined reference to `locale_charset'
+/tmp/cc0Qcp1M.o: In function `main':
+/home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0/conftest.c:76: undefined reference to `locale_charset'
 collect2: error: ld returned 1 exit status
 configure:17892: $? = 1
 configure: failed program was:
@@ -1372,8 +1372,8 @@ configure:17994: checking for freexl.h
 configure:17994: result: yes
 configure:18006: checking for library containing freexl_version
 configure:18037: gcc -o conftest -g -O2   conftest.c -lcharset -lproj -lsqlite3 -lz -lsqlite3  >&5
-/tmp/ccjgMo6t.o: In function `main':
-/home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0/conftest.c:77: undefined reference to `freexl_version'
+/tmp/ccjrGH9X.o: In function `main':
+/home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0/conftest.c:77: undefined reference to `freexl_version'
 collect2: error: ld returned 1 exit status
 configure:18037: $? = 1
 configure: failed program was:
@@ -1475,8 +1475,8 @@ configure:18177: checking for geos_c.h
 configure:18177: result: yes
 configure:18193: checking for library containing GEOSCoveredBy
 configure:18224: gcc -o conftest -g -O2   conftest.c -L/usr/local/lib >&5
-/tmp/ccKvYkRz.o: In function `main':
-/home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0/conftest.c:78: undefined reference to `GEOSCoveredBy'
+/tmp/ccynP0ej.o: In function `main':
+/home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0/conftest.c:78: undefined reference to `GEOSCoveredBy'
 collect2: error: ld returned 1 exit status
 configure:18224: $? = 1
 configure: failed program was:
@@ -1584,8 +1584,8 @@ configure:18444: checking for librttopo.h
 configure:18444: result: yes
 configure:18456: checking for library containing rtt_AddLineNoFace
 configure:18487: gcc -o conftest -g -O2   conftest.c -lfreexl -lcharset -lproj -lsqlite3 -lz -lsqlite3  -L/usr/local/lib -lgeos_c >&5
-/tmp/ccsvR03P.o: In function `main':
-/home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0/conftest.c:82: undefined reference to `rtt_AddLineNoFace'
+/tmp/ccVEzro4.o: In function `main':
+/home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0/conftest.c:82: undefined reference to `rtt_AddLineNoFace'
 collect2: error: ld returned 1 exit status
 configure:18487: $? = 1
 configure: failed program was:
@@ -1692,103 +1692,8 @@ configure:18682: $? = 0
 configure:18720: result: yes
 configure:18838: checking whether SQLITE_INDEX_CONSTRAINT_LIKE is declared
 configure:18838: gcc -c -g -O2  conftest.c >&5
-conftest.c: In function 'main':
-conftest.c:83:10: error: 'SQLITE_INDEX_CONSTRAINT_LIKE' undeclared (first use in this function)
-   (void) SQLITE_INDEX_CONSTRAINT_LIKE;
-          ^
-conftest.c:83:10: note: each undeclared identifier is reported only once for each function it appears in
-configure:18838: $? = 1
-configure: failed program was:
-| /* confdefs.h */
-| #define PACKAGE_NAME "libspatialite"
-| #define PACKAGE_TARNAME "libspatialite"
-| #define PACKAGE_VERSION "4.4.0-RC1"
-| #define PACKAGE_STRING "libspatialite 4.4.0-RC1"
-| #define PACKAGE_BUGREPORT "a.furieri@lqt.it"
-| #define PACKAGE_URL ""
-| #define PACKAGE "libspatialite"
-| #define VERSION "4.4.0-RC1"
-| #define _LARGE_FILE 1
-| #define _FILE_OFFSET_BITS 64
-| #define _LARGEFILE_SOURCE 1
-| #define NDEBUG 1
-| #define STDC_HEADERS 1
-| #define HAVE_SYS_TYPES_H 1
-| #define HAVE_SYS_STAT_H 1
-| #define HAVE_STDLIB_H 1
-| #define HAVE_STRING_H 1
-| #define HAVE_MEMORY_H 1
-| #define HAVE_STRINGS_H 1
-| #define HAVE_INTTYPES_H 1
-| #define HAVE_STDINT_H 1
-| #define HAVE_UNISTD_H 1
-| #define HAVE_STDLIB_H 1
-| #define HAVE_STDIO_H 1
-| #define HAVE_STRING_H 1
-| #define HAVE_MEMORY_H 1
-| #define HAVE_MATH_H 1
-| #define HAVE_FLOAT_H 1
-| #define HAVE_FCNTL_H 1
-| #define HAVE_INTTYPES_H 1
-| #define HAVE_STDDEF_H 1
-| #define HAVE_STDINT_H 1
-| #define HAVE_SYS_TIME_H 1
-| #define HAVE_UNISTD_H 1
-| #define HAVE_SQLITE3_H 1
-| #define HAVE_SQLITE3EXT_H 1
-| #define HAVE_ZLIB_H 1
-| #define HAVE_DLFCN_H 1
-| #define LT_OBJDIR ".libs/"
-| #define TIME_WITH_SYS_TIME 1
-| #define HAVE_LSTAT_EMPTY_STRING_BUG 1
-| #define HAVE_STAT_EMPTY_STRING_BUG 1
-| #define HAVE_STRFTIME 1
-| #define HAVE_MEMSET 1
-| #define HAVE_STRCASECMP 1
-| #define HAVE_STRERROR 1
-| #define HAVE_STRNCASECMP 1
-| #define HAVE_STRSTR 1
-| #define HAVE_FDATASYNC 1
-| #define HAVE_FTRUNCATE 1
-| #define HAVE_GETCWD 1
-| #define HAVE_GETTIMEOFDAY 1
-| #define HAVE_LOCALTIME_R 1
-| #define HAVE_MEMMOVE 1
-| #define HAVE_STRERROR 1
-| #define HAVE_LIBSQLITE3 1
-| #define HAVE_LIBZ 1
-| #define TARGET_CPU "x86_64-linux-gnu"
-| #define OMIT_GEOCALLBACKS 1
-| #define HAVE_LIBSQLITE3 1
-| #define HAVE_PROJ_API_H 1
-| #define HAVE_ICONV_H 1
-| #define HAVE_FREEXL_H 1
-| #define HAVE_GEOS_C_H 1
-| #define ENABLE_GCP 1
-| #define GEOS_ADVANCED 1
-| #define GEOS_REENTRANT 1
-| #define HAVE_LIBRTTOPO_H 1
-| #define ENABLE_RTTOPO 1
-| #define ENABLE_LIBXML2 1
-| #define ENABLE_GEOPACKAGE 1
-| /* end confdefs.h.  */
-| #include <sqlite3.h>
-| 
-| int
-| main ()
-| {
-| #ifndef SQLITE_INDEX_CONSTRAINT_LIKE
-| #ifdef __cplusplus
-|   (void) SQLITE_INDEX_CONSTRAINT_LIKE;
-| #else
-|   (void) SQLITE_INDEX_CONSTRAINT_LIKE;
-| #endif
-| #endif
-| 
-|   ;
-|   return 0;
-| }
-configure:18838: result: no
+configure:18838: $? = 0
+configure:18838: result: yes
 configure:18954: checking that generated files are newer than configure
 configure:18960: result: done
 configure:19019: creating ./config.status
@@ -1808,59 +1713,59 @@ generated by GNU Autoconf 2.69.  Invocation command line was
 
 on mj10777-01-l
 
-config.status:1267: creating Makefile
-config.status:1267: creating src/Makefile
-config.status:1267: creating src/headers/Makefile
-config.status:1267: creating src/gaiaaux/Makefile
-config.status:1267: creating src/gaiaexif/Makefile
-config.status:1267: creating src/gaiageo/Makefile
-config.status:1267: creating src/gaiageo/flex/Makefile
-config.status:1267: creating src/gaiageo/lemon/Makefile
-config.status:1267: creating src/gaiageo/lemon/lemon_src/Makefile
-config.status:1267: creating src/geopackage/Makefile
-config.status:1267: creating src/spatialite/Makefile
-config.status:1267: creating src/shapefiles/Makefile
-config.status:1267: creating src/dxf/Makefile
-config.status:1267: creating src/md5/Makefile
-config.status:1267: creating src/control_points/Makefile
-config.status:1267: creating src/cutter/Makefile
-config.status:1267: creating src/topology/Makefile
-config.status:1267: creating src/srsinit/Makefile
-config.status:1267: creating src/srsinit/epsg_update/Makefile
-config.status:1267: creating src/connection_cache/Makefile
-config.status:1267: creating src/connection_cache/generator/Makefile
-config.status:1267: creating src/virtualtext/Makefile
-config.status:1267: creating src/wfs/Makefile
-config.status:1267: creating test/Makefile
-config.status:1267: creating test/sql_stmt_tests/Makefile
-config.status:1267: creating test/sql_stmt_geos_tests/Makefile
-config.status:1267: creating test/sql_stmt_geosadvanced_tests/Makefile
-config.status:1267: creating test/sql_stmt_geopackage_tests/Makefile
-config.status:1267: creating test/sql_stmt_gpkg_epsg492_tests/Makefile
-config.status:1267: creating test/sql_stmt_gpkg_epsg493_tests/Makefile
-config.status:1267: creating test/sql_stmt_proj_tests/Makefile
-config.status:1267: creating test/sql_stmt_proj492_tests/Makefile
-config.status:1267: creating test/sql_stmt_proj493_tests/Makefile
-config.status:1267: creating test/sql_stmt_mathsql_tests/Makefile
-config.status:1267: creating test/sql_stmt_rtgeom_tests/Makefile
-config.status:1267: creating test/sql_stmt_rttopo_tests/Makefile
-config.status:1267: creating test/sql_stmt_libxml2_tests/Makefile
-config.status:1267: creating test/sql_stmt_security_tests/Makefile
-config.status:1267: creating test/sql_stmt_xmlsec_tests/Makefile
-config.status:1267: creating test/sql_stmt_freexl_tests/Makefile
-config.status:1267: creating test/sql_stmt_cache_tests/Makefile
-config.status:1267: creating test/sql_stmt_gpkgcache_tests/Makefile
-config.status:1267: creating test/sql_stmt_nocache_tests/Makefile
-config.status:1267: creating test/sql_stmt_gpkgnocache_tests/Makefile
-config.status:1267: creating test/sql_stmt_voronoj1_tests/Makefile
-config.status:1267: creating test/sql_stmt_voronoj2_tests/Makefile
-config.status:1267: creating test/sql_stmt_sequence_tests/Makefile
-config.status:1267: creating examples/Makefile
-config.status:1267: creating Doxyfile
-config.status:1267: creating spatialite.pc
-config.status:1267: creating config.h
-config.status:1496: executing depfiles commands
-config.status:1496: executing libtool commands
+config.status:1268: creating Makefile
+config.status:1268: creating src/Makefile
+config.status:1268: creating src/headers/Makefile
+config.status:1268: creating src/gaiaaux/Makefile
+config.status:1268: creating src/gaiaexif/Makefile
+config.status:1268: creating src/gaiageo/Makefile
+config.status:1268: creating src/gaiageo/flex/Makefile
+config.status:1268: creating src/gaiageo/lemon/Makefile
+config.status:1268: creating src/gaiageo/lemon/lemon_src/Makefile
+config.status:1268: creating src/geopackage/Makefile
+config.status:1268: creating src/spatialite/Makefile
+config.status:1268: creating src/shapefiles/Makefile
+config.status:1268: creating src/dxf/Makefile
+config.status:1268: creating src/md5/Makefile
+config.status:1268: creating src/control_points/Makefile
+config.status:1268: creating src/cutter/Makefile
+config.status:1268: creating src/topology/Makefile
+config.status:1268: creating src/srsinit/Makefile
+config.status:1268: creating src/srsinit/epsg_update/Makefile
+config.status:1268: creating src/connection_cache/Makefile
+config.status:1268: creating src/connection_cache/generator/Makefile
+config.status:1268: creating src/virtualtext/Makefile
+config.status:1268: creating src/wfs/Makefile
+config.status:1268: creating test/Makefile
+config.status:1268: creating test/sql_stmt_tests/Makefile
+config.status:1268: creating test/sql_stmt_geos_tests/Makefile
+config.status:1268: creating test/sql_stmt_geosadvanced_tests/Makefile
+config.status:1268: creating test/sql_stmt_geopackage_tests/Makefile
+config.status:1268: creating test/sql_stmt_gpkg_epsg492_tests/Makefile
+config.status:1268: creating test/sql_stmt_gpkg_epsg493_tests/Makefile
+config.status:1268: creating test/sql_stmt_proj_tests/Makefile
+config.status:1268: creating test/sql_stmt_proj492_tests/Makefile
+config.status:1268: creating test/sql_stmt_proj493_tests/Makefile
+config.status:1268: creating test/sql_stmt_mathsql_tests/Makefile
+config.status:1268: creating test/sql_stmt_rtgeom_tests/Makefile
+config.status:1268: creating test/sql_stmt_rttopo_tests/Makefile
+config.status:1268: creating test/sql_stmt_libxml2_tests/Makefile
+config.status:1268: creating test/sql_stmt_security_tests/Makefile
+config.status:1268: creating test/sql_stmt_xmlsec_tests/Makefile
+config.status:1268: creating test/sql_stmt_freexl_tests/Makefile
+config.status:1268: creating test/sql_stmt_cache_tests/Makefile
+config.status:1268: creating test/sql_stmt_gpkgcache_tests/Makefile
+config.status:1268: creating test/sql_stmt_nocache_tests/Makefile
+config.status:1268: creating test/sql_stmt_gpkgnocache_tests/Makefile
+config.status:1268: creating test/sql_stmt_voronoj1_tests/Makefile
+config.status:1268: creating test/sql_stmt_voronoj2_tests/Makefile
+config.status:1268: creating test/sql_stmt_sequence_tests/Makefile
+config.status:1268: creating examples/Makefile
+config.status:1268: creating Doxyfile
+config.status:1268: creating spatialite.pc
+config.status:1268: creating config.h
+config.status:1497: executing depfiles commands
+config.status:1497: executing libtool commands
 
 ## ---------------- ##
 ## Cache variables. ##
@@ -1924,7 +1829,7 @@ ac_cv_func_strerror=yes
 ac_cv_func_strftime=yes
 ac_cv_func_strncasecmp=yes
 ac_cv_func_strstr=yes
-ac_cv_have_decl_SQLITE_INDEX_CONSTRAINT_LIKE=no
+ac_cv_have_decl_SQLITE_INDEX_CONSTRAINT_LIKE=yes
 ac_cv_header_dlfcn_h=yes
 ac_cv_header_fcntl_h=yes
 ac_cv_header_float_h=yes
@@ -2167,7 +2072,7 @@ host_vendor='linux'
 htmldir='${docdir}'
 includedir='${prefix}/include'
 infodir='${datarootdir}/info'
-install_sh='${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0/install-sh'
+install_sh='${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0/install-sh'
 libdir='${exec_prefix}/lib'
 libexecdir='${exec_prefix}/libexec'
 localedir='${datarootdir}/locale'
@@ -2260,5 +2165,6 @@ target_alias=''
 #define ENABLE_RTTOPO 1
 #define ENABLE_LIBXML2 1
 #define ENABLE_GEOPACKAGE 1
+#define HAVE_DECL_SQLITE_INDEX_CONSTRAINT_LIKE 1
 
 configure: exit 0

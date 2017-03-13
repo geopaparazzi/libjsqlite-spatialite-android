@@ -627,7 +627,49 @@ extern "C"
 						     const char
 						     *f_geometry_column,
 						     const char *title,
-						     const char *abstract);
+						     const char *abstract,
+						     int is_queryable,
+						     int is_editable);
+
+    SPATIALITE_PRIVATE int register_spatial_view_coverage (void *p_sqlite,
+							   const char
+							   *coverage_name,
+							   const char
+							   *view_name,
+							   const char
+							   *view_geometry,
+							   const char *title,
+							   const char *abstract,
+							   int is_queryable,
+							   int is_editable);
+
+    SPATIALITE_PRIVATE int register_virtual_shp_coverage (void *p_sqlite,
+							  const char
+							  *coverage_name,
+							  const char *virt_name,
+							  const char
+							  *virt_geometry,
+							  const char *title,
+							  const char *abstract,
+							  int is_queryable);
+
+    SPATIALITE_PRIVATE int register_topogeo_coverage (void *p_sqlite,
+						      const char
+						      *coverage_name,
+						      const char *topogeo_name,
+						      const char *title,
+						      const char *abstract,
+						      int is_queryable,
+						      int is_editable);
+
+    SPATIALITE_PRIVATE int register_toponet_coverage (void *p_sqlite,
+						      const char
+						      *coverage_name,
+						      const char *toponet_name,
+						      const char *title,
+						      const char *abstract,
+						      int is_queryable,
+						      int is_editable);
 
     SPATIALITE_PRIVATE int unregister_vector_coverage (void *p_sqlite,
 						       const char
@@ -637,7 +679,15 @@ extern "C"
 						      const char
 						      *coverage_name,
 						      const char *title,
-						      const char *abstract);
+						      const char *abstract,
+						      int is_queryable,
+						      int is_editable);
+
+    SPATIALITE_PRIVATE int set_vector_coverage_copyright (void *p_sqlite,
+							  const char
+							  *coverage_name,
+							  const char *copyright,
+							  const char *license);
 
     SPATIALITE_PRIVATE int register_vector_coverage_srid (void *p_sqlite,
 							  const char
@@ -666,6 +716,153 @@ extern "C"
 							  const char
 							  *coverage_name,
 							  int transaction);
+
+    SPATIALITE_PRIVATE int createWMSTables (void *p_sqlite);
+
+    SPATIALITE_PRIVATE int register_wms_getcapabilities (void *p_sqlite,
+							 const char *url,
+							 const char *title,
+							 const char *abstract);
+
+    SPATIALITE_PRIVATE int unregister_wms_getcapabilities (void *p_sqlite,
+							   const char *url);
+
+    SPATIALITE_PRIVATE int set_wms_getcapabilities_infos (void *p_sqlite,
+							  const char *url,
+							  const char *title,
+							  const char *abstract);
+
+    SPATIALITE_PRIVATE int register_wms_getmap (void *p_sqlite,
+						const char *getcapabilities_url,
+						const char *getmap_url,
+						const char *layer_name,
+						const char *title,
+						const char *abstract,
+						const char *version,
+						const char *ref_sys,
+						const char *image_format,
+						const char *style,
+						int transparent,
+						int flip_axes,
+						int tiled,
+						int cached,
+						int tile_width,
+						int tile_height,
+						const char *bgcolor,
+						int is_queryable,
+						const char *getfeatureinfo_url);
+
+    SPATIALITE_PRIVATE int unregister_wms_getmap (void *p_sqlite,
+						  const char *url,
+						  const char *layer_name);
+
+    SPATIALITE_PRIVATE int set_wms_getmap_infos (void *p_sqlite,
+						 const char *url,
+						 const char *layer_name,
+						 const char *title,
+						 const char *abstract);
+
+    SPATIALITE_PRIVATE int set_wms_getmap_copyright (void *p_sqlite,
+						     const char *url,
+						     const char *layer_name,
+						     const char *copyright,
+						     const char *license);
+
+    SPATIALITE_PRIVATE int set_wms_getmap_bgcolor (void *p_sqlite,
+						   const char *url,
+						   const char *layer_name,
+						   const char *bgcolor);
+
+    SPATIALITE_PRIVATE int set_wms_getmap_queryable (void *p_sqlite,
+						     const char *url,
+						     const char *layer_name,
+						     int is_queryable,
+						     const char
+						     *getfeatureifo_url);
+
+    SPATIALITE_PRIVATE int set_wms_getmap_options (void *p_sqlite,
+						   const char *url,
+						   const char *layer_name,
+						   int transparent,
+						   int flip_axes);
+
+    SPATIALITE_PRIVATE int set_wms_getmap_tiled (void *p_sqlite,
+						 const char *url,
+						 const char *layer_name,
+						 int tiled, int cached,
+						 int tile_width,
+						 int tile_height);
+
+    SPATIALITE_PRIVATE int register_wms_setting (void *p_sqlite,
+						 const char *url,
+						 const char *layer_name,
+						 const char *key,
+						 const char *value,
+						 int is_default);
+
+    SPATIALITE_PRIVATE int unregister_wms_setting (void *p_sqlite,
+						   const char *url,
+						   const char *layer_name,
+						   const char *key,
+						   const char *value);
+
+    SPATIALITE_PRIVATE int set_wms_default_setting (void *p_sqlite,
+						    const char *url,
+						    const char *layer_name,
+						    const char *key,
+						    const char *value);
+
+    SPATIALITE_PRIVATE int register_wms_srs (void *p_sqlite,
+					     const char *url,
+					     const char *layer_name,
+					     const char *ref_sys, double minx,
+					     double miny, double maxx,
+					     double maxy, int is_default);
+
+    SPATIALITE_PRIVATE int unregister_wms_srs (void *p_sqlite,
+					       const char *url,
+					       const char *layer_name,
+					       const char *ref_sys);
+
+    SPATIALITE_PRIVATE int set_wms_default_srs (void *p_sqlite,
+						const char *url,
+						const char *layer_name,
+						const char *ref_sys);
+
+    SPATIALITE_PRIVATE char *wms_getmap_request_url (void *p_sqlite,
+						     const char *getmap_url,
+						     const char *layer_name,
+						     int width, int height,
+						     double minx, double miny,
+						     double maxx, double maxy);
+
+    SPATIALITE_PRIVATE char *wms_getfeatureinfo_request_url (void *p_sqlite,
+							     const char
+							     *getmap_url,
+							     const char
+							     *layer_name,
+							     int width,
+							     int height, int x,
+							     int y, double minx,
+							     double miny,
+							     double maxx,
+							     double maxy,
+							     int feature_count);
+
+    SPATIALITE_PRIVATE int register_data_license (void *p_sqlite,
+						  const char *license_name,
+						  const char *url);
+
+    SPATIALITE_PRIVATE int unregister_data_license (void *p_sqlite,
+						    const char *license_name);
+
+    SPATIALITE_PRIVATE int rename_data_license (void *p_sqlite,
+						const char *old_name,
+						const char *new_name);
+
+    SPATIALITE_PRIVATE int set_data_license_url (void *p_sqlite,
+						 const char *license_name,
+						 const char *url);
 
     SPATIALITE_PRIVATE const char *splite_rttopo_version (void);
 
@@ -750,6 +947,14 @@ extern "C"
 							      *context,
 							      int argc,
 							      const void *argv);
+
+    SPATIALITE_PRIVATE void fnctaux_CreateTopoTables (const void *context,
+						      int argc,
+						      const void *argv);
+
+    SPATIALITE_PRIVATE int do_create_topologies (void *sqlite_handle);
+
+    SPATIALITE_PRIVATE int do_create_networks (void *sqlite_handle);
 
     SPATIALITE_PRIVATE void fnctaux_CreateTopology (const void *context,
 						    int argc, const void *argv);
@@ -882,6 +1087,10 @@ extern "C"
 							int argc,
 							const void *argv);
 
+    SPATIALITE_PRIVATE void fnctaux_TopoGeo_PolyFacesList (const void *context,
+							   int argc,
+							   const void *argv);
+
     SPATIALITE_PRIVATE void fnctaux_TopoGeo_ToGeoTableGeneralize (const void
 								  *context,
 								  int argc,
@@ -912,6 +1121,14 @@ extern "C"
     SPATIALITE_PRIVATE void fnctaux_TopoGeo_ModEdgeHeal (const void *context,
 							 int argc,
 							 const void *argv);
+
+    SPATIALITE_PRIVATE void fnctaux_TopoGeo_NewEdgesSplit (const void *context,
+							   int argc,
+							   const void *argv);
+
+    SPATIALITE_PRIVATE void fnctaux_TopoGeo_ModEdgeSplit (const void *context,
+							  int argc,
+							  const void *argv);
 
     SPATIALITE_PRIVATE void fnctaux_TopoGeo_CreateTopoLayer (const void
 							     *context,

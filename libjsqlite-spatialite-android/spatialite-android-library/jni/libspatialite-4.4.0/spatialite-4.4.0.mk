@@ -1,6 +1,6 @@
 include $(CLEAR_VARS)
-# ./configure  --enable-lwgeom=yes --enable-gcp --enable-examples=no --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
-# 20150626.libspatialite-4.4.0-dev
+# ./configure  --enable-rttopo --enable-gcp  --enable-examples=no --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
+# 20170118.libspatialite-4.4.0-dev
 # -------------------
 # As of 2015-10-03 [4.4.0-t20160229]
 # -------------------
@@ -15,6 +15,7 @@ include $(CLEAR_VARS)
 # - Ewkt.c/.h geoJSON.c/.h
 # - Gml.c/.h Kml.c/.h
 # - lex.*.c
+# - vanuatuWkt.*
 # srsinit/
 # - directory 'epsg_update'
 # -------------------
@@ -44,7 +45,7 @@ spatialite_flags := \
  -DENABLE_GCP=1 \
  -DENABLE_GEOPACKAGE=1 \
  -DENABLE_LIBXML2=1 \
- -DENABLE_LWGEOM=1 \
+ -DENABLE_RTTOPO=1 \
  -DSQLITE_OMIT_BUILTIN_TEST=1 
 
 LOCAL_CFLAGS    := \
@@ -63,13 +64,14 @@ LOCAL_C_INCLUDES := \
  $(ICONV_PATH)/libcharset/include \
  $(GEOS_PATH)/include \
  $(GEOS_PATH)/capi \
- $(LWGEOM_PATH) \
+ $(RTTOPO_PATH)/headers \
  $(PROJ4_PATH)/src \
  $(LZMA_PATH)/src/liblzma/api \
  $(XML2_PATH)/include
 LOCAL_SRC_FILES := \
  $(SPATIALITE_PATH)/src/connection_cache/generator/code_generator.c \
  $(SPATIALITE_PATH)/src/connection_cache/alloc_cache.c \
+ $(SPATIALITE_PATH)/src/connection_cache/gg_sequence.c \
  $(SPATIALITE_PATH)/src/control_points/gaia_control_points.c \
  $(SPATIALITE_PATH)/src/control_points/grass_crs3d.c \
  $(SPATIALITE_PATH)/src/control_points/grass_georef.c \
@@ -93,10 +95,10 @@ LOCAL_SRC_FILES := \
  $(SPATIALITE_PATH)/src/gaiageo/gg_geoscvt.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_gml.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_kml.c \
- $(SPATIALITE_PATH)/src/gaiageo/gg_lwgeom.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_matrix.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_relations.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_relations_ext.c \
+ $(SPATIALITE_PATH)/src/gaiageo/gg_rttopo.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_shape.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_transform.c \
  $(SPATIALITE_PATH)/src/gaiageo/gg_vanuatu.c \
@@ -138,6 +140,7 @@ LOCAL_SRC_FILES := \
  $(SPATIALITE_PATH)/src/spatialite/virtualgpkg.c \
  $(SPATIALITE_PATH)/src/spatialite/virtualknn.c \
  $(SPATIALITE_PATH)/src/spatialite/virtualnetwork.c \
+ $(SPATIALITE_PATH)/src/spatialite/virtualrouting.c \
  $(SPATIALITE_PATH)/src/spatialite/virtualshape.c \
  $(SPATIALITE_PATH)/src/spatialite/virtualspatialindex.c \
  $(SPATIALITE_PATH)/src/spatialite/virtualXL.c \
@@ -196,6 +199,7 @@ LOCAL_SRC_FILES := \
  $(SPATIALITE_PATH)/src/srsinit/srs_init.c \
  $(SPATIALITE_PATH)/src/topology/gaia_auxnet.c \
  $(SPATIALITE_PATH)/src/topology/gaia_auxtopo.c \
+ $(SPATIALITE_PATH)/src/topology/gaia_auxtopo_table.c \
  $(SPATIALITE_PATH)/src/topology/gaia_netstmts.c \
  $(SPATIALITE_PATH)/src/topology/gaia_network.c \
  $(SPATIALITE_PATH)/src/topology/gaia_topology.c \
@@ -206,5 +210,5 @@ LOCAL_SRC_FILES := \
  $(SPATIALITE_PATH)/src/versioninfo/version.c \
  $(SPATIALITE_PATH)/src/virtualtext/virtualtext.c \
  $(SPATIALITE_PATH)/src/wfs/wfs_in.c
-LOCAL_STATIC_LIBRARIES := iconv proj geos libljson-c liblwgeom libxml2
+LOCAL_STATIC_LIBRARIES := iconv proj geos libljson-c librttopo libxml2
 include $(BUILD_STATIC_LIBRARY)

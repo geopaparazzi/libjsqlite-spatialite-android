@@ -1,4 +1,4 @@
-TopoGeo_RemoveSmallFaces - BLOB prefix
+TopoGeo_RemoveSmallFaces - BLOB min-circularity
 :memory: #use in-memory database
 SELECT TopoGeo_RemoveSmallFaces('topology', zeroblob(4));
 1 # rows (not including the header row)

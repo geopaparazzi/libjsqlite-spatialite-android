@@ -65,7 +65,8 @@ check_PROGRAMS = check_endian \
 		check_network3d \
 		check_network_log \
 		check_virtualknn \
-		check_sequence
+		check_sequence \
+		check_wms
 		
 if ENABLE_GEOPACKAGE
 check_PROGRAMS += \

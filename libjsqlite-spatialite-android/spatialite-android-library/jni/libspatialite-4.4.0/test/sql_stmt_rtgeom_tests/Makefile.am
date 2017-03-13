@@ -27,6 +27,15 @@ EXTRA_DIST = 3ddistance10.testcase \
 	3dmaxdistance7.testcase \
 	3dmaxdistance8.testcase \
 	3dmaxdistance9.testcase \
+	circularity10.testcase \
+	circularity11.testcase \
+	circularity12.testcase \
+	circularity13.testcase \
+	circularity14.testcase \
+	circularity15.testcase \
+	circularity16.testcase \
+	circularity17.testcase \
+	circularity18.testcase \
 	maxdistance10.testcase \
 	maxdistance1.testcase \
 	maxdistance2.testcase \

@@ -351,6 +351,15 @@ EXTRA_DIST = bdmpolyfromtext10.testcase \
 	centroid6.testcase \
 	centroid7.testcase \
 	centroid8.testcase \
+	circularity1.testcase \
+	circularity2.testcase \
+	circularity3.testcase \
+	circularity4.testcase \
+	circularity5.testcase \
+	circularity6.testcase \
+	circularity7.testcase \
+	circularity8.testcase \
+	circularity9.testcase \
 	convexhull10.testcase \
 	convexhull1.testcase \
 	convexhull2.testcase \

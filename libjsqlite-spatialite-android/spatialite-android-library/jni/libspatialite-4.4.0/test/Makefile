@@ -120,7 +120,7 @@ check_PROGRAMS = check_endian$(EXEEXT) check_version$(EXEEXT) \
 	check_toposnap$(EXEEXT) check_network2d$(EXEEXT) \
 	check_network3d$(EXEEXT) check_network_log$(EXEEXT) \
 	check_virtualknn$(EXEEXT) check_sequence$(EXEEXT) \
-	$(am__EXEEXT_1)
+	check_wms$(EXEEXT) $(am__EXEEXT_1)
 am__append_1 = \
 		check_createBaseTables \
 		check_gpkgCreateTilesTable \
@@ -499,6 +499,9 @@ check_virtualxpath_LDADD = $(LDADD)
 check_wfsin_SOURCES = check_wfsin.c
 check_wfsin_OBJECTS = check_wfsin.$(OBJEXT)
 check_wfsin_LDADD = $(LDADD)
+check_wms_SOURCES = check_wms.c
+check_wms_OBJECTS = check_wms.$(OBJEXT)
+check_wms_LDADD = $(LDADD)
 check_xls_load_SOURCES = check_xls_load.c
 check_xls_load_OBJECTS = check_xls_load.$(OBJEXT)
 check_xls_load_LDADD = $(LDADD)
@@ -594,9 +597,9 @@ SOURCES = check_add_tile_triggers.c \
 	check_virtualtable1.c check_virtualtable2.c \
 	check_virtualtable3.c check_virtualtable4.c \
 	check_virtualtable5.c check_virtualtable6.c \
-	check_virtualxpath.c check_wfsin.c check_xls_load.c shape_3d.c \
-	shape_cp1252.c shape_primitives.c shape_utf8_1.c \
-	shape_utf8_1ex.c shape_utf8_2.c
+	check_virtualxpath.c check_wfsin.c check_wms.c \
+	check_xls_load.c shape_3d.c shape_cp1252.c shape_primitives.c \
+	shape_utf8_1.c shape_utf8_1ex.c shape_utf8_2.c
 DIST_SOURCES = check_add_tile_triggers.c \
 	check_add_tile_triggers_bad_table_name.c check_bufovflw.c \
 	check_clone_table.c check_control_points.c check_create.c \
@@ -637,9 +640,9 @@ DIST_SOURCES = check_add_tile_triggers.c \
 	check_virtualtable1.c check_virtualtable2.c \
 	check_virtualtable3.c check_virtualtable4.c \
 	check_virtualtable5.c check_virtualtable6.c \
-	check_virtualxpath.c check_wfsin.c check_xls_load.c shape_3d.c \
-	shape_cp1252.c shape_primitives.c shape_utf8_1.c \
-	shape_utf8_1ex.c shape_utf8_2.c
+	check_virtualxpath.c check_wfsin.c check_wms.c \
+	check_xls_load.c shape_3d.c shape_cp1252.c shape_primitives.c \
+	shape_utf8_1.c shape_utf8_1ex.c shape_utf8_2.c
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -988,10 +991,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = strip
 VERSION = 4.4.0-RC1
-abs_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0/test
-abs_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0/test
-abs_top_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0
-abs_top_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0
+abs_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0/test
+abs_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0/test
+abs_top_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0
+abs_top_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0
 ac_ct_AR = ar
 ac_ct_CC = gcc
 ac_ct_CXX = g++
@@ -1021,7 +1024,7 @@ host_vendor = linux
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite.4.4.0/install-sh
+install_sh = ${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libspatialite-4.4.0/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -1544,6 +1547,10 @@ check_wfsin$(EXEEXT): $(check_wfsin_OBJECTS) $(check_wfsin_DEPENDENCIES) $(EXTRA
 	@rm -f check_wfsin$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(check_wfsin_OBJECTS) $(check_wfsin_LDADD) $(LIBS)
 
+check_wms$(EXEEXT): $(check_wms_OBJECTS) $(check_wms_DEPENDENCIES) $(EXTRA_check_wms_DEPENDENCIES) 
+	@rm -f check_wms$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(check_wms_OBJECTS) $(check_wms_LDADD) $(LIBS)
+
 check_xls_load$(EXEEXT): $(check_xls_load_OBJECTS) $(check_xls_load_DEPENDENCIES) $(EXTRA_check_xls_load_DEPENDENCIES) 
 	@rm -f check_xls_load$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(check_xls_load_OBJECTS) $(check_xls_load_LDADD) $(LIBS)
@@ -1666,6 +1673,7 @@ include ./$(DEPDIR)/check_virtualtable5.Po
 include ./$(DEPDIR)/check_virtualtable6.Po
 include ./$(DEPDIR)/check_virtualxpath.Po
 include ./$(DEPDIR)/check_wfsin.Po
+include ./$(DEPDIR)/check_wms.Po
 include ./$(DEPDIR)/check_xls_load.Po
 include ./$(DEPDIR)/shape_3d.Po
 include ./$(DEPDIR)/shape_cp1252.Po
@@ -2399,6 +2407,13 @@ check_virtualknn.log: check_virtualknn$(EXEEXT)
 check_sequence.log: check_sequence$(EXEEXT)
 	@p='check_sequence$(EXEEXT)'; \
 	b='check_sequence'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+check_wms.log: check_wms$(EXEEXT)
+	@p='check_wms$(EXEEXT)'; \
+	b='check_wms'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
