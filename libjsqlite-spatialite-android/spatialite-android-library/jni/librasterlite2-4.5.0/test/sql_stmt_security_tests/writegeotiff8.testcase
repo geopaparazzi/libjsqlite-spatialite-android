@@ -1,0 +1,7 @@
+RL2_WriteGeoTiff - NULL vertical resolution
+:memory: #use in-memory database
+SELECT RL2_WriteGeoTiff(NULL, 'alpha', './test.tif', 1024, 1024, MakePoint(1, 1), 0.5, NULL);
+1 # rows (not including the header row)
+1 # columns
+RL2_WriteGeoTiff(NULL, 'alpha', './test.tif', 1024, 1024, MakePoint(1, 1), 0.5, NULL)
+-1

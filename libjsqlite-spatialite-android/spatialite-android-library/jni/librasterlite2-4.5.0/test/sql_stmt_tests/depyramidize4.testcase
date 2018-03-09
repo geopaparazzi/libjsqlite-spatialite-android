@@ -1,0 +1,7 @@
+rl2_depyramidize - DOUBLE Coverage
+:memory: #use in-memory database
+SELECT rl2_depyramidize(1.1);
+1 # rows (not including the header row)
+1 # columns
+rl2_depyramidize(1.1)
+-1

@@ -1,0 +1,7 @@
+GetPixelFromRasterByPoint - NULL Point
+:memory: #use in-memory database
+SELECT RL2_GetPixelFromRasterByPoint(NULL, 'coverage', NULL, 0);
+1 # rows (not including the header row)
+1 # columns
+RL2_GetPixelFromRasterByPoint(NULL, 'coverage', NULL, 0)
+(NULL)

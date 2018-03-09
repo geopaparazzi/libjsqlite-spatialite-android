@@ -1,0 +1,7 @@
+SetPixelValue - mismatching 1-BIT value
+:memory: #use in-memory database
+SELECT RL2_SetPixelValue(RL2_CreatePixel('1-BIT', 'MONOCHROME', 1), 0, 2);
+1 # rows (not including the header row)
+1 # columns
+RL2_SetPixelValue(RL2_CreatePixel('1-BIT', 'MONOCHROME', 1), 0, 2)
+(NULL)

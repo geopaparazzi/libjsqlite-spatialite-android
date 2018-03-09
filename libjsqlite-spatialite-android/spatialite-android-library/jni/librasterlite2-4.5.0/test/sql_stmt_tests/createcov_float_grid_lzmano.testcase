@@ -1,0 +1,7 @@
+RL2_CreateRasterCoverage - FLOAT GRID LZMA_NO
+:memory: #use in-memory database
+SELECT RL2_CreateRasterCoverage('float_grid_lzmano', 'FLOAT', 'DATAGRID', 1, 'LZMA_NO', 100, 512, 512, 3003, 1.0);
+1 # rows (not including the header row)
+1 # columns
+RL2_CreateRasterCoverage('float_grid_lzmano', 'FLOAT', 'DATAGRID', 1, 'LZMA_NO', 100, 512, 512, 3003, 1.0)
+1

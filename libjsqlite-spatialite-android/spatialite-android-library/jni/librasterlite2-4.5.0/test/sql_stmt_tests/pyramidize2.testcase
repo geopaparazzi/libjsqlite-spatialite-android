@@ -1,0 +1,7 @@
+rl2_pyramidize - BLOB Coverage
+:memory: #use in-memory database
+SELECT rl2_pyramidize(zeroblob(4));
+1 # rows (not including the header row)
+1 # columns
+rl2_pyramidize(zeroblob(4))
+-1

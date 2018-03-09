@@ -1,0 +1,7 @@
+RL2_WriteMonoBandGeoTiff - invalid mono band (too big)
+:memory: #use in-memory database
+SELECT RL2_WriteMonoBandGeoTiff(NULL, 'alpha', './test.tif', 1024, 1024, 500, MakePoint(1, 1), 0.5, 0.5, 1, 'NONE', 256);
+1 # rows (not including the header row)
+1 # columns
+RL2_WriteMonoBandGeoTiff(NULL, 'alpha', './test.tif', 1024, 1024, 500, MakePoint(1, 1), 0.5, 0.5, 1, 'NONE', 256)
+-1

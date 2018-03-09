@@ -1,0 +1,7 @@
+GetPixelFromRasterByPoint - BLOB DB-prefix
+:memory: #use in-memory database
+SELECT RL2_GetPixelFromRasterByPoint(zeroblob(4), 'coverage', MakePoint(11.1, 43.8, 4326), 0);
+1 # rows (not including the header row)
+1 # columns
+RL2_GetPixelFromRasterByPoint(zeroblob(4), 'coverage', MakePoint(11.1, 43.8, 4326), 0)
+(NULL)

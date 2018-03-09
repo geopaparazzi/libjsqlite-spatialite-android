@@ -1,0 +1,11 @@
+GEOS_Error - topology exception 
+:memory: #use in-memory database
+SELECT ST_Difference(MakePoint(136,-35), GeomFromText('POLYGON((136 -35, 135.2 -34.5, 136 -35.2, 136 -35, 135.2 -34.5))')), GEOS_GetLastWarningMsg(), Length(GEOS_GetLastErrorMsg()) > 1 AS test;
+1 # rows (not including the header row)
+3 # columns
+ST_Difference(MakePoint(136,-35), GeomFromText('POLYGON((136 -35, 135.2 -34.5, 136 -35.2, 136 -35, 135.2 -34.5))'))
+GEOS_GetLastWarningMsg()
+test
+(NULL)
+(NULL)
+1

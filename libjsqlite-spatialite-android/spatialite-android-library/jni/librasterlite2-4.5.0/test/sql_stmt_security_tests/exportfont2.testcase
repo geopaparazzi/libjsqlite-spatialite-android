@@ -1,0 +1,7 @@
+RL2_ExportFontToFile - INTEGER facename
+:memory: #use in-memory database
+SELECT RL2_ExportFontToFile('MAIN', 1, 'wonderfulFree-font.ttf');
+1 # rows (not including the header row)
+1 # columns
+RL2_ExportFontToFile('MAIN', 1, 'wonderfulFree-font.ttf')
+-1

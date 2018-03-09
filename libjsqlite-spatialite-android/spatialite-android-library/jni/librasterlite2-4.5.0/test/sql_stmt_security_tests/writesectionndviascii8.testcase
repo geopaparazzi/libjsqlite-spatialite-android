@@ -1,0 +1,7 @@
+RL2_WriteSectionNdviAsciiGrid - Invalid BLOB Geometry
+:memory: #use in-memory database
+SELECT RL2_WriteSectionNdviAsciiGrid(NULL, 'alpha', 1, './test.asc', 1024, 1024, 0, 3, zeroblob(100), 0.5);
+1 # rows (not including the header row)
+1 # columns
+RL2_WriteSectionNdviAsciiGrid(NULL, 'alpha', 1, './test.asc', 1024, 1024, 0, 3, zeroblob(100), 0.5)
+-1

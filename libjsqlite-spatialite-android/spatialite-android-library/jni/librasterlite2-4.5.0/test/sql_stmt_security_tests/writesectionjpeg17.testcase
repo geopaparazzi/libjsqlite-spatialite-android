@@ -1,0 +1,7 @@
+RL2_WriteSectionJpeg - Int DbPrefix
+:memory: #use in-memory database
+SELECT RL2_WriteSectionJpeg(1, 'alpha', 1, './test.jpg', 1024, 1024, MakePoint(1, 1), 1);
+1 # rows (not including the header row)
+1 # columns
+RL2_WriteSectionJpeg(1, 'alpha', 1, './test.jpg', 1024, 1024, MakePoint(1, 1), 1)
+-1

@@ -1,0 +1,7 @@
+RL2_WriteSectionMonoBandGeoTiff - invalid width (too big)
+:memory: #use in-memory database
+SELECT RL2_WriteSectionMonoBandGeoTiff(NULL, 'alpha', 1, './test.tif', 1000004, 1024, 0, MakePoint(1, 1), 0.5, 0.5, 1, 'FAX4', 512);
+1 # rows (not including the header row)
+1 # columns
+RL2_WriteSectionMonoBandGeoTiff(NULL, 'alpha', 1, './test.tif', 1000004, 1024, 0, MakePoint(1, 1), 0.5, 0.5, 1, 'FAX4', 512)
+-1

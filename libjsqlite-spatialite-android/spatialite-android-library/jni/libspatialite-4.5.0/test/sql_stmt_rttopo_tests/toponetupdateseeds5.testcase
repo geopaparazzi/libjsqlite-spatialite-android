@@ -1,0 +1,7 @@
+TopoNet_UpdateSeeds - Text Network 
+:memory: #use in-memory database
+SELECT TopoNet_UpdateSeeds('network');
+1 # rows (not including the header row)
+1 # columns
+TopoNet_UpdateSeeds('network')
+SQL/MM Spatial exception - invalid network name.

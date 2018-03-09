@@ -1,0 +1,7 @@
+GetFaceByPoint - NULL Geometry
+:memory: #use in-memory database
+SELECT GetFaceByPoint('topology', NULL, 0);
+1 # rows (not including the header row)
+1 # columns
+GetFaceByPoint('topology', NULL, 0)
+SQL/MM Spatial exception - null argument.

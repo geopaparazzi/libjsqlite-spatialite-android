@@ -1,0 +1,35 @@
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="256" height="256" version="1.1"
+xmlns="http://www.w3.org/2000/svg">
+
+<!-- circle and a quadratic bezier path approximating it -->
+<circle cx="128" cy="128" r="112" stroke="black" stroke-width="8"
+fill="none"/>
+<path d="M 16 128 Q 16 82 49 49 T 128 16 207 49 240 128 207 207 128 240 49 207 16 128" stroke="red" stroke-width="4" fill="none"/>
+
+<!-- visualization of on-curve points -->
+<g stroke-width="2" fill="#FFFFFF" fill-opacity="0.5" stroke="black">
+<rect x="10" y="122" width="12" height="12"/>
+<rect x="234" y="122" width="12" height="12"/>
+<rect x="122" y="10" width="12" height="12"/>
+<rect x="122" y="234" width="12" height="12"/>
+<rect x="43" y="43" width="12" height="12"/>
+<rect x="43" y="201" width="12" height="12"/>
+<rect x="201" y="43" width="12" height="12"/>
+<rect x="201" y="201" width="12" height="12"/>
+</g>
+<!-- visualization of off-curve points -->
+<g stroke-width="2" fill="none" stroke="green">
+<circle cx="16" cy="82" r="6"/>
+<circle cx="82" cy="16" r="6"/>
+<circle cx="174" cy="16" r="6"/>
+<circle cx="240" cy="82" r="6"/>
+<circle cx="16" cy="174" r="6"/>
+<circle cx="82" cy="240" r="6"/>
+<circle cx="174" cy="240" r="6"/>
+<circle cx="240" cy="174" r="6"/>
+</g>
+
+</svg>
+

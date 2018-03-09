@@ -1,5 +1,5 @@
 include $(CLEAR_VARS)
-# In 'postgis-2.2.svn' directory
+# librttopo-20180125 directory
 # ./autogen.sh
 # ./configure  --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
 # configure: error: cannot run test program while cross compiling
@@ -11,7 +11,7 @@ include $(CLEAR_VARS)
 # libjson may be needed
 # ljson-c
 # -------------------
-# As of 2017-01-18
+# As of 2018-01-25
 # -------------------
 # changes:
 # - geos-3.6.0
@@ -66,6 +66,7 @@ LOCAL_SRC_FILES := \
  $(RTTOPO_PATH)/src/rtin_geojson.c \
  $(RTTOPO_PATH)/src/rtin_twkb.c \
  $(RTTOPO_PATH)/src/rtin_wkb.c \
+ $(RTTOPO_PATH)/src/rtiterator.c \
  $(RTTOPO_PATH)/src/rtline.c \
  $(RTTOPO_PATH)/src/rtlinearreferencing.c \
  $(RTTOPO_PATH)/src/rtmcurve.c \

@@ -46,6 +46,10 @@
  #define HAVE_RASTERLITE2 = 0
 #endif
 #include <spatialite_private.h>
+#include <spatialite.h>
+#if HAVE_RASTERLITE2 == 1
+#include "rasterlite2.h"
+#endif
 
 /* definition to expand macro then apply to pragma message */
 #define VALUE_TO_STRING(x) #x
@@ -305,7 +309,7 @@ static void
 globrefset(JNIEnv *env, jobject obj, jobject *ref)
 {
     if (ref) {
-	if (obj) {	
+	if (obj) {
 	    *ref = (*env)->NewGlobalRef(env, obj);
 	} else {
 	    *ref = 0;
@@ -418,7 +422,7 @@ trans2iso(JNIEnv *env, int haveutf, jstring enc, jstring src,
 	    throwoom(env, "string translation failed");
 	    return dest->result;
 	}
-	dest->result = dest->tofree;	
+	dest->result = dest->tofree;
 	(*env)->GetByteArrayRegion(env, bytes, 0, len, (jbyte *) dest->result);
 	dest->result[len] = '\0';
     } else {
@@ -985,7 +989,7 @@ Java_jsqlite_Database_rasterlite2_1version(JNIEnv *env, jobject obj)
 #endif
   }
   else
-  { 
+  {
    return (*env)->NewStringUTF(env, rasterlite2_version);
   }
 }
@@ -3266,7 +3270,7 @@ Java_jsqlite_Database_vm_1compile_1args(JNIEnv *env,
     throwex(env, "unsupported");
 #endif
 #endif
-#if HAVE_SQLITE3 
+#if HAVE_SQLITE3
     if (!h || !h->sqlite) {
 	throwclosed(env);
 	return;

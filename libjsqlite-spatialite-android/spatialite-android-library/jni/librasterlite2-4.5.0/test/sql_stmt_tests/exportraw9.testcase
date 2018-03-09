@@ -1,0 +1,7 @@
+RL2_ExportRawPixels - Int DbPrefix
+:memory: #use in-memory database
+SELECT RL2_ExportRawPixels(1, 'coverage', 1000, 1000, BuildMBR(1, 2, 3, 4), 1, 1, 1);
+1 # rows (not including the header row)
+1 # columns
+RL2_ExportRawPixels(1, 'coverage', 1000, 1000, BuildMBR(1, 2, 3, 4), 1, 1, 1)
+(NULL)

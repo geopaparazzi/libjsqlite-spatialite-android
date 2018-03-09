@@ -1,0 +1,7 @@
+RL2_CreateRasterCoverage - UINT8 RGB DEFLATE_NO
+:memory: #use in-memory database
+SELECT RL2_CreateRasterCoverage('uint8_rgb_deflateno', 'UINT8', 'RGB', 3, 'DEFLATE_NO', 100, 512, 512, 3003, 1.0);
+1 # rows (not including the header row)
+1 # columns
+RL2_CreateRasterCoverage('uint8_rgb_deflateno', 'UINT8', 'RGB', 3, 'DEFLATE_NO', 100, 512, 512, 3003, 1.0)
+1

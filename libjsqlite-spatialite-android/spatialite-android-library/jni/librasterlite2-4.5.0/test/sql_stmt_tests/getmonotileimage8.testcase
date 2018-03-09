@@ -1,0 +1,7 @@
+RL2_GetMonoBandTileImage - invalid mono-band
+:memory: #use in-memory database
+SELECT RL2_GetMonoBandTileImage(NULL, 'alpha', 1, -1, '#ffffff', 1);
+1 # rows (not including the header row)
+1 # columns
+RL2_GetMonoBandTileImage(NULL, 'alpha', 1, -1, '#ffffff', 1)
+(NULL)

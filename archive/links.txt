@@ -12,6 +12,8 @@ wget http://www.sqlite.org/2015/sqlite-amalgamation-3080800.zip
 wget http://www.sqlite.org/2015/sqlite-autoconf-3080800.tar.gz
 wget http://www.sqlite.org/2015/sqlite-amalgamation-3081002.zip
 wget http://www.sqlite.org/2015/sqlite-autoconf-3081002.tar.gz
+wget https://www.sqlite.org/2017/sqlite-autoconf-3170000.tar.gz
+wget https://www.sqlite.org/2017/sqlite-amalgamation-3170000.zip
 
 wget http://www.sqlite.org/2013/sqlite-autoconf-3080100.tar.gz
 wget http://www.sqlite.org/2013/sqlite-amalgamation-3080200.zip

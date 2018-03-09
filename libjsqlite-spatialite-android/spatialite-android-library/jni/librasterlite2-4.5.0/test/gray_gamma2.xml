@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RasterSymbolizer version="1.1.0" xsi:schemaLocation="http://www.opengis.net/se http://schemas.opengis.net/se/1.1.0/Symbolizer.xsd" xmlns="http://www.opengis.net/se" xmlns:ogc="http://www.opengis.net/ogc" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>gray_gamma2</Name>
+	<Description>
+		<Title>Gray, Normalize</Title>
+		<Abstract>Grayscale, contrast enhancement: NORMALIZE</Abstract>
+	</Description>
+	<Opacity>1.0</Opacity>
+	<ChannelSelection>
+		<GrayChannel>
+			<SourceChannelName>1</SourceChannelName>
+			<ContrastEnhancement>
+				<GammaValue>1.6</GammaValue>
+			</ContrastEnhancement>
+		</GrayChannel>
+	</ChannelSelection>
+</RasterSymbolizer>

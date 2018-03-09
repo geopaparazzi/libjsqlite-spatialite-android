@@ -1,0 +1,7 @@
+RL2_WriteJpeg - not existing coverage (1)
+:memory: #use in-memory database
+SELECT RL2_WriteJpeg(NULL, 'alpha', './test.jpg', 1024, 1024, MakePoint(1, 1), 0.5, 0.5, 101);
+1 # rows (not including the header row)
+1 # columns
+RL2_WriteJpeg(NULL, 'alpha', './test.jpg', 1024, 1024, MakePoint(1, 1), 0.5, 0.5, 101)
+-1

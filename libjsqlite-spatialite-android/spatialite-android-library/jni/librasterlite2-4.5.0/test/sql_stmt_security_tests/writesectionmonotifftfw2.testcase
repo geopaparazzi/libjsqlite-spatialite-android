@@ -1,0 +1,7 @@
+RL2_WriteSectionMonoBandTiffTfw - NULL Path
+:memory: #use in-memory database
+SELECT RL2_WriteSectionMonoBandTiffTfw('MAIN', 'alpha', 1, NULL, 1024, 1024, 0, MakePoint(1, 1), 1);
+1 # rows (not including the header row)
+1 # columns
+RL2_WriteSectionMonoBandTiffTfw('MAIN', 'alpha', 1, NULL, 1024, 1024, 0, MakePoint(1, 1), 1)
+-1

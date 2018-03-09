@@ -1,7 +1,7 @@
 include $(CLEAR_VARS)
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
 # -------------------
-# As of 2017-01-18 
+# As of 2017-01-18
 # -------------------
 # changes:
 # - geos-3.6.1
@@ -19,6 +19,7 @@ common_sqlite_flags := \
  -DSQLITE_THREADSAFE=1 \
  -DNDEBUG=1 \
  -DSQLITE_ENABLE_MEMORY_MANAGEMENT=1 \
+ -DSQLITE_HAS_COLUMN_METADATA=1 \
  -DSQLITE_DEFAULT_AUTOVACUUM=1 \
  -DSQLITE_TEMP_STORE=3 \
  -DSQLITE_ENABLE_FTS3 \
