@@ -6,6 +6,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE    := libcurl
 
 # http://thesoftwarerogue.blogspot.de/2010/05/porting-of-libcurl-to-android-os-using.html
+# long should be sizeof(long) and not 4 in curlbuild.h ; #define CURL_SIZEOF_LONG 8
 
 curl_flags := \
  -DCURL_STATICLIB \

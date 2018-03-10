@@ -1,0 +1,7 @@
+Name: cairo-ps
+Description: PostScript surface backend for cairo graphics library
+Version: 1.14.12
+
+Requires: cairo 
+Libs: -lz 
+Cflags: -I${pc_top_builddir}/${pcfiledir}/./src 

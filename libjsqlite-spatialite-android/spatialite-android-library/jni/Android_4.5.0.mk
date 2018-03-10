@@ -1,5 +1,10 @@
 # -------------------
 # Android_4.5.0.mk
+# -------------------
+# For Spatialite without RasterLite2
+# - jsqlite-20120209.mk
+# 'HAVE_RASTERLITE2=0'
+# -------------------
 # [from 'jni/' directory]
 # ndk-build clean
 # ndk-build
@@ -20,7 +25,6 @@
 # - xz[5.2.1 (5.2.3 fails)]
 # - libiconv[1.15]
 # -------------------
-# -------------------
 LOCAL_PATH := $(call my-dir)
 JSQLITE_PATH := javasqlite-20120209
 SQLITE_PATH := sqlite-amalgamation-3220000
@@ -32,7 +36,7 @@ RTTOPO_PATH := librttopo-20180125
 XML2_PATH := libxml2-2.9.8
 LZMA_PATH := xz-5.2.1
 ICONV_PATH := libiconv-1.15
-
+# -------------------
 include $(LOCAL_PATH)/jsqlite-20120209.mk
 include $(LOCAL_PATH)/sqlite-3220000.mk
 include $(LOCAL_PATH)/spatialite-4.5.0.mk

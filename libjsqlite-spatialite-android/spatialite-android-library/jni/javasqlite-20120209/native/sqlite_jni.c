@@ -39,6 +39,16 @@
 #define MAX_PARAMS 32
 #endif
 
+/* definition to expand macro then apply to pragma message */
+#define VALUE_TO_STRING(x) #x
+#define VALUE(x) VALUE_TO_STRING(x)
+#define VAR_NAME_VALUE(var) #var "="  VALUE(var)
+// print out values
+#define Stringize( L )     #L
+#define MakeString( M, L ) M(L)
+#define $Line MakeString( Stringize, __LINE__ )
+#define CompileOptions __FILE__ "(" $Line ") Compile Options: "
+
 #ifndef HAVE_SPATIALITE41
  #define HAVE_SPATIALITE41 = 0
 #endif
@@ -48,14 +58,8 @@
 #include <spatialite_private.h>
 #include <spatialite.h>
 #if HAVE_RASTERLITE2 == 1
-#include "rasterlite2.h"
+#include "rasterlite2/rasterlite2.h"
 #endif
-
-/* definition to expand macro then apply to pragma message */
-#define VALUE_TO_STRING(x) #x
-#define VALUE(x) VALUE_TO_STRING(x)
-#define VAR_NAME_VALUE(var) #var "="  VALUE(var)
-// print out values
 
 /* free memory proc */
 
@@ -1298,14 +1302,16 @@ Java_jsqlite_Database__1open4(JNIEnv *env, jobject obj, jstring file, jint mode,
 #if HAVE_SPATIALITE41 == 1
  /* Since 4.1.1: spatialite_init(1) is now DEPRECATED because is not reentrant (not thread safe) */
  /* Initializes a SpatiaLite connection. */
+#pragma message(CompileOptions "Spatialite Version >= 4.1")
     void *p_cache = (void *)spatialite_alloc_connection();
     if (p_cache != NULL)
     { // Avoid ERROR unable to initialize the SpatiaLite extension: NULL cache !!!
      spatialite_init_ex((sqlite3 *)h->sqlite,p_cache,0);
-#pragma message(VAR_NAME_VALUE(HAVE_SPATIALITE41))
 #if HAVE_RASTERLITE2 == 1
-     /* Initializes the (RasterLite2) library */
-     rl2_init((sqlite3 *)h->sqlite,0);
+#pragma message(CompileOptions "RasterLite2 with Spatialite")
+     void *p_rl2_data = (void *)rl2_alloc_private();
+     /* Initializes the (RasterLite2) library, verbose=0 */
+     rl2_init((sqlite3 *)h->sqlite,p_rl2_data,0);
      if (rasterlite2_version == NULL)
      { // The library may be compiled in, but the functionality missing
       rasterlite2_version=(const char *)rl2_version();
@@ -1322,7 +1328,8 @@ Java_jsqlite_Database__1open4(JNIEnv *env, jobject obj, jstring file, jint mode,
 	      return;
       }
      }
-#pragma message(VAR_NAME_VALUE(HAVE_RASTERLITE2))
+#else
+#pragma message(CompileOptions "Spatialite without RasterLite2")
 #endif
      SPATIALITE_CONNECTIONS++;
     }
@@ -1331,6 +1338,8 @@ Java_jsqlite_Database__1open4(JNIEnv *env, jobject obj, jstring file, jint mode,
      	throwex(env, err ? err : "E Spatialite: ERROR: Too many connections: max 64");
 	    return;
     }
+#else
+#pragma message(CompileOptions "Spatialite Version <= 4.0")
 #endif
 	h->ver = ((maj & 0xFF) << 16) | ((min & 0xFF) << 8) | (lev & 0xFF);
 	return;

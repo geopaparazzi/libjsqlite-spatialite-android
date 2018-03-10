@@ -1,3 +1,10 @@
+# -------------------
+# jsqlite-20120209.mk
+# -------------------
+# For Spatialite without RasterLite2
+# 'HAVE_RASTERLITE2=0'
+# LOCAL_STATIC_LIBRARIES := sqlite spatialite
+# -------------------
 include $(CLEAR_VARS)
 LOCAL_MODULE    := jsqlite
 LOCAL_CFLAGS	:= \
