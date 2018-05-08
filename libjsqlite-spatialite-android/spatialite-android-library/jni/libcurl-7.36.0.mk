@@ -3,14 +3,31 @@ include $(CLEAR_VARS)
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi  --disable-gpg
 
 # ./configure --host=arm-linux-eabi --disable-tftp --disable-sspi --disable-ipv6 --disable-ldaps --disable-ldap --disable-telnet --disable-pop3 --disable-ftp --without-ssl --disable-imap --disable-smtp --disable-pop3 --disable-rtsp --disable-ares --without-ca-bundle --disable-warnings --disable-manual --without-nss --enable-static --without-zlib --without-random  --disable-gpg
+#--------------------------------------
+# ./configure --host=arm-linux-androideabi --build=x86_64-pc-linux-gnu  --disable-tftp --disable-sspi --disable-ipv6 --disable-ldaps --disable-ldap --disable-telnet --disable-pop3 --disable-ftp --without-ssl --disable-imap --disable-smtp --disable-pop3 --disable-rtsp --disable-ares --without-ca-bundle --disable-warnings --disable-manual --without-nss --enable-static --without-zlib --without-random  --disable-gpg
+# ./configure --host=aarch64-linux-android --build=x86_64-pc-linux-gnu  --disable-tftp --disable-sspi --disable-ipv6 --disable-ldaps --disable-ldap --disable-telnet --disable-pop3 --disable-ftp --without-ssl --disable-imap --disable-smtp --disable-pop3 --disable-rtsp --disable-ares --without-ca-bundle --disable-warnings --disable-manual --without-nss --enable-static --without-zlib --without-random  --disable-gpg
+# ./configure --host=x86_64-linux-android --build=x86_64-pc-linux-gnu  --disable-tftp --disable-sspi --disable-ipv6 --disable-ldaps --disable-ldap --disable-telnet --disable-pop3 --disable-ftp --without-ssl --disable-imap --disable-smtp --disable-pop3 --disable-rtsp --disable-ares --without-ca-bundle --disable-warnings --disable-manual --without-nss --enable-static --without-zlib --without-random  --disable-gpg
+#--------------------------------------
 LOCAL_MODULE    := libcurl
 
 # http://thesoftwarerogue.blogspot.de/2010/05/porting-of-libcurl-to-android-os-using.html
 #if defined(__amd64__) || defined(_x86_64__) #define CURL_SIZEOF_LONG 8
+# curl_config.h
 
 curl_flags := \
  -DCURL_STATICLIB \
  -DHAVE_CONFIG_H=1
+
+ifeq ($(TARGET_ARCH_ABI),$(filter $(TARGET_ARCH_ABI),armeabi-v7a arm64-v8a x86_64))
+ curl_flags += -DCURL_SIZEOF_LONG=8
+ curl_flags += -DCURL_SIZEOF_CURL_SOCKLEN_T=16
+ curl_flags += -DCURL_SIZEOF_CURL_OFF_T=8
+endif
+ifeq ($(TARGET_ARCH_ABI),$(filter $(TARGET_ARCH_ABI),armeabi-v7a x86))
+ curl_flags += -DCURL_SIZEOF_LONG=4
+ curl_flags += -DCURL_SIZEOF_CURL_SOCKLEN_T=4
+ curl_flags += -DCURL_SIZEOF_CURL_OFF_T=8
+endif
 
 LOCAL_CFLAGS    := \
  $(curl_flags)

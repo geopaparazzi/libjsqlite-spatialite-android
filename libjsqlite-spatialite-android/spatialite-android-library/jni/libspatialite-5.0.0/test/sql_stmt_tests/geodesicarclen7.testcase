@@ -1,0 +1,7 @@
+geodesic Arc Length - non-Geographic SRIDs
+:memory:
+SELECT GeodesicArcLength(MakePoint(172.677712, -34.426461, 3003), MakePoint(167.836789, -46.969656, 3003), 0);
+1 # rows
+1 # column
+GeodesicArcLength(MakePoint(172.677712, -34.426461, 3003), MakePoint(167.836789, -46.969656, 3003), 0)
+(NULL)

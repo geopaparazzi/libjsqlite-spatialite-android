@@ -15,7 +15,7 @@
 
 /* Define to 1 if translation of program messages to the user's native
    language is requested. */
-#define ENABLE_NLS 1
+/* #define ENABLE_NLS 1 */
 
 /* Additional font directories */
 #define FC_ADD_FONTS "yes"
@@ -295,7 +295,11 @@
 /* #undef SIZEOF_VOIDP */
 
 /* The size of `void *', as computed by sizeof. */
+#if __SIZEOF_POINTER__ == 8
 #define SIZEOF_VOID_P 8
+#else
+#define SIZEOF_VOID_P 4
+#endif
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1

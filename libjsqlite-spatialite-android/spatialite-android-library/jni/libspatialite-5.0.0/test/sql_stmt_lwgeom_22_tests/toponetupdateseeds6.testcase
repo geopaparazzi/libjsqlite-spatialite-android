@@ -1,0 +1,7 @@
+TopoNet_UpdateSeeds - NULL mode
+:memory: #use in-memory database
+SELECT TopoNet_UpdateSeeds('network', NULL);
+1 # rows (not including the header row)
+1 # columns
+TopoNet_UpdateSeeds('network', NULL)
+SQL/MM Spatial exception - null argument.

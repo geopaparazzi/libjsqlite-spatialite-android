@@ -57,7 +57,7 @@
 /* ================================================================ */
 /*  DEFINITION OF THESE SYMBOLS SHALL NOT TAKE PLACE ANYWHERE ELSE  */
 /* ================================================================ */
-
+/*
 #ifdef CURL_SIZEOF_LONG
 #error "CURL_SIZEOF_LONG shall not be defined except in curlbuild.h"
    Error Compilation_aborted_CURL_SIZEOF_LONG_already_defined
@@ -107,6 +107,7 @@
 #error "CURL_SUFFIX_CURL_OFF_TU shall not be defined except in curlbuild.h"
    Error Compilation_aborted_CURL_SUFFIX_CURL_OFF_TU_already_defined
 #endif
+*/
 
 /* ================================================================ */
 /*  EXTERNAL INTERFACE SETTINGS FOR CONFIGURE CAPABLE SYSTEMS ONLY  */
@@ -159,18 +160,26 @@
 #  include <sys/poll.h>
 #endif
 
+#ifndef CURL_SIZEOF_LONG
 /* The size of `long', as computed by sizeof. */
 #if __SIZEOF_POINTER__ == 8
 #define CURL_SIZEOF_LONG 8
 #else
 #define CURL_SIZEOF_LONG 4
 #endif
+#endif
 
 /* Integral data type used for curl_socklen_t. */
 #define CURL_TYPEOF_CURL_SOCKLEN_T socklen_t
 
+#ifndef CURL_SIZEOF_CURL_SOCKLEN_T
 /* The size of `curl_socklen_t', as computed by sizeof. */
+#if __SIZEOF_POINTER__ == 8
+#define CURL_SIZEOF_CURL_SOCKLEN_T 8
+#else
 #define CURL_SIZEOF_CURL_SOCKLEN_T 4
+#endif
+#endif
 
 /* Data type definition of curl_socklen_t. */
 typedef CURL_TYPEOF_CURL_SOCKLEN_T curl_socklen_t;
@@ -190,8 +199,14 @@ typedef CURL_TYPEOF_CURL_OFF_T curl_off_t;
 /* curl_off_t formatting string directive with "%" conversion specifier. */
 #define CURL_FORMAT_OFF_T "%lld"
 
+#ifndef CURL_SIZEOF_CURL_OFF_T
 /* The size of `curl_off_t', as computed by sizeof. */
+#if __SIZEOF_POINTER__ == 8
 #define CURL_SIZEOF_CURL_OFF_T 8
+#else
+#define CURL_SIZEOF_CURL_OFF_T 8
+#endif
+#endif
 
 /* curl_off_t constant suffix. */
 #define CURL_SUFFIX_CURL_OFF_T LL

@@ -1,5 +1,6 @@
 include $(CLEAR_VARS)
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
+# fails [arm64-v8a] Compile        : pixman <= pixman-arm-simd-asm.S
 # DO NOT use the config.h, only with the setting of PACKAGE will this work
 # -DUSE_ARM_IWMMXT
 LOCAL_MODULE    := libpixman
@@ -16,8 +17,9 @@ LOCAL_MODULE    := libpixman
 # Extra spaces are allowed and ignored at the beginning of the conditional directive line,
 # but a tab is not allowed.
 # (If the line begins with a tab, it will be considered part of a recipe for a rule.)
+# ifneq (,$(filter x86 x86_64,$(TARGET_ARCH_ABI)))
 
-ifneq ($(TARGET_ARCH_ABI),x86)
+ifeq ($(TARGET_ARCH_ABI),$(filter $(TARGET_ARCH_ABI),armeabi-v7a))
  LOCAL_CFLAGS   := -DUSE_ARM_NEON -DUSE_ARM_SIMD $(pixman_flags)
 else
  LOCAL_CFLAGS   := $(pixman_flags)
@@ -56,9 +58,9 @@ LOCAL_SRC_FILES := \
  $(PIXMAN_PATH)/pixman/pixman-solid-fill.c \
  $(PIXMAN_PATH)/pixman/pixman-timer.c \
  $(PIXMAN_PATH)/pixman/pixman-trap.c \
- $(PIXMAN_PATH)/pixman/pixman-utils.c 
+ $(PIXMAN_PATH)/pixman/pixman-utils.c
 
-ifneq ($(TARGET_ARCH_ABI),x86)
+ifeq ($(TARGET_ARCH_ABI),$(filter $(TARGET_ARCH_ABI),armeabi-v7a))
  # Setting LOCAL_ARM_NEON will enable -mfpu=neon which may cause illegal
  # instructions to be generated for armv7a code. Instead target the neon code
  # specifically.

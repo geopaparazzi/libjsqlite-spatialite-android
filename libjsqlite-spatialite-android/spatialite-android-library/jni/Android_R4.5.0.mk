@@ -32,7 +32,7 @@
 # - librttopo[20180125]
 # - libxml2[2.9.8]
 # - pixman[0.32.6 - with processor specific makefile ]
-# - fontconfig[2.11.1 ; 2.12.93 : fatal error]
+# - fontconfig[2.11.1 ; 2.12.93 : uses uuid which is not available]
 # - libtiff[4.0.9]
 # - proj4[3.9.3]
 # - libiconv[1.15]

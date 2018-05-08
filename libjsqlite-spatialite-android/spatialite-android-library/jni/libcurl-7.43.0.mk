@@ -7,6 +7,11 @@ LOCAL_MODULE    := libcurl
 
 # http://thesoftwarerogue.blogspot.de/2010/05/porting-of-libcurl-to-android-os-using.html
 # long should be sizeof(long) and not 4 in curlbuild.h ; #define CURL_SIZEOF_LONG 8
+#if __SIZEOF_POINTER__ == 8
+#define CURL_SIZEOF_LONG 8
+#else
+#define CURL_SIZEOF_LONG 4
+#endif
 
 curl_flags := \
  -DCURL_STATICLIB \

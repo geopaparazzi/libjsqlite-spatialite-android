@@ -1,5 +1,10 @@
 include $(CLEAR_VARS)
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
+#--------------------------------------
+# ./configure --host=arm-linux-androideabi --build=x86_64-pc-linux-gnu  --enable-libxml2
+# ./configure --host=aarch64-linux-android --build=x86_64-pc-linux-gnu  --enable-libxml2
+# ./configure --host=x86_64-linux-android --build=x86_64-pc-linux-gnu  --enable-libxml2
+#--------------------------------------
 LOCAL_MODULE    := libfontconfig
 
  fontconfig_flags := \
@@ -10,10 +15,12 @@ LOCAL_MODULE    := libfontconfig
  -DSIZEOF_VOID_P=4 \
  -DHAVE_CONFIG_H
 
-ifeq ($(TARGET_ARCH),arm)
+ifeq ($(TARGET_ARCH_ABI),$(filter $(TARGET_ARCH_ABI),armeabi-v7a arm64-v8a x86_64))
  fontconfig_flags += -DALIGNOF_DOUBLE=8
+ fontconfig_flags += -DSIZEOF_VOID_P=8
 else
  fontconfig_flags += -DALIGNOF_DOUBLE=4
+ fontconfig_flags += -DSIZEOF_VOID_P=4
 endif
 
 # fontconfig-2.11.1/config.h: comment out
