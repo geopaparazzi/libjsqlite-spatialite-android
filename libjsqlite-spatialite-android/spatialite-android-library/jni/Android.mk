@@ -24,7 +24,7 @@
 # - libwebp[0.4.0 ; todo: 0.6.1 ; see: pixman]
 # - spatialite[5.0.0-20180309]
 # - cairo[1.14.12]
-# - curl[7.36.0 ; todo: 7.58.0]
+# - curl[7.59.0]
 # - libgeotiff[1.4.2]
 # - giflib[5.1.4]
 # - geos[3.6.2]
@@ -52,7 +52,7 @@ OPENJPEG_PATH := openjpeg-2.0.0
 WEBP_PATH := libwebp-0.4.0
 SPATIALITE_PATH := libspatialite-5.0.0
 CAIRO_PATH := cairo-1.14.12/src
-CURL_PATH := curl-7.58.0
+CURL_PATH := curl-7.59.0
 GEOTIFF_PATH := libgeotiff-1.4.2
 GIF_PATH := giflib-5.1.4/lib
 GEOS_PATH := geos-3.6.2
@@ -78,7 +78,7 @@ include $(LOCAL_PATH)/openjpeg-2.0.0.mk
 include $(LOCAL_PATH)/libwebp-0.4.0.mk
 include $(LOCAL_PATH)/spatialite-5.0.0.mk
 include $(LOCAL_PATH)/cairo-1.14.12.mk
-include $(LOCAL_PATH)/libcurl-7.58.0.mk
+include $(LOCAL_PATH)/libcurl-7.59.0.mk
 include $(LOCAL_PATH)/libgeotiff-1.4.2.mk
 include $(LOCAL_PATH)/giflib-5.1.4.mk
 include $(LOCAL_PATH)/geos-3.6.2.mk

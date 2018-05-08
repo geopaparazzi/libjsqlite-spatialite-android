@@ -24,7 +24,7 @@
 # - libwebp[0.4.0 ; todo: 0.6.1 ; see: pixman]
 # - spatialite[5.0.0-20180309]
 # - cairo[1.14.12]
-# - curl[7.36.0 ; todo: 7.59.0]
+# - curl[7.59.0]
 # - libgeotiff[1.4.2]
 # - giflib[5.1.4]
 # - geos[3.6.2]
