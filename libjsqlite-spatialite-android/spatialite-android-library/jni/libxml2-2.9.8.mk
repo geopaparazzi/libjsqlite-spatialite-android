@@ -1,11 +1,12 @@
 include $(CLEAR_VARS)
 # ./autogen.sh  --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
-# ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
+# ASFLAGS="-D__ANDROID__" ; ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
 # -------------------
 # As of 2018-03-05
 # -------------------
 # changes:
 # use autogen.sh with configure parameters
+# avoid: dict.c:205: error: undefined reference to 'rand_r' using 'ASFLAGS="-D__ANDROID__"'
 # ------------------
 LOCAL_MODULE    := libxml2
 
