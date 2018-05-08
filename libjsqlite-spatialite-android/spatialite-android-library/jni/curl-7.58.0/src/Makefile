@@ -97,9 +97,9 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = x86_64-pc-linux-gnu
-host_triplet = arm-linux-eabi
+host_triplet = arm-unknown-linux-androideabi
 bin_PROGRAMS = curl$(EXEEXT)
-am__append_1 = -DCURL_STATICLIB
+#am__append_1 = -DCURL_STATICLIB
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_code_coverage.m4 \
@@ -216,10 +216,10 @@ am__objects_7 = ../lib/curl-strtoofft.$(OBJEXT) \
 am__objects_8 = $(am__objects_6) $(am__objects_7) $(am__objects_3)
 am_curl_OBJECTS = $(am__objects_8)
 curl_OBJECTS = $(am_curl_OBJECTS)
-#curl_DEPENDENCIES =  \
-#	$(top_builddir)/lib/libcurl.la
 curl_DEPENDENCIES =  \
 	$(top_builddir)/lib/libcurl.la
+#curl_DEPENDENCIES =  \
+#	$(top_builddir)/lib/libcurl.la
 curl_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(curl_LDFLAGS) $(LDFLAGS) -o $@
@@ -331,18 +331,18 @@ am__relativize = \
 ACLOCAL = ${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/curl-7.58.0/missing aclocal-1.15
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 0
-AR = /usr/bin/ar
-AS = as
+AR = aarch64-linux-android-ar
+AS = aarch64-linux-android-as
 AUTOCONF = ${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/curl-7.58.0/missing autoconf
 AUTOHEADER = ${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/curl-7.58.0/missing autoheader
 AUTOMAKE = ${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/curl-7.58.0/missing automake-1.15
 AWK = gawk
 BLANK_AT_MAKETIME = 
-CC = gcc
+CC = aarch64-linux-android-gcc
 CCDEPMODE = depmode=gcc3
 
 # This might hold -Werror
-CFLAGS = -Werror-implicit-function-declaration -O2 -Wno-system-headers -pthread  $(CODE_COVERAGE_CFLAGS)
+CFLAGS = -fPIE -fPIC -DANDROID=1 -Werror-implicit-function-declaration -O2 -Wno-system-headers  $(CODE_COVERAGE_CFLAGS)
 CFLAG_CURL_SYMBOL_HIDING = -fvisibility=hidden
 CODE_COVERAGE_CFLAGS = 
 CODE_COVERAGE_CPPFLAGS = 
@@ -350,31 +350,31 @@ CODE_COVERAGE_CXXFLAGS =
 CODE_COVERAGE_ENABLED = no
 CODE_COVERAGE_LDFLAGS = 
 CODE_COVERAGE_LIBS = 
-CONFIGURE_OPTIONS = " '--host=arm-linux-eabi' '--disable-tftp' '--disable-sspi' '--disable-ipv6' '--disable-ldaps' '--disable-ldap' '--disable-telnet' '--disable-ftp' '--without-ssl' '--disable-imap' '--disable-smtp' '--disable-pop3' '--disable-rtsp' '--disable-ares' '--without-ca-bundle' '--disable-warnings' '--disable-manual' '--without-nss' '--enable-static' '--without-zlib' '--without-random' '--disable-gpg' 'host_alias=arm-linux-eabi'"
-CPP = gcc -E
-CPPFLAGS = 
-CPPFLAG_CURL_STATICLIB = -DCURL_STATICLIB
+CONFIGURE_OPTIONS = " '--host=arm-unknown-linux-androideabi' '--build=x86_64-pc-linux-gnu' '--prefix=/home/mj10777/000_links/gnu_source/adt-bundle-linux/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/apps_local/arm64-v8a.21' 'build_alias=x86_64-pc-linux-gnu' 'host_alias=arm-unknown-linux-androideabi' 'CC=aarch64-linux-android-gcc' 'CFLAGS=-fPIE -fPIC -DANDROID=1' 'LDFLAGS=-pie' 'LIBS=-L/home/mj10777/000_links/gnu_source/adt-bundle-linux/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/apps_local/arm64-v8a.21/lib -lsqlite3 -liconv -lcharset -llzma -lpng -ljpeg  -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/ndk/toolchains/arm64-v8a.21/sysroot/usr/lib -lz -lm' 'CPP=aarch64-linux-android-cpp'"
+CPP = aarch64-linux-android-cpp
+CPPFLAGS = -I/usr/local/include
+CPPFLAG_CURL_STATICLIB = 
 CURLVERSION = 7.58.0
 CURL_CA_BUNDLE = 
 CURL_CFLAG_EXTRAS = 
 CURL_DISABLE_DICT = 
 CURL_DISABLE_FILE = 
-CURL_DISABLE_FTP = 1
+CURL_DISABLE_FTP = 
 CURL_DISABLE_GOPHER = 
 CURL_DISABLE_HTTP = 
-CURL_DISABLE_IMAP = 1
+CURL_DISABLE_IMAP = 
 CURL_DISABLE_LDAP = 1
 CURL_DISABLE_LDAPS = 1
-CURL_DISABLE_POP3 = 1
+CURL_DISABLE_POP3 = 
 CURL_DISABLE_PROXY = 
-CURL_DISABLE_RTSP = 1
+CURL_DISABLE_RTSP = 
 CURL_DISABLE_SMB = 
-CURL_DISABLE_SMTP = 1
-CURL_DISABLE_TELNET = 1
-CURL_DISABLE_TFTP = 1
+CURL_DISABLE_SMTP = 
+CURL_DISABLE_TELNET = 
+CURL_DISABLE_TFTP = 
 CURL_LT_SHLIB_VERSIONED_FLAVOUR = 
-CURL_NETWORK_AND_TIME_LIBS = 
-CURL_NETWORK_LIBS = 
+CURL_NETWORK_AND_TIME_LIBS = -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/apps_local/arm64-v8a.21/lib -lsqlite3 -liconv -lcharset -llzma -lpng -ljpeg -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/ndk/toolchains/arm64-v8a.21/sysroot/usr/lib -lz -lm
+CURL_NETWORK_LIBS = -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/apps_local/arm64-v8a.21/lib -lsqlite3 -liconv -lcharset -llzma -lpng -ljpeg -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/ndk/toolchains/arm64-v8a.21/sysroot/usr/lib -lz -lm
 CURL_WITH_MULTI_SSL = 
 CYGPATH_W = echo
 DEFAULT_SSL_BACKEND = no
@@ -382,12 +382,12 @@ DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
 DLLTOOL = false
 DSYMUTIL = 
-DUMPBIN = :
+DUMPBIN = 
 ECHO_C = 
 ECHO_N = -n
 ECHO_T = 
 EGREP = /bin/grep -E
-ENABLE_SHARED = no
+ENABLE_SHARED = yes
 ENABLE_STATIC = yes
 EXEEXT = 
 FGREP = /bin/grep -F
@@ -396,8 +396,8 @@ GENHTML =
 GREP = /bin/grep
 HAVE_BROTLI = 
 HAVE_GNUTLS_SRP = 
-HAVE_LDAP_SSL = 
-HAVE_LIBZ = 
+HAVE_LDAP_SSL = 1
+HAVE_LIBZ = 1
 HAVE_OPENSSL_SRP = 
 IDN_ENABLED = 
 INSTALL = /usr/bin/install -c
@@ -405,11 +405,11 @@ INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
-IPV6_ENABLED = 
+IPV6_ENABLED = 1
 LCOV = 
-LD = /usr/bin/ld
-LDFLAGS = 
-LIBCURL_LIBS = 
+LD = aarch64-linux-android-ld
+LDFLAGS = -pie -L/usr/local/lib
+LIBCURL_LIBS = -lz -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/apps_local/arm64-v8a.21/lib -lsqlite3 -liconv -lcharset -llzma -lpng -ljpeg -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/ndk/toolchains/arm64-v8a.21/sysroot/usr/lib -lz -lm
 LIBMETALINK_CPPFLAGS = 
 LIBMETALINK_LDFLAGS = 
 LIBMETALINK_LIBS = 
@@ -427,7 +427,7 @@ MAKEINFO = ${SHELL} /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsql
 MANIFEST_TOOL = :
 MANOPT = -man
 MKDIR_P = /bin/mkdir -p
-NM = nm
+NM = aarch64-linux-android-nm
 NMEDIT = 
 # Use the C locale to ensure that only ASCII characters appear in the
 # embedded text.
@@ -451,17 +451,17 @@ PKGADD_PKG = HAXXcurl
 PKGADD_VENDOR = curl.haxx.se
 PKGCONFIG = no
 RANDOM_FILE = 
-RANLIB = ranlib
-REQUIRE_LIB_DEPS = yes
+RANLIB = aarch64-linux-android-ranlib
+REQUIRE_LIB_DEPS = no
 SED = /bin/sed
 SET_MAKE = 
 SHELL = /bin/bash
 SSL_BACKENDS = 
 SSL_ENABLED = 
 SSL_LIBS = 
-STRIP = strip
-SUPPORT_FEATURES = UnixSockets AsynchDNS
-SUPPORT_PROTOCOLS = DICT FILE GOPHER HTTP
+STRIP = aarch64-linux-android-strip
+SUPPORT_FEATURES = IPv6 UnixSockets libz AsynchDNS
+SUPPORT_PROTOCOLS = DICT FILE FTP GOPHER HTTP IMAP POP3 RTSP SMTP TELNET TFTP
 USE_ARES = 
 USE_AXTLS = 
 USE_CYASSL = 
@@ -481,15 +481,15 @@ USE_UNIX_SOCKETS = 1
 USE_WINDOWS_SSPI = 
 VERSION = -
 VERSIONNUM = 073a00
-ZLIB_LIBS = 
+ZLIB_LIBS = -lz
 ZSH_FUNCTIONS_DIR = ${prefix}/share/zsh/site-functions
 abs_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/curl-7.58.0/src
 abs_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/curl-7.58.0/src
 abs_top_builddir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/curl-7.58.0
 abs_top_srcdir = /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/curl-7.58.0
 ac_ct_AR = 
-ac_ct_CC = gcc
-ac_ct_DUMPBIN = link -dump
+ac_ct_CC = 
+ac_ct_DUMPBIN = 
 am__include = include
 am__leading_dot = .
 am__quote = 
@@ -497,7 +497,7 @@ am__tar = $${TAR-tar} chof - "$$tardir"
 am__untar = $${TAR-tar} xf -
 bindir = ${exec_prefix}/bin
 build = x86_64-pc-linux-gnu
-build_alias = 
+build_alias = x86_64-pc-linux-gnu
 build_cpu = x86_64
 build_os = linux-gnu
 build_vendor = pc
@@ -507,11 +507,11 @@ datarootdir = ${prefix}/share
 docdir = ${datarootdir}/doc/${PACKAGE_TARNAME}
 dvidir = ${docdir}
 exec_prefix = ${prefix}
-host = arm-linux-eabi
-host_alias = arm-linux-eabi
+host = arm-unknown-linux-androideabi
+host_alias = arm-unknown-linux-androideabi
 host_cpu = arm
-host_os = eabi
-host_vendor = linux
+host_os = linux-androideabi
+host_vendor = unknown
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
@@ -525,7 +525,7 @@ mandir = ${datarootdir}/man
 mkdir_p = $(MKDIR_P)
 oldincludedir = /usr/include
 pdfdir = ${docdir}
-prefix = /usr/local
+prefix = /home/mj10777/000_links/gnu_source/adt-bundle-linux/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/apps_local/arm64-v8a.21
 program_transform_name = s,x,x,
 psdir = ${docdir}
 runstatedir = ${localstatedir}/run
@@ -680,8 +680,8 @@ CURL_FILES = $(CURL_CFILES) $(CURLX_CFILES) $(CURL_HFILES)
 
 # CURL_FILES comes from Makefile.inc
 curl_SOURCES = $(CURL_FILES)
-#curl_LDADD = $(top_builddir)/lib/libcurl.la     
-curl_LDADD = $(top_builddir)/lib/libcurl.la  
+curl_LDADD = $(top_builddir)/lib/libcurl.la    -lz -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/apps_local/arm64-v8a.21/lib -lsqlite3 -liconv -lcharset -llzma -lpng -ljpeg -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/ndk/toolchains/arm64-v8a.21/sysroot/usr/lib -lz -lm
+#curl_LDADD = $(top_builddir)/lib/libcurl.la  -lz -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/apps_local/arm64-v8a.21/lib -lsqlite3 -liconv -lcharset -llzma -lpng -ljpeg -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/ndk/toolchains/arm64-v8a.21/sysroot/usr/lib -lz -lm
 curl_LDFLAGS =  $(CODE_COVERAGE_LDFLAGS)
 curl_CPPFLAGS = $(AM_CPPFLAGS) $(LIBMETALINK_CPPFLAGS)
 
@@ -2379,28 +2379,28 @@ AM_DISTCHECK_CONFIGURE_FLAGS += --disable-code-coverage
 
 # Here are the stuff to create a built-in manual
 
-#$(MANPAGE):
-#	cd $(top_builddir)/docs && $(MAKE)
+$(MANPAGE):
+	cd $(top_builddir)/docs && $(MAKE)
 
 # This generates the tool_hugehelp.c file in both uncompressed and
 # compressed formats.
-##$(HUGE): $(MANPAGE) $(README) $(MKHELP)
-##	echo '#include "tool_setup.h"' > $(HUGE)
-##	echo '#ifndef HAVE_LIBZ' >> $(HUGE)
-##	$(NROFF) $(MANPAGE) | $(PERL) $(MKHELP) $(README) >> $(HUGE)
-##	echo '#else' >> $(HUGE)
-##	$(NROFF) $(MANPAGE) | $(PERL) $(MKHELP) -c $(README) >> $(HUGE)
-##	echo '#endif /* HAVE_LIBZ */' >> $(HUGE)
+$(HUGE): $(MANPAGE) $(README) $(MKHELP)
+	echo '#include "tool_setup.h"' > $(HUGE)
+	echo '#ifndef HAVE_LIBZ' >> $(HUGE)
+	$(NROFF) $(MANPAGE) | $(PERL) $(MKHELP) $(README) >> $(HUGE)
+	echo '#else' >> $(HUGE)
+	$(NROFF) $(MANPAGE) | $(PERL) $(MKHELP) -c $(README) >> $(HUGE)
+	echo '#endif /* HAVE_LIBZ */' >> $(HUGE)
 # This generates the tool_hugehelp.c file uncompressed only
 #$(HUGE): $(MANPAGE) $(README) $(MKHELP)
 #	echo '#include "tool_setup.h"' > $(HUGE)
 #	$(NROFF) $(MANPAGE) | $(PERL) $(MKHELP) $(README) >> $(HUGE)
 
 # built-in manual has been disabled, make a blank file
-$(HUGE):
-	echo "/* built-in manual is disabled, blank function */" > $(HUGE)
-	echo '#include "tool_hugehelp.h"' >> $(HUGE)
-	echo "void hugehelp(void) {}" >>$(HUGE)
+#$(HUGE):
+#	echo "/* built-in manual is disabled, blank function */" > $(HUGE)
+#	echo '#include "tool_hugehelp.h"' >> $(HUGE)
+#	echo "void hugehelp(void) {}" >>$(HUGE)
 
 # ignore tool_hugehelp.c since it is generated source code and it plays
 # by slightly different rules!

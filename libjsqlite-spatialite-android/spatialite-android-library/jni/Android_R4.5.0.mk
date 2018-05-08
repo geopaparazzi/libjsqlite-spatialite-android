@@ -1,5 +1,5 @@
 # -------------------
-# Android_R4.3.0.mk
+# Android_R4.5.0.mk
 # -------------------
 # For RasterLite2 with Spatialite
 # - jsqlite-R20120209.mk

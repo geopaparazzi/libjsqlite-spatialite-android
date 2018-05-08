@@ -21,10 +21,10 @@
 #
 ###########################################################################
 
-prefix=/usr/local
+prefix=/home/mj10777/000_links/gnu_source/adt-bundle-linux/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/apps_local/arm64-v8a.21
 exec_prefix=${prefix}
 includedir=${prefix}/include
-cppflag_curl_staticlib=-DCURL_STATICLIB
+cppflag_curl_staticlib=
 
 usage()
 {
@@ -67,7 +67,7 @@ while test $# -gt 0; do
 
     case "$1" in
     --built-shared)
-        echo no
+        echo yes
         ;;
 
     --ca)
@@ -75,7 +75,7 @@ while test $# -gt 0; do
         ;;
 
     --cc)
-        echo "/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc"
+        echo "aarch64-linux-android-gcc"
         ;;
 
     --prefix)
@@ -83,7 +83,7 @@ while test $# -gt 0; do
         ;;
 
     --feature|--features)
-        for feature in  ""; do
+        for feature in libz ""; do
             test -n "$feature" && echo "$feature"
         done
         ;;
@@ -147,8 +147,8 @@ while test $# -gt 0; do
         else
            CURLLIBDIR=""
         fi
-        if test "Xyes" = "Xyes"; then
-          echo ${CURLLIBDIR}-lcurl -lc -ldl -llog -lgcc -lm
+        if test "Xno" = "Xyes"; then
+          echo ${CURLLIBDIR}-lcurl -lz -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/apps_local/arm64-v8a.21/lib -lsqlite3 -liconv -lcharset -llzma -lpng -ljpeg -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/ndk/toolchains/arm64-v8a.21/sysroot/usr/lib -lz -lm
         else
           echo ${CURLLIBDIR}-lcurl
         fi
@@ -156,7 +156,7 @@ while test $# -gt 0; do
 
     --static-libs)
         if test "Xyes" != "Xno" ; then
-          echo ${exec_prefix}/lib/libcurl.a -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/lib -Wl,--gc-sections -nostdlib -Wl,--no-undefined,-z,nocopyreloc -Wl,-dynamic-linker,/system/bin/linker -lc -ldl -llog -lgcc -lm
+          echo ${exec_prefix}/lib/libcurl.a -pie -lz -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/apps_local/arm64-v8a.21/lib -lsqlite3 -liconv -lcharset -llzma -lpng -ljpeg -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/ndk/toolchains/arm64-v8a.21/sysroot/usr/lib -lz -lm
         else
           echo "curl was built with static libraries disabled" >&2
           exit 1
@@ -164,7 +164,7 @@ while test $# -gt 0; do
         ;;
 
     --configure)
-        echo " '--host=arm-linux-eabi' '--without-zlib' '--disable-manual' 'host_alias=arm-linux-eabi' 'CC=/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc' 'CFLAGS=-march=armv5te -mtune=xscale -msoft-float -mandroid -fPIC -mthumb-interwork -mthumb -mlong-calls -ffunction-sections -fstack-protector -fno-short-enums -fomit-frame-pointer -fno-strict-aliasing -finline-limit=64 ' 'LDFLAGS=-L/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/lib -Wl,--gc-sections -nostdlib -Wl,--no-undefined,-z,nocopyreloc -Wl,-dynamic-linker,/system/bin/linker ' 'LIBS=-lc -ldl -llog -lgcc -lm' 'CPPFLAGS=-I/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/platforms/android-18/arch-arm/usr/include -D__ARM_ARCH_5__ -D__ARM_ARCH_5T__ -D__ARM_ARCH_5E__ -D__ARM_ARCH_5TE__ -DANDROID -DOS_ANDROID -D__NEW__ -D__SGI_STL_INTERNAL_PAIR_H '"
+        echo " '--host=arm-unknown-linux-androideabi' '--build=x86_64-pc-linux-gnu' '--prefix=/home/mj10777/000_links/gnu_source/adt-bundle-linux/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/apps_local/arm64-v8a.21' 'build_alias=x86_64-pc-linux-gnu' 'host_alias=arm-unknown-linux-androideabi' 'CC=aarch64-linux-android-gcc' 'CFLAGS=-fPIE -fPIC -DANDROID=1' 'LDFLAGS=-pie' 'LIBS=-L/home/mj10777/000_links/gnu_source/adt-bundle-linux/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/apps_local/arm64-v8a.21/lib -lsqlite3 -liconv -lcharset -llzma -lpng -ljpeg  -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/ndk/toolchains/arm64-v8a.21/sysroot/usr/lib -lz -lm' 'CPP=aarch64-linux-android-cpp'"
         ;;
 
     *)

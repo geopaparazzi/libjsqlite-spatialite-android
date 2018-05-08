@@ -26,7 +26,7 @@
 /* #undef CURL_DISABLE_FILE */
 
 /* to disable FTP */
-#define CURL_DISABLE_FTP 1
+/* #undef CURL_DISABLE_FTP */
 
 /* to disable Gopher */
 /* #undef CURL_DISABLE_GOPHER */
@@ -35,7 +35,7 @@
 /* #undef CURL_DISABLE_HTTP */
 
 /* to disable IMAP */
-#define CURL_DISABLE_IMAP 1
+/* #undef CURL_DISABLE_IMAP */
 
 /* to disable LDAP */
 #define CURL_DISABLE_LDAP 1
@@ -47,25 +47,25 @@
 /* #undef CURL_DISABLE_LIBCURL_OPTION */
 
 /* to disable POP3 */
-#define CURL_DISABLE_POP3 1
+/* #undef CURL_DISABLE_POP3 */
 
 /* to disable proxies */
 /* #undef CURL_DISABLE_PROXY */
 
 /* to disable RTSP */
-#define CURL_DISABLE_RTSP 1
+/* #undef CURL_DISABLE_RTSP */
 
 /* to disable SMB/CIFS */
 /* #undef CURL_DISABLE_SMB */
 
 /* to disable SMTP */
-#define CURL_DISABLE_SMTP 1
+/* #undef CURL_DISABLE_SMTP */
 
 /* to disable TELNET */
-#define CURL_DISABLE_TELNET 1
+/* #undef CURL_DISABLE_TELNET */
 
 /* to disable TFTP */
-#define CURL_DISABLE_TFTP 1
+/* #undef CURL_DISABLE_TFTP */
 
 /* to disable TLS-SRP authentication */
 /* #undef CURL_DISABLE_TLS_SRP */
@@ -83,7 +83,7 @@
 /* #undef EGD_SOCKET */
 
 /* Define if you want to enable IPv6 support */
-/* #undef ENABLE_IPV6 */
+#define ENABLE_IPV6 1
 
 /* Define to the type of arg 2 for gethostname. */
 #define GETHOSTNAME_TYPE_ARG2 size_t
@@ -98,16 +98,16 @@
 #define GETNAMEINFO_TYPE_ARG2 socklen_t
 
 /* Define to the type of args 4 and 6 for getnameinfo. */
-#define GETNAMEINFO_TYPE_ARG46 socklen_t
+#define GETNAMEINFO_TYPE_ARG46 size_t
 
 /* Define to the type of arg 7 for getnameinfo. */
 #define GETNAMEINFO_TYPE_ARG7 int
 
 /* Specifies the number of arguments to getservbyport_r */
-#define GETSERVBYPORT_R_ARGS 6
+/* #undef GETSERVBYPORT_R_ARGS */
 
 /* Specifies the size of the buffer to pass to getservbyport_r */
-#define GETSERVBYPORT_R_BUFSIZE 4096
+/* #undef GETSERVBYPORT_R_BUFSIZE */
 
 /* Define to 1 if you have the alarm function. */
 #define HAVE_ALARM 1
@@ -200,7 +200,7 @@
 #define HAVE_FREEADDRINFO 1
 
 /* Define to 1 if you have the freeifaddrs function. */
-#define HAVE_FREEIFADDRS 1
+/* #undef HAVE_FREEIFADDRS */
 
 /* Define to 1 if you have the fsetxattr function. */
 #define HAVE_FSETXATTR 1
@@ -230,7 +230,7 @@
 #define HAVE_GETHOSTBYADDR 1
 
 /* Define to 1 if you have the gethostbyaddr_r function. */
-#define HAVE_GETHOSTBYADDR_R 1
+/* #undef HAVE_GETHOSTBYADDR_R */
 
 /* gethostbyaddr_r() takes 5 args */
 /* #undef HAVE_GETHOSTBYADDR_R_5 */
@@ -239,7 +239,7 @@
 /* #undef HAVE_GETHOSTBYADDR_R_7 */
 
 /* gethostbyaddr_r() takes 8 args */
-#define HAVE_GETHOSTBYADDR_R_8 1
+/* #undef HAVE_GETHOSTBYADDR_R_8 */
 
 /* Define to 1 if you have the gethostbyname function. */
 #define HAVE_GETHOSTBYNAME 1
@@ -260,7 +260,7 @@
 #define HAVE_GETHOSTNAME 1
 
 /* Define to 1 if you have a working getifaddrs function. */
-#define HAVE_GETIFADDRS 1
+/* #undef HAVE_GETIFADDRS */
 
 /* Define to 1 if you have the getnameinfo function. */
 #define HAVE_GETNAMEINFO 1
@@ -281,7 +281,7 @@
 #define HAVE_GETRLIMIT 1
 
 /* Define to 1 if you have the getservbyport_r function. */
-#define HAVE_GETSERVBYPORT_R 1
+/* #undef HAVE_GETSERVBYPORT_R */
 
 /* Define to 1 if you have the `gettimeofday' function. */
 #define HAVE_GETTIMEOFDAY 1
@@ -391,7 +391,7 @@
 /* #undef HAVE_LDAP_INIT_FD */
 
 /* Use LDAPS implementation */
-/* #undef HAVE_LDAP_SSL */
+#define HAVE_LDAP_SSL 1
 
 /* Define to 1 if you have the ldap_ssl.h header file. */
 /* #undef HAVE_LDAP_SSL_H */
@@ -430,7 +430,7 @@
 /* #undef HAVE_LIBSSL */
 
 /* if zlib is available */
-/* #undef HAVE_LIBZ */
+#define HAVE_LIBZ 1
 
 /* Define to 1 if you have the <linux/tcp.h> header file. */
 #define HAVE_LINUX_TCP_H 1
@@ -457,7 +457,7 @@
 #define HAVE_MEMORY_H 1
 
 /* Define to 1 if you have the memrchr function or macro. */
-/* #undef HAVE_MEMRCHR */
+#define HAVE_MEMRCHR 1
 
 /* Define to 1 if you have the MSG_NOSIGNAL flag. */
 #define HAVE_MSG_NOSIGNAL 1
@@ -466,7 +466,7 @@
 #define HAVE_NETDB_H 1
 
 /* Define to 1 if you have the <netinet/in6.h> header file. */
-/* #undef HAVE_NETINET_IN6_H */
+#define HAVE_NETINET_IN6_H 1
 
 /* Define to 1 if you have the <netinet/in.h> header file. */
 #define HAVE_NETINET_IN_H 1
@@ -569,7 +569,7 @@
 /* #undef HAVE_SETSOCKOPT_SO_NONBLOCK */
 
 /* Define to 1 if you have the <sgtty.h> header file. */
-#define HAVE_SGTTY_H 1
+/* #undef HAVE_SGTTY_H */
 
 /* Define to 1 if you have the sigaction function. */
 #define HAVE_SIGACTION 1
@@ -593,7 +593,7 @@
 /* #undef HAVE_SIG_ATOMIC_T_VOLATILE */
 
 /* Define to 1 if struct sockaddr_in6 has the sin6_scope_id member */
-/* #undef HAVE_SOCKADDR_IN6_SIN6_SCOPE_ID */
+#define HAVE_SOCKADDR_IN6_SIN6_SCOPE_ID 1
 
 /* Define to 1 if you have the socket function. */
 #define HAVE_SOCKET 1
@@ -656,7 +656,7 @@
 /* #undef HAVE_STRNICMP */
 
 /* Define to 1 if you have the <stropts.h> header file. */
-/* #define HAVE_STROPTS_H 1 */
+/* #undef HAVE_STROPTS_H */
 
 /* Define to 1 if you have the strstr function. */
 #define HAVE_STRSTR 1
@@ -776,7 +776,7 @@
 /* #undef HAVE_WOLFSSL_USEALPN */
 
 /* Define this symbol if your OS supports changing the contents of argv */
-#define HAVE_WRITABLE_ARGV 1
+/* #undef HAVE_WRITABLE_ARGV */
 
 /* Define to 1 if you have the writev function. */
 #define HAVE_WRITEV 1
@@ -788,7 +788,7 @@
 /* #undef HAVE_X509_H */
 
 /* if you have the zlib.h header file */
-/* #undef HAVE_ZLIB_H */
+#define HAVE_ZLIB_H 1
 
 /* Define to the sub-directory where libtool stores uninstalled libraries. */
 #define LT_OBJDIR ".libs/"
@@ -815,7 +815,7 @@
 /* #undef NTLM_WB_FILE */
 
 /* cpu-machine-OS */
-#define OS "arm-linux-eabi"
+#define OS "arm-unknown-linux-androideabi"
 
 /* Name of package */
 #define PACKAGE "curl"
@@ -860,7 +860,7 @@
 #define RETSIGTYPE void
 
 /* Define to the type qualifier of arg 5 for select. */
-#define SELECT_QUAL_ARG5
+#define SELECT_QUAL_ARG5 
 
 /* Define to the type of arg 1 for select. */
 #define SELECT_TYPE_ARG1 int
@@ -956,7 +956,7 @@
 /* #undef USE_LIBSSH2 */
 
 /* If you want to build curl with the built-in manual */
-/* #undef USE_MANUAL */
+#define USE_MANUAL 1
 
 /* if mbedTLS is enabled */
 /* #undef USE_MBEDTLS */

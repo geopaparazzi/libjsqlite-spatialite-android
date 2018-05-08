@@ -21,10 +21,10 @@
 #
 ###########################################################################
 
-prefix=/usr/local
+prefix=/home/mj10777/000_links/gnu_source/adt-bundle-linux/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/apps_local/arm64-v8a.21
 exec_prefix=${prefix}
 includedir=${prefix}/include
-cppflag_curl_staticlib=-DCURL_STATICLIB
+cppflag_curl_staticlib=
 
 usage()
 {
@@ -68,7 +68,7 @@ while test $# -gt 0; do
 
     case "$1" in
     --built-shared)
-        echo no
+        echo yes
         ;;
 
     --ca)
@@ -76,7 +76,7 @@ while test $# -gt 0; do
         ;;
 
     --cc)
-        echo "gcc"
+        echo "aarch64-linux-android-gcc"
         ;;
 
     --prefix)
@@ -84,13 +84,13 @@ while test $# -gt 0; do
         ;;
 
     --feature|--features)
-        for feature in UnixSockets AsynchDNS ""; do
+        for feature in IPv6 UnixSockets libz AsynchDNS ""; do
             test -n "$feature" && echo "$feature"
         done
         ;;
 
     --protocols)
-        for protocol in DICT FILE GOPHER HTTP; do
+        for protocol in DICT FILE FTP GOPHER HTTP IMAP POP3 RTSP SMTP TELNET TFTP; do
             echo "$protocol"
         done
         ;;
@@ -148,8 +148,8 @@ while test $# -gt 0; do
         else
            CURLLIBDIR=""
         fi
-        if test "Xyes" = "Xyes"; then
-          echo ${CURLLIBDIR}-lcurl 
+        if test "Xno" = "Xyes"; then
+          echo ${CURLLIBDIR}-lcurl -lz -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/apps_local/arm64-v8a.21/lib -lsqlite3 -liconv -lcharset -llzma -lpng -ljpeg -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/ndk/toolchains/arm64-v8a.21/sysroot/usr/lib -lz -lm
         else
           echo ${CURLLIBDIR}-lcurl
         fi
@@ -160,7 +160,7 @@ while test $# -gt 0; do
 
     --static-libs)
         if test "Xyes" != "Xno" ; then
-          echo ${exec_prefix}/lib/libcurl.a  
+          echo ${exec_prefix}/lib/libcurl.a -pie -L/usr/local/lib -lz -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/apps_local/arm64-v8a.21/lib -lsqlite3 -liconv -lcharset -llzma -lpng -ljpeg -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/ndk/toolchains/arm64-v8a.21/sysroot/usr/lib -lz -lm
         else
           echo "curl was built with static libraries disabled" >&2
           exit 1
@@ -168,7 +168,7 @@ while test $# -gt 0; do
         ;;
 
     --configure)
-        echo " '--host=arm-linux-eabi' '--disable-tftp' '--disable-sspi' '--disable-ipv6' '--disable-ldaps' '--disable-ldap' '--disable-telnet' '--disable-ftp' '--without-ssl' '--disable-imap' '--disable-smtp' '--disable-pop3' '--disable-rtsp' '--disable-ares' '--without-ca-bundle' '--disable-warnings' '--disable-manual' '--without-nss' '--enable-static' '--without-zlib' '--without-random' '--disable-gpg' 'host_alias=arm-linux-eabi'"
+        echo " '--host=arm-unknown-linux-androideabi' '--build=x86_64-pc-linux-gnu' '--prefix=/home/mj10777/000_links/gnu_source/adt-bundle-linux/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/apps_local/arm64-v8a.21' 'build_alias=x86_64-pc-linux-gnu' 'host_alias=arm-unknown-linux-androideabi' 'CC=aarch64-linux-android-gcc' 'CFLAGS=-fPIE -fPIC -DANDROID=1' 'LDFLAGS=-pie' 'LIBS=-L/home/mj10777/000_links/gnu_source/adt-bundle-linux/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/apps_local/arm64-v8a.21/lib -lsqlite3 -liconv -lcharset -llzma -lpng -ljpeg  -L/home/mj10777/000_links/gnu_source/adt-bundle-linux/ndk/toolchains/arm64-v8a.21/sysroot/usr/lib -lz -lm' 'CPP=aarch64-linux-android-cpp'"
         ;;
 
     *)

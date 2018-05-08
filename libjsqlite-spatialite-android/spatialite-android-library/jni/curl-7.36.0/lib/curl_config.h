@@ -77,7 +77,7 @@
 /* #undef ENABLE_IPV6 */
 
 /* Define to the type of arg 2 for gethostname. */
-#define GETHOSTNAME_TYPE_ARG2 unsigned int
+#define GETHOSTNAME_TYPE_ARG2 size_t
 
 /* Define to the type qualifier of arg 1 for getnameinfo. */
 #define GETNAMEINFO_QUAL_ARG1 const
@@ -110,7 +110,7 @@
 #define HAVE_ARPA_INET_H 1
 
 /* Define to 1 if you have the <arpa/tftp.h> header file. */
-/* #undef HAVE_ARPA_TFTP_H */
+#define HAVE_ARPA_TFTP_H 1
 
 /* Define to 1 if you have the <assert.h> header file. */
 #define HAVE_ASSERT_H 1
@@ -176,10 +176,10 @@
 /* #undef HAVE_FREEIFADDRS */
 
 /* Define to 1 if you have the fsetxattr function. */
-/* #undef HAVE_FSETXATTR */
+#define HAVE_FSETXATTR 1
 
 /* fsetxattr() takes 5 args */
-/* #undef HAVE_FSETXATTR_5 */
+#define HAVE_FSETXATTR_5 1
 
 /* fsetxattr() takes 6 args */
 /* #undef HAVE_FSETXATTR_6 */
@@ -239,7 +239,7 @@
 #define HAVE_GETNAMEINFO 1
 
 /* Define to 1 if you have the `getpass_r' function. */
-#define HAVE_GETPASS_R 1
+/* #undef HAVE_GETPASS_R */
 
 /* Define to 1 if you have the `getppid' function. */
 #define HAVE_GETPPID 1
@@ -299,7 +299,7 @@
 /* #undef HAVE_IDN_FREE_H */
 
 /* Define to 1 if you have the <ifaddrs.h> header file. */
-/* #undef HAVE_IFADDRS_H */
+#define HAVE_IFADDRS_H 1
 
 /* Define to 1 if you have the `inet_addr' function. */
 #define HAVE_INET_ADDR 1
@@ -405,7 +405,7 @@
 /* #undef HAVE_LIBSSL */
 
 /* if zlib is available */
-/* #undef HAVE_LIBZ */
+#define HAVE_LIBZ 1
 
 /* Define to 1 if you have the <limits.h> header file. */
 #define HAVE_LIMITS_H 1
@@ -535,7 +535,7 @@
 #define HAVE_SETLOCALE 1
 
 /* Define to 1 if you have the `setmode' function. */
-#define HAVE_SETMODE 1
+/* #undef HAVE_SETMODE */
 
 /* Define to 1 if you have the `setrlimit' function. */
 #define HAVE_SETRLIMIT 1
@@ -547,7 +547,7 @@
 /* #undef HAVE_SETSOCKOPT_SO_NONBLOCK */
 
 /* Define to 1 if you have the <sgtty.h> header file. */
-#define HAVE_SGTTY_H 1
+/* #undef HAVE_SGTTY_H */
 
 /* Define to 1 if you have the sigaction function. */
 #define HAVE_SIGACTION 1
@@ -706,13 +706,13 @@
 #define HAVE_SYS_UN_H 1
 
 /* Define to 1 if you have the <sys/utime.h> header file. */
-#define HAVE_SYS_UTIME_H 1
+/* #undef HAVE_SYS_UTIME_H */
 
 /* Define to 1 if you have the <sys/wait.h> header file. */
 #define HAVE_SYS_WAIT_H 1
 
 /* Define to 1 if you have the <sys/xattr.h> header file. */
-/* #undef HAVE_SYS_XATTR_H */
+#define HAVE_SYS_XATTR_H 1
 
 /* Define to 1 if you have the <termios.h> header file. */
 #define HAVE_TERMIOS_H 1
@@ -775,7 +775,7 @@
 /* #undef HAVE_X509_H */
 
 /* if you have the zlib.h header file */
-/* #undef HAVE_ZLIB_H */
+#define HAVE_ZLIB_H 1
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
@@ -803,7 +803,7 @@
 /* #undef NTLM_WB_FILE */
 
 /* cpu-machine-OS */
-#define OS "arm-linux-eabi"
+#define OS "arm-unknown-linux-androideabi"
 
 /* Name of package */
 #define PACKAGE "curl"
@@ -839,7 +839,7 @@
 #define RECV_TYPE_ARG3 size_t
 
 /* Define to the type of arg 4 for recv. */
-#define RECV_TYPE_ARG4 unsigned int
+#define RECV_TYPE_ARG4 int
 
 /* Define to the function return type for recv. */
 #define RECV_TYPE_RETV ssize_t
@@ -875,7 +875,7 @@
 #define SEND_TYPE_ARG3 size_t
 
 /* Define to the type of arg 4 for send. */
-#define SEND_TYPE_ARG4 unsigned int
+#define SEND_TYPE_ARG4 int
 
 /* Define to the function return type for send. */
 #define SEND_TYPE_RETV ssize_t
@@ -884,25 +884,25 @@
 #define SIZEOF_INT 4
 
 /* The size of `long', as computed by sizeof. */
-#define SIZEOF_LONG 4
+#define SIZEOF_LONG 8
 
 /* The size of `long long', as computed by sizeof. */
 /* #undef SIZEOF_LONG_LONG */
 
 /* The size of `off_t', as computed by sizeof. */
-#define SIZEOF_OFF_T 4
+#define SIZEOF_OFF_T 8
 
 /* The size of `short', as computed by sizeof. */
 #define SIZEOF_SHORT 2
 
 /* The size of `size_t', as computed by sizeof. */
-#define SIZEOF_SIZE_T 4
+#define SIZEOF_SIZE_T 8
 
 /* The size of `time_t', as computed by sizeof. */
-#define SIZEOF_TIME_T 4
+#define SIZEOF_TIME_T 8
 
 /* The size of `void*', as computed by sizeof. */
-#define SIZEOF_VOIDP 4
+#define SIZEOF_VOIDP 8
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
@@ -938,7 +938,7 @@
 /* #undef USE_LIBSSH2 */
 
 /* If you want to build curl with the built-in manual */
-/* #undef USE_MANUAL */
+#define USE_MANUAL 1
 
 /* Define to enable metalink support */
 /* #undef USE_METALINK */

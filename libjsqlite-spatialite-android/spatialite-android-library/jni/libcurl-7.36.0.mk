@@ -7,6 +7,19 @@ include $(CLEAR_VARS)
 # ./configure --host=arm-linux-androideabi --build=x86_64-pc-linux-gnu  --disable-tftp --disable-sspi --disable-ipv6 --disable-ldaps --disable-ldap --disable-telnet --disable-pop3 --disable-ftp --without-ssl --disable-imap --disable-smtp --disable-pop3 --disable-rtsp --disable-ares --without-ca-bundle --disable-warnings --disable-manual --without-nss --enable-static --without-zlib --without-random  --disable-gpg
 # ./configure --host=aarch64-linux-android --build=x86_64-pc-linux-gnu  --disable-tftp --disable-sspi --disable-ipv6 --disable-ldaps --disable-ldap --disable-telnet --disable-pop3 --disable-ftp --without-ssl --disable-imap --disable-smtp --disable-pop3 --disable-rtsp --disable-ares --without-ca-bundle --disable-warnings --disable-manual --without-nss --enable-static --without-zlib --without-random  --disable-gpg
 # ./configure --host=x86_64-linux-android --build=x86_64-pc-linux-gnu  --disable-tftp --disable-sspi --disable-ipv6 --disable-ldaps --disable-ldap --disable-telnet --disable-pop3 --disable-ftp --without-ssl --disable-imap --disable-smtp --disable-pop3 --disable-rtsp --disable-ares --without-ca-bundle --disable-warnings --disable-manual --without-nss --enable-static --without-zlib --without-random  --disable-gpg
+
+# source android_arm64_21.sh
+# ./configure --host=arm-unknown-linux-androideabi --build=x86_64-pc-linux-gnu  --prefix=/home/mj10777/000_links/gnu_source/adt-bundle-linux/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/apps_local/arm64-v8a.21
+#--------------------------------------
+# in curl-7.36.0/include/curl/curlbuild.h
+#--------------------------------------
+# The size of `long', as computed by sizeof.
+# #define CURL_SIZEOF_LONG 8
+#define CURL_SIZEOF_LONG sizeof(long)
+#--------------------------------------
+# The size of `curl_off_t', as computed by sizeof.
+# #define CURL_SIZEOF_CURL_OFF_T 8
+#define CURL_SIZEOF_LONG sizeof(long)
 #--------------------------------------
 LOCAL_MODULE    := libcurl
 

@@ -44,7 +44,7 @@ macro_version=2.4.2
 macro_revision=1.3337
 
 # Assembler program.
-AS="as"
+AS="aarch64-linux-android-as"
 
 # DLL creation program.
 DLLTOOL="false"
@@ -53,7 +53,7 @@ DLLTOOL="false"
 OBJDUMP="objdump"
 
 # Whether or not to build shared libraries.
-build_libtool_libs=no
+build_libtool_libs=yes
 
 # Whether or not to build static libraries.
 build_old_libs=yes
@@ -74,13 +74,13 @@ ECHO="printf %s\\n"
 PATH_SEPARATOR=":"
 
 # The host system.
-host_alias=arm-linux-eabi
-host=arm-linux-eabi
-host_os=eabi
+host_alias=arm-unknown-linux-androideabi
+host=arm-unknown-linux-androideabi
+host_os=linux-androideabi
 
 # The build system.
-build_alias=
-build=x86_64-unknown-linux-gnu
+build_alias=x86_64-pc-linux-gnu
+build=x86_64-pc-linux-gnu
 build_os=linux-gnu
 
 # A sed program that does not truncate output.
@@ -99,7 +99,7 @@ EGREP="/bin/grep -E"
 FGREP="/bin/grep -F"
 
 # A BSD- or MS-compatible name lister.
-NM="nm"
+NM="aarch64-linux-android-nm"
 
 # Whether we need soft or hard links.
 LN_S="ln -s"
@@ -129,7 +129,7 @@ to_host_file_cmd=func_convert_file_noop
 to_tool_file_cmd=func_convert_file_noop
 
 # Method to check whether dependent libraries are shared objects.
-deplibs_check_method="unknown"
+deplibs_check_method="pass_all"
 
 # Command to use when deplibs_check_method = "file_magic".
 file_magic_cmd="\$MAGIC_CMD"
@@ -144,7 +144,7 @@ want_nocaseglob="no"
 sharedlib_from_linklib_cmd="printf %s\\n"
 
 # The archiver.
-AR="/usr/bin/ar"
+AR="aarch64-linux-android-ar"
 
 # Flags to create an archive.
 AR_FLAGS="cru"
@@ -153,10 +153,10 @@ AR_FLAGS="cru"
 archiver_list_spec="@"
 
 # A symbol stripping program.
-STRIP="strip"
+STRIP="aarch64-linux-android-strip"
 
 # Commands used to install an old-style archive.
-RANLIB="ranlib"
+RANLIB="aarch64-linux-android-ranlib"
 old_postinstall_cmds="chmod 644 \$oldlib~\$RANLIB \$tool_oldlib"
 old_postuninstall_cmds=""
 
@@ -164,10 +164,10 @@ old_postuninstall_cmds=""
 lock_old_archive_extraction=no
 
 # A C compiler.
-LTCC="/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc"
+LTCC="aarch64-linux-android-gcc"
 
 # LTCC compiler flags.
-LTCFLAGS="-march=armv5te -mtune=xscale -msoft-float -mandroid -fPIC -mthumb-interwork -mthumb -mlong-calls -ffunction-sections -fstack-protector -fno-short-enums -fomit-frame-pointer -fno-strict-aliasing -finline-limit=64 -O2 -Wno-system-headers"
+LTCFLAGS="-fPIE -fPIC -DANDROID=1 -O2 -Wno-system-headers"
 
 # Take the output of nm and produce a listing of raw symbols and C names.
 global_symbol_pipe="sed -n -e 's/^.*[	 ]\\([ABCDGIRSTW][ABCDGIRSTW]*\\)[	 ][	 ]*\\([_A-Za-z][_A-Za-z0-9]*\\)\$/\\1 \\2 \\2/p' | sed '/ __gnu_lto/d'"
@@ -225,35 +225,35 @@ extract_expsyms_cmds=""
 
 # Variables whose values should be saved in libtool wrapper scripts and
 # restored at link time.
-variables_saved_for_relink="PATH  LD_RUN_PATH GCC_EXEC_PREFIX COMPILER_PATH LIBRARY_PATH"
+variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COMPILER_PATH LIBRARY_PATH"
 
 # Do we need the "lib" prefix for modules?
-need_lib_prefix=unknown
+need_lib_prefix=no
 
 # Do we need a version for libraries?
-need_version=unknown
+need_version=no
 
 # Library versioning type.
-version_type=none
+version_type=linux
 
 # Shared library runtime path variable.
 runpath_var=LD_RUN_PATH
 
 # Shared library path variable.
-shlibpath_var=
+shlibpath_var=LD_LIBRARY_PATH
 
 # Is shlibpath searched before the hard-coded library search path?
-shlibpath_overrides_runpath=unknown
+shlibpath_overrides_runpath=no
 
 # Format of library name prefix.
 libname_spec="lib\$name"
 
 # List of archive names.  First name is the real one, the rest are links.
 # The last name is the one that the linker finds with -lNAME
-library_names_spec=""
+library_names_spec="\${libname}\${release}\${shared_ext}\$versuffix \${libname}\${release}\${shared_ext}\$major \$libname\${shared_ext}"
 
 # The coded name of the library, if different from the real name.
-soname_spec=""
+soname_spec="\${libname}\${release}\${shared_ext}\$major"
 
 # Permission mode override for installation of shared libraries.
 install_override_mode=""
@@ -265,20 +265,20 @@ postinstall_cmds=""
 postuninstall_cmds=""
 
 # Commands used to finish a libtool library installation in a directory.
-finish_cmds=""
+finish_cmds="PATH=\\\"\\\$PATH:/sbin\\\" ldconfig -n \$libdir"
 
 # As "finish_cmds", except a single script fragment to be evaled but
 # not shown.
 finish_eval=""
 
 # Whether we should hardcode library paths into libraries.
-hardcode_into_libs=no
+hardcode_into_libs=yes
 
 # Compile-time system search path for libraries.
-sys_lib_search_path_spec="/home/mj10777/gnu_source/adt-bundle-linux/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/lib/gcc/arm-linux-androideabi/4.6/thumb /home/mj10777/gnu_source/adt-bundle-linux/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/lib/gcc /home/mj10777/gnu_source/adt-bundle-linux/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/arm-linux-androideabi/lib/thumb "
+sys_lib_search_path_spec="/media/mj10777/tb_4/gnu_source/adt-bundle-linux/ndk/toolchains/arm64-v8a.21/lib/gcc/aarch64-linux-android/4.9.x /media/mj10777/tb_4/gnu_source/adt-bundle-linux/ndk/toolchains/arm64-v8a.21/lib/lib64 /media/mj10777/tb_4/gnu_source/adt-bundle-linux/ndk/toolchains/arm64-v8a.21/aarch64-linux-android/lib64 /media/mj10777/tb_4/gnu_source/adt-bundle-linux/ndk/toolchains/arm64-v8a.21/sysroot/usr/lib "
 
 # Run-time system search path for libraries.
-sys_lib_dlsearch_path_spec="/lib /usr/lib"
+sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/local/lib /home/mj10777/000_links/apps_local/qgis_210/lib /home/mj10777/000_links/apps_local/qgis_210/lib/qgis/plugins /home/mj10777/000_links/apps_local/qgis_216/lib /home/mj10777/000_links/apps_local/qgis_216/lib/qgis/plugins /home/mj10777/000_links/apps_local/qgis_216_gdal_1112/lib /home/mj10777/000_links/apps_local/qgis_216_gdal_1112/lib/qgis/plugins /home/mj10777/000_links/apps_local/gdal_2000.master/lib /home/mj10777/000_links/apps_local/gdal_2000.spatialview/lib /home/mj10777/000_links/apps_local/gdal_git_master/lib /home/mj10777/000_links/apps_local/gdal_2200.spatialview/lib /home/mj10777/000_links/apps_local/gdal_1112/lib /home/mj10777/000_links/apps_local/gdal_1115/lib /home/mj10777/000_links/apps_local/gdal_externals /home/mj10777/000_links/apps_local/qgis_2160/lib /home/mj10777/000_links/apps_local/qgis_2160/lib/qgis/plugins /home/mj10777/000_links/apps_local/qgis_2161/lib /home/mj10777/000_links/apps_local/qgis_2161/lib/qgis/plugins /home/mj10777/000_links/apps_local/qgis_216.gdal_2/lib /home/mj10777/000_links/apps_local/qgis_216.gdal_2/lib/qgis/plugins /home/mj10777/000_links/apps_local/qgis_219/lib /home/mj10777/000_links/apps_local/qgis_219/lib/qgis/plugins /home/mj10777/000_links/apps_local/qgis_219.gdal_2/lib /home/mj10777/000_links/apps_local/qgis_219.gdal_2/lib/qgis/plugins /home/mj10777/000_links/apps_local/qgis_219.gdal_2.gdal_1112/lib /home/mj10777/000_links/apps_local/qgis_219.gdal_2.gdal_1112/lib/qgis/plugins /home/mj10777/000_links/apps_local/libQt571/lib /home/mj10777/000_links/apps_local/qgis_300/lib /home/mj10777/000_links/apps_local/qgis_300/lib/qgis/plugins /home/mj10777/000_links/apps_local/qgis_300.gdal_2/lib /home/mj10777/000_links/apps_local/qgis_300.gdal_2/lib/qgis/plugins /home/mj10777/000_links/apps_local/qgis_300_metadata/lib /home/mj10777/000_links/apps_local/qgis_300_metadata/lib/qgis/plugins /home/mj10777/000_links/apps_local/qgis_300.georeferencer/lib /home/mj10777/000_links/apps_local/qgis_300.georeferencer/lib/qgis/plugins /home/mj10777/000_links/apps_local/qgis_300.spatialite/lib /home/mj10777/000_links/apps_local/qgis_300spatialite/lib/qgis/plugins /home/mj10777/000_links/apps_local/qgis_300_master/lib /home/mj10777/000_links/apps_local/qgis_300_master/lib/qgis/plugins /home/mj10777/000_links/apps_local/qgis_300.master/lib /home/mj10777/000_links/apps_local/qgis_300.master/lib/qgis/plugins /home/mj10777/000_links/apps_local/libQt592/lib /home/mj10777/000_links/apps_local/qgis_300.layermetadata/lib /home/mj10777/000_links/apps_local/qgis_300.layermetadata/lib/qgis/plugins /home/mj10777/000_links/apps_local/libproj/proj-4.9.3/lib /home/mj10777/000_links/apps_local/libproj/spatialite/lib /home/mj10777/000_links/apps_local/spatialite.libs/wxwindows/wxWidgets-3.0.2/lib /home/mj10777/000_links/apps_local/spatialite.libs/wxwindows/wxWidgets-3.0.3/lib /home/mj10777/000_links/apps_local/spatialite.libs/wxwindows/wxWidgets-3.1.1/lib /usr/lib/x86_64-linux-gnu/libfakeroot /opt/google/earth/free /usr/local/grass-6.4.0/lib /usr/local/grass-6.4.0/bin /lib/i386-linux-gnu /usr/lib/i386-linux-gnu /lib/i686-linux-gnu /usr/lib/i686-linux-gnu /usr/lib/i386-linux-gnu/mesa /lib/i386-linux-gnu /usr/lib/i386-linux-gnu /lib/i686-linux-gnu /usr/lib/i686-linux-gnu /usr/local/lib /usr/local/lib /usr/local/lib64 /lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu/mesa-egl /usr/lib/x86_64-linux-gnu/mesa /usr/lib/x86_64-linux-gnu/mir/client8driver/mesa /lib32 /usr/lib32 /libx32 /usr/libx32 "
 
 # Whether dlopen is supported.
 dlopen_support=unknown
@@ -290,12 +290,12 @@ dlopen_self=unknown
 dlopen_self_static=unknown
 
 # Commands to strip libraries.
-old_striplib="strip --strip-debug"
-striplib="strip --strip-unneeded"
+old_striplib="aarch64-linux-android-strip --strip-debug"
+striplib="aarch64-linux-android-strip --strip-unneeded"
 
 
 # The linker used to build libraries.
-LD="/home/mj10777/gnu_source/adt-bundle-linux/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/arm-linux-androideabi/bin/ld"
+LD="aarch64-linux-android-ld"
 
 # How to create reloadable object files.
 reload_flag=" -r"
@@ -305,7 +305,7 @@ reload_cmds="\$LD\$reload_flag -o \$output\$reload_objs"
 old_archive_cmds="\$AR \$AR_FLAGS \$oldlib\$oldobjs~\$RANLIB \$tool_oldlib"
 
 # A language specific compiler.
-CC="/home/mj10777/000_links/gnu_source/adt-bundle-linux/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc"
+CC="aarch64-linux-android-gcc"
 
 # Is the compiler the GNU compiler?
 with_gcc=yes
@@ -348,7 +348,10 @@ old_archive_from_expsyms_cmds=""
 
 # Commands used to build a shared archive.
 archive_cmds="\$CC -shared \$pic_flag \$libobjs \$deplibs \$compiler_flags \${wl}-soname \$wl\$soname -o \$lib"
-archive_expsym_cmds="\$CC -shared \$pic_flag \$libobjs \$deplibs \$compiler_flags \${wl}-soname \$wl\$soname \${wl}-retain-symbols-file \$wl\$export_symbols -o \$lib"
+archive_expsym_cmds="echo \\\"{ global:\\\" > \$output_objdir/\$libname.ver~
+	    cat \$export_symbols | sed -e \\\"s/\\\\(.*\\\\)/\\\\1;/\\\" >> \$output_objdir/\$libname.ver~
+	    echo \\\"local: *; };\\\" >> \$output_objdir/\$libname.ver~
+	    \$CC -shared \$pic_flag \$libobjs \$deplibs \$compiler_flags \${wl}-soname \$wl\$soname \${wl}-version-script \${wl}\$output_objdir/\$libname.ver -o \$lib"
 
 # Commands used to build a loadable module if different from building
 # a shared archive.
@@ -399,7 +402,7 @@ hardcode_automatic=no
 inherit_rpath=no
 
 # Whether libtool must link a program against all its dependency libraries.
-link_all_deplibs=unknown
+link_all_deplibs=no
 
 # Set to "yes" if exported symbols are required.
 always_export_symbols=no
