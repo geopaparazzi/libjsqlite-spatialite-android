@@ -1,0 +1,7 @@
+rl2_openjpeg_version 
+:memory: #use in-memory database
+SELECT rl2_openjpeg_version() IS NOT NULL;
+1 # rows (not including the header row)
+1 # columns
+rl2_openjpeg_version() IS NOT NULL
+1

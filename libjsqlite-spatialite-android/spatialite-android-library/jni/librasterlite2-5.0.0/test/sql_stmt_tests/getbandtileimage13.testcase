@@ -1,0 +1,7 @@
+RL2_GetTripleBandTileImage - Int DbPrefix
+:memory: #use in-memory database
+SELECT RL2_GetTripleBandTileImage(1, 'alpha', 1, 0, 1, 2, '#ffffff', 1);
+1 # rows (not including the header row)
+1 # columns
+RL2_GetTripleBandTileImage(1, 'alpha', 1, 0, 1, 2, '#ffffff', 1)
+(NULL)

@@ -1,0 +1,7 @@
+IsPixelNone - true
+:memory: #use in-memory database
+SELECT RL2_IsPixelNone(RL2_CreatePixelNone());
+1 # rows (not including the header row)
+1 # columns
+RL2_IsPixelNone(RL2_CreatePixelNone())
+1

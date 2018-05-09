@@ -1,0 +1,7 @@
+RL2_WriteSectionNdviAsciiGrid - invalid width (too small)
+:memory: #use in-memory database
+SELECT RL2_WriteSectionNdviAsciiGrid(NULL, 'alpha', 1, './test.asc', 4, 1024, 0, 3, BuildMbr(1, 1, 10, 10), 1, 1, 2);
+1 # rows (not including the header row)
+1 # columns
+RL2_WriteSectionNdviAsciiGrid(NULL, 'alpha', 1, './test.asc', 4, 1024, 0, 3, BuildMbr(1, 1, 10, 10), 1, 1, 2)
+-1

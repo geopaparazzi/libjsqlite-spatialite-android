@@ -1,0 +1,7 @@
+RL2_CreateRasterCoverage - INT32 GRID LOSSLESS WEBP
+:memory: #use in-memory database
+SELECT RL2_CreateRasterCoverage('int32_grid_webp2', 'INT32', 'DATAGRID', 1, 'LL_WEBP', 100, 512, 512, 3003, 1);
+1 # rows (not including the header row)
+1 # columns
+RL2_CreateRasterCoverage('int32_grid_webp2', 'INT32', 'DATAGRID', 1, 'LL_WEBP', 100, 512, 512, 3003, 1)
+0

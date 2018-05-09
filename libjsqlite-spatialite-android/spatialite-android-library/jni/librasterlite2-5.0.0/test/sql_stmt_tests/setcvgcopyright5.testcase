@@ -1,0 +1,7 @@
+SetRasterCoverageCopyright - NULL Copyright
+:memory: #use in-memory database
+SELECT RL2_SetRasterCoverageCopyright('coverage', NULL, 'license');
+1 # rows (not including the header row)
+1 # columns
+RL2_SetRasterCoverageCopyright('coverage', NULL, 'license')
+0

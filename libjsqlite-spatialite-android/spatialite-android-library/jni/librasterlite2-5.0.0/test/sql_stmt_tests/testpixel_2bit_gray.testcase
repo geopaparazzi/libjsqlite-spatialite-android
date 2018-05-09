@@ -1,0 +1,7 @@
+TestPixel - 2-BIT Gray (ok)
+:memory: #use in-memory database
+SELECT RL2_GetPixelValue(RL2_SetPixelValue(RL2_CreatePixel('2-BIT', 'GRAYSCALE', 1), 0, 3), 0);
+1 # rows (not including the header row)
+1 # columns
+RL2_GetPixelValue(RL2_SetPixelValue(RL2_CreatePixel('2-BIT', 'GRAYSCALE', 1), 0, 3), 0)
+3

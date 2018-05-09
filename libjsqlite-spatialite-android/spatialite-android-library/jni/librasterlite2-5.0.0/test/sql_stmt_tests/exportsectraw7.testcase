@@ -1,0 +1,7 @@
+RL2_ExportSectionRawPixels - NULL vertical resolution
+:memory: #use in-memory database
+SELECT RL2_ExportSectionRawPixels(NULL, 'coverage', 1, 1000, 1000, BuildMBR(1, 2, 3, 4), 1, NULL);
+1 # rows (not including the header row)
+1 # columns
+RL2_ExportSectionRawPixels(NULL, 'coverage', 1, 1000, 1000, BuildMBR(1, 2, 3, 4), 1, NULL)
+(NULL)

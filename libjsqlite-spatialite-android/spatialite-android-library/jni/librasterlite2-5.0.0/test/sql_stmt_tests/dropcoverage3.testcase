@@ -1,0 +1,7 @@
+DropRasterCoverage - not existing
+:memory: #use in-memory database
+SELECT RL2_DropRasterCoverage('alpha', 1);
+1 # rows (not including the header row)
+1 # columns
+RL2_DropRasterCoverage('alpha', 1)
+0

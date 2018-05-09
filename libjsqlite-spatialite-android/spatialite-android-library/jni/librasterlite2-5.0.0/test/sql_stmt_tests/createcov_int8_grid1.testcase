@@ -1,0 +1,7 @@
+RL2_CreateRasterCoverage - INT8 GRID invalid Bands
+:memory: #use in-memory database
+SELECT RL2_CreateRasterCoverage('int8_grid1', 'INT8', 'DATAGRID', 2, 'NONE', 100, 512, 512, 3003, 1.0);
+1 # rows (not including the header row)
+1 # columns
+RL2_CreateRasterCoverage('int8_grid1', 'INT8', 'DATAGRID', 2, 'NONE', 100, 512, 512, 3003, 1.0)
+0

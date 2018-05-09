@@ -1,0 +1,7 @@
+SetPixelValue - mismatching INT8 (-) value
+:memory: #use in-memory database
+SELECT RL2_SetPixelValue(RL2_CreatePixel('INT8', 'DATAGRID', 1), 0, -129);
+1 # rows (not including the header row)
+1 # columns
+RL2_SetPixelValue(RL2_CreatePixel('INT8', 'DATAGRID', 1), 0, -129)
+(NULL)

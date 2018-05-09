@@ -1,0 +1,7 @@
+RL2_WriteSectionMonoBandTiff - invalid width (too small)
+:memory: #use in-memory database
+SELECT RL2_WriteSectionMonoBandTiff(NULL, 'alpha', 1, './test.tif', 4, 1024, 0, MakePoint(1, 1), 0.5, 0.5, 'PNG', 512);
+1 # rows (not including the header row)
+1 # columns
+RL2_WriteSectionMonoBandTiff(NULL, 'alpha', 1, './test.tif', 4, 1024, 0, MakePoint(1, 1), 0.5, 0.5, 'PNG', 512)
+-1

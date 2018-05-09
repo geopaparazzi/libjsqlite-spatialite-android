@@ -1,0 +1,7 @@
+RL2_IsRasterCoverageAutoNdviEnabled - Double Coverage
+:memory: #use in-memory database
+SELECT RL2_IsRasterCoverageAutoNdviEnabled ('MAIN', 1.5);
+1 # rows (not including the header row)
+1 # columns
+RL2_IsRasterCoverageAutoNdviEnabled ('MAIN', 1.5)
+-1

@@ -1,0 +1,117 @@
+# SandroFurieri (c) 2014
+# Makefile RasterLite2 statically linked CLI-tools [Win MSYS/MinGW]
+
+CFLAGS = -Wall -Wextra -Wunused -pedantic -I/mingw64/local/include
+GG = g++ -static
+CC = gcc -static
+
+all: ./static_bin/rl2sniff.exe ./static_bin/rl2tool.exe \
+	./static_bin/wmslite.exe
+
+./static_bin/rl2sniff.exe: ./tools/rl2sniff.o 
+	$(GG) ./tools/rl2sniff.o -o ./static_bin/rl2sniff.exe \
+	/mingw64/local/lib/librasterlite2.a \
+	/mingw64/local/lib/libspatialite.a \
+	/mingw64/local/lib/libsqlite3.a \
+	/mingw64/local/lib/librttopo.a \
+	/mingw64/local/lib/libproj.a \
+	/mingw64/local/lib/libgeos_c.a \
+	/mingw64/local/lib/libgeos.a \
+	/mingw64/local/lib/libfreexl.a \
+	/mingw64/local/lib/libcairo.a \
+	/mingw64/local/lib/libpixman-1.a \
+	/mingw64/local/lib/libfontconfig.a \
+	/mingw64/local/lib/libfreetype.a \
+	/mingw64/local/lib/libgif.a \
+	/mingw64/local/lib/libwebp.a \
+	/mingw64/local/lib/libjpeg.a \
+	/mingw64/local/lib/libgeotiff.a \
+	/mingw64/local/lib/libtiff.a \
+	/mingw64/local/lib/libpng.a \
+	/mingw64/local/lib/libCharLS.a \
+	/mingw64/local/lib/libopenjp2.a \
+	/mingw64/local/lib/libcurl.a \
+	/mingw64/local/lib/libssl.a \
+	/mingw64/local/lib/libcrypto.a \
+	/mingw64/local/lib/libxml2.a \
+	/mingw64/local/lib/libexpat.a \
+	/mingw64/local/lib/liblzma.a \
+	/mingw64/local/lib/libz.a \
+	/mingw64/local/lib/libiconv.a \
+	-lm -lmsimg32 -lws2_32 -lgdi32 -lwldap32 -static-libstdc++ -static-libgcc
+	strip --strip-all ./static_bin/rl2sniff.exe
+	
+./static_bin/rl2tool.exe: ./tools/rl2tool.o 
+	$(GG) ./tools/rl2tool.o -o ./static_bin/rl2tool.exe \
+	/mingw64/local/lib/librasterlite2.a \
+	/mingw64/local/lib/libspatialite.a \
+	/mingw64/local/lib/libsqlite3.a \
+	/mingw64/local/lib/librttopo.a \
+	/mingw64/local/lib/libproj.a \
+	/mingw64/local/lib/libgeos_c.a \
+	/mingw64/local/lib/libgeos.a \
+	/mingw64/local/lib/libfreexl.a \
+	/mingw64/local/lib/libcairo.a \
+	/mingw64/local/lib/libpixman-1.a \
+	/mingw64/local/lib/libfontconfig.a \
+	/mingw64/local/lib/libfreetype.a \
+	/mingw64/local/lib/libgif.a \
+	/mingw64/local/lib/libwebp.a \
+	/mingw64/local/lib/libjpeg.a \
+	/mingw64/local/lib/libgeotiff.a \
+	/mingw64/local/lib/libtiff.a \
+	/mingw64/local/lib/libpng.a \
+	/mingw64/local/lib/libCharLS.a \
+	/mingw64/local/lib/libopenjp2.a \
+	/mingw64/local/lib/libcurl.a \
+	/mingw64/local/lib/libssl.a \
+	/mingw64/local/lib/libcrypto.a \
+	/mingw64/local/lib/libxml2.a \
+	/mingw64/local/lib/libexpat.a \
+	/mingw64/local/lib/liblzma.a \
+	/mingw64/local/lib/libz.a \
+	/mingw64/local/lib/libiconv.a \
+	-lm -lmsimg32 -lws2_32 -lgdi32 -lwldap32 -static-libstdc++ -static-libgcc
+	strip --strip-all ./static_bin/rl2tool.exe
+
+./static_bin/wmslite.exe: ./tools/wmslite.o 
+	$(GG) ./tools/wmslite.o -o ./static_bin/wmslite.exe \
+	/mingw64/local/lib/librasterlite2.a \
+	/mingw64/local/lib/libspatialite.a \
+	/mingw64/local/lib/libsqlite3.a \
+	/mingw64/local/lib/librttopo.a \
+	/mingw64/local/lib/libproj.a \
+	/mingw64/local/lib/libgeos_c.a \
+	/mingw64/local/lib/libgeos.a \
+	/mingw64/local/lib/libfreexl.a \
+	/mingw64/local/lib/libcairo.a \
+	/mingw64/local/lib/libpixman-1.a \
+	/mingw64/local/lib/libfontconfig.a \
+	/mingw64/local/lib/libfreetype.a \
+	/mingw64/local/lib/libgif.a \
+	/mingw64/local/lib/libwebp.a \
+	/mingw64/local/lib/libjpeg.a \
+	/mingw64/local/lib/libgeotiff.a \
+	/mingw64/local/lib/libtiff.a \
+	/mingw64/local/lib/libpng.a \
+	/mingw64/local/lib/libCharLS.a \
+	/mingw64/local/lib/libopenjp2.a \
+	/mingw64/local/lib/libcurl.a \
+	/mingw64/local/lib/libssl.a \
+	/mingw64/local/lib/libcrypto.a \
+	/mingw64/local/lib/libxml2.a \
+	/mingw64/local/lib/libexpat.a \
+	/mingw64/local/lib/liblzma.a \
+	/mingw64/local/lib/libz.a \
+	/mingw64/local/lib/libiconv.a \
+	-lm -lmsimg32 -lws2_32 -lgdi32 -lwldap32 -static-libstdc++ -static-libgcc
+	strip --strip-all ./static_bin/wmslite.exe
+
+./tools/rl2sniff.o: 
+	$(CC) $(CFLAGS) ./tools/rlsniff.c -c
+	
+./tools/rl2tool.o: 
+	$(CC) $(CFLAGS) ./tools/rl2tool.c -c
+
+	./tools/wmslite.o:
+	$(CC) $(CFLAGS) ./tools/wmslite.c -c

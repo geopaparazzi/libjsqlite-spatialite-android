@@ -1,0 +1,7 @@
+RL2_GetMonoBandTileImage - invalid background color
+:memory: #use in-memory database
+SELECT RL2_GetMonoBandTileImage(NULL, 'alpha', 1, 0, 'blue');
+1 # rows (not including the header row)
+1 # columns
+RL2_GetMonoBandTileImage(NULL, 'alpha', 1, 0, 'blue')
+(NULL)
