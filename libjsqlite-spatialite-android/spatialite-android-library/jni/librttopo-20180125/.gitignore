@@ -24,7 +24,6 @@ config.status
 config.sub
 configure
 install-sh
-librttopo_geom.h
 libtool
 ltmain.sh
 rtin_wkt_lex.c
