@@ -29,6 +29,5 @@ ltmain.sh
 rtin_wkt_lex.c
 rtin_wkt_parse.c
 rtin_wkt_parse.h
-rttopo_config.h
 rttopo_config.h.in
 !/docker/**/Makefile
