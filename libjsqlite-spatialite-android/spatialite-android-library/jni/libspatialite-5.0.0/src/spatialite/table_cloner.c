@@ -107,20 +107,12 @@ struct aux_foreign_key
     struct aux_foreign_key *next;
 };
 
-struct aux_index_column
-{
-/* an Index Column object */
-    char *name;
-    struct aux_index_column *next;
-};
-
 struct aux_index
 {
 /* a Table Index object */
     char *name;
     int unique;
-    struct aux_index_column *first;
-    struct aux_index_column *last;
+    char *create_sql;
     struct aux_index *next;
 };
 
@@ -214,6 +206,7 @@ create_column (sqlite3 * sqlite, const char *table, struct aux_column *column)
     free (xtable);
     free (xcolumn);
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    sqlite3_free (sql);
     if (ret != SQLITE_OK)
       {
 	  spatialite_e ("ALTER TABLE ADD COLUMN error: %s\n", err_msg);
@@ -429,6 +422,7 @@ create_geometry (sqlite3 * sqlite, const char *table, struct aux_column *column)
     free (xtable);
     free (xcolumn);
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+    sqlite3_free (sql);
     if (ret != SQLITE_OK)
       {
 	  spatialite_e ("ADD GEOMETRY COLUMN error: %s\n", err_msg);
@@ -446,6 +440,7 @@ create_geometry (sqlite3 * sqlite, const char *table, struct aux_column *column)
 	  free (xtable);
 	  free (xcolumn);
 	  ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+	  sqlite3_free (sql);
 	  if (ret != SQLITE_OK)
 	    {
 		spatialite_e ("CREATE SPATIAL INDEX error: %s\n", err_msg);
@@ -623,6 +618,31 @@ check_existing_triggers (struct aux_cloner *cloner)
     sqlite3_free_table (results);
 }
 
+static const char *
+do_find_index_list (const char *create_sql)
+{
+/* attempting to extract the columns list or expression from a CREATE INDEX Sql Statement */
+    int i;
+    int len;
+    int count = 0;
+    if (create_sql == NULL)
+	return NULL;
+
+    len = strlen (create_sql);
+    if (*(create_sql + len - 1) != ')')
+	return NULL;
+    for (i = len - 1; i >= 0; i--)
+      {
+	  if (*(create_sql + i) == ')')
+	      count++;
+	  if (*(create_sql + i) == '(')
+	      count--;
+	  if (count == 0)
+	      return create_sql + i;
+      }
+    return NULL;
+}
+
 static int
 create_output_table (struct aux_cloner *cloner)
 {
@@ -633,7 +653,6 @@ create_output_table (struct aux_cloner *cloner)
     struct aux_foreign_key *fk;
     struct aux_fk_columns *fk_col;
     struct aux_index *index;
-    struct aux_index_column *idx_column;
     char *sql;
     char *prev_sql;
     char *xtable;
@@ -896,9 +915,11 @@ create_output_table (struct aux_cloner *cloner)
     while (index != NULL)
       {
 	  /* creating an Index */
+	  const char *list;
 	  constraint =
 	      sqlite3_mprintf ("idx_%s_%d", cloner->out_table, fk_no++);
 	  xconstraint = gaiaDoubleQuotedSql (constraint);
+	  sqlite3_free (constraint);
 	  xtable = gaiaDoubleQuotedSql (cloner->out_table);
 	  if (index->unique)
 	      sql =
@@ -911,26 +932,12 @@ create_output_table (struct aux_cloner *cloner)
 	  free (xconstraint);
 	  free (xtable);
 	  prev_sql = sql;
-
-	  idx_column = index->first;
-	  first = 1;
-	  while (idx_column != NULL)
+	  list = do_find_index_list (index->create_sql);
+	  if (list != NULL)
 	    {
-		xcolumn = gaiaDoubleQuotedSql (idx_column->name);
-		if (first)
-		  {
-		      sql = sqlite3_mprintf ("%s (\"%s\"", prev_sql, xcolumn);
-		      first = 0;
-		  }
-		else
-		    sql = sqlite3_mprintf ("%s, \"%s\"", prev_sql, xcolumn);
-		free (xcolumn);
+		sql = sqlite3_mprintf ("%s %s", prev_sql, list);
 		sqlite3_free (prev_sql);
-		prev_sql = sql;
-		idx_column = idx_column->next;
 	    }
-	  sql = sqlite3_mprintf ("%s)\n", prev_sql);
-	  sqlite3_free (prev_sql);
 
 	  ret = sqlite3_exec (cloner->sqlite, sql, NULL, NULL, &err_msg);
 	  sqlite3_free (sql);
@@ -989,7 +996,6 @@ copy_rows (struct aux_cloner *cloner)
 
 /* composing the SELECT statement */
     sql = sqlite3_mprintf ("SELECT ");
-    prev_sql = sql;
     column = cloner->first_col;
     while (column != NULL)
       {
@@ -1000,6 +1006,7 @@ copy_rows (struct aux_cloner *cloner)
 		continue;
 	    }
 	  xcolumn = gaiaDoubleQuotedSql (column->name);
+	  prev_sql = sql;
 	  if (first)
 	    {
 		sql = sqlite3_mprintf ("%s\"%s\"", prev_sql, xcolumn);
@@ -1014,8 +1021,10 @@ copy_rows (struct aux_cloner *cloner)
       }
     xdb_prefix = gaiaDoubleQuotedSql (cloner->db_prefix);
     xtable = gaiaDoubleQuotedSql (cloner->in_table);
+    prev_sql = sql;
     sql =
 	sqlite3_mprintf ("%s FROM \"%s\".\"%s\"", prev_sql, xdb_prefix, xtable);
+    sqlite3_free (prev_sql);
     free (xdb_prefix);
     free (xtable);
 /* compiling the SELECT FROM statement */
@@ -1374,23 +1383,9 @@ add_foreign_key (struct aux_cloner *cloner, int id, const char *references,
 }
 
 static void
-add_index_column (struct aux_index *index, struct aux_column *first_col,
-		  const char *name)
+add_index_column (struct aux_column *first_col, const char *name)
 {
-/* adding a Column into an Index definition */
-    int len;
     struct aux_column *col;
-    struct aux_index_column *column = malloc (sizeof (struct aux_index_column));
-    len = strlen (name);
-    column->name = malloc (len + 1);
-    strcpy (column->name, name);
-    column->next = NULL;
-/* updating the linked list */
-    if (index->first == NULL)
-	index->first = column;
-    if (index->last != NULL)
-	index->last->next = column;
-    index->last = column;
 /* marking the column as a Foreign Key */
     col = first_col;
     while (col != NULL)
@@ -1414,8 +1409,7 @@ add_index (struct aux_cloner *cloner, const char *name, int unique)
     index->name = malloc (len + 1);
     strcpy (index->name, name);
     index->unique = unique;
-    index->first = NULL;
-    index->last = NULL;
+    index->create_sql = NULL;
     index->next = NULL;
 /* updating the linked list */
     if (cloner->first_idx == NULL)
@@ -1639,6 +1633,7 @@ expand_index (struct aux_cloner *cloner, struct aux_index *index)
     char *xprefix;
     char *xindex;
 
+/* retrieving the column names */
     xprefix = gaiaDoubleQuotedSql (cloner->db_prefix);
     xindex = gaiaDoubleQuotedSql (index->name);
     sql = sqlite3_mprintf ("PRAGMA \"%s\".index_info(\"%s\")", xprefix, xindex);
@@ -1657,7 +1652,44 @@ expand_index (struct aux_cloner *cloner, struct aux_index *index)
 	  for (i = 1; i <= rows; i++)
 	    {
 		name = results[(i * columns) + 2];
-		add_index_column (index, cloner->first_col, name);
+		if (name != NULL)
+		  {
+		      /* indexes based on Expressions have a NULL column name !!! */
+		      add_index_column (cloner->first_col, name);
+		  }
+	    }
+      }
+    sqlite3_free_table (results);
+
+/* retrieving the initial CREATE INDEX Sql Statement */
+    xprefix = gaiaDoubleQuotedSql (cloner->db_prefix);
+    sql = sqlite3_mprintf ("SELECT sql FROM \"%s\".sqlite_master "
+			   "WHERE type = 'index' AND name = %Q", xprefix,
+			   index->name);
+    free (xprefix);
+    ret =
+	sqlite3_get_table (cloner->sqlite, sql, &results, &rows, &columns,
+			   NULL);
+    sqlite3_free (sql);
+    if (ret != SQLITE_OK)
+	return;
+    if (rows < 1)
+	;
+    else
+      {
+	  for (i = 1; i <= rows; i++)
+	    {
+		const char *create_sql = results[(i * columns) + 0];
+		if (index->create_sql != NULL)
+		    free (index->create_sql);
+		if (create_sql == NULL)
+		    index->create_sql = NULL;
+		else
+		  {
+		      int len = strlen (create_sql);
+		      index->create_sql = malloc (len + 1);
+		      strcpy (index->create_sql, create_sql);
+		  }
 	    }
       }
     sqlite3_free_table (results);
@@ -1954,33 +1986,15 @@ free_foreign_key (struct aux_foreign_key *fk)
 }
 
 static void
-free_index_column (struct aux_index_column *column)
-{
-/* memory cleanup - destroying an Index Column object */
-    if (column == NULL)
-	return;
-    if (column->name != NULL)
-	free (column->name);
-    free (column);
-}
-
-static void
 free_index (struct aux_index *index)
 {
 /* memory cleanup - destroying an Index object */
-    struct aux_index_column *pc;
-    struct aux_index_column *pcn;
     if (index == NULL)
 	return;
     if (index->name != NULL)
 	free (index->name);
-    pc = index->first;
-    while (pc != NULL)
-      {
-	  pcn = pc->next;
-	  free_index_column (pc);
-	  pc = pcn;
-      }
+    if (index->create_sql != NULL)
+	free (index->create_sql);
     free (index);
 }
 
@@ -2307,7 +2321,7 @@ gaiaAuxClonerExecute (const void *handle)
 	  if (!upgrade_output_table (cloner))
 	    {
 		spatialite_e
-		    ("CloneTable: unable to updgrade the output table \"%s\"\n",
+		    ("CloneTable: unable to upgrade the output table \"%s\"\n",
 		     cloner->out_table);
 		return 0;
 	    }

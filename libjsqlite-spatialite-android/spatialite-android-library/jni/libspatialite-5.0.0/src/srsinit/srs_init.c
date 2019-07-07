@@ -415,7 +415,7 @@ create_spatial_ref_sys_aux (sqlite3 * handle)
 }
 
 static int
-populate_spatial_ref_sys (sqlite3 * handle, int mode)
+populate_spatial_ref_sys (sqlite3 * handle, int mode, int metadata)
 {
 /* populating the EPSG dataset into the SPATIAL_REF_SYS table */
     struct epsg_defs *first = NULL;
@@ -430,30 +430,57 @@ populate_spatial_ref_sys (sqlite3 * handle, int mode)
 /* initializing the EPSG defs list */
     initialize_epsg (mode, &first, &last);
 
-    create_spatial_ref_sys_aux (handle);
 /* preparing the SQL parameterized statement (main) */
     strcpy (sql, "INSERT INTO spatial_ref_sys ");
-    strcat (sql,
-	    "(srid, auth_name, auth_srid, ref_sys_name, proj4text, srtext) ");
-    strcat (sql, "VALUES (?, ?, ?, ?, ?, ?)");
+
+/*
+ * the following code has been contributed by Mark Johnson <mj10777@googlemail.com>
+ * on 2019-01-27
+*/
+    switch (metadata)
+      {
+      case 1:			/* SpatiaLite-Pre-Legacy Versions 2.0 to 2.3.0 */
+	  strcat (sql,
+		  "(srid, auth_name, auth_srid, ref_sys_name, proj4text) ");
+	  strcat (sql, "VALUES (?, ?, ?, ?, ?)");
+	  break;
+      case 2:			/*  SpatiaLite-Legacy 2.4.0 - 3.0.1 */
+	  strcat (sql,
+		  "(srid, auth_name, auth_srid, ref_sys_name, proj4text, srs_wkt) ");
+	  strcat (sql, "VALUES (?, ?, ?, ?, ?, ?)");
+	  break;
+      case 3:			/*  SpatiaLite 4.0.0 - present */
+	  strcat (sql,
+		  "(srid, auth_name, auth_srid, ref_sys_name, proj4text, srtext) ");
+	  strcat (sql, "VALUES (?, ?, ?, ?, ?, ?)");
+	  create_spatial_ref_sys_aux (handle);
+	  break;
+      }
+
     ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
     if (ret != SQLITE_OK)
       {
 	  spatialite_e ("%s\n", sqlite3_errmsg (handle));
 	  goto error;
       }
+
 /* preparing the SQL parameterized statement (aux) */
-    strcpy (sql, "INSERT INTO spatial_ref_sys_aux ");
-    strcat (sql,
-	    "(srid, is_geographic, has_flipped_axes, spheroid, prime_meridian, ");
-    strcat (sql, "datum, projection, unit, axis_1_name, axis_1_orientation, ");
-    strcat (sql, "axis_2_name, axis_2_orientation) ");
-    strcat (sql, "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt_aux, NULL);
-    if (ret != SQLITE_OK)
+    if (metadata >= 3)
       {
-	  spatialite_e ("%s\n", sqlite3_errmsg (handle));
-	  goto error;
+	  /*  SpatiaLite 4.0.0 - present */
+	  strcpy (sql, "INSERT INTO spatial_ref_sys_aux ");
+	  strcat (sql,
+		  "(srid, is_geographic, has_flipped_axes, spheroid, prime_meridian, ");
+	  strcat (sql,
+		  "datum, projection, unit, axis_1_name, axis_1_orientation, ");
+	  strcat (sql, "axis_2_name, axis_2_orientation) ");
+	  strcat (sql, "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	  ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt_aux, NULL);
+	  if (ret != SQLITE_OK)
+	    {
+		spatialite_e ("%s\n", sqlite3_errmsg (handle));
+		goto error;
+	    }
       }
 
     p = first;
@@ -472,114 +499,15 @@ populate_spatial_ref_sys (sqlite3 * handle, int mode)
 			     SQLITE_STATIC);
 	  sqlite3_bind_text (stmt, 5, p->proj4text, strlen (p->proj4text),
 			     SQLITE_STATIC);
-	  if (strlen (p->srs_wkt) == 0)
-	      sqlite3_bind_text (stmt, 6, "Undefined", 9, SQLITE_STATIC);
-	  else
-	      sqlite3_bind_text (stmt, 6, p->srs_wkt, strlen (p->srs_wkt),
-				 SQLITE_STATIC);
-	  ret = sqlite3_step (stmt);
-	  if (ret == SQLITE_DONE || ret == SQLITE_ROW)
-	      ;
-	  else
+	  if (metadata >= 2)
 	    {
-		spatialite_e ("%s\n", sqlite3_errmsg (handle));
-		goto error;
-	    }
-
-	  /* inserting into SPATIAL_REF_SYS_AUX */
-	  ok_aux = 0;
-	  sqlite3_reset (stmt_aux);
-	  sqlite3_clear_bindings (stmt_aux);
-	  sqlite3_bind_int (stmt_aux, 1, p->srid);
-	  if (p->is_geographic < 0)
-	      sqlite3_bind_null (stmt_aux, 2);
-	  else
-	    {
-		sqlite3_bind_int (stmt_aux, 2, p->is_geographic);
-		ok_aux = 1;
-	    }
-	  if (p->flipped_axes < 0)
-	      sqlite3_bind_null (stmt_aux, 3);
-	  else
-	    {
-		sqlite3_bind_int (stmt_aux, 3, p->flipped_axes);
-		ok_aux = 1;
-	    }
-	  if (p->spheroid == NULL)
-	      sqlite3_bind_null (stmt_aux, 4);
-	  else
-	    {
-		sqlite3_bind_text (stmt_aux, 4, p->spheroid,
-				   strlen (p->spheroid), SQLITE_STATIC);
-		ok_aux = 1;
-	    }
-	  if (p->prime_meridian == NULL)
-	      sqlite3_bind_null (stmt_aux, 5);
-	  else
-	    {
-		sqlite3_bind_text (stmt_aux, 5, p->prime_meridian,
-				   strlen (p->prime_meridian), SQLITE_STATIC);
-		ok_aux = 1;
-	    }
-	  if (p->datum == NULL)
-	      sqlite3_bind_null (stmt_aux, 6);
-	  else
-	    {
-		sqlite3_bind_text (stmt_aux, 6, p->datum, strlen (p->datum),
-				   SQLITE_STATIC);
-		ok_aux = 1;
-	    }
-	  if (p->projection == NULL)
-	      sqlite3_bind_null (stmt_aux, 7);
-	  else
-	    {
-		sqlite3_bind_text (stmt_aux, 7, p->projection,
-				   strlen (p->projection), SQLITE_STATIC);
-		ok_aux = 1;
-	    }
-	  if (p->unit == NULL)
-	      sqlite3_bind_null (stmt_aux, 8);
-	  else
-	    {
-		sqlite3_bind_text (stmt_aux, 8, p->unit, strlen (p->unit),
-				   SQLITE_STATIC);
-		ok_aux = 1;
-	    }
-	  if (p->axis_1 == NULL)
-	      sqlite3_bind_null (stmt_aux, 9);
-	  else
-	    {
-		sqlite3_bind_text (stmt_aux, 9, p->axis_1, strlen (p->axis_1),
-				   SQLITE_STATIC);
-		ok_aux = 1;
-	    }
-	  if (p->orientation_1 == NULL)
-	      sqlite3_bind_null (stmt_aux, 10);
-	  else
-	    {
-		sqlite3_bind_text (stmt_aux, 10, p->orientation_1,
-				   strlen (p->orientation_1), SQLITE_STATIC);
-		ok_aux = 1;
-	    }
-	  if (p->axis_2 == NULL)
-	      sqlite3_bind_null (stmt_aux, 11);
-	  else
-	    {
-		sqlite3_bind_text (stmt_aux, 11, p->axis_2, strlen (p->axis_2),
-				   SQLITE_STATIC);
-		ok_aux = 1;
-	    }
-	  if (p->orientation_2 == NULL)
-	      sqlite3_bind_null (stmt_aux, 12);
-	  else
-	    {
-		sqlite3_bind_text (stmt_aux, 12, p->orientation_2,
-				   strlen (p->orientation_2), SQLITE_STATIC);
-		ok_aux = 1;
-	    }
-	  if (ok_aux)
-	    {
-		ret = sqlite3_step (stmt_aux);
+		/*  SpatiaLite-Legacy 2.4.0 - 3.0.1 and SpatiaLite 4.0.0 - present */
+		if (strlen (p->srs_wkt) == 0)
+		    sqlite3_bind_text (stmt, 6, "Undefined", 9, SQLITE_STATIC);
+		else
+		    sqlite3_bind_text (stmt, 6, p->srs_wkt, strlen (p->srs_wkt),
+				       SQLITE_STATIC);
+		ret = sqlite3_step (stmt);
 		if (ret == SQLITE_DONE || ret == SQLITE_ROW)
 		    ;
 		else
@@ -588,6 +516,116 @@ populate_spatial_ref_sys (sqlite3 * handle, int mode)
 		      goto error;
 		  }
 	    }
+
+/* inserting into SPATIAL_REF_SYS_AUX */
+	  if (metadata >= 3)
+	    {			/*  SpatiaLite 4.0.0 - present */
+		ok_aux = 0;
+		sqlite3_reset (stmt_aux);
+		sqlite3_clear_bindings (stmt_aux);
+		sqlite3_bind_int (stmt_aux, 1, p->srid);
+		if (p->is_geographic < 0)
+		    sqlite3_bind_null (stmt_aux, 2);
+		else
+		  {
+		      sqlite3_bind_int (stmt_aux, 2, p->is_geographic);
+		      ok_aux = 1;
+		  }
+		if (p->flipped_axes < 0)
+		    sqlite3_bind_null (stmt_aux, 3);
+		else
+		  {
+		      sqlite3_bind_int (stmt_aux, 3, p->flipped_axes);
+		      ok_aux = 1;
+		  }
+		if (p->spheroid == NULL)
+		    sqlite3_bind_null (stmt_aux, 4);
+		else
+		  {
+		      sqlite3_bind_text (stmt_aux, 4, p->spheroid,
+					 strlen (p->spheroid), SQLITE_STATIC);
+		      ok_aux = 1;
+		  }
+		if (p->prime_meridian == NULL)
+		    sqlite3_bind_null (stmt_aux, 5);
+		else
+		  {
+		      sqlite3_bind_text (stmt_aux, 5, p->prime_meridian,
+					 strlen (p->prime_meridian),
+					 SQLITE_STATIC);
+		      ok_aux = 1;
+		  }
+		if (p->datum == NULL)
+		    sqlite3_bind_null (stmt_aux, 6);
+		else
+		  {
+		      sqlite3_bind_text (stmt_aux, 6, p->datum,
+					 strlen (p->datum), SQLITE_STATIC);
+		      ok_aux = 1;
+		  }
+		if (p->projection == NULL)
+		    sqlite3_bind_null (stmt_aux, 7);
+		else
+		  {
+		      sqlite3_bind_text (stmt_aux, 7, p->projection,
+					 strlen (p->projection), SQLITE_STATIC);
+		      ok_aux = 1;
+		  }
+		if (p->unit == NULL)
+		    sqlite3_bind_null (stmt_aux, 8);
+		else
+		  {
+		      sqlite3_bind_text (stmt_aux, 8, p->unit, strlen (p->unit),
+					 SQLITE_STATIC);
+		      ok_aux = 1;
+		  }
+		if (p->axis_1 == NULL)
+		    sqlite3_bind_null (stmt_aux, 9);
+		else
+		  {
+		      sqlite3_bind_text (stmt_aux, 9, p->axis_1,
+					 strlen (p->axis_1), SQLITE_STATIC);
+		      ok_aux = 1;
+		  }
+		if (p->orientation_1 == NULL)
+		    sqlite3_bind_null (stmt_aux, 10);
+		else
+		  {
+		      sqlite3_bind_text (stmt_aux, 10, p->orientation_1,
+					 strlen (p->orientation_1),
+					 SQLITE_STATIC);
+		      ok_aux = 1;
+		  }
+		if (p->axis_2 == NULL)
+		    sqlite3_bind_null (stmt_aux, 11);
+		else
+		  {
+		      sqlite3_bind_text (stmt_aux, 11, p->axis_2,
+					 strlen (p->axis_2), SQLITE_STATIC);
+		      ok_aux = 1;
+		  }
+		if (p->orientation_2 == NULL)
+		    sqlite3_bind_null (stmt_aux, 12);
+		else
+		  {
+		      sqlite3_bind_text (stmt_aux, 12, p->orientation_2,
+					 strlen (p->orientation_2),
+					 SQLITE_STATIC);
+		      ok_aux = 1;
+		  }
+		if (ok_aux)
+		  {
+		      ret = sqlite3_step (stmt_aux);
+		      if (ret == SQLITE_DONE || ret == SQLITE_ROW)
+			  ;
+		      else
+			{
+			    spatialite_e ("%s\n", sqlite3_errmsg (handle));
+			    goto error;
+			}
+		  }
+	    }
+	  /* end Mark Johnson 2019-01-27 */
 	  p = p->next;
       }
     sqlite3_finalize (stmt);
@@ -658,6 +696,7 @@ check_spatial_ref_sys (sqlite3 * handle)
     int ref_sys_name = 0;
     int proj4text = 0;
     int srtext = 0;
+    int srs_wkt = 0;
 
     strcpy (sql, "PRAGMA table_info(spatial_ref_sys)");
     ret =
@@ -687,12 +726,30 @@ check_spatial_ref_sys (sqlite3 * handle)
 		    proj4text = 1;
 		if (strcasecmp (name, "srtext") == 0)
 		    srtext = 1;
+/*
+ * the following code has been contributed by Mark Johnson <mj10777@googlemail.com>
+ * on 2019-01-27
+*/
+		if (strcasecmp (name, "srs_wkt") == 0)
+		    srs_wkt = 1;
+/* end Mark Johnson 2019-01-26 */
 	    }
       }
     sqlite3_free_table (results);
     if (rs_srid && auth_name && auth_srid && ref_sys_name && proj4text
 	&& srtext)
-	ret = 1;
+/*
+ * the following code has been contributed by Mark Johnson <mj10777@googlemail.com>
+ * on 2019-01-27
+*/
+	ret = 3;		/*  SpatiaLite 4.0.0 - present */
+    else if (rs_srid && auth_name && auth_srid && ref_sys_name && proj4text
+	     && srs_wkt)
+	ret = 2;		/*  SpatiaLite-Legacy 2.4.0 - 3.0.1 */
+    else if (rs_srid && auth_name && auth_srid && ref_sys_name && proj4text
+	     && srs_wkt == 0)
+	ret = 1;		/* SpatiaLite-Pre-Legacy Versions 2.0 to 2.3.0 */
+/* end Mark Johnson 2019-01-26 */
     else
 	ret = 0;
     return ret;
@@ -747,13 +804,21 @@ SPATIALITE_DECLARE int
 spatial_ref_sys_init2 (sqlite3 * handle, int mode, int verbose)
 {
 /* populating the EPSG dataset into the SPATIAL_REF_SYS table */
+    int metadata = 0;
     if (!exists_spatial_ref_sys (handle))
       {
 	  if (verbose)
 	      spatialite_e ("the SPATIAL_REF_SYS table doesn't exists\n");
 	  return 0;
       }
-    if (!check_spatial_ref_sys (handle))
+
+/*
+ * the following code has been contributed by Mark Johnson <mj10777@googlemail.com>
+ * on 2019-01-27
+*/
+    metadata = check_spatial_ref_sys (handle);
+    if (metadata < 1)
+/* end Mark Johnson 2019-01-27 */
       {
 	  if (verbose)
 	      spatialite_e
@@ -772,9 +837,11 @@ spatial_ref_sys_init2 (sqlite3 * handle, int mode, int verbose)
 	;
     else
 	mode = GAIA_EPSG_ANY;
-    if (populate_spatial_ref_sys (handle, mode))
+    if (mode == GAIA_EPSG_NONE)
+	return 1;
+    if (populate_spatial_ref_sys (handle, mode, metadata))	/* Mark Johnson 2019-01-27 */
       {
-	  if (verbose && mode != GAIA_EPSG_NONE)
+	  if (verbose)
 	      spatialite_e
 		  ("OK: the SPATIAL_REF_SYS table was successfully populated\n");
 	  return 1;
@@ -791,6 +858,7 @@ insert_epsg_srid (sqlite3 * handle, int srid)
     char sql[1024];
     int ret;
     int error = 0;
+    int metadata = 0;
     sqlite3_stmt *stmt = NULL;
     sqlite3_stmt *stmt_aux = NULL;
     int ok_aux;
@@ -800,7 +868,12 @@ insert_epsg_srid (sqlite3 * handle, int srid)
 	  spatialite_e ("the SPATIAL_REF_SYS table doesn't exists\n");
 	  return 0;
       }
-    if (!check_spatial_ref_sys (handle))
+/*
+ * the following code has been contributed by Mark Johnson <mj10777@googlemail.com>
+ * on 2019-01-27
+*/
+    metadata = check_spatial_ref_sys (handle);
+    if (metadata < 1)
       {
 	  spatialite_e
 	      ("the SPATIAL_REF_SYS table has an unsupported layout\n");
@@ -816,12 +889,32 @@ insert_epsg_srid (sqlite3 * handle, int srid)
 	  return 0;
       }
 
-    create_spatial_ref_sys_aux (handle);
 /* preparing the SQL parameterized statement */
+
+/*
+ * the following code has been contributed by Mark Johnson <mj10777@googlemail.com>
+ * on 2019-01-27
+*/
     strcpy (sql, "INSERT INTO spatial_ref_sys ");
-    strcat (sql,
-	    "(srid, auth_name, auth_srid, ref_sys_name, proj4text, srtext) ");
-    strcat (sql, "VALUES (?, ?, ?, ?, ?, ?)");
+    switch (metadata)
+      {
+      case 1:			/* SpatiaLite-Pre-Legacy Versions 2.0 to 2.3.0 */
+	  strcat (sql,
+		  "(srid, auth_name, auth_srid, ref_sys_name, proj4text) ");
+	  strcat (sql, "VALUES (?, ?, ?, ?, ?)");
+	  break;
+      case 2:			/*  SpatiaLite-Legacy 2.4.0 - 3.0.1 */
+	  strcat (sql,
+		  "(srid, auth_name, auth_srid, ref_sys_name, proj4text, srs_wkt) ");
+	  strcat (sql, "VALUES (?, ?, ?, ?, ?, ?)");
+	  break;
+      case 3:			/*  SpatiaLite 4.0.0 - present */
+	  strcat (sql,
+		  "(srid, auth_name, auth_srid, ref_sys_name, proj4text, srtext) ");
+	  strcat (sql, "VALUES (?, ?, ?, ?, ?, ?)");
+	  create_spatial_ref_sys_aux (handle);
+	  break;
+      }
     ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
     if (ret != SQLITE_OK)
       {
@@ -829,22 +922,26 @@ insert_epsg_srid (sqlite3 * handle, int srid)
 	  error = 1;
 	  goto stop;
       }
-/* preparing the SQL parameterized statement (aux) */
-    strcpy (sql, "INSERT INTO spatial_ref_sys_aux ");
-    strcat (sql,
-	    "(srid, is_geographic, has_flipped_axes, spheroid, prime_meridian, ");
-    strcat (sql, "datum, projection, unit, axis_1_name, axis_1_orientation, ");
-    strcat (sql, "axis_2_name, axis_2_orientation) ");
-    strcat (sql, "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt_aux, NULL);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("%s\n", sqlite3_errmsg (handle));
-	  error = 1;
-	  goto stop;
+    if (metadata >= 3)
+      {				/*  SpatiaLite 4.0.0 - present */
+	  /* preparing the SQL parameterized statement (aux) */
+	  strcpy (sql, "INSERT INTO spatial_ref_sys_aux ");
+	  strcat (sql,
+		  "(srid, is_geographic, has_flipped_axes, spheroid, prime_meridian, ");
+	  strcat (sql,
+		  "datum, projection, unit, axis_1_name, axis_1_orientation, ");
+	  strcat (sql, "axis_2_name, axis_2_orientation) ");
+	  strcat (sql, "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+	  ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt_aux, NULL);
+	  if (ret != SQLITE_OK)
+	    {
+		spatialite_e ("%s\n", sqlite3_errmsg (handle));
+		error = 1;
+		goto stop;
+	    }
       }
 
-    /* inserting into SPATIAL_REF_SYS_AUX */
+    /* inserting into SPATIAL_REF_SYS */
     sqlite3_reset (stmt);
     sqlite3_clear_bindings (stmt);
     sqlite3_bind_int (stmt, 1, first->srid);
@@ -855,11 +952,15 @@ insert_epsg_srid (sqlite3 * handle, int srid)
 		       strlen (first->ref_sys_name), SQLITE_STATIC);
     sqlite3_bind_text (stmt, 5, first->proj4text, strlen (first->proj4text),
 		       SQLITE_STATIC);
-    if (strlen (first->srs_wkt) == 0)
-	sqlite3_bind_text (stmt, 6, "Undefined", 9, SQLITE_STATIC);
-    else
-	sqlite3_bind_text (stmt, 6, first->srs_wkt, strlen (first->srs_wkt),
-			   SQLITE_STATIC);
+    if (metadata >= 2)
+      {
+	  /*  SpatiaLite-Legacy 2.4.0 - 3.0.1 and SpatiaLite 4.0.0 - present */
+	  if (strlen (first->srs_wkt) == 0)
+	      sqlite3_bind_text (stmt, 6, "Undefined", 9, SQLITE_STATIC);
+	  else
+	      sqlite3_bind_text (stmt, 6, first->srs_wkt,
+				 strlen (first->srs_wkt), SQLITE_STATIC);
+      }
     ret = sqlite3_step (stmt);
     if (ret == SQLITE_DONE || ret == SQLITE_ROW)
 	;
@@ -870,108 +971,115 @@ insert_epsg_srid (sqlite3 * handle, int srid)
 	  goto stop;
       }
 
-    /* inserting into SPATIAL_REF_SYS_AUX */
-    ok_aux = 0;
-    sqlite3_reset (stmt_aux);
-    sqlite3_clear_bindings (stmt_aux);
-    sqlite3_bind_int (stmt_aux, 1, first->srid);
-    if (first->is_geographic < 0)
-	sqlite3_bind_null (stmt_aux, 2);
-    else
-      {
-	  sqlite3_bind_int (stmt_aux, 2, first->is_geographic);
-	  ok_aux = 1;
-      }
-    if (first->flipped_axes < 0)
-	sqlite3_bind_null (stmt_aux, 3);
-    else
-      {
-	  sqlite3_bind_int (stmt_aux, 3, first->flipped_axes);
-	  ok_aux = 1;
-      }
-    if (first->spheroid == NULL)
-	sqlite3_bind_null (stmt_aux, 4);
-    else
-      {
-	  sqlite3_bind_text (stmt_aux, 4, first->spheroid,
-			     strlen (first->spheroid), SQLITE_STATIC);
-	  ok_aux = 1;
-      }
-    if (first->prime_meridian == NULL)
-	sqlite3_bind_null (stmt_aux, 5);
-    else
-      {
-	  sqlite3_bind_text (stmt_aux, 5, first->prime_meridian,
-			     strlen (first->prime_meridian), SQLITE_STATIC);
-	  ok_aux = 1;
-      }
-    if (first->datum == NULL)
-	sqlite3_bind_null (stmt_aux, 6);
-    else
-      {
-	  sqlite3_bind_text (stmt_aux, 6, first->datum, strlen (first->datum),
-			     SQLITE_STATIC);
-	  ok_aux = 1;
-      }
-    if (first->projection == NULL)
-	sqlite3_bind_null (stmt_aux, 7);
-    else
-      {
-	  sqlite3_bind_text (stmt_aux, 7, first->projection,
-			     strlen (first->projection), SQLITE_STATIC);
-	  ok_aux = 1;
-      }
-    if (first->unit == NULL)
-	sqlite3_bind_null (stmt_aux, 8);
-    else
-      {
-	  sqlite3_bind_text (stmt_aux, 8, first->unit, strlen (first->unit),
-			     SQLITE_STATIC);
-	  ok_aux = 1;
-      }
-    if (first->axis_1 == NULL)
-	sqlite3_bind_null (stmt_aux, 9);
-    else
-      {
-	  sqlite3_bind_text (stmt_aux, 9, first->axis_1, strlen (first->axis_1),
-			     SQLITE_STATIC);
-	  ok_aux = 1;
-      }
-    if (first->orientation_1 == NULL)
-	sqlite3_bind_null (stmt_aux, 10);
-    else
-      {
-	  sqlite3_bind_text (stmt_aux, 10, first->orientation_1,
-			     strlen (first->orientation_1), SQLITE_STATIC);
-	  ok_aux = 1;
-      }
-    if (first->axis_2 == NULL)
-	sqlite3_bind_null (stmt_aux, 11);
-    else
-      {
-	  sqlite3_bind_text (stmt_aux, 11, first->axis_2,
-			     strlen (first->axis_2), SQLITE_STATIC);
-	  ok_aux = 1;
-      }
-    if (first->orientation_2 == NULL)
-	sqlite3_bind_null (stmt_aux, 11);
-    else
-      {
-	  sqlite3_bind_text (stmt_aux, 11, first->orientation_2,
-			     strlen (first->orientation_2), SQLITE_STATIC);
-	  ok_aux = 1;
-      }
-    if (ok_aux)
-      {
-	  ret = sqlite3_step (stmt_aux);
-	  if (ret == SQLITE_DONE || ret == SQLITE_ROW)
-	      ;
+    if (metadata >= 3)
+      {				/*  SpatiaLite 4.0.0 - present */
+	  /* inserting into SPATIAL_REF_SYS_AUX */
+	  ok_aux = 0;
+	  sqlite3_reset (stmt_aux);
+	  sqlite3_clear_bindings (stmt_aux);
+	  sqlite3_bind_int (stmt_aux, 1, first->srid);
+	  if (first->is_geographic < 0)
+	      sqlite3_bind_null (stmt_aux, 2);
 	  else
 	    {
-		spatialite_e ("%s\n", sqlite3_errmsg (handle));
-		goto stop;
+		sqlite3_bind_int (stmt_aux, 2, first->is_geographic);
+		ok_aux = 1;
+	    }
+	  if (first->flipped_axes < 0)
+	      sqlite3_bind_null (stmt_aux, 3);
+	  else
+	    {
+		sqlite3_bind_int (stmt_aux, 3, first->flipped_axes);
+		ok_aux = 1;
+	    }
+	  if (first->spheroid == NULL)
+	      sqlite3_bind_null (stmt_aux, 4);
+	  else
+	    {
+		sqlite3_bind_text (stmt_aux, 4, first->spheroid,
+				   strlen (first->spheroid), SQLITE_STATIC);
+		ok_aux = 1;
+	    }
+	  if (first->prime_meridian == NULL)
+	      sqlite3_bind_null (stmt_aux, 5);
+	  else
+	    {
+		sqlite3_bind_text (stmt_aux, 5, first->prime_meridian,
+				   strlen (first->prime_meridian),
+				   SQLITE_STATIC);
+		ok_aux = 1;
+	    }
+	  if (first->datum == NULL)
+	      sqlite3_bind_null (stmt_aux, 6);
+	  else
+	    {
+		sqlite3_bind_text (stmt_aux, 6, first->datum,
+				   strlen (first->datum), SQLITE_STATIC);
+		ok_aux = 1;
+	    }
+	  if (first->projection == NULL)
+	      sqlite3_bind_null (stmt_aux, 7);
+	  else
+	    {
+		sqlite3_bind_text (stmt_aux, 7, first->projection,
+				   strlen (first->projection), SQLITE_STATIC);
+		ok_aux = 1;
+	    }
+	  if (first->unit == NULL)
+	      sqlite3_bind_null (stmt_aux, 8);
+	  else
+	    {
+		sqlite3_bind_text (stmt_aux, 8, first->unit,
+				   strlen (first->unit), SQLITE_STATIC);
+		ok_aux = 1;
+	    }
+	  if (first->axis_1 == NULL)
+	      sqlite3_bind_null (stmt_aux, 9);
+	  else
+	    {
+		sqlite3_bind_text (stmt_aux, 9, first->axis_1,
+				   strlen (first->axis_1), SQLITE_STATIC);
+		ok_aux = 1;
+	    }
+	  if (first->orientation_1 == NULL)
+	      sqlite3_bind_null (stmt_aux, 10);
+	  else
+	    {
+		sqlite3_bind_text (stmt_aux, 10, first->orientation_1,
+				   strlen (first->orientation_1),
+				   SQLITE_STATIC);
+		ok_aux = 1;
+	    }
+	  if (first->axis_2 == NULL)
+	      sqlite3_bind_null (stmt_aux, 11);
+	  else
+	    {
+		sqlite3_bind_text (stmt_aux, 11, first->axis_2,
+				   strlen (first->axis_2), SQLITE_STATIC);
+		ok_aux = 1;
+	    }
+	  if (first->orientation_2 == NULL)
+	      sqlite3_bind_null (stmt_aux, 11);
+	  else
+	    {
+		sqlite3_bind_text (stmt_aux, 11, first->orientation_2,
+				   strlen (first->orientation_2),
+				   SQLITE_STATIC);
+		ok_aux = 1;
+	    }
+	  if (ok_aux)
+	    {
+		ret = sqlite3_step (stmt_aux);
+		if (ret == SQLITE_DONE || ret == SQLITE_ROW)
+		    ;
+		else
+		  {
+		      spatialite_e ("%s\n", sqlite3_errmsg (handle));
+		      goto stop;
+		  }
 	    }
       }
+/* end Mark Johnson 2019-01-27 */
   stop:
     if (stmt != NULL)
 	sqlite3_finalize (stmt);

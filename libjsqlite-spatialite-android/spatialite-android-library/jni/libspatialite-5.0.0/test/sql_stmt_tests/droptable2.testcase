@@ -1,0 +1,7 @@
+DropTable - DOUBLE DB-prefix
+:memory: #use in-memory database
+SELECT DropTable(1.5, 'table');
+1 # rows (not including the header row)
+1 # columns
+DropTable(1.5, 'table');
+DropTable exception - invalid argument (1st arg).

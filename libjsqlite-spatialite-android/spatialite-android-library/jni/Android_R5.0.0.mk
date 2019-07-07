@@ -14,7 +14,7 @@
 # Order of running:
 # -------------------
 #  Rasterlite2 with Spatialite
-# As of 2018-05-08
+# As of 2019-07-07
 # -------------------
 # - javasqlite[R20120209] code corrections for 64-bits
 # - sqlite3[3220000]
@@ -34,7 +34,7 @@
 # - pixman[0.32.6 - with processor specific makefile ]
 # - fontconfig[2.11.1 ; 2.12.93 : uses uuid which is not available]
 # - libtiff[4.0.9]
-# - proj4[3.9.3]
+# - proj[6.1.1]
 # - libiconv[1.15]
 # - cpufeatures
 # - freetype[2.9]
@@ -62,7 +62,7 @@ XML2_PATH := libxml2-2.9.8
 PIXMAN_PATH := pixman-0.34.0
 FONTCONFIG_PATH := fontconfig-2.11.1
 TIFF_PATH := tiff-4.0.9/libtiff
-PROJ4_PATH := proj-4.9.3
+PROJ_PATH := proj-6.1.1
 ICONV_PATH := libiconv-1.15
 FREETYPE_PATH := freetype-2.9
 EXPAT_PATH := expat-2.2.5
@@ -88,7 +88,7 @@ include $(LOCAL_PATH)/libxml2-2.9.8.mk
 include $(LOCAL_PATH)/pixman-0.34.0.mk
 include $(LOCAL_PATH)/fontconfig-2.11.1.mk
 include $(LOCAL_PATH)/libtiff-4.0.9.mk
-include $(LOCAL_PATH)/proj4-4.9.3.mk
+include $(LOCAL_PATH)/proj-6.1.1.mk
 include $(LOCAL_PATH)/iconv-1.15.mk
 include $(LOCAL_PATH)/freetype-2.9.mk
 include $(LOCAL_PATH)/expat-2.2.5.mk

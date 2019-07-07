@@ -1,0 +1,8 @@
+ReCreateStylingTriggers - BLOB
+:memory: #use in-memory database
+SELECT ReCreateStylingTriggers(zeroblob(4));
+1 # rows (not including the header row)
+1 # columns
+ReCreateStylingTriggers(zeroblob(4))
+-1
+

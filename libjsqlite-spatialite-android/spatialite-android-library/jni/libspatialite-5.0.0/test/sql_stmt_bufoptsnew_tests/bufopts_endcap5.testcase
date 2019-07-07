@@ -1,0 +1,7 @@
+BufferOptions EndCapStyle - INT
+:memory: #use in-memory database
+SELECT BufferOptions_SetEndCapStyle(1);
+1 # rows (not including the header row)
+1 # columns
+BufferOptions_SetEndCapStyle(1)
+0

@@ -2288,7 +2288,7 @@ sanitize_geometry_column_common (const void *p_cache, sqlite3 * sqlite,
     if (report->n_not_repaired > 0)
       {
 	  fprintf (out,
-		   "\t\t\t<tr><td colspan=\"2\" class=\"err\">This layer contains severly damaged Geometries (beyond any possible repair);<br>");
+		   "\t\t\t<tr><td colspan=\"2\" class=\"err\">This layer contains severely damaged Geometries (beyond any possible repair);<br>");
 	  fprintf (out,
 		   "please manually check the <b>%s</b> table.</td></tr>\n",
 		   tmp_table);

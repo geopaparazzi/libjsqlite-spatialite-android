@@ -680,6 +680,8 @@ EXTRA_DIST = addedgemodface1.testcase \
 	polygonize8.testcase \
 	polygonize9.testcase \
 	polygonize10.testcase \
+	recreatetopotriggers.testcase \
+	recreatevectorcoverages.testcase \
 	remedgemodface1.testcase \
 	remedgemodface2.testcase \
 	remedgemodface3.testcase \
@@ -734,6 +736,17 @@ EXTRA_DIST = addedgemodface1.testcase \
 	remlink7.testcase \
 	remlink8.testcase \
 	remlink9.testcase \
+	subdivide1.testcase \
+	subdivide2.testcase \
+	subdivide3.testcase \
+	subdivide4.testcase \
+	subdivide5.testcase \
+	subdivide6.testcase \
+	subdivide7.testcase \
+	subdivide8.testcase \
+	subdivide9.testcase \
+	subdivide10.testcase \
+	subdivide11.testcase \
 	removetopolayer1.testcase \
 	removetopolayer2.testcase \
 	removetopolayer3.testcase \

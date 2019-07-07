@@ -1,0 +1,7 @@
+transform - PROJ.6 extra-args - proj4text/proj4text
+:memory: #use in-memory database
+SELECT AsText(ST_Transform(MakePoint(11, 42, 4326), 32632, NULL, (SELECT proj4text FROM spatial_ref_sys where srid = 4326), (SELECT proj4text FROM spatial_ref_sys where srid = 32632)));
+1 # rows (not including the header row)
+1 # columns
+AsText(ST_Transform(MakePoint(11, 42, 4326), 32632, NULL, (SELECT proj4text FROM spatial_ref_sys where srid = 4326), (SELECT proj4text FROM spatial_ref_sys where srid = 32632)))
+POINT(665638.822054 4651711.059432)

@@ -4,4 +4,4 @@ SELECT MbrContains(GeomFromText("POINT(2 1)"), zeroblob(49));
 1 # rows (not including the header row)
 1 # columns
 MbrContains(GeomFromText("POINT(2 1)"), zeroblob(49))
-(NULL)
+-1

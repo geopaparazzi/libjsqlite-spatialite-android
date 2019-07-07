@@ -1,0 +1,133 @@
+:
+# Test projinfo
+
+TEST_CLI_DIR=`dirname $0`
+EXE=$1
+
+usage()
+{
+    echo "Usage: ${0} <path to 'projinfo' program>" 
+    echo
+    exit 1
+}
+
+if test -z "${EXE}"; then
+    EXE=../../src/projinfo
+fi
+
+if test ! -x ${EXE}; then
+    echo "*** ERROR: Can not find '${EXE}' program!"
+    exit 1
+fi
+
+echo "============================================"
+echo "Running ${0} using ${EXE}:"
+echo "============================================"
+
+OUT=testprojinfo_out
+
+rm -f ${OUT}
+
+export PROJINFO_NO_GRID_CHECK=YES
+
+echo "Testing projinfo EPSG:4326" >> ${OUT}
+$EXE EPSG:4326 >>${OUT}
+echo "" >>${OUT}
+
+echo "Testing projinfo -o WKT1_GDAL EPSG:4326" >> ${OUT}
+$EXE -o WKT1_GDAL EPSG:4326 >>${OUT}
+echo "" >>${OUT}
+
+echo "Testing projinfo -o WKT2_2015 EPSG:4326" >> ${OUT}
+$EXE -o WKT2_2015 EPSG:4326 >>${OUT}
+echo "" >>${OUT}
+
+echo "Testing projinfo -o WKT2_2018 EPSG:4326" >> ${OUT}
+$EXE -o WKT2_2018 EPSG:4326 >>${OUT}
+echo "" >>${OUT}
+
+echo "Testing projinfo -o ALL EPSG:4326" >> ${OUT}
+$EXE -o ALL EPSG:4326 >>${OUT}
+echo "" >>${OUT}
+
+echo "Testing projinfo -s EPSG:4326 -t EPSG:32631" >> ${OUT}
+$EXE -s EPSG:4326 -t EPSG:32631 >>${OUT}
+echo "" >>${OUT}
+
+echo "Testing projinfo -s NAD27 -t NAD83" >> ${OUT}
+$EXE -s NAD27 -t NAD83 >>${OUT}
+echo "" >>${OUT}
+
+echo "Testing projinfo -s NAD27 -t NAD83 --grid-check none --spatial-test intersects --summary" >> ${OUT}
+$EXE -s NAD27 -t NAD83 --grid-check none --spatial-test intersects --summary >>${OUT}
+echo "" >>${OUT}
+
+echo "Testing projinfo -s NAD27 -t NAD83 --grid-check none --spatial-test intersects" >> ${OUT}
+$EXE -s NAD27 -t NAD83 --grid-check none --spatial-test intersects >>${OUT}
+echo "" >>${OUT}
+
+echo "Testing projinfo -s EPSG:4230 -t EPSG:4258 --bbox 8,54.51,15.24,57.8 --summary" >> ${OUT}
+$EXE -s EPSG:4230 -t EPSG:4258 --bbox 8,54.51,15.24,57.8 --summary >>${OUT}
+echo "" >>${OUT}
+
+echo "Testing projinfo -s EPSG:4230 -t EPSG:4258 --area EPSG:3237 --summary" >> ${OUT}
+$EXE -s EPSG:4230 -t EPSG:4258 --area EPSG:3237 --summary >>${OUT}
+echo "" >>${OUT}
+
+echo "Testing projinfo -s EPSG:4230 -t EPSG:4258 --area 'Denmark - onshore' --summary" >> ${OUT}
+$EXE -s EPSG:4230 -t EPSG:4258 --area 'Denmark - onshore' --summary >>${OUT}
+echo "" >>${OUT}
+
+# several match
+echo "Testing projinfo -s EPSG:4230 -t EPSG:4258 --area 'Denmark -' --summary" >> ${OUT}
+$EXE -s EPSG:4230 -t EPSG:4258 --area 'Denmark -' --summary >>${OUT} 2>&1
+echo "" >>${OUT}
+
+echo "Testing projinfo -s EPSG:4230 -t EPSG:4258 --area no_match --summary" >> ${OUT}
+$EXE -s EPSG:4230 -t EPSG:4258 --area no_match --summary >>${OUT} 2>&1
+echo "" >>${OUT}
+
+echo "Testing projinfo -s EPSG:4230 -t EPSG:4258 --area WRONG:CODE --summary" >> ${OUT}
+$EXE -s EPSG:4230 -t EPSG:4258 --area WRONG:CODE --summary >>${OUT} 2>&1
+echo "" >>${OUT}
+
+echo "Testing deprecated CRS: projinfo EPSG:26591" >> ${OUT}
+$EXE EPSG:26591 >>${OUT} 2>&1
+echo "" >>${OUT}
+
+echo "Testing non compliant WKT1" >> ${OUT}
+$EXE 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563]],UNIT["degree",0.0174532925199433]]' >>${OUT} 2>&1
+echo "" >>${OUT}
+
+echo "Testing CRS with towgs84: projinfo -o PROJ EPSG:25832" >> ${OUT}
+$EXE -o PROJ EPSG:25832 >>${OUT} 2>&1
+echo "" >>${OUT}
+
+echo "Testing RH2000 height to SWEREF99: projinfo -s EPSG:5613 -t EPSG:4977" >> ${OUT}
+$EXE -s EPSG:5613 -t EPSG:4977 >>${OUT} 2>&1
+echo "" >>${OUT}
+
+echo "Testing NAD83(2011) + NAVD88 height -> NAD83(2011) : projinfo -s EPSG:6349 -t EPSG:6319 --spatial-test intersects -o PROJ" >> ${OUT}
+$EXE -s EPSG:6349 -t EPSG:6319 --spatial-test intersects -o PROJ >>${OUT} 2>&1
+echo "" >>${OUT}
+
+echo "Testing NGF IGN69 height to RGF93: projinfo -s EPSG:5720 -t EPSG:4965 -o PROJ" >> ${OUT}
+$EXE -s EPSG:5720 -t EPSG:4965 -o PROJ >>${OUT} 2>&1
+echo "" >>${OUT}
+
+# do 'diff' with distribution results
+echo "diff ${OUT} with testprojinfo_out.dist"
+diff -u ${OUT} ${TEST_CLI_DIR}/testprojinfo_out.dist
+if [ $? -ne 0 ] ; then
+	echo  ""
+	echo "PROBLEMS HAVE OCCURRED"
+	echo "test file ${OUT} saved"
+    echo
+	exit 100
+else
+	echo "TEST OK"
+	echo "test file ${OUT} removed"
+    echo
+	/bin/rm -f ${OUT}
+	exit 0
+fi

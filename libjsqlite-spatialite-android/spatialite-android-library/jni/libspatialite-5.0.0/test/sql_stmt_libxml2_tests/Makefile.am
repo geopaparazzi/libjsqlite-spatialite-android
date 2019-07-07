@@ -89,6 +89,17 @@ EXTRA_DIST = addfileid1.testcase \
 	isvalidxmlblob4.testcase \
 	isvalidxmlblob5.testcase \
 	isvalidxmlblob6.testcase \
+	recreatestyling1.testcase \
+	recreatestyling2.testcase \
+	recreatestyling3.testcase \
+	recreatestyling4.testcase \
+	recreatestyling5.testcase \
+	recreatestyling6.testcase \
+	recreatestyling7.testcase \
+	recreatestyling8.testcase \
+	recreatestyling9.testcase \
+	recreatestyling10.testcase \
+	recreatestyling11.testcase \
 	registerGraphic10.testcase \
 	registerGraphic11.testcase \
 	registerGraphic12.testcase \

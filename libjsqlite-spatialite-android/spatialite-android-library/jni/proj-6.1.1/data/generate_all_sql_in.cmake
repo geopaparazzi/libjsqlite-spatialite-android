@@ -1,0 +1,10 @@
+function(cat IN_FILE OUT_FILE)
+  file(READ ${IN_FILE} CONTENTS)
+  file(APPEND ${OUT_FILE} "${CONTENTS}")
+endfunction()
+
+file(WRITE "${ALL_SQL_IN}" "")
+include(sql_filelist.cmake)
+foreach(SQL_FILE ${SQL_FILES})
+  cat(${SQL_FILE} "${ALL_SQL_IN}")
+endforeach()

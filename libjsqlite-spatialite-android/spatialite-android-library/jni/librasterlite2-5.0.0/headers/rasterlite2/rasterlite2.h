@@ -145,7 +145,7 @@ extern "C"
 /** RasterLite2 constant: Compression LZMA Delta */
 #define RL2_COMPRESSION_LZMA		0x23
 /** RasterLite2 constant: Compression LZMA noDelta */
-#define RL2_COMPRESSION_LZMA_NO		0xd3
+#define RL2_COMPRESSION_LZMA_NO	0xd3
 /** RasterLite2 constant: Compression GIF */
 #define RL2_COMPRESSION_GIF		0x24
 /** RasterLite2 constant: Compression PNG */
@@ -168,6 +168,14 @@ extern "C"
 #define RL2_COMPRESSION_LOSSY_JP2	0x33
 /** RasterLite2 constant: Compression JPEG2000 (lossless mode) */
 #define RL2_COMPRESSION_LOSSLESS_JP2	0x34
+/** RasterLite2 constant: Compression LZ4 Delta */
+#define RL2_COMPRESSION_LZ4		0x35
+/** RasterLite2 constant: Compression LZ4 noDelta */
+#define RL2_COMPRESSION_LZ4_NO		0xd4
+/** RasterLite2 constant: Compression ZSTD Delta */
+#define RL2_COMPRESSION_ZSTD		0x36
+/** RasterLite2 constant: Compression ZSTD noDelta */
+#define RL2_COMPRESSION_ZSTD_NO	0xd5
 
 /** RasterLite2 constant: UNKNOWN number of Bands */
 #define RL2_BANDS_UNKNOWN		0x00
@@ -718,6 +726,20 @@ extern "C"
  \return the version string.
  */
     RL2_DECLARE const char *rl2_lzma_version (void);
+
+/**
+ Return the current LZ4 version.
+
+ \return the version string.
+ */
+    RL2_DECLARE const char *rl2_lz4_version (void);
+
+/**
+ Return the current ZSTD version.
+
+ \return the version string.
+ */
+    RL2_DECLARE const char *rl2_zstd_version (void);
 
 /**
  Return the current PNG version.
@@ -4001,6 +4023,24 @@ extern "C"
 					 rl2RasterStatisticsPtr stats);
 
     RL2_DECLARE int
+	rl2_get_raw_raster_data_transparent (sqlite3 * handle, int max_threads,
+					     rl2CoveragePtr cvg,
+					     unsigned int width,
+					     unsigned int height, double minx,
+					     double miny, double maxx,
+					     double maxy, double x_res,
+					     double y_res,
+					     unsigned char **buffer,
+					     int *buf_size,
+					     unsigned char **mask,
+					     int *mask_size,
+					     rl2PalettePtr * palette,
+					     unsigned char *out_pixel,
+					     rl2PixelPtr no_data,
+					     rl2RasterSymbolizerPtr style,
+					     rl2RasterStatisticsPtr stats);
+
+    RL2_DECLARE int
 	rl2_get_raw_raster_data_mixed_resolutions (sqlite3 * handle,
 						   int max_threads,
 						   rl2CoveragePtr cvg,
@@ -4019,6 +4059,38 @@ extern "C"
 						   rl2RasterSymbolizerPtr style,
 						   rl2RasterStatisticsPtr
 						   stats);
+
+    RL2_DECLARE int
+	rl2_get_raw_raster_data_mixed_resolutions_transparent (sqlite3 * handle,
+							       int max_threads,
+							       rl2CoveragePtr
+							       cvg,
+							       unsigned int
+							       width,
+							       unsigned int
+							       height,
+							       double minx,
+							       double miny,
+							       double maxx,
+							       double maxy,
+							       double x_res,
+							       double y_res,
+							       unsigned char
+							       **buffer,
+							       int *buf_size,
+							       unsigned char
+							       **mask,
+							       int *mask_size,
+							       rl2PalettePtr *
+							       palette,
+							       unsigned char
+							       *out_pixel,
+							       rl2PixelPtr
+							       no_data,
+							       rl2RasterSymbolizerPtr
+							       style,
+							       rl2RasterStatisticsPtr
+							       stats);
 
     RL2_DECLARE int
 	rl2_create_dbms_coverage (sqlite3 * handle, const char *coverage,
@@ -6076,7 +6148,8 @@ extern "C"
 						     const char *cvg_name,
 						     const unsigned char *blob,
 						     int blob_sz,
-						     const char *style);
+						     const char *style,
+						     unsigned char *xml_style);
 
     RL2_DECLARE int rl2_map_image_blob_from_vector (sqlite3 * sqlite,
 						    const void *data,
@@ -6123,6 +6196,19 @@ extern "C"
 							with_edge_or_link_seeds,
 							int with_face_seeds);
 
+    RL2_DECLARE unsigned char *rl2_map_image_from_wms (sqlite3 * sqlite,
+						       const char *db_prefix,
+						       const char *cvg_name,
+						       const unsigned char
+						       *blob, int blob_sz,
+						       int width, int height,
+						       const char *version,
+						       const char *style,
+						       const char *format,
+						       int transparent,
+						       const char *bg_color,
+						       int *image_size);
+
     RL2_DECLARE rl2FeatureTypeStylePtr rl2_feature_type_style_from_xml (const
 									char
 									*name,
@@ -6130,6 +6216,18 @@ extern "C"
 									unsigned
 									char
 									*xml);
+
+    RL2_DECLARE int rl2_drape_geometries (sqlite3 * sqlite,
+					  const void *priv_data,
+					  const char *db_prefix,
+					  const char *raster_coverage,
+					  const char *coverage_list_table,
+					  const char *spatial_table,
+					  const char *old_geom,
+					  const char *new_geom,
+					  double no_data_value,
+					  double densify_dist,
+					  double z_simplify_dist, int update_m);
 
 #ifdef __cplusplus
 }

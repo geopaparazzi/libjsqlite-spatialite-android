@@ -1,0 +1,7 @@
+importGeoJSON - NULL srid
+:memory: #use in-memory database
+SELECT ImportGeoJSON('file.geojson', 'table', 'geom', 1, NULL);
+1 # rows (not including the header row)
+1 # columns
+ImportGeoJSON('file.geojson', 'table', 'geom', 1, NULL)
+(NULL)

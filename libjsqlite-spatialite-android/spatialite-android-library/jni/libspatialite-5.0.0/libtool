@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # libtool - Provide generalized library-building support services.
-# Generated automatically by config.status (libspatialite) 5.0.0-devel
+# Generated automatically by config.status (libspatialite) 5.0.0-beta1
 # Libtool was configured on host mj10777-01-l:
 # NOTE: Changes made to this file will be lost: look at ltmain.sh.
 #

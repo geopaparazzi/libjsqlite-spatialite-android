@@ -105,12 +105,53 @@ rl2GeomEndianArch ()
 }
 
 static rl2PointPtr
-rl2CreatePoint (double x, double y)
+rl2CreatePointXY (double x, double y)
 {
 /* POINT object constructor */
     rl2PointPtr p = malloc (sizeof (rl2Point));
     p->x = x;
     p->y = y;
+    p->dims = GAIA_XY;
+    p->next = NULL;
+    return p;
+}
+
+static rl2PointPtr
+rl2CreatePointXYZ (double x, double y, double z)
+{
+/* POINT object constructor */
+    rl2PointPtr p = malloc (sizeof (rl2Point));
+    p->x = x;
+    p->y = y;
+    p->z = z;
+    p->dims = GAIA_XY_Z;
+    p->next = NULL;
+    return p;
+}
+
+static rl2PointPtr
+rl2CreatePointXYM (double x, double y, double m)
+{
+/* POINT object constructor */
+    rl2PointPtr p = malloc (sizeof (rl2Point));
+    p->x = x;
+    p->y = y;
+    p->m = m;
+    p->dims = GAIA_XY_M;
+    p->next = NULL;
+    return p;
+}
+
+static rl2PointPtr
+rl2CreatePointXYZM (double x, double y, double z, double m)
+{
+/* POINT object constructor */
+    rl2PointPtr p = malloc (sizeof (rl2Point));
+    p->x = x;
+    p->y = y;
+    p->z = z;
+    p->m = m;
+    p->dims = GAIA_XY_Z_M;
     p->next = NULL;
     return p;
 }
@@ -124,16 +165,32 @@ rl2DestroyPoint (rl2PointPtr ptr)
 }
 
 RL2_PRIVATE rl2LinestringPtr
-rl2CreateLinestring (int vert)
+rl2CreateLinestring (int vert, int dims)
 {
 /* LINESTRING object constructor */
+    int n;
     rl2LinestringPtr p = malloc (sizeof (rl2Linestring));
-    p->coords = malloc (sizeof (double) * (vert * 2));
+    switch (dims)
+      {
+      case GAIA_XY_Z:
+      case GAIA_XY_M:
+	  n = 3;
+	  break;
+      case GAIA_XY_Z_M:
+	  n = 4;
+	  break;
+      case GAIA_XY:
+      default:
+	  n = 2;
+	  break;
+      };
+    p->coords = malloc (sizeof (double) * (vert * n));
     p->points = vert;
     p->minx = DBL_MAX;
     p->miny = DBL_MAX;
     p->maxx = 0.0 - DBL_MAX;
     p->maxy = 0.0 - DBL_MAX;
+    p->dims = dims;
     p->next = NULL;
     return p;
 }
@@ -164,7 +221,7 @@ rl2_linestring_to_image (rl2LinestringPtr line, int height, double minx,
 
     if (line == NULL)
 	return NULL;
-    out = rl2CreateLinestring (line->points);
+    out = rl2CreateLinestring (line->points, GAIA_XY);
     if (out == NULL)
 	return out;
     for (iv = 0; iv < line->points; iv++)
@@ -179,16 +236,32 @@ rl2_linestring_to_image (rl2LinestringPtr line, int height, double minx,
 }
 
 static rl2RingPtr
-rl2CreateRing (int vert)
+rl2CreateRing (int vert, int dims)
 {
 /* ring object constructor */
+    int n;
     rl2RingPtr p = malloc (sizeof (rl2Ring));
-    p->coords = malloc (sizeof (double) * (vert * 2));
+    switch (dims)
+      {
+      case GAIA_XY_Z:
+      case GAIA_XY_M:
+	  n = 3;
+	  break;
+      case GAIA_XY_Z_M:
+	  n = 4;
+	  break;
+      case GAIA_XY:
+      default:
+	  n = 2;
+	  break;
+      };
+    p->coords = malloc (sizeof (double) * (vert * n));
     p->points = vert;
     p->minx = DBL_MAX;
     p->miny = DBL_MAX;
     p->maxx = 0.0 - DBL_MAX;
     p->maxy = 0.0 - DBL_MAX;
+    p->dims = dims;
     p->next = NULL;
     return p;
 }
@@ -207,7 +280,7 @@ rl2_ring_to_image (rl2RingPtr ring, int height, double minx, double miny,
 
     if (ring == NULL)
 	return NULL;
-    out = rl2CreateRing (ring->points);
+    out = rl2CreateRing (ring->points, GAIA_XY);
     if (out == NULL)
 	return out;
     for (iv = 0; iv < ring->points; iv++)
@@ -234,15 +307,16 @@ rl2DestroyRing (rl2RingPtr ptr)
 }
 
 static rl2PolygonPtr
-rl2CreatePolygon (int vert, int excl)
+rl2CreatePolygon (int vert, int excl, int dims)
 {
 /* POLYGON object constructor */
     rl2PolygonPtr p;
     rl2RingPtr pP;
     int ind;
     p = malloc (sizeof (rl2Polygon));
-    p->exterior = rl2CreateRing (vert);
+    p->exterior = rl2CreateRing (vert, dims);
     p->num_interiors = excl;
+    p->dims = dims;
     p->next = NULL;
     if (excl == 0)
 	p->interiors = NULL;
@@ -257,6 +331,7 @@ rl2CreatePolygon (int vert, int excl)
 	  pP->miny = DBL_MAX;
 	  pP->maxx = 0.0 - DBL_MAX;
 	  pP->maxy = 0.0 - DBL_MAX;
+	  pP->dims = dims;
       }
     return p;
 }
@@ -280,8 +355,8 @@ rl2DestroyPolygon (rl2PolygonPtr p)
     free (p);
 }
 
-static rl2GeometryPtr
-rl2CreateGeometry ()
+RL2_PRIVATE rl2GeometryPtr
+rl2CreateGeometry (int dims, int type)
 {
 /* GEOMETRYCOLLECTION object constructor */
     rl2GeometryPtr p = malloc (sizeof (rl2Geometry));
@@ -291,6 +366,63 @@ rl2CreateGeometry ()
     p->last_linestring = NULL;
     p->first_polygon = NULL;
     p->last_polygon = NULL;
+    p->dims = dims;
+    switch (type)
+      {
+      case GAIA_POINT:
+      case GAIA_POINTZ:
+      case GAIA_POINTM:
+      case GAIA_POINTZM:
+	  p->type = GAIA_POINT;
+	  break;
+      case GAIA_LINESTRING:
+      case GAIA_LINESTRINGZ:
+      case GAIA_LINESTRINGM:
+      case GAIA_LINESTRINGZM:
+      case GAIA_COMPRESSED_LINESTRING:
+      case GAIA_COMPRESSED_LINESTRINGZ:
+      case GAIA_COMPRESSED_LINESTRINGM:
+      case GAIA_COMPRESSED_LINESTRINGZM:
+	  p->type = GAIA_LINESTRING;
+	  break;
+      case GAIA_POLYGON:
+      case GAIA_POLYGONZ:
+      case GAIA_POLYGONM:
+      case GAIA_POLYGONZM:
+      case GAIA_COMPRESSED_POLYGON:
+      case GAIA_COMPRESSED_POLYGONZ:
+      case GAIA_COMPRESSED_POLYGONM:
+      case GAIA_COMPRESSED_POLYGONZM:
+	  p->type = GAIA_POLYGON;
+	  break;
+      case GAIA_MULTIPOINT:
+      case GAIA_MULTIPOINTZ:
+      case GAIA_MULTIPOINTM:
+      case GAIA_MULTIPOINTZM:
+	  p->type = GAIA_MULTIPOINT;
+	  break;
+      case GAIA_MULTILINESTRING:
+      case GAIA_MULTILINESTRINGZ:
+      case GAIA_MULTILINESTRINGM:
+      case GAIA_MULTILINESTRINGZM:
+	  p->type = GAIA_MULTILINESTRING;
+	  break;
+      case GAIA_MULTIPOLYGON:
+      case GAIA_MULTIPOLYGONZ:
+      case GAIA_MULTIPOLYGONM:
+      case GAIA_MULTIPOLYGONZM:
+	  p->type = GAIA_MULTIPOLYGON;
+	  break;
+      case GAIA_GEOMETRYCOLLECTION:
+      case GAIA_GEOMETRYCOLLECTIONZ:
+      case GAIA_GEOMETRYCOLLECTIONM:
+      case GAIA_GEOMETRYCOLLECTIONZM:
+	  p->type = GAIA_GEOMETRYCOLLECTION;
+	  break;
+      default:
+	  p->type = type;
+	  break;
+      };
     return p;
 }
 
@@ -591,11 +723,48 @@ rl2GeomExport64 (unsigned char *p, double value, int little_endian,
       }
 }
 
-static void
-rl2AddPointToGeometry (rl2GeometryPtr p, double x, double y)
+RL2_PRIVATE void
+rl2AddPointXYToGeometry (rl2GeometryPtr p, double x, double y)
 {
-/* adding a LINESTRING to this GEOMETRYCOLLECTION */
-    rl2PointPtr point = rl2CreatePoint (x, y);
+/* adding a POINT to this GEOMETRYCOLLECTION */
+    rl2PointPtr point = rl2CreatePointXY (x, y);
+    if (p->first_point == NULL)
+	p->first_point = point;
+    if (p->last_point != NULL)
+	p->last_point->next = point;
+    p->last_point = point;
+}
+
+RL2_PRIVATE void
+rl2AddPointXYZToGeometry (rl2GeometryPtr p, double x, double y, double z)
+{
+/* adding a POINT to this GEOMETRYCOLLECTION */
+    rl2PointPtr point = rl2CreatePointXYZ (x, y, z);
+    if (p->first_point == NULL)
+	p->first_point = point;
+    if (p->last_point != NULL)
+	p->last_point->next = point;
+    p->last_point = point;
+}
+
+RL2_PRIVATE void
+rl2AddPointXYMToGeometry (rl2GeometryPtr p, double x, double y, double m)
+{
+/* adding a POINT to this GEOMETRYCOLLECTION */
+    rl2PointPtr point = rl2CreatePointXYM (x, y, m);
+    if (p->first_point == NULL)
+	p->first_point = point;
+    if (p->last_point != NULL)
+	p->last_point->next = point;
+    p->last_point = point;
+}
+
+RL2_PRIVATE void
+rl2AddPointXYZMToGeometry (rl2GeometryPtr p, double x, double y, double z,
+			   double m)
+{
+/* adding a POINT to this GEOMETRYCOLLECTION */
+    rl2PointPtr point = rl2CreatePointXYZM (x, y, z, m);
     if (p->first_point == NULL)
 	p->first_point = point;
     if (p->last_point != NULL)
@@ -615,7 +784,7 @@ rl2ParsePoint (rl2GeometryPtr geom, const unsigned char *blob, int size,
     x = rl2GeomImport64 (blob + *offset, endian, endian_arch);
     y = rl2GeomImport64 (blob + (*offset + 8), endian, endian_arch);
     *offset += 16;
-    rl2AddPointToGeometry (geom, x, y);
+    rl2AddPointXYToGeometry (geom, x, y);
 }
 
 static void
@@ -625,12 +794,14 @@ rl2ParsePointZ (rl2GeometryPtr geom, const unsigned char *blob, int size,
 /* decodes a POINTZ from WKB */
     double x;
     double y;
+    double z;
     if (size < *offset + 24)
 	return;
     x = rl2GeomImport64 (blob + *offset, endian, endian_arch);
     y = rl2GeomImport64 (blob + (*offset + 8), endian, endian_arch);
+    z = rl2GeomImport64 (blob + (*offset + 16), endian, endian_arch);
     *offset += 24;
-    rl2AddPointToGeometry (geom, x, y);
+    rl2AddPointXYZToGeometry (geom, x, y, z);
 }
 
 static void
@@ -640,12 +811,14 @@ rl2ParsePointM (rl2GeometryPtr geom, const unsigned char *blob, int size,
 /* decodes a POINTM from WKB */
     double x;
     double y;
+    double m;
     if (size < *offset + 24)
 	return;
     x = rl2GeomImport64 (blob + *offset, endian, endian_arch);
     y = rl2GeomImport64 (blob + (*offset + 8), endian, endian_arch);
+    m = rl2GeomImport64 (blob + (*offset + 16), endian, endian_arch);
     *offset += 24;
-    rl2AddPointToGeometry (geom, x, y);
+    rl2AddPointXYMToGeometry (geom, x, y, m);
 }
 
 static void
@@ -655,19 +828,98 @@ rl2ParsePointZM (rl2GeometryPtr geom, const unsigned char *blob, int size,
 /* decodes a POINTZM from WKB */
     double x;
     double y;
+    double z;
+    double m;
     if (size < *offset + 32)
 	return;
     x = rl2GeomImport64 (blob + *offset, endian, endian_arch);
     y = rl2GeomImport64 (blob + (*offset + 8), endian, endian_arch);
+    z = rl2GeomImport64 (blob + (*offset + 16), endian, endian_arch);
+    m = rl2GeomImport64 (blob + (*offset + 24), endian, endian_arch);
     *offset += 32;
-    rl2AddPointToGeometry (geom, x, y);
+    rl2AddPointXYZMToGeometry (geom, x, y, z, m);
 }
 
-static rl2LinestringPtr
+static rl2GeometryPtr
+rl2ParseTinyPointBlob (const unsigned char *blob, unsigned int size)
+{
+/* decoding from SpatiaLite TinyPoint BLOB to GEOMETRY */
+    unsigned char pointType;
+    int type;
+    int dims;
+    int offset;
+    int little_endian;
+    int endian_arch = rl2GeomEndianArch ();
+    rl2GeometryPtr geo = NULL;
+
+    if (size < 24)
+	return NULL;		/* cannot be an internal BLOB TinyPoint geometry */
+    if (*(blob + 0) != GAIA_MARK_START)
+	return NULL;		/* failed to recognize START signature */
+    if (*(blob + (size - 1)) != GAIA_MARK_END)
+	return NULL;		/* failed to recognize END signature */
+    if (*(blob + 1) == GAIA_TINYPOINT_LITTLE_ENDIAN)
+	little_endian = 1;
+    else if (*(blob + 1) == GAIA_TINYPOINT_BIG_ENDIAN)
+	little_endian = 0;
+    else
+	return NULL;		/* unknown encoding; nor little-endian neither big-endian */
+
+    pointType = *(blob + 6);
+    switch (pointType)
+      {
+	  /* setting up DimensionModel */
+      case GAIA_TINYPOINT_XYZ:
+	  type = GAIA_POINTZ;
+	  dims = GAIA_XY_Z;
+	  break;
+      case GAIA_TINYPOINT_XYM:
+	  type = GAIA_POINTM;
+	  dims = GAIA_XY_M;
+	  break;
+      case GAIA_TINYPOINT_XYZM:
+	  type = GAIA_POINTZM;
+	  dims = GAIA_XY_Z_M;
+	  break;
+      default:
+	  type = GAIA_POINT;
+	  dims = GAIA_XY;
+	  break;
+      };
+    geo = rl2CreateGeometry (dims, type);
+    geo->srid = rl2GeomImport32 (blob + 2, little_endian, endian_arch);
+    offset = 7;
+    switch (type)
+      {
+	  /* parsing elementary geometries */
+      case GAIA_POINT:
+	  rl2ParsePoint (geo, blob, size, little_endian, endian_arch, &offset);
+	  break;
+      case GAIA_POINTZ:
+	  rl2ParsePointZ (geo, blob, size, little_endian, endian_arch, &offset);
+	  break;
+      case GAIA_POINTM:
+	  rl2ParsePointM (geo, blob, size, little_endian, endian_arch, &offset);
+	  break;
+      case GAIA_POINTZM:
+	  rl2ParsePointZM (geo, blob, size, little_endian, endian_arch,
+			   &offset);
+	  break;
+      default:
+	  break;
+      };
+    geo->minx = geo->first_point->x;
+    geo->miny = geo->first_point->y;
+    geo->maxx = geo->first_point->x;
+    geo->maxy = geo->first_point->y;
+    return geo;
+}
+
+RL2_PRIVATE rl2LinestringPtr
 rl2AddLinestringToGeometry (rl2GeometryPtr p, int vert)
 {
 /* adding a POINT to this GEOMETRYCOLLECTION */
-    rl2LinestringPtr line = rl2CreateLinestring (vert);
+    rl2LinestringPtr line = rl2CreateLinestring (vert, p->dims);
     if (p->first_linestring == NULL)
 	p->first_linestring = line;
     if (p->last_linestring != NULL)
@@ -719,6 +971,7 @@ rl2ParseLineZ (rl2GeometryPtr geom, const unsigned char *blob, int size,
     int iv;
     double x;
     double y;
+    double z;
     rl2LinestringPtr line;
     if (size < *offset + 4)
 	return;
@@ -731,7 +984,8 @@ rl2ParseLineZ (rl2GeometryPtr geom, const unsigned char *blob, int size,
       {
 	  x = rl2GeomImport64 (blob + *offset, endian, endian_arch);
 	  y = rl2GeomImport64 (blob + (*offset + 8), endian, endian_arch);
-	  rl2SetPoint (line->coords, iv, x, y);
+	  z = rl2GeomImport64 (blob + (*offset + 16), endian, endian_arch);
+	  rl2SetPointZ (line->coords, iv, x, y, z);
 	  if (x < line->minx)
 	      line->minx = x;
 	  if (x > line->maxx)
@@ -753,6 +1007,7 @@ rl2ParseLineM (rl2GeometryPtr geom, const unsigned char *blob, int size,
     int iv;
     double x;
     double y;
+    double m;
     rl2LinestringPtr line;
     if (size < *offset + 4)
 	return;
@@ -765,7 +1020,8 @@ rl2ParseLineM (rl2GeometryPtr geom, const unsigned char *blob, int size,
       {
 	  x = rl2GeomImport64 (blob + *offset, endian, endian_arch);
 	  y = rl2GeomImport64 (blob + (*offset + 8), endian, endian_arch);
-	  rl2SetPoint (line->coords, iv, x, y);
+	  m = rl2GeomImport64 (blob + (*offset + 16), endian, endian_arch);
+	  rl2SetPointM (line->coords, iv, x, y, m);
 	  if (x < line->minx)
 	      line->minx = x;
 	  if (x > line->maxx)
@@ -787,6 +1043,8 @@ rl2ParseLineZM (rl2GeometryPtr geom, const unsigned char *blob, int size,
     int iv;
     double x;
     double y;
+    double z;
+    double m;
     rl2LinestringPtr line;
     if (size < *offset + 4)
 	return;
@@ -799,7 +1057,9 @@ rl2ParseLineZM (rl2GeometryPtr geom, const unsigned char *blob, int size,
       {
 	  x = rl2GeomImport64 (blob + *offset, endian, endian_arch);
 	  y = rl2GeomImport64 (blob + (*offset + 8), endian, endian_arch);
-	  rl2SetPoint (line->coords, iv, x, y);
+	  z = rl2GeomImport64 (blob + (*offset + 16), endian, endian_arch);
+	  m = rl2GeomImport64 (blob + (*offset + 24), endian, endian_arch);
+	  rl2SetPointZM (line->coords, iv, x, y, z, m);
 	  if (x < line->minx)
 	      line->minx = x;
 	  if (x > line->maxx)
@@ -812,11 +1072,11 @@ rl2ParseLineZM (rl2GeometryPtr geom, const unsigned char *blob, int size,
       }
 }
 
-static rl2PolygonPtr
+RL2_PRIVATE rl2PolygonPtr
 rl2AddPolygonToGeometry (rl2GeometryPtr p, int vert, int interiors)
 {
 /* adding a POLYGON to this GEOMETRYCOLLECTION */
-    rl2PolygonPtr polyg = rl2CreatePolygon (vert, interiors);
+    rl2PolygonPtr polyg = rl2CreatePolygon (vert, interiors, p->dims);
     if (p->first_polygon == NULL)
 	p->first_polygon = polyg;
     if (p->last_polygon != NULL)
@@ -825,13 +1085,29 @@ rl2AddPolygonToGeometry (rl2GeometryPtr p, int vert, int interiors)
     return polyg;
 }
 
-static rl2RingPtr
+RL2_PRIVATE rl2RingPtr
 rl2AddInteriorRing (rl2PolygonPtr p, int pos, int vert)
 {
 /* adding an interior ring to some polygon */
+    int n;
     rl2RingPtr pP = p->interiors + pos;
+    switch (p->dims)
+      {
+      case GAIA_XY_Z:
+      case GAIA_XY_M:
+	  n = 3;
+	  break;
+      case GAIA_XY_Z_M:
+	  n = 4;
+	  break;
+      case GAIA_XY:
+      default:
+	  n = 2;
+	  break;
+      };
     pP->points = vert;
-    pP->coords = malloc (sizeof (double) * (vert * 2));
+    pP->coords = malloc (sizeof (double) * (vert * n));
+    pP->dims = p->dims;
     return pP;
 }
 
@@ -896,6 +1172,7 @@ rl2ParsePolygonZ (rl2GeometryPtr geom, const unsigned char *blob, int size,
     int ib;
     double x;
     double y;
+    double z;
     rl2PolygonPtr polyg = NULL;
     rl2RingPtr ring;
     if (size < *offset + 4)
@@ -921,8 +1198,10 @@ rl2ParsePolygonZ (rl2GeometryPtr geom, const unsigned char *blob, int size,
 	    {
 		x = rl2GeomImport64 (blob + *offset, endian, endian_arch);
 		y = rl2GeomImport64 (blob + (*offset + 8), endian, endian_arch);
+		z = rl2GeomImport64 (blob + (*offset + 16), endian,
+				     endian_arch);
 		*offset += 24;
-		rl2SetPoint (ring->coords, iv, x, y);
+		rl2SetPointZ (ring->coords, iv, x, y, z);
 		if (x < ring->minx)
 		    ring->minx = x;
 		if (x > ring->maxx)
@@ -946,6 +1225,7 @@ rl2ParsePolygonM (rl2GeometryPtr geom, const unsigned char *blob, int size,
     int ib;
     double x;
     double y;
+    double m;
     rl2PolygonPtr polyg = NULL;
     rl2RingPtr ring;
     if (size < *offset + 4)
@@ -971,8 +1251,10 @@ rl2ParsePolygonM (rl2GeometryPtr geom, const unsigned char *blob, int size,
 	    {
 		x = rl2GeomImport64 (blob + *offset, endian, endian_arch);
 		y = rl2GeomImport64 (blob + (*offset + 8), endian, endian_arch);
+		m = rl2GeomImport64 (blob + (*offset + 16), endian,
+				     endian_arch);
 		*offset += 24;
-		rl2SetPoint (ring->coords, iv, x, y);
+		rl2SetPointM (ring->coords, iv, x, y, m);
 		if (x < ring->minx)
 		    ring->minx = x;
 		if (x > ring->maxx)
@@ -996,6 +1278,8 @@ rl2ParsePolygonZM (rl2GeometryPtr geom, const unsigned char *blob, int size,
     int ib;
     double x;
     double y;
+    double z;
+    double m;
     rl2PolygonPtr polyg = NULL;
     rl2RingPtr ring;
     if (size < *offset + 4)
@@ -1021,8 +1305,12 @@ rl2ParsePolygonZM (rl2GeometryPtr geom, const unsigned char *blob, int size,
 	    {
 		x = rl2GeomImport64 (blob + *offset, endian, endian_arch);
 		y = rl2GeomImport64 (blob + (*offset + 8), endian, endian_arch);
+		z = rl2GeomImport64 (blob + (*offset + 16), endian,
+				     endian_arch);
+		m = rl2GeomImport64 (blob + (*offset + 24), endian,
+				     endian_arch);
 		*offset += 32;
-		rl2SetPoint (ring->coords, iv, x, y);
+		rl2SetPointZM (ring->coords, iv, x, y, z, m);
 		if (x < ring->minx)
 		    ring->minx = x;
 		if (x > ring->maxx)
@@ -1098,10 +1386,13 @@ rl2ParseCompressedLineZ (rl2GeometryPtr geom, const unsigned char *blob,
     int iv;
     double x;
     double y;
+    double z;
     double last_x = 0.0;
     double last_y = 0.0;
+    double last_z = 0.0;
     float fx;
     float fy;
+    float fz;
     rl2LinestringPtr line;
     if (size < *offset + 4)
 	return;
@@ -1117,6 +1408,8 @@ rl2ParseCompressedLineZ (rl2GeometryPtr geom, const unsigned char *blob,
 		/* first and last vertices are uncompressed */
 		x = rl2GeomImport64 (blob + *offset, endian, endian_arch);
 		y = rl2GeomImport64 (blob + (*offset + 8), endian, endian_arch);
+		z = rl2GeomImport64 (blob + (*offset + 16), endian,
+				     endian_arch);
 		*offset += 24;
 	    }
 	  else
@@ -1125,11 +1418,14 @@ rl2ParseCompressedLineZ (rl2GeometryPtr geom, const unsigned char *blob,
 		fx = rl2GeomImportF32 (blob + *offset, endian, endian_arch);
 		fy = rl2GeomImportF32 (blob + (*offset + 4), endian,
 				       endian_arch);
+		fz = rl2GeomImportF32 (blob + (*offset + 8), endian,
+				       endian_arch);
 		x = last_x + fx;
 		y = last_y + fy;
+		z = last_z + fz;
 		*offset += 12;
 	    }
-	  rl2SetPoint (line->coords, iv, x, y);
+	  rl2SetPointZ (line->coords, iv, x, y, z);
 	  if (x < line->minx)
 	      line->minx = x;
 	  if (x > line->maxx)
@@ -1140,6 +1436,7 @@ rl2ParseCompressedLineZ (rl2GeometryPtr geom, const unsigned char *blob,
 	      line->maxy = y;
 	  last_x = x;
 	  last_y = y;
+	  last_z = z;
       }
 }
 
@@ -1152,10 +1449,13 @@ rl2ParseCompressedLineM (rl2GeometryPtr geom, const unsigned char *blob,
     int iv;
     double x;
     double y;
+    double m;
     double last_x = 0.0;
     double last_y = 0.0;
+    double last_m = 0.0;
     float fx;
     float fy;
+    float fm;
     rl2LinestringPtr line;
     if (size < *offset + 4)
 	return;
@@ -1171,6 +1471,8 @@ rl2ParseCompressedLineM (rl2GeometryPtr geom, const unsigned char *blob,
 		/* first and last vertices are uncompressed */
 		x = rl2GeomImport64 (blob + *offset, endian, endian_arch);
 		y = rl2GeomImport64 (blob + (*offset + 8), endian, endian_arch);
+		m = rl2GeomImport64 (blob + (*offset + 16), endian,
+				     endian_arch);
 		*offset += 24;
 	    }
 	  else
@@ -1179,11 +1481,14 @@ rl2ParseCompressedLineM (rl2GeometryPtr geom, const unsigned char *blob,
 		fx = rl2GeomImportF32 (blob + *offset, endian, endian_arch);
 		fy = rl2GeomImportF32 (blob + (*offset + 4), endian,
 				       endian_arch);
+		fm = rl2GeomImportF32 (blob + (*offset + 8), endian,
+				       endian_arch);
 		x = last_x + fx;
 		y = last_y + fy;
+		m = last_m + fm;
 		*offset += 16;
 	    }
-	  rl2SetPoint (line->coords, iv, x, y);
+	  rl2SetPointM (line->coords, iv, x, y, m);
 	  if (x < line->minx)
 	      line->minx = x;
 	  if (x > line->maxx)
@@ -1194,6 +1499,7 @@ rl2ParseCompressedLineM (rl2GeometryPtr geom, const unsigned char *blob,
 	      line->maxy = y;
 	  last_x = x;
 	  last_y = y;
+	  last_m = m;
       }
 }
 
@@ -1206,10 +1512,16 @@ rl2ParseCompressedLineZM (rl2GeometryPtr geom, const unsigned char *blob,
     int iv;
     double x;
     double y;
+    double z;
+    double m;
     double last_x = 0.0;
     double last_y = 0.0;
+    double last_z = 0.0;
+    double last_m = 0.0;
     float fx;
     float fy;
+    float fz;
+    float fm;
     rl2LinestringPtr line;
     if (size < *offset + 4)
 	return;
@@ -1225,6 +1537,10 @@ rl2ParseCompressedLineZM (rl2GeometryPtr geom, const unsigned char *blob,
 		/* first and last vertices are uncompressed */
 		x = rl2GeomImport64 (blob + *offset, endian, endian_arch);
 		y = rl2GeomImport64 (blob + (*offset + 8), endian, endian_arch);
+		z = rl2GeomImport64 (blob + (*offset + 16), endian,
+				     endian_arch);
+		m = rl2GeomImport64 (blob + (*offset + 24), endian,
+				     endian_arch);
 		*offset += 32;
 	    }
 	  else
@@ -1233,11 +1549,17 @@ rl2ParseCompressedLineZM (rl2GeometryPtr geom, const unsigned char *blob,
 		fx = rl2GeomImportF32 (blob + *offset, endian, endian_arch);
 		fy = rl2GeomImportF32 (blob + (*offset + 4), endian,
 				       endian_arch);
+		fz = rl2GeomImportF32 (blob + (*offset + 8), endian,
+				       endian_arch);
+		fm = rl2GeomImportF32 (blob + (*offset + 12), endian,
+				       endian_arch);
 		x = last_x + fx;
 		y = last_y + fy;
+		z = last_z + fz;
+		m = last_m + fm;
 		*offset += 20;
 	    }
-	  rl2SetPoint (line->coords, iv, x, y);
+	  rl2SetPointZM (line->coords, iv, x, y, z, m);
 	  if (x < line->minx)
 	      line->minx = x;
 	  if (x > line->maxx)
@@ -1248,6 +1570,8 @@ rl2ParseCompressedLineZM (rl2GeometryPtr geom, const unsigned char *blob,
 	      line->maxy = y;
 	  last_x = x;
 	  last_y = y;
+	  last_z = z;
+	  last_m = m;
       }
 }
 
@@ -1334,10 +1658,13 @@ rl2ParseCompressedPolygonZ (rl2GeometryPtr geom, const unsigned char *blob,
     int ib;
     double x;
     double y;
+    double z;
     double last_x = 0.0;
     double last_y = 0.0;
+    double last_z = 0.0;
     float fx;
     float fy;
+    float fz;
     rl2PolygonPtr polyg = NULL;
     rl2RingPtr ring;
     if (size < *offset + 4)
@@ -1367,6 +1694,8 @@ rl2ParseCompressedPolygonZ (rl2GeometryPtr geom, const unsigned char *blob,
 		      x = rl2GeomImport64 (blob + *offset, endian, endian_arch);
 		      y = rl2GeomImport64 (blob + (*offset + 8), endian,
 					   endian_arch);
+		      z = rl2GeomImport64 (blob + (*offset + 16), endian,
+					   endian_arch);
 		      *offset += 24;
 		  }
 		else
@@ -1376,11 +1705,14 @@ rl2ParseCompressedPolygonZ (rl2GeometryPtr geom, const unsigned char *blob,
 					     endian_arch);
 		      fy = rl2GeomImportF32 (blob + (*offset + 4), endian,
 					     endian_arch);
+		      fz = rl2GeomImportF32 (blob + (*offset + 8), endian,
+					     endian_arch);
 		      x = last_x + fx;
 		      y = last_y + fy;
+		      z = last_z + fz;
 		      *offset += 12;
 		  }
-		rl2SetPoint (ring->coords, iv, x, y);
+		rl2SetPointZ (ring->coords, iv, x, y, z);
 		if (x < ring->minx)
 		    ring->minx = x;
 		if (x > ring->maxx)
@@ -1391,6 +1723,7 @@ rl2ParseCompressedPolygonZ (rl2GeometryPtr geom, const unsigned char *blob,
 		    ring->maxy = y;
 		last_x = x;
 		last_y = y;
+		last_z = z;
 	    }
       }
 }
@@ -1406,6 +1739,7 @@ rl2ParseCompressedPolygonM (rl2GeometryPtr geom, const unsigned char *blob,
     int ib;
     double x;
     double y;
+    double m;
     double last_x = 0.0;
     double last_y = 0.0;
     float fx;
@@ -1439,6 +1773,8 @@ rl2ParseCompressedPolygonM (rl2GeometryPtr geom, const unsigned char *blob,
 		      x = rl2GeomImport64 (blob + *offset, endian, endian_arch);
 		      y = rl2GeomImport64 (blob + (*offset + 8), endian,
 					   endian_arch);
+		      m = rl2GeomImport64 (blob + (*offset + 16), endian,
+					   endian_arch);
 		      *offset += 24;
 		  }
 		else
@@ -1448,11 +1784,13 @@ rl2ParseCompressedPolygonM (rl2GeometryPtr geom, const unsigned char *blob,
 					     endian_arch);
 		      fy = rl2GeomImportF32 (blob + (*offset + 4), endian,
 					     endian_arch);
+		      m = rl2GeomImport64 (blob + (*offset + 8), endian,
+					   endian_arch);
 		      x = last_x + fx;
 		      y = last_y + fy;
 		      *offset += 16;
 		  }
-		rl2SetPoint (ring->coords, iv, x, y);
+		rl2SetPointM (ring->coords, iv, x, y, m);
 		if (x < ring->minx)
 		    ring->minx = x;
 		if (x > ring->maxx)
@@ -1478,10 +1816,14 @@ rl2ParseCompressedPolygonZM (rl2GeometryPtr geom, const unsigned char *blob,
     int ib;
     double x;
     double y;
+    double z;
+    double m;
     double last_x = 0.0;
     double last_y = 0.0;
+    double last_z = 0.0;
     float fx;
     float fy;
+    float fz;
     rl2PolygonPtr polyg = NULL;
     rl2RingPtr ring;
     if (size < *offset + 4)
@@ -1511,6 +1853,10 @@ rl2ParseCompressedPolygonZM (rl2GeometryPtr geom, const unsigned char *blob,
 		      x = rl2GeomImport64 (blob + *offset, endian, endian_arch);
 		      y = rl2GeomImport64 (blob + (*offset + 8), endian,
 					   endian_arch);
+		      z = rl2GeomImport64 (blob + (*offset + 16), endian,
+					   endian_arch);
+		      m = rl2GeomImport64 (blob + (*offset + 24), endian,
+					   endian_arch);
 		      *offset += 32;
 		  }
 		else
@@ -1520,11 +1866,16 @@ rl2ParseCompressedPolygonZM (rl2GeometryPtr geom, const unsigned char *blob,
 					     endian_arch);
 		      fy = rl2GeomImportF32 (blob + (*offset + 4), endian,
 					     endian_arch);
+		      fz = rl2GeomImportF32 (blob + (*offset + 8), endian,
+					     endian_arch);
+		      m = rl2GeomImport64 (blob + (*offset + 12), endian,
+					   endian_arch);
 		      x = last_x + fx;
 		      y = last_y + fy;
+		      z = last_z + fz;
 		      *offset += 20;
 		  }
-		rl2SetPoint (ring->coords, iv, x, y);
+		rl2SetPointZM (ring->coords, iv, x, y, z, m);
 		if (x < ring->minx)
 		    ring->minx = x;
 		if (x > ring->maxx)
@@ -1535,6 +1886,7 @@ rl2ParseCompressedPolygonZM (rl2GeometryPtr geom, const unsigned char *blob,
 		    ring->maxy = y;
 		last_x = x;
 		last_y = y;
+		last_z = z;
 	    }
       }
 }
@@ -1641,10 +1993,22 @@ rl2_geometry_from_blob (const unsigned char *blob, int size)
 {
 /* decoding from SpatiaLite BLOB to GEOMETRY */
     int type;
+    int dims;
     int little_endian;
     int offset;
     int endian_arch = rl2GeomEndianArch ();
     rl2GeometryPtr geom = NULL;
+
+    if (size == 24 || size == 32 || size == 40)
+      {
+	  /* testing for a possible TinyPoint BLOB */
+	  if (*(blob + 0) == GAIA_MARK_START &&
+	      (*(blob + 1) == GAIA_TINYPOINT_LITTLE_ENDIAN
+	       || *(blob + 1) == GAIA_TINYPOINT_BIG_ENDIAN)
+	      && *(blob + (size - 1)) == GAIA_MARK_END)
+	      return rl2ParseTinyPointBlob (blob, size);
+      }
+
     if (size < 45)
 	return NULL;		/* cannot be an internal BLOB WKB geometry */
     if (*(blob + 0) != GAIA_MARK_START)
@@ -1660,8 +2024,58 @@ rl2_geometry_from_blob (const unsigned char *blob, int size)
     else
 	return NULL;		/* unknown encoding; nor little-endian neither big-endian */
     type = rl2GeomImport32 (blob + 39, little_endian, endian_arch);
-    geom = rl2CreateGeometry ();
     offset = 43;
+    switch (type)
+      {
+      case GAIA_POINTZ:
+      case GAIA_LINESTRINGZ:
+      case GAIA_POLYGONZ:
+      case GAIA_MULTIPOINTZ:
+      case GAIA_MULTILINESTRINGZ:
+      case GAIA_MULTIPOLYGONZ:
+      case GAIA_GEOMETRYCOLLECTIONZ:
+      case GAIA_COMPRESSED_LINESTRINGZ:
+      case GAIA_COMPRESSED_POLYGONZ:
+	  dims = GAIA_XY_Z;
+	  break;
+      case GAIA_POINTM:
+      case GAIA_LINESTRINGM:
+      case GAIA_POLYGONM:
+      case GAIA_MULTIPOINTM:
+      case GAIA_MULTILINESTRINGM:
+      case GAIA_MULTIPOLYGONM:
+      case GAIA_GEOMETRYCOLLECTIONM:
+      case GAIA_COMPRESSED_LINESTRINGM:
+      case GAIA_COMPRESSED_POLYGONM:
+	  dims = GAIA_XY_M;
+	  break;
+      case GAIA_POINTZM:
+      case GAIA_LINESTRINGZM:
+      case GAIA_POLYGONZM:
+      case GAIA_MULTIPOINTZM:
+      case GAIA_MULTILINESTRINGZM:
+      case GAIA_MULTIPOLYGONZM:
+      case GAIA_GEOMETRYCOLLECTIONZM:
+      case GAIA_COMPRESSED_LINESTRINGZM:
+      case GAIA_COMPRESSED_POLYGONZM:
+	  dims = GAIA_XY_Z_M;
+	  break;
+      case GAIA_POINT:
+      case GAIA_LINESTRING:
+      case GAIA_POLYGON:
+      case GAIA_MULTIPOINT:
+      case GAIA_MULTILINESTRING:
+      case GAIA_MULTIPOLYGON:
+      case GAIA_GEOMETRYCOLLECTION:
+      case GAIA_COMPRESSED_LINESTRING:
+      case GAIA_COMPRESSED_POLYGON:
+      default:
+	  dims = GAIA_XY;
+	  break;
+      };
+    geom = rl2CreateGeometry (dims, type);
+    geom->srid = rl2GeomImport32 (blob + 2, little_endian, endian_arch);
+    geom->type = type;
     switch (type)
       {
 	  /* parsing elementary geometries */
@@ -1763,7 +2177,185 @@ rl2_geometry_from_blob (const unsigned char *blob, int size)
       default:
 	  break;
       };
+    geom->minx = rl2GeomImport64 (blob + 6, little_endian, endian_arch);
+    geom->miny = rl2GeomImport64 (blob + 14, little_endian, endian_arch);
+    geom->maxx = rl2GeomImport64 (blob + 22, little_endian, endian_arch);
+    geom->maxy = rl2GeomImport64 (blob + 30, little_endian, endian_arch);
     return geom;
+}
+
+static void
+do_update_mbr (rl2GeometryPtr geom)
+{
+/* updating the Geometry BBOX */
+    rl2PointPtr pt;
+    rl2LinestringPtr ln;
+    rl2PolygonPtr pg;
+    rl2RingPtr rng;
+    int iv;
+    int ib;
+    double x;
+    double y;
+    double z;
+    double m;
+
+    geom->minx = DBL_MAX;
+    geom->miny = DBL_MAX;
+    geom->maxx = 0.0 - DBL_MAX;
+    geom->maxy = 0.0 - DBL_MAX;
+
+    pt = geom->first_point;
+    while (pt != NULL)
+      {
+	  /* POINTs */
+	  if (pt->x < geom->minx)
+	      geom->minx = pt->x;
+	  if (pt->x > geom->maxx)
+	      geom->maxx = pt->x;
+	  if (pt->y < geom->miny)
+	      geom->miny = pt->y;
+	  if (pt->y > geom->maxy)
+	      geom->maxy = pt->y;
+	  pt = pt->next;
+      }
+
+    ln = geom->first_linestring;
+    while (ln != NULL)
+      {
+	  /* LINESTRINGs */
+	  ln->minx = DBL_MAX;
+	  ln->miny = DBL_MAX;
+	  ln->maxx = 0.0 - DBL_MAX;
+	  ln->maxy = 0.0 - DBL_MAX;
+	  for (iv = 0; iv < ln->points; iv++)
+	    {
+		if (ln->dims == GAIA_XY_Z_M)
+		  {
+		      rl2GetPointZM (ln->coords, iv, &x, &y, &z, &m);
+		  }
+		else if (ln->dims == GAIA_XY_Z)
+		  {
+		      rl2GetPointZ (ln->coords, iv, &x, &y, &z);
+		  }
+		else if (ln->dims == GAIA_XY_M)
+		  {
+		      rl2GetPointM (ln->coords, iv, &x, &y, &m);
+		  }
+		else if (ln->dims == GAIA_XY)
+		  {
+		      rl2GetPoint (ln->coords, iv, &x, &y);
+		  }
+		if (x < ln->minx)
+		    ln->minx = x;
+		if (x > ln->maxx)
+		    ln->maxx = x;
+		if (y < ln->miny)
+		    ln->miny = y;
+		if (y > ln->maxy)
+		    ln->maxy = y;
+		if (x < geom->minx)
+		    geom->minx = x;
+		if (x > geom->maxx)
+		    geom->maxx = x;
+		if (y < geom->miny)
+		    geom->miny = y;
+		if (y > geom->maxy)
+		    geom->maxy = y;
+	    }
+	  ln = ln->next;
+      }
+
+    pg = geom->first_polygon;
+    while (pg != NULL)
+      {
+	  /* POLYGONs */
+	  rng = pg->exterior;
+	  rng->minx = DBL_MAX;
+	  rng->miny = DBL_MAX;
+	  rng->maxx = 0.0 - DBL_MAX;
+	  rng->maxy = 0.0 - DBL_MAX;
+	  for (iv = 0; iv < rng->points; iv++)
+	    {
+		/* EXTERIOR RING */
+		if (rng->dims == GAIA_XY_Z_M)
+		  {
+		      rl2GetPointZM (rng->coords, iv, &x, &y, &z, &m);
+		  }
+		else if (rng->dims == GAIA_XY_Z)
+		  {
+		      rl2GetPointZ (rng->coords, iv, &x, &y, &z);
+		  }
+		else if (rng->dims == GAIA_XY_M)
+		  {
+		      rl2GetPointM (rng->coords, iv, &x, &y, &m);
+		  }
+		else if (rng->dims == GAIA_XY)
+		  {
+		      rl2GetPoint (rng->coords, iv, &x, &y);
+		  }
+		if (x < rng->minx)
+		    rng->minx = x;
+		if (x > rng->maxx)
+		    rng->maxx = x;
+		if (y < rng->miny)
+		    rng->miny = y;
+		if (y > rng->maxy)
+		    rng->maxy = y;
+		if (x < geom->minx)
+		    geom->minx = x;
+		if (x > geom->maxx)
+		    geom->maxx = x;
+		if (y < geom->miny)
+		    geom->miny = y;
+		if (y > geom->maxy)
+		    geom->maxy = y;
+	    }
+	  for (ib = 0; ib < pg->num_interiors; ib++)
+	    {
+		/* INTERIOR RINGS */
+		rng = pg->interiors + ib;
+		rng->minx = DBL_MAX;
+		rng->miny = DBL_MAX;
+		rng->maxx = 0.0 - DBL_MAX;
+		rng->maxy = 0.0 - DBL_MAX;
+		for (iv = 0; iv < rng->points; iv++)
+		  {
+		      if (rng->dims == GAIA_XY_Z_M)
+			{
+			    rl2GetPointZM (rng->coords, iv, &x, &y, &z, &m);
+			}
+		      else if (rng->dims == GAIA_XY_Z)
+			{
+			    rl2GetPointZ (rng->coords, iv, &x, &y, &z);
+			}
+		      else if (rng->dims == GAIA_XY_M)
+			{
+			    rl2GetPointM (rng->coords, iv, &x, &y, &m);
+			}
+		      else if (rng->dims == GAIA_XY)
+			{
+			    rl2GetPoint (rng->coords, iv, &x, &y);
+			}
+		      if (x < rng->minx)
+			  rng->minx = x;
+		      if (x > rng->maxx)
+			  rng->maxx = x;
+		      if (y < rng->miny)
+			  rng->miny = y;
+		      if (y > rng->maxy)
+			  rng->maxy = y;
+		      if (x < geom->minx)
+			  geom->minx = x;
+		      if (x > geom->maxx)
+			  geom->maxx = x;
+		      if (y < geom->miny)
+			  geom->miny = y;
+		      if (y > geom->maxy)
+			  geom->maxy = y;
+		  }
+	    }
+	  pg = pg->next;
+      }
 }
 
 RL2_PRIVATE int
@@ -1774,6 +2366,8 @@ rl2_geometry_to_blob (rl2GeometryPtr geom, unsigned char **result, int *size)
     int iv;
     double x;
     double y;
+    double z;
+    double m;
     int entities = 0;
     int n_points = 0;
     int n_linestrings = 0;
@@ -1789,12 +2383,8 @@ rl2_geometry_to_blob (rl2GeometryPtr geom, unsigned char **result, int *size)
     rl2PolygonPtr polyg = NULL;
     int endian_arch = rl2GeomEndianArch ();
 
-/* setting up a fake MBR and SRID */
-    geom->minx = 0.0;
-    geom->miny = 0.0;
-    geom->maxx = 0.0;
-    geom->maxy = 0.0;
-    geom->srid = -1;
+/* setting up the MBR */
+    do_update_mbr (geom);
 
 /* how many entities, and of what kind, do we have ? */
     pt = geom->first_point;
@@ -1827,19 +2417,199 @@ rl2_geometry_to_blob (rl2GeometryPtr geom, unsigned char **result, int *size)
 	return 0;
 /* ok, we can determine the geometry class */
     if (n_points == 1 && n_linestrings == 0 && n_polygons == 0)
-	type = GAIA_POINT;
+      {
+	  if (geom->type == GAIA_MULTIPOINT)
+	    {
+		if (geom->dims == GAIA_XY_Z)
+		    type = GAIA_MULTIPOINTZ;
+		else if (geom->dims == GAIA_XY_M)
+		    type = GAIA_MULTIPOINTM;
+		else if (geom->dims == GAIA_XY_Z_M)
+		    type = GAIA_MULTIPOINTZM;
+		else
+		    type = GAIA_MULTIPOINT;
+	    }
+	  else if (geom->type == GAIA_GEOMETRYCOLLECTION)
+	    {
+		if (geom->dims == GAIA_XY_Z)
+		    type = GAIA_GEOMETRYCOLLECTIONZ;
+		else if (geom->dims == GAIA_XY_M)
+		    type = GAIA_GEOMETRYCOLLECTIONM;
+		else if (geom->dims == GAIA_XY_Z_M)
+		    type = GAIA_GEOMETRYCOLLECTIONZM;
+		else
+		    type = GAIA_GEOMETRYCOLLECTION;
+	    }
+	  else
+	    {
+		if (geom->dims == GAIA_XY_Z)
+		    type = GAIA_POINTZ;
+		else if (geom->dims == GAIA_XY_M)
+		    type = GAIA_POINTM;
+		else if (geom->dims == GAIA_XY_Z_M)
+		    type = GAIA_POINTZM;
+		else
+		    type = GAIA_POINT;
+	    }
+      }
     else if (n_points > 1 && n_linestrings == 0 && n_polygons == 0)
-	type = GAIA_MULTIPOINT;
+      {
+	  if (geom->type == GAIA_GEOMETRYCOLLECTION)
+	    {
+		if (geom->dims == GAIA_XY_Z)
+		    type = GAIA_GEOMETRYCOLLECTIONZ;
+		else if (geom->dims == GAIA_XY_M)
+		    type = GAIA_GEOMETRYCOLLECTIONM;
+		else if (geom->dims == GAIA_XY_Z_M)
+		    type = GAIA_GEOMETRYCOLLECTIONZM;
+		else
+		    type = GAIA_GEOMETRYCOLLECTION;
+	    }
+	  else
+	    {
+		if (geom->dims == GAIA_XY_Z)
+		    type = GAIA_MULTIPOINTZ;
+		else if (geom->dims == GAIA_XY_M)
+		    type = GAIA_MULTIPOINTM;
+		else if (geom->dims == GAIA_XY_Z_M)
+		    type = GAIA_MULTIPOINTZM;
+		else
+		    type = GAIA_MULTIPOINT;
+	    }
+      }
     else if (n_points == 0 && n_linestrings == 1 && n_polygons == 0)
-	type = GAIA_LINESTRING;
+      {
+	  if (geom->type == GAIA_MULTILINESTRING)
+	    {
+		if (geom->dims == GAIA_XY_Z)
+		    type = GAIA_MULTILINESTRINGZ;
+		else if (geom->dims == GAIA_XY_M)
+		    type = GAIA_MULTILINESTRINGM;
+		else if (geom->dims == GAIA_XY_Z_M)
+		    type = GAIA_MULTILINESTRINGZM;
+		else
+		    type = GAIA_MULTILINESTRING;
+	    }
+	  else if (geom->type == GAIA_GEOMETRYCOLLECTION)
+	    {
+		if (geom->dims == GAIA_XY_Z)
+		    type = GAIA_GEOMETRYCOLLECTIONZ;
+		else if (geom->dims == GAIA_XY_M)
+		    type = GAIA_GEOMETRYCOLLECTIONM;
+		else if (geom->dims == GAIA_XY_Z_M)
+		    type = GAIA_GEOMETRYCOLLECTIONZM;
+		else
+		    type = GAIA_GEOMETRYCOLLECTION;
+	    }
+	  else
+	    {
+		if (geom->dims == GAIA_XY_Z)
+		    type = GAIA_LINESTRINGZ;
+		else if (geom->dims == GAIA_XY_M)
+		    type = GAIA_LINESTRINGM;
+		else if (geom->dims == GAIA_XY_Z_M)
+		    type = GAIA_LINESTRINGZM;
+		else
+		    type = GAIA_LINESTRING;
+	    }
+      }
     else if (n_points == 0 && n_linestrings > 1 && n_polygons == 0)
-	type = GAIA_MULTILINESTRING;
+      {
+	  if (geom->type == GAIA_GEOMETRYCOLLECTION)
+	    {
+		if (geom->dims == GAIA_XY_Z)
+		    type = GAIA_GEOMETRYCOLLECTIONZ;
+		else if (geom->dims == GAIA_XY_M)
+		    type = GAIA_GEOMETRYCOLLECTIONM;
+		else if (geom->dims == GAIA_XY_Z_M)
+		    type = GAIA_GEOMETRYCOLLECTIONZM;
+		else
+		    type = GAIA_GEOMETRYCOLLECTION;
+	    }
+	  else
+	    {
+		if (geom->dims == GAIA_XY_Z)
+		    type = GAIA_MULTILINESTRINGZ;
+		else if (geom->dims == GAIA_XY_M)
+		    type = GAIA_MULTILINESTRINGM;
+		else if (geom->dims == GAIA_XY_Z_M)
+		    type = GAIA_MULTILINESTRINGZM;
+		else
+		    type = GAIA_MULTILINESTRING;
+	    }
+      }
     else if (n_points == 0 && n_linestrings == 0 && n_polygons == 1)
-	type = GAIA_POLYGON;
+      {
+	  if (geom->type == GAIA_MULTIPOLYGON)
+	    {
+		if (geom->dims == GAIA_XY_Z)
+		    type = GAIA_MULTIPOLYGONZ;
+		else if (geom->dims == GAIA_XY_M)
+		    type = GAIA_MULTIPOLYGONM;
+		else if (geom->dims == GAIA_XY_Z_M)
+		    type = GAIA_MULTIPOLYGONZM;
+		else
+		    type = GAIA_MULTIPOLYGON;
+	    }
+	  else if (geom->type == GAIA_GEOMETRYCOLLECTION)
+	    {
+		if (geom->dims == GAIA_XY_Z)
+		    type = GAIA_GEOMETRYCOLLECTIONZ;
+		else if (geom->dims == GAIA_XY_M)
+		    type = GAIA_GEOMETRYCOLLECTIONM;
+		else if (geom->dims == GAIA_XY_Z_M)
+		    type = GAIA_GEOMETRYCOLLECTIONZM;
+		else
+		    type = GAIA_GEOMETRYCOLLECTION;
+	    }
+	  else
+	    {
+		if (geom->dims == GAIA_XY_Z)
+		    type = GAIA_POLYGONZ;
+		else if (geom->dims == GAIA_XY_M)
+		    type = GAIA_POLYGONM;
+		else if (geom->dims == GAIA_XY_Z_M)
+		    type = GAIA_POLYGONZM;
+		else
+		    type = GAIA_POLYGON;
+	    }
+      }
     else if (n_points == 0 && n_linestrings == 0 && n_polygons > 1)
-	type = GAIA_MULTIPOLYGON;
+      {
+	  if (geom->type == GAIA_GEOMETRYCOLLECTION)
+	    {
+		if (geom->dims == GAIA_XY_Z)
+		    type = GAIA_GEOMETRYCOLLECTIONZ;
+		else if (geom->dims == GAIA_XY_M)
+		    type = GAIA_GEOMETRYCOLLECTIONM;
+		else if (geom->dims == GAIA_XY_Z_M)
+		    type = GAIA_GEOMETRYCOLLECTIONZM;
+		else
+		    type = GAIA_GEOMETRYCOLLECTION;
+	    }
+	  else
+	    {
+		if (geom->dims == GAIA_XY_Z)
+		    type = GAIA_MULTIPOLYGONZ;
+		else if (geom->dims == GAIA_XY_M)
+		    type = GAIA_MULTIPOLYGONM;
+		else if (geom->dims == GAIA_XY_Z_M)
+		    type = GAIA_MULTIPOLYGONZM;
+		else
+		    type = GAIA_MULTIPOLYGON;
+	    }
+      }
     else
-	type = GAIA_GEOMETRYCOLLECTION;
+      {
+	  if (geom->dims == GAIA_XY_Z)
+	      type = GAIA_GEOMETRYCOLLECTIONZ;
+	  else if (geom->dims == GAIA_XY_M)
+	      type = GAIA_GEOMETRYCOLLECTIONM;
+	  else if (geom->dims == GAIA_XY_Z_M)
+	      type = GAIA_GEOMETRYCOLLECTIONZM;
+	  else
+	      type = GAIA_GEOMETRYCOLLECTION;
+      }
 /* and now we compute the size of BLOB */
     *size = 44;			/* header size */
     switch (type)
@@ -1847,8 +2617,26 @@ rl2_geometry_to_blob (rl2GeometryPtr geom, unsigned char **result, int *size)
       case GAIA_POINT:
 	  *size += (sizeof (double) * 2);	/* [x,y] coords */
 	  break;
+      case GAIA_POINTZ:
+	  *size += (sizeof (double) * 3);	/* [x,y,z] coords */
+	  break;
+      case GAIA_POINTM:
+	  *size += (sizeof (double) * 3);	/* [x,y,m] coords */
+	  break;
+      case GAIA_POINTZM:
+	  *size += (sizeof (double) * 4);	/* [x,y,z,m] coords */
+	  break;
       case GAIA_LINESTRING:
 	  *size += (4 + ((sizeof (double) * 2) * line->points));	/* # points + [x,y] for each vertex */
+	  break;
+      case GAIA_LINESTRINGZ:
+	  *size += (4 + ((sizeof (double) * 3) * line->points));	/* # points + [x,y,z] for each vertex */
+	  break;
+      case GAIA_LINESTRINGM:
+	  *size += (4 + ((sizeof (double) * 3) * line->points));	/* # points + [x,y,m] for each vertex */
+	  break;
+      case GAIA_LINESTRINGZM:
+	  *size += (4 + ((sizeof (double) * 4) * line->points));	/* # points + [x,y,z,m] for each vertex */
 	  break;
       case GAIA_POLYGON:
 	  rng = polyg->exterior;
@@ -1859,21 +2647,58 @@ rl2_geometry_to_blob (rl2GeometryPtr geom, unsigned char **result, int *size)
 		*size += (4 + ((sizeof (double) * 2) * rng->points));	/* # points + [x,y] array - interior ring */
 	    }
 	  break;
+      case GAIA_POLYGONZ:
+	  rng = polyg->exterior;
+	  *size += (8 + ((sizeof (double) * 3) * rng->points));	/* # rings + # points + [x,y,z] array - exterior ring */
+	  for (ib = 0; ib < polyg->num_interiors; ib++)
+	    {
+		rng = polyg->interiors + ib;
+		*size += (4 + ((sizeof (double) * 3) * rng->points));	/* # points + [x,y,z] array - interior ring */
+	    }
+	  break;
+      case GAIA_POLYGONM:
+	  rng = polyg->exterior;
+	  *size += (8 + ((sizeof (double) * 3) * rng->points));	/* # rings + # points + [x,y,m] array - exterior ring */
+	  for (ib = 0; ib < polyg->num_interiors; ib++)
+	    {
+		rng = polyg->interiors + ib;
+		*size += (4 + ((sizeof (double) * 3) * rng->points));	/* # points + [x,y,m] array - interior ring */
+	    }
+	  break;
+      case GAIA_POLYGONZM:
+	  rng = polyg->exterior;
+	  *size += (8 + ((sizeof (double) * 4) * rng->points));	/* # rings + # points + [x,y,z,m] array - exterior ring */
+	  for (ib = 0; ib < polyg->num_interiors; ib++)
+	    {
+		rng = polyg->interiors + ib;
+		*size += (4 + ((sizeof (double) * 4) * rng->points));	/* # points + [x,y,z,m] array - interior ring */
+	    }
+	  break;
       default:
-	  /* this one is not a simple geometry; should be a MULTIxxxx or a GEOMETRyCOLLECTION */
+	  /* this one is not a simple geometry; should be a MULTIxxxx or a GEOMETRYCOLLECTION */
 	  *size += 4;		/* # entities */
 	  point = geom->first_point;
 	  while (point)
 	    {
 		*size += 5;	/* entity header */
-		*size += (sizeof (double) * 2);	/* two doubles for each POINT */
+		if (geom->dims == GAIA_XY_Z || geom->dims == GAIA_XY_M)
+		    *size += (sizeof (double) * 3);	/* three doubles for each POINT */
+		else if (geom->dims == GAIA_XY_Z_M)
+		    *size += (sizeof (double) * 4);	/* four doubles for each POINT */
+		else
+		    *size += (sizeof (double) * 2);	/* two doubles for each POINT */
 		point = point->next;
 	    }
 	  line = geom->first_linestring;
 	  while (line)
 	    {
 		*size += 5;	/* entity header */
-		*size += (4 + ((sizeof (double) * 2) * line->points));	/* # points + [x,y] for each vertex */
+		if (geom->dims == GAIA_XY_Z || geom->dims == GAIA_XY_M)
+		    *size += (4 + ((sizeof (double) * 3) * line->points));	/* # points + [x,y,z] for each vertex */
+		else if (geom->dims == GAIA_XY_Z_M)
+		    *size += (4 + ((sizeof (double) * 4) * line->points));	/* # points + [x,y,z,m] for each vertex */
+		else
+		    *size += (4 + ((sizeof (double) * 2) * line->points));	/* # points + [x,y] for each vertex */
 		line = line->next;
 	    }
 	  polyg = geom->first_polygon;
@@ -1881,11 +2706,21 @@ rl2_geometry_to_blob (rl2GeometryPtr geom, unsigned char **result, int *size)
 	    {
 		*size += 5;	/* entity header */
 		rng = polyg->exterior;
-		*size += (8 + ((sizeof (double) * 2) * rng->points));	/* # rings + # points + [x,y] array - exterior ring */
+		if (geom->dims == GAIA_XY_Z || geom->dims == GAIA_XY_M)
+		    *size += (8 + ((sizeof (double) * 3) * rng->points));	/* # rings + # points + [x,y,z] array - exterior ring */
+		else if (geom->dims == GAIA_XY_Z_M)
+		    *size += (8 + ((sizeof (double) * 4) * rng->points));	/* # rings + # points + [x,y,z,m] array - exterior ring */
+		else
+		    *size += (8 + ((sizeof (double) * 2) * rng->points));	/* # rings + # points + [x,y] array - exterior ring */
 		for (ib = 0; ib < polyg->num_interiors; ib++)
 		  {
 		      rng = polyg->interiors + ib;
-		      *size += (4 + ((sizeof (double) * 2) * rng->points));	/* # points + [x,y] array - interior ring */
+		      if (geom->dims == GAIA_XY_Z || geom->dims == GAIA_XY_M)
+			  *size += (4 + ((sizeof (double) * 3) * rng->points));	/* # points + [x,y,z] array - interior ring */
+		      else if (geom->dims == GAIA_XY_Z_M)
+			  *size += (4 + ((sizeof (double) * 4) * rng->points));	/* # points + [x,y,z,m] array - interior ring */
+		      else
+			  *size += (4 + ((sizeof (double) * 2) * rng->points));	/* # points + [x,y] array - interior ring */
 		  }
 		polyg = polyg->next;
 	    }
@@ -1909,6 +2744,52 @@ rl2_geometry_to_blob (rl2GeometryPtr geom, unsigned char **result, int *size)
 	  rl2GeomExport64 (ptr + 51, point->y, 1, endian_arch);	/* y */
 	  *(ptr + 59) = GAIA_MARK_END;	/* END signature */
 	  break;
+      case GAIA_POINTZ:
+	  *ptr = GAIA_MARK_START;	/* START signature */
+	  *(ptr + 1) = GAIA_LITTLE_ENDIAN;	/* byte ordering */
+	  rl2GeomExport32 (ptr + 2, geom->srid, 1, endian_arch);	/* the SRID */
+	  rl2GeomExport64 (ptr + 6, geom->minx, 1, endian_arch);	/* MBR - minimum X */
+	  rl2GeomExport64 (ptr + 14, geom->miny, 1, endian_arch);	/* MBR - minimum Y */
+	  rl2GeomExport64 (ptr + 22, geom->maxx, 1, endian_arch);	/* MBR - maximum X */
+	  rl2GeomExport64 (ptr + 30, geom->maxy, 1, endian_arch);	/* MBR - maximum Y */
+	  *(ptr + 38) = GAIA_MARK_MBR;	/* MBR signature */
+	  rl2GeomExport32 (ptr + 39, GAIA_POINTZ, 1, endian_arch);	/* class POINT XYZ */
+	  rl2GeomExport64 (ptr + 43, point->x, 1, endian_arch);	/* X */
+	  rl2GeomExport64 (ptr + 51, point->y, 1, endian_arch);	/* Y */
+	  rl2GeomExport64 (ptr + 59, point->z, 1, endian_arch);	/* Z */
+	  *(ptr + 67) = GAIA_MARK_END;	/* END signature */
+	  break;
+      case GAIA_POINTM:
+	  *ptr = GAIA_MARK_START;	/* START signature */
+	  *(ptr + 1) = GAIA_LITTLE_ENDIAN;	/* byte ordering */
+	  rl2GeomExport32 (ptr + 2, geom->srid, 1, endian_arch);	/* the SRID */
+	  rl2GeomExport64 (ptr + 6, geom->minx, 1, endian_arch);	/* MBR - minimum X */
+	  rl2GeomExport64 (ptr + 14, geom->miny, 1, endian_arch);	/* MBR - minimum Y */
+	  rl2GeomExport64 (ptr + 22, geom->maxx, 1, endian_arch);	/* MBR - maximum X */
+	  rl2GeomExport64 (ptr + 30, geom->maxy, 1, endian_arch);	/* MBR - maximum Y */
+	  *(ptr + 38) = GAIA_MARK_MBR;	/* MBR signature */
+	  rl2GeomExport32 (ptr + 39, GAIA_POINTM, 1, endian_arch);	/* class POINT XYM */
+	  rl2GeomExport64 (ptr + 43, point->x, 1, endian_arch);	/* X */
+	  rl2GeomExport64 (ptr + 51, point->y, 1, endian_arch);	/* Y */
+	  rl2GeomExport64 (ptr + 59, point->m, 1, endian_arch);	/* M */
+	  *(ptr + 67) = GAIA_MARK_END;	/* END signature */
+	  break;
+      case GAIA_POINTZM:
+	  *ptr = GAIA_MARK_START;	/* START signature */
+	  *(ptr + 1) = GAIA_LITTLE_ENDIAN;	/* byte ordering */
+	  rl2GeomExport32 (ptr + 2, geom->srid, 1, endian_arch);	/* the SRID */
+	  rl2GeomExport64 (ptr + 6, geom->minx, 1, endian_arch);	/* MBR - minimum X */
+	  rl2GeomExport64 (ptr + 14, geom->miny, 1, endian_arch);	/* MBR - minimum Y */
+	  rl2GeomExport64 (ptr + 22, geom->maxx, 1, endian_arch);	/* MBR - maximum X */
+	  rl2GeomExport64 (ptr + 30, geom->maxy, 1, endian_arch);	/* MBR - maximum Y */
+	  *(ptr + 38) = GAIA_MARK_MBR;	/* MBR signature */
+	  rl2GeomExport32 (ptr + 39, GAIA_POINTZM, 1, endian_arch);	/* class POINT XYZM */
+	  rl2GeomExport64 (ptr + 43, point->x, 1, endian_arch);	/* X */
+	  rl2GeomExport64 (ptr + 51, point->y, 1, endian_arch);	/* Y */
+	  rl2GeomExport64 (ptr + 59, point->z, 1, endian_arch);	/* M */
+	  rl2GeomExport64 (ptr + 67, point->m, 1, endian_arch);	/* Z */
+	  *(ptr + 75) = GAIA_MARK_END;	/* END signature */
+	  break;
       case GAIA_LINESTRING:
 	  *ptr = GAIA_MARK_START;	/* START signature */
 	  *(ptr + 1) = GAIA_LITTLE_ENDIAN;	/* byte ordering */
@@ -1927,6 +2808,73 @@ rl2_geometry_to_blob (rl2GeometryPtr geom, unsigned char **result, int *size)
 		rl2GeomExport64 (ptr, x, 1, endian_arch);
 		rl2GeomExport64 (ptr + 8, y, 1, endian_arch);
 		ptr += 16;
+	    }
+	  *ptr = GAIA_MARK_END;	/* END signature */
+	  break;
+      case GAIA_LINESTRINGZ:
+	  *ptr = GAIA_MARK_START;	/* START signature */
+	  *(ptr + 1) = GAIA_LITTLE_ENDIAN;	/* byte ordering */
+	  rl2GeomExport32 (ptr + 2, geom->srid, 1, endian_arch);	/* the SRID */
+	  rl2GeomExport64 (ptr + 6, geom->minx, 1, endian_arch);	/* MBR - minimum X */
+	  rl2GeomExport64 (ptr + 14, geom->miny, 1, endian_arch);	/* MBR - minimum Y */
+	  rl2GeomExport64 (ptr + 22, geom->maxx, 1, endian_arch);	/* MBR - maximum X */
+	  rl2GeomExport64 (ptr + 30, geom->maxy, 1, endian_arch);	/* MBR - maximum Y */
+	  *(ptr + 38) = GAIA_MARK_MBR;	/* MBR signature */
+	  rl2GeomExport32 (ptr + 39, GAIA_LINESTRINGZ, 1, endian_arch);	/* class LINESTRING XYZ */
+	  rl2GeomExport32 (ptr + 43, line->points, 1, endian_arch);	/* # points */
+	  ptr += 47;
+	  for (iv = 0; iv < line->points; iv++)
+	    {
+		rl2GetPointZ (line->coords, iv, &x, &y, &z);
+		rl2GeomExport64 (ptr, x, 1, endian_arch);
+		rl2GeomExport64 (ptr + 8, y, 1, endian_arch);
+		rl2GeomExport64 (ptr + 16, z, 1, endian_arch);
+		ptr += 24;
+	    }
+	  *ptr = GAIA_MARK_END;	/* END signature */
+	  break;
+      case GAIA_LINESTRINGM:
+	  *ptr = GAIA_MARK_START;	/* START signature */
+	  *(ptr + 1) = GAIA_LITTLE_ENDIAN;	/* byte ordering */
+	  rl2GeomExport32 (ptr + 2, geom->srid, 1, endian_arch);	/* the SRID */
+	  rl2GeomExport64 (ptr + 6, geom->minx, 1, endian_arch);	/* MBR - minimum X */
+	  rl2GeomExport64 (ptr + 14, geom->miny, 1, endian_arch);	/* MBR - minimum Y */
+	  rl2GeomExport64 (ptr + 22, geom->maxx, 1, endian_arch);	/* MBR - maximum X */
+	  rl2GeomExport64 (ptr + 30, geom->maxy, 1, endian_arch);	/* MBR - maximum Y */
+	  *(ptr + 38) = GAIA_MARK_MBR;	/* MBR signature */
+	  rl2GeomExport32 (ptr + 39, GAIA_LINESTRINGM, 1, endian_arch);	/* class LINESTRING XYM */
+	  rl2GeomExport32 (ptr + 43, line->points, 1, endian_arch);	/* # points */
+	  ptr += 47;
+	  for (iv = 0; iv < line->points; iv++)
+	    {
+		rl2GetPointM (line->coords, iv, &x, &y, &m);
+		rl2GeomExport64 (ptr, x, 1, endian_arch);
+		rl2GeomExport64 (ptr + 8, y, 1, endian_arch);
+		rl2GeomExport64 (ptr + 16, m, 1, endian_arch);
+		ptr += 24;
+	    }
+	  *ptr = GAIA_MARK_END;	/* END signature */
+	  break;
+      case GAIA_LINESTRINGZM:
+	  *ptr = GAIA_MARK_START;	/* START signature */
+	  *(ptr + 1) = GAIA_LITTLE_ENDIAN;	/* byte ordering */
+	  rl2GeomExport32 (ptr + 2, geom->srid, 1, endian_arch);	/* the SRID */
+	  rl2GeomExport64 (ptr + 6, geom->minx, 1, endian_arch);	/* MBR - minimum X */
+	  rl2GeomExport64 (ptr + 14, geom->miny, 1, endian_arch);	/* MBR - minimum Y */
+	  rl2GeomExport64 (ptr + 22, geom->maxx, 1, endian_arch);	/* MBR - maximum X */
+	  rl2GeomExport64 (ptr + 30, geom->maxy, 1, endian_arch);	/* MBR - maximum Y */
+	  *(ptr + 38) = GAIA_MARK_MBR;	/* MBR signature */
+	  rl2GeomExport32 (ptr + 39, GAIA_LINESTRINGZM, 1, endian_arch);	/* class LINESTRING XYZM */
+	  rl2GeomExport32 (ptr + 43, line->points, 1, endian_arch);	/* # points */
+	  ptr += 47;
+	  for (iv = 0; iv < line->points; iv++)
+	    {
+		rl2GetPointZM (line->coords, iv, &x, &y, &z, &m);
+		rl2GeomExport64 (ptr, x, 1, endian_arch);
+		rl2GeomExport64 (ptr + 8, y, 1, endian_arch);
+		rl2GeomExport64 (ptr + 16, z, 1, endian_arch);
+		rl2GeomExport64 (ptr + 24, m, 1, endian_arch);
+		ptr += 32;
 	    }
 	  *ptr = GAIA_MARK_END;	/* END signature */
 	  break;
@@ -1966,6 +2914,122 @@ rl2_geometry_to_blob (rl2GeometryPtr geom, unsigned char **result, int *size)
 	    }
 	  *ptr = GAIA_MARK_END;	/* END signature */
 	  break;
+      case GAIA_POLYGONZ:
+	  *ptr = GAIA_MARK_START;	/* START signature */
+	  *(ptr + 1) = GAIA_LITTLE_ENDIAN;	/* byte ordering */
+	  rl2GeomExport32 (ptr + 2, geom->srid, 1, endian_arch);	/* the SRID */
+	  rl2GeomExport64 (ptr + 6, geom->minx, 1, endian_arch);	/* MBR - minimum X */
+	  rl2GeomExport64 (ptr + 14, geom->miny, 1, endian_arch);	/* MBR - minimum Y */
+	  rl2GeomExport64 (ptr + 22, geom->maxx, 1, endian_arch);	/* MBR - maximum X */
+	  rl2GeomExport64 (ptr + 30, geom->maxy, 1, endian_arch);	/* MBR - maximum Y */
+	  *(ptr + 38) = GAIA_MARK_MBR;	/* MBR signature */
+	  rl2GeomExport32 (ptr + 39, GAIA_POLYGONZ, 1, endian_arch);	/* class POLYGON XYZ */
+	  rl2GeomExport32 (ptr + 43, polyg->num_interiors + 1, 1, endian_arch);	/* # rings */
+	  rng = polyg->exterior;
+	  rl2GeomExport32 (ptr + 47, rng->points, 1, endian_arch);	/* # points - exterior ring */
+	  ptr += 51;
+	  for (iv = 0; iv < rng->points; iv++)
+	    {
+		rl2GetPointZ (rng->coords, iv, &x, &y, &z);
+		rl2GeomExport64 (ptr, x, 1, endian_arch);	/* X - exterior ring */
+		rl2GeomExport64 (ptr + 8, y, 1, endian_arch);	/* Y - exterior ring */
+		rl2GeomExport64 (ptr + 16, z, 1, endian_arch);	/* Z - exterior ring */
+		ptr += 24;
+	    }
+	  for (ib = 0; ib < polyg->num_interiors; ib++)
+	    {
+		rng = polyg->interiors + ib;
+		rl2GeomExport32 (ptr, rng->points, 1, endian_arch);	/* # points - interior ring */
+		ptr += 4;
+		for (iv = 0; iv < rng->points; iv++)
+		  {
+		      rl2GetPointZ (rng->coords, iv, &x, &y, &z);
+		      rl2GeomExport64 (ptr, x, 1, endian_arch);	/* X - interior ring */
+		      rl2GeomExport64 (ptr + 8, y, 1, endian_arch);	/* Y - interior ring */
+		      rl2GeomExport64 (ptr + 16, z, 1, endian_arch);	/* Z - interior ring */
+		      ptr += 24;
+		  }
+	    }
+	  *ptr = GAIA_MARK_END;	/* END signature */
+	  break;
+      case GAIA_POLYGONM:
+	  *ptr = GAIA_MARK_START;	/* START signature */
+	  *(ptr + 1) = GAIA_LITTLE_ENDIAN;	/* byte ordering */
+	  rl2GeomExport32 (ptr + 2, geom->srid, 1, endian_arch);	/* the SRID */
+	  rl2GeomExport64 (ptr + 6, geom->minx, 1, endian_arch);	/* MBR - minimum X */
+	  rl2GeomExport64 (ptr + 14, geom->miny, 1, endian_arch);	/* MBR - minimum Y */
+	  rl2GeomExport64 (ptr + 22, geom->maxx, 1, endian_arch);	/* MBR - maximum X */
+	  rl2GeomExport64 (ptr + 30, geom->maxy, 1, endian_arch);	/* MBR - maximum Y */
+	  *(ptr + 38) = GAIA_MARK_MBR;	/* MBR signature */
+	  rl2GeomExport32 (ptr + 39, GAIA_POLYGONM, 1, endian_arch);	/* class POLYGON XYM */
+	  rl2GeomExport32 (ptr + 43, polyg->num_interiors + 1, 1, endian_arch);	/* # rings */
+	  rng = polyg->exterior;
+	  rl2GeomExport32 (ptr + 47, rng->points, 1, endian_arch);	/* # points - exterior ring */
+	  ptr += 51;
+	  for (iv = 0; iv < rng->points; iv++)
+	    {
+		rl2GetPointM (rng->coords, iv, &x, &y, &m);
+		rl2GeomExport64 (ptr, x, 1, endian_arch);	/* X - exterior ring */
+		rl2GeomExport64 (ptr + 8, y, 1, endian_arch);	/* Y - exterior ring */
+		rl2GeomExport64 (ptr + 16, m, 1, endian_arch);	/* M - exterior ring */
+		ptr += 24;
+	    }
+	  for (ib = 0; ib < polyg->num_interiors; ib++)
+	    {
+		rng = polyg->interiors + ib;
+		rl2GeomExport32 (ptr, rng->points, 1, endian_arch);	/* # points - interior ring */
+		ptr += 4;
+		for (iv = 0; iv < rng->points; iv++)
+		  {
+		      rl2GetPointM (rng->coords, iv, &x, &y, &m);
+		      rl2GeomExport64 (ptr, x, 1, endian_arch);	/* X - interior ring */
+		      rl2GeomExport64 (ptr + 8, y, 1, endian_arch);	/* Y - interior ring */
+		      rl2GeomExport64 (ptr + 16, m, 1, endian_arch);	/* M - interior ring */
+		      ptr += 24;
+		  }
+	    }
+	  *ptr = GAIA_MARK_END;	/* END signature */
+	  break;
+      case GAIA_POLYGONZM:
+	  *ptr = GAIA_MARK_START;	/* START signature */
+	  *(ptr + 1) = GAIA_LITTLE_ENDIAN;	/* byte ordering */
+	  rl2GeomExport32 (ptr + 2, geom->srid, 1, endian_arch);	/* the SRID */
+	  rl2GeomExport64 (ptr + 6, geom->minx, 1, endian_arch);	/* MBR - minimum X */
+	  rl2GeomExport64 (ptr + 14, geom->miny, 1, endian_arch);	/* MBR - minimum Y */
+	  rl2GeomExport64 (ptr + 22, geom->maxx, 1, endian_arch);	/* MBR - maximum X */
+	  rl2GeomExport64 (ptr + 30, geom->maxy, 1, endian_arch);	/* MBR - maximum Y */
+	  *(ptr + 38) = GAIA_MARK_MBR;	/* MBR signature */
+	  rl2GeomExport32 (ptr + 39, GAIA_POLYGONZM, 1, endian_arch);	/* class POLYGON */
+	  rl2GeomExport32 (ptr + 43, polyg->num_interiors + 1, 1, endian_arch);	/* # rings */
+	  rng = polyg->exterior;
+	  rl2GeomExport32 (ptr + 47, rng->points, 1, endian_arch);	/* # points - exterior ring */
+	  ptr += 51;
+	  for (iv = 0; iv < rng->points; iv++)
+	    {
+		rl2GetPointZM (rng->coords, iv, &x, &y, &z, &m);
+		rl2GeomExport64 (ptr, x, 1, endian_arch);	/* X - exterior ring */
+		rl2GeomExport64 (ptr + 8, y, 1, endian_arch);	/* Y - exterior ring */
+		rl2GeomExport64 (ptr + 16, z, 1, endian_arch);	/* Z - exterior ring */
+		rl2GeomExport64 (ptr + 24, m, 1, endian_arch);	/* M - exterior ring */
+		ptr += 32;
+	    }
+	  for (ib = 0; ib < polyg->num_interiors; ib++)
+	    {
+		rng = polyg->interiors + ib;
+		rl2GeomExport32 (ptr, rng->points, 1, endian_arch);	/* # points - interior ring */
+		ptr += 4;
+		for (iv = 0; iv < rng->points; iv++)
+		  {
+		      rl2GetPointZM (rng->coords, iv, &x, &y, &z, &m);
+		      rl2GeomExport64 (ptr, x, 1, endian_arch);	/* X - interior ring */
+		      rl2GeomExport64 (ptr + 8, y, 1, endian_arch);	/* Y - interior ring */
+		      rl2GeomExport64 (ptr + 16, z, 1, endian_arch);	/* Z - exterior ring */
+		      rl2GeomExport64 (ptr + 24, m, 1, endian_arch);	/* M - exterior ring */
+		      ptr += 32;
+		  }
+	    }
+	  *ptr = GAIA_MARK_END;	/* END signature */
+	  break;
       default:
 	  /* this one is a MULTIxxxx or a GEOMETRyCOLLECTION - building the main header */
 	  *ptr = GAIA_MARK_START;	/* START signature */
@@ -1983,25 +3047,91 @@ rl2_geometry_to_blob (rl2GeometryPtr geom, unsigned char **result, int *size)
 	  while (point)
 	    {
 		*ptr = GAIA_MARK_ENTITY;	/* ENTITY signature */
-		rl2GeomExport32 (ptr + 1, GAIA_POINT, 1, endian_arch);	/* class POINT */
-		rl2GeomExport64 (ptr + 5, point->x, 1, endian_arch);	/* x */
-		rl2GeomExport64 (ptr + 13, point->y, 1, endian_arch);	/* y */
-		ptr += 21;
+		if (geom->dims == GAIA_XY_Z)
+		  {
+		      rl2GeomExport32 (ptr + 1, GAIA_POINTZ, 1, endian_arch);	/* class POINT XYZ */
+		      rl2GeomExport64 (ptr + 5, point->x, 1, endian_arch);	/* X */
+		      rl2GeomExport64 (ptr + 13, point->y, 1, endian_arch);	/* Y */
+		      rl2GeomExport64 (ptr + 21, point->z, 1, endian_arch);	/* Z */
+		      ptr += 29;
+		  }
+		else if (geom->dims == GAIA_XY_M)
+		  {
+		      rl2GeomExport32 (ptr + 1, GAIA_POINTM, 1, endian_arch);	/* class POINT XYM */
+		      rl2GeomExport64 (ptr + 5, point->x, 1, endian_arch);	/* X */
+		      rl2GeomExport64 (ptr + 13, point->y, 1, endian_arch);	/* Y */
+		      rl2GeomExport64 (ptr + 21, point->m, 1, endian_arch);	/* M */
+		      ptr += 29;
+		  }
+		else if (geom->dims == GAIA_XY_Z_M)
+		  {
+		      rl2GeomExport32 (ptr + 1, GAIA_POINTZM, 1, endian_arch);	/* class POINT XYZM */
+		      rl2GeomExport64 (ptr + 5, point->x, 1, endian_arch);	/* X */
+		      rl2GeomExport64 (ptr + 13, point->y, 1, endian_arch);	/* Y */
+		      rl2GeomExport64 (ptr + 21, point->z, 1, endian_arch);	/* Z */
+		      rl2GeomExport64 (ptr + 29, point->m, 1, endian_arch);	/* M */
+		      ptr += 37;
+		  }
+		else
+		  {
+		      rl2GeomExport32 (ptr + 1, GAIA_POINT, 1, endian_arch);	/* class POINT */
+		      rl2GeomExport64 (ptr + 5, point->x, 1, endian_arch);	/* X */
+		      rl2GeomExport64 (ptr + 13, point->y, 1, endian_arch);	/* Y */
+		      ptr += 21;
+		  }
 		point = point->next;
 	    }
 	  line = geom->first_linestring;
 	  while (line)
 	    {
 		*ptr = GAIA_MARK_ENTITY;	/* ENTITY signature */
-		rl2GeomExport32 (ptr + 1, GAIA_LINESTRING, 1, endian_arch);	/* class LINESTRING */
+		if (geom->dims == GAIA_XY_Z)
+		    rl2GeomExport32 (ptr + 1, GAIA_LINESTRINGZ, 1, endian_arch);	/* class LINESTRING XYZ */
+		else if (geom->dims == GAIA_XY_M)
+		    rl2GeomExport32 (ptr + 1, GAIA_LINESTRINGM, 1, endian_arch);	/* class LINESTRING XYM */
+		else if (geom->dims == GAIA_XY_Z_M)
+		    rl2GeomExport32 (ptr + 1, GAIA_LINESTRINGZM, 1, endian_arch);	/* class LINESTRING XYZM */
+		else
+		    rl2GeomExport32 (ptr + 1, GAIA_LINESTRING, 1, endian_arch);	/* class LINESTRING */
 		rl2GeomExport32 (ptr + 5, line->points, 1, endian_arch);	/* # points */
 		ptr += 9;
 		for (iv = 0; iv < line->points; iv++)
 		  {
-		      gaiaGetPoint (line->coords, iv, &x, &y);
-		      rl2GeomExport64 (ptr, x, 1, endian_arch);	/* x */
-		      rl2GeomExport64 (ptr + 8, y, 1, endian_arch);	/* y */
+		      if (geom->dims == GAIA_XY_Z)
+			{
+			    rl2GetPointZ (line->coords, iv, &x, &y, &z);
+			}
+		      else if (geom->dims == GAIA_XY_M)
+			{
+			    rl2GetPointM (line->coords, iv, &x, &y, &m);
+			}
+		      else if (geom->dims == GAIA_XY_Z_M)
+			{
+			    rl2GetPointZM (line->coords, iv, &x, &y, &z, &m);
+			}
+		      else
+			{
+			    rl2GetPoint (line->coords, iv, &x, &y);
+			}
+		      rl2GeomExport64 (ptr, x, 1, endian_arch);	/* X */
+		      rl2GeomExport64 (ptr + 8, y, 1, endian_arch);	/* Y */
 		      ptr += 16;
+		      if (geom->dims == GAIA_XY_Z)
+			{
+			    rl2GeomExport64 (ptr, z, 1, endian_arch);	/* Z */
+			    ptr += 8;
+			}
+		      if (geom->dims == GAIA_XY_M)
+			{
+			    rl2GeomExport64 (ptr, m, 1, endian_arch);	/* M */
+			    ptr += 8;
+			}
+		      if (geom->dims == GAIA_XY_Z_M)
+			{
+			    rl2GeomExport64 (ptr, z, 1, endian_arch);	/* Z */
+			    rl2GeomExport64 (ptr + 8, m, 1, endian_arch);	/* M */
+			    ptr += 16;
+			}
 		  }
 		line = line->next;
 	    }
@@ -2009,17 +3139,55 @@ rl2_geometry_to_blob (rl2GeometryPtr geom, unsigned char **result, int *size)
 	  while (polyg)
 	    {
 		*ptr = GAIA_MARK_ENTITY;	/* ENTITY signature */
-		rl2GeomExport32 (ptr + 1, GAIA_POLYGON, 1, endian_arch);	/* class POLYGON */
+		if (geom->dims == GAIA_XY_Z)
+		    rl2GeomExport32 (ptr + 1, GAIA_POLYGONZ, 1, endian_arch);	/* class POLYGON XYZ */
+		else if (geom->dims == GAIA_XY_M)
+		    rl2GeomExport32 (ptr + 1, GAIA_POLYGONM, 1, endian_arch);	/* class POLYGON XYM */
+		else if (geom->dims == GAIA_XY_Z_M)
+		    rl2GeomExport32 (ptr + 1, GAIA_POLYGONZM, 1, endian_arch);	/* class POLYGON XYZM */
+		else
+		    rl2GeomExport32 (ptr + 1, GAIA_POLYGON, 1, endian_arch);	/* class POLYGON */
 		rl2GeomExport32 (ptr + 5, polyg->num_interiors + 1, 1, endian_arch);	/* # rings */
 		rng = polyg->exterior;
 		rl2GeomExport32 (ptr + 9, rng->points, 1, endian_arch);	/* # points - exterior ring */
 		ptr += 13;
 		for (iv = 0; iv < rng->points; iv++)
 		  {
-		      gaiaGetPoint (rng->coords, iv, &x, &y);
-		      rl2GeomExport64 (ptr, x, 1, endian_arch);	/* x - exterior ring */
-		      rl2GeomExport64 (ptr + 8, y, 1, endian_arch);	/* y - exterior ring */
+		      if (geom->dims == GAIA_XY_Z)
+			{
+			    rl2GetPointZ (rng->coords, iv, &x, &y, &z);
+			}
+		      else if (geom->dims == GAIA_XY_M)
+			{
+			    rl2GetPointM (rng->coords, iv, &x, &y, &m);
+			}
+		      else if (geom->dims == GAIA_XY_Z_M)
+			{
+			    rl2GetPointZM (rng->coords, iv, &x, &y, &z, &m);
+			}
+		      else
+			{
+			    rl2GetPoint (rng->coords, iv, &x, &y);
+			}
+		      rl2GeomExport64 (ptr, x, 1, endian_arch);	/* X - exterior ring */
+		      rl2GeomExport64 (ptr + 8, y, 1, endian_arch);	/* Y - exterior ring */
 		      ptr += 16;
+		      if (geom->dims == GAIA_XY_Z)
+			{
+			    rl2GeomExport64 (ptr, z, 1, endian_arch);	/* Z */
+			    ptr += 8;
+			}
+		      if (geom->dims == GAIA_XY_M)
+			{
+			    rl2GeomExport64 (ptr, m, 1, endian_arch);	/* M */
+			    ptr += 8;
+			}
+		      if (geom->dims == GAIA_XY_Z_M)
+			{
+			    rl2GeomExport64 (ptr, z, 1, endian_arch);	/* Z */
+			    rl2GeomExport64 (ptr + 8, m, 1, endian_arch);	/* M */
+			    ptr += 16;
+			}
 		  }
 		for (ib = 0; ib < polyg->num_interiors; ib++)
 		  {
@@ -2028,10 +3196,42 @@ rl2_geometry_to_blob (rl2GeometryPtr geom, unsigned char **result, int *size)
 		      ptr += 4;
 		      for (iv = 0; iv < rng->points; iv++)
 			{
-			    gaiaGetPoint (rng->coords, iv, &x, &y);
-			    rl2GeomExport64 (ptr, x, 1, endian_arch);	/* x - interior ring */
-			    rl2GeomExport64 (ptr + 8, y, 1, endian_arch);	/* y - interior ring */
+			    if (geom->dims == GAIA_XY_Z)
+			      {
+				  rl2GetPointZ (rng->coords, iv, &x, &y, &z);
+			      }
+			    else if (geom->dims == GAIA_XY_M)
+			      {
+				  rl2GetPointM (rng->coords, iv, &x, &y, &m);
+			      }
+			    else if (geom->dims == GAIA_XY_Z_M)
+			      {
+				  rl2GetPointZM (rng->coords, iv, &x, &y,
+						 &z, &m);
+			      }
+			    else
+			      {
+				  rl2GetPoint (rng->coords, iv, &x, &y);
+			      }
+			    rl2GeomExport64 (ptr, x, 1, endian_arch);	/* X - interior ring */
+			    rl2GeomExport64 (ptr + 8, y, 1, endian_arch);	/* Y - interior ring */
 			    ptr += 16;
+			    if (geom->dims == GAIA_XY_Z)
+			      {
+				  rl2GeomExport64 (ptr, z, 1, endian_arch);	/* Z */
+				  ptr += 8;
+			      }
+			    if (geom->dims == GAIA_XY_M)
+			      {
+				  rl2GeomExport64 (ptr, m, 1, endian_arch);	/* M */
+				  ptr += 8;
+			      }
+			    if (geom->dims == GAIA_XY_Z_M)
+			      {
+				  rl2GeomExport64 (ptr, z, 1, endian_arch);	/* Z */
+				  rl2GeomExport64 (ptr + 8, m, 1, endian_arch);	/* M */
+				  ptr += 16;
+			      }
 			}
 		  }
 		polyg = polyg->next;
@@ -2270,7 +3470,7 @@ rl2_curve_from_XY (int points, double *x, double *y)
 
     if (points <= 0 || x == NULL || y == NULL)
 	return 0;
-    geom = rl2CreateGeometry ();
+    geom = rl2CreateGeometry (GAIA_XY, GAIA_LINESTRING);
     ln = rl2AddLinestringToGeometry (geom, points);
     for (iv = 0; iv < points; iv++)
       {
@@ -2392,7 +3592,7 @@ rl2_clone_curve (rl2GeometryPtr in)
     rl2LinestringPtr ln_out;
     int iv;
 
-    out = rl2CreateGeometry ();
+    out = rl2CreateGeometry (GAIA_XY, GAIA_LINESTRING);
     ln_out = rl2AddLinestringToGeometry (out, ln_in->points);
     for (iv = 0; iv < ln_in->points; iv++)
       {
@@ -2420,7 +3620,7 @@ rl2_clone_linestring (rl2LinestringPtr in)
     rl2LinestringPtr ln_out;
     int iv;
 
-    out = rl2CreateGeometry ();
+    out = rl2CreateGeometry (GAIA_XY, GAIA_LINESTRING);
     ln_out = rl2AddLinestringToGeometry (out, in->points);
     for (iv = 0; iv < in->points; iv++)
       {
@@ -2452,7 +3652,7 @@ rl2_clone_polygons (rl2GeometryPtr in)
     int iv;
     int ib;
 
-    out = rl2CreateGeometry ();
+    out = rl2CreateGeometry (GAIA_XY, GAIA_MULTIPOLYGON);
     pg_in = in->first_polygon;
     while (pg_in != NULL)
       {
@@ -2513,7 +3713,7 @@ rl2_build_circle (double cx, double cy, double radius)
     double x;
     double y;
     rl2LinestringPtr ln;
-    rl2GeometryPtr out = rl2CreateGeometry ();
+    rl2GeometryPtr out = rl2CreateGeometry (GAIA_XY, GAIA_LINESTRING);
     ln = rl2AddLinestringToGeometry (out, 129);
     for (rads = 0.0; rads <= (pi * 2.0); rads += pi / 64.0)
       {
@@ -2576,4 +3776,494 @@ rl2_affine_transform_from_blob (rl2PrivAffineTransformPtr matrix,
     if (*(ptr + 145) != MATRIX_MAGIC_END)
 	return 0;
     return 1;
+}
+
+RL2_PRIVATE rl2DynLinePtr
+rl2CreateDynLine ()
+{
+/* creating an empty DynLine object */
+    rl2DynLinePtr dyn = malloc (sizeof (rl2DynLine));
+    dyn->first = NULL;
+    dyn->last = NULL;
+    return dyn;
+}
+
+RL2_PRIVATE void
+rl2DestroyDynLine (rl2DynLinePtr dyn)
+{
+/* memory cleanup - destroying a DynLine object */
+    rl2PointPtr pt;
+    rl2PointPtr pt_n;
+
+    if (dyn == NULL)
+	return;
+
+    pt = dyn->first;
+    while (pt != NULL)
+      {
+	  pt_n = pt->next;
+	  free (pt);
+	  pt = pt_n;
+      }
+    free (dyn);
+}
+
+RL2_PRIVATE void
+rl2AddDynPoint (rl2DynLinePtr dyn, double x, double y)
+{
+/* adding a Point XY to a DynLine */
+    rl2PointPtr pt = rl2CreatePointXY (x, y);
+    if (dyn->first == NULL)
+	dyn->first = pt;
+    if (dyn->last != NULL)
+	dyn->last->next = pt;
+    dyn->last = pt;
+}
+
+RL2_PRIVATE void
+rl2AddDynPointZ (rl2DynLinePtr dyn, double x, double y, double z)
+{
+/* adding a Point XYZ to a DynLine */
+    rl2PointPtr pt = rl2CreatePointXYZ (x, y, z);
+    if (dyn->first == NULL)
+	dyn->first = pt;
+    if (dyn->last != NULL)
+	dyn->last->next = pt;
+    dyn->last = pt;
+}
+
+RL2_PRIVATE void
+rl2AddDynPointM (rl2DynLinePtr dyn, double x, double y, double m)
+{
+/* adding a Point XYM to a DynLine */
+    rl2PointPtr pt = rl2CreatePointXYM (x, y, m);
+    if (dyn->first == NULL)
+	dyn->first = pt;
+    if (dyn->last != NULL)
+	dyn->last->next = pt;
+    dyn->last = pt;
+}
+
+RL2_PRIVATE void
+rl2AddDynPointZM (rl2DynLinePtr dyn, double x, double y, double z, double m)
+{
+/* adding a Point XYZM to a DynLine */
+    rl2PointPtr pt = rl2CreatePointXYZM (x, y, z, m);
+    if (dyn->first == NULL)
+	dyn->first = pt;
+    if (dyn->last != NULL)
+	dyn->last->next = pt;
+    dyn->last = pt;
+}
+
+RL2_PRIVATE int
+rl2CountDynLinePoints (rl2DynLinePtr dyn)
+{
+/* counting how many points in a DynLine */
+    int count = 0;
+    rl2PointPtr pt = dyn->first;
+    while (pt != NULL)
+      {
+	  count++;
+	  pt = pt->next;
+      }
+    return count;
+}
+
+RL2_PRIVATE void
+rl2_destroy_updatable_geometry (rl2UpdatableGeometryPtr geom)
+{
+/* destroying an UPDATABLE GEOMETRY object */
+    rl2CoordSeqPtr pC;
+    rl2CoordSeqPtr pCn;
+    if (geom == NULL)
+	return;
+
+    if (geom->blob != NULL)
+	free (geom->blob);
+    pC = geom->first;
+    while (pC != NULL)
+      {
+	  pCn = pC->next;
+	  free (pC);
+	  pC = pCn;
+      }
+    free (geom);
+}
+
+static void
+rl2AddCoordSeqToGeometry (rl2UpdatableGeometryPtr geom, int points, int offset)
+{
+/* adding a CoordSeq to an UPDATABLE GEOMETRY object */
+    double x;
+    double y;
+    int iv;
+    const unsigned char *p;
+    rl2CoordSeqPtr ptr = malloc (sizeof (rl2CoordSeq));
+    ptr->points = points;
+    ptr->base_addr = geom->blob + offset;
+    ptr->endian = geom->endian;
+    ptr->endian_arch = geom->endian_arch;
+    ptr->has_z = geom->has_z;
+    ptr->has_m = geom->has_m;
+
+/* setting the BBOX */
+    p = ptr->base_addr;
+    geom->minx = rl2GeomImport64 (p + 0, geom->endian, geom->endian_arch);
+    geom->maxx = geom->minx;
+    geom->miny = rl2GeomImport64 (p + 8, geom->endian, geom->endian_arch);
+    geom->maxy = geom->miny;
+    p += 16;
+    if (geom->has_z)
+	p += 8;
+    if (geom->has_m)
+	p += 8;
+    for (iv = 1; iv < points; iv++)
+      {
+	  x = rl2GeomImport64 (p + 0, geom->endian, geom->endian_arch);
+	  y = rl2GeomImport64 (p + 8, geom->endian, geom->endian_arch);
+	  if (x < geom->minx)
+	      geom->minx = x;
+	  if (x > geom->maxx)
+	      geom->maxx = x;
+	  if (y < geom->miny)
+	      geom->miny = y;
+	  if (y > geom->maxy)
+	      geom->maxy = y;
+	  p += 16;
+	  if (geom->has_z)
+	      p += 8;
+	  if (geom->has_m)
+	      p += 8;
+      }
+
+    ptr->next = NULL;
+    if (geom->first == NULL)
+	geom->first = ptr;
+    if (geom->last != NULL)
+	geom->last->next = ptr;
+    geom->last = ptr;
+}
+
+RL2_PRIVATE double
+rl2_get_coord_seq_value (rl2CoordSeqPtr pCS, int iv, char dim)
+{
+/* extracting a coordinate value from the Sequence */
+    int point_sz = 16;
+    int offset;
+    double value;
+
+    if (pCS->has_m)
+	point_sz += 8;
+    if (pCS->has_z)
+	point_sz += 8;
+    if (dim == 'y')
+	offset = 8;
+    else if (dim == 'z')
+	offset = 16;
+    else if (dim == 'm')
+      {
+	  if (pCS->has_z)
+	      offset = 24;
+	  else
+	      offset = 16;
+      }
+    else
+	offset = 0;
+    value =
+	rl2GeomImport64 (pCS->base_addr + (point_sz * iv) + offset, pCS->endian,
+			 pCS->endian_arch);
+    return value;
+}
+
+RL2_PRIVATE void
+rl2_set_coord_seq_value (double value, rl2CoordSeqPtr pCS, int iv, char dim)
+{
+/* inserting a coordinate value into the Sequence */
+    int point_sz = 16;
+    int offset;
+
+    if (pCS->has_m)
+	point_sz += 8;
+    if (pCS->has_z)
+	point_sz += 8;
+    if (dim == 'y')
+	offset = 8;
+    else if (dim == 'z')
+	offset = 16;
+    else if (dim == 'm')
+      {
+	  if (pCS->has_z)
+	      offset = 24;
+	  else
+	      offset = 16;
+      }
+    else
+	offset = 0;
+    rl2GeomExport64 (pCS->base_addr + (point_sz * iv) + offset, value,
+		     pCS->endian, pCS->endian_arch);
+}
+
+static int
+rl2ParseUpdatablePoint (rl2UpdatableGeometryPtr geom, int *offset)
+{
+/* decodes a POINT (may be Z,M) from WKB */
+    int size = 16;
+    if (geom->has_z)
+	size += 8;
+    if (geom->has_m)
+	size += 16;
+    if (geom->size < *offset + size)
+	return 0;
+    rl2AddCoordSeqToGeometry (geom, 1, *offset);
+    *offset += size;
+    return 1;
+}
+
+static int
+rl2ParseUpdatableLinestring (rl2UpdatableGeometryPtr geom, int *offset)
+{
+/* decodes a LINESTRING (may be Z,M) from WKB */
+    int points;
+    int size = 16;
+    if (geom->has_z)
+	size += 8;
+    if (geom->has_m)
+	size += 16;
+    if (geom->size < *offset + 4)
+	return 0;
+    points =
+	rl2GeomImport32 (geom->blob + *offset, geom->endian, geom->endian_arch);
+    *offset += 4;
+    if (geom->size < *offset + (size * points))
+	return 0;
+    rl2AddCoordSeqToGeometry (geom, points, *offset);
+    *offset += (size * points);
+    return 1;
+}
+
+static int
+rl2ParseUpdatablePolygon (rl2UpdatableGeometryPtr geom, int *offset)
+{
+/* decodes a POLYGON (may be Z,M) from WKB */
+    int rings;
+    int ib;
+    int points;
+    int size = 16;
+    if (geom->has_z)
+	size += 8;
+    if (geom->has_m)
+	size += 16;
+    if (geom->size < *offset + 4)
+	return 0;
+    rings =
+	rl2GeomImport32 (geom->blob + *offset, geom->endian, geom->endian_arch);
+    *offset += 4;
+    for (ib = 0; ib < rings; ib++)
+      {
+	  if (geom->size < *offset + 4)
+	      return 0;
+	  points =
+	      rl2GeomImport32 (geom->blob + *offset, geom->endian,
+			       geom->endian_arch);
+	  *offset += 4;
+	  if (geom->size < *offset + (size * points))
+	      return 0;
+	  rl2AddCoordSeqToGeometry (geom, points, *offset);
+	  *offset += (size * points);
+      }
+    return 1;
+}
+
+static int
+rl2ParseUpdatableCollection (rl2UpdatableGeometryPtr geom, int *offset)
+{
+/* decodes a MULTIxxxx/GEOMETRYCOLLECTION (may be Z,M) from WKB */
+    int entities;
+    int type;
+    int ie;
+    if (geom->size < *offset + 4)
+	return 0;
+    entities =
+	rl2GeomImport32 (geom->blob + *offset, geom->endian, geom->endian_arch);
+    *offset += 4;
+    for (ie = 0; ie < entities; ie++)
+      {
+	  if (geom->size < *offset + 5)
+	      return 0;
+	  type =
+	      rl2GeomImport32 (geom->blob + *offset + 1, geom->endian,
+			       geom->endian_arch);
+	  *offset += 5;
+	  switch (type)
+	    {
+	    case GAIA_POINT:
+	    case GAIA_POINTZ:
+	    case GAIA_POINTM:
+	    case GAIA_POINTZM:
+		if (!rl2ParseUpdatablePoint (geom, offset))
+		    return 0;
+		break;
+	    case GAIA_LINESTRING:
+	    case GAIA_LINESTRINGZ:
+	    case GAIA_LINESTRINGM:
+	    case GAIA_LINESTRINGZM:
+		if (!rl2ParseUpdatableLinestring (geom, offset))
+		    return 0;
+		break;
+	    case GAIA_POLYGON:
+	    case GAIA_POLYGONZ:
+	    case GAIA_POLYGONM:
+	    case GAIA_POLYGONZM:
+		if (!rl2ParseUpdatablePolygon (geom, offset))
+		    return 0;
+		break;
+	    default:
+		return 0;
+		break;
+	    };
+      }
+    return 1;
+}
+
+RL2_PRIVATE rl2UpdatableGeometryPtr
+rl2_create_updatable_geometry (const unsigned char *blob, int size)
+{
+/* decoding from SpatiaLite BLOB to UPDATABLE GEOMETRY */
+    int type;
+    int little_endian;
+    int offset;
+    int endian_arch = rl2GeomEndianArch ();
+    rl2UpdatableGeometryPtr geom = NULL;
+    if (size < 45)
+	return NULL;		/* cannot be an internal BLOB WKB geometry */
+    if (*(blob + 0) != GAIA_MARK_START)
+	return NULL;		/* failed to recognize START signature */
+    if (*(blob + (size - 1)) != GAIA_MARK_END)
+	return NULL;		/* failed to recognize END signature */
+    if (*(blob + 38) != GAIA_MARK_MBR)
+	return NULL;		/* failed to recognize MBR signature */
+    if (*(blob + 1) == GAIA_LITTLE_ENDIAN)
+	little_endian = 1;
+    else if (*(blob + 1) == GAIA_BIG_ENDIAN)
+	little_endian = 0;
+    else
+	return NULL;		/* unknown encoding; nor little-endian neither big-endian */
+    type = rl2GeomImport32 (blob + 39, little_endian, endian_arch);
+
+/* creating and initializing the Updatable Geometry object */
+    geom = malloc (sizeof (rl2UpdatableGeometry));
+    geom->blob = malloc (size);
+    geom->size = size;
+    memcpy (geom->blob, blob, size);
+    geom->endian = little_endian;
+    geom->endian_arch = endian_arch;
+    switch (type)
+      {
+	  /* testing for Z-values */
+      case GAIA_POINTZ:
+      case GAIA_LINESTRINGZ:
+      case GAIA_POLYGONZ:
+      case GAIA_MULTIPOINTZ:
+      case GAIA_MULTILINESTRINGZ:
+      case GAIA_MULTIPOLYGONZ:
+      case GAIA_GEOMETRYCOLLECTIONZ:
+      case GAIA_POINTZM:
+      case GAIA_LINESTRINGZM:
+      case GAIA_POLYGONZM:
+      case GAIA_MULTIPOINTZM:
+      case GAIA_MULTILINESTRINGZM:
+      case GAIA_MULTIPOLYGONZM:
+      case GAIA_GEOMETRYCOLLECTIONZM:
+	  geom->has_z = 1;
+	  break;
+      default:
+	  geom->has_z = 0;
+	  break;
+      };
+    switch (type)
+      {
+	  /* testing for Z-values */
+      case GAIA_POINTM:
+      case GAIA_LINESTRINGM:
+      case GAIA_POLYGONM:
+      case GAIA_MULTIPOINTM:
+      case GAIA_MULTILINESTRINGM:
+      case GAIA_MULTIPOLYGONM:
+      case GAIA_GEOMETRYCOLLECTIONM:
+      case GAIA_POINTZM:
+      case GAIA_LINESTRINGZM:
+      case GAIA_POLYGONZM:
+      case GAIA_MULTIPOINTZM:
+      case GAIA_MULTILINESTRINGZM:
+      case GAIA_MULTIPOLYGONZM:
+      case GAIA_GEOMETRYCOLLECTIONZM:
+	  geom->has_m = 1;
+	  break;
+      default:
+	  geom->has_m = 0;
+	  break;
+      };
+    geom->minx = rl2GeomImport64 (blob + 6, little_endian, endian_arch);
+    geom->miny = rl2GeomImport64 (blob + 14, little_endian, endian_arch);
+    geom->maxx = rl2GeomImport64 (blob + 22, little_endian, endian_arch);
+    geom->maxy = rl2GeomImport64 (blob + 30, little_endian, endian_arch);
+    geom->first = NULL;
+    geom->last = NULL;
+
+    offset = 43;
+    switch (type)
+      {
+	  /* parsing elementary geometries */
+      case GAIA_POINT:
+      case GAIA_POINTZ:
+      case GAIA_POINTM:
+      case GAIA_POINTZM:
+	  if (!rl2ParseUpdatablePoint (geom, &offset))
+	      goto error;
+	  break;
+      case GAIA_LINESTRING:
+      case GAIA_LINESTRINGZ:
+      case GAIA_LINESTRINGM:
+      case GAIA_LINESTRINGZM:
+	  if (!rl2ParseUpdatableLinestring (geom, &offset))
+	      goto error;
+	  break;
+      case GAIA_POLYGON:
+      case GAIA_POLYGONZ:
+      case GAIA_POLYGONM:
+      case GAIA_POLYGONZM:
+	  if (!rl2ParseUpdatablePolygon (geom, &offset))
+	      goto error;
+	  break;
+      case GAIA_MULTIPOINT:
+      case GAIA_MULTIPOINTZ:
+      case GAIA_MULTIPOINTM:
+      case GAIA_MULTIPOINTZM:
+      case GAIA_MULTILINESTRING:
+      case GAIA_MULTILINESTRINGZ:
+      case GAIA_MULTILINESTRINGM:
+      case GAIA_MULTILINESTRINGZM:
+      case GAIA_MULTIPOLYGON:
+      case GAIA_MULTIPOLYGONZ:
+      case GAIA_MULTIPOLYGONM:
+      case GAIA_MULTIPOLYGONZM:
+      case GAIA_GEOMETRYCOLLECTION:
+      case GAIA_GEOMETRYCOLLECTIONZ:
+      case GAIA_GEOMETRYCOLLECTIONM:
+      case GAIA_GEOMETRYCOLLECTIONZM:
+	  if (!rl2ParseUpdatableCollection (geom, &offset))
+	      goto error;
+	  break;
+      default:
+	  goto error;
+	  break;
+      };
+
+    return geom;
+
+  error:
+    if (geom != NULL)
+	rl2_destroy_updatable_geometry (geom);
+    return NULL;
 }

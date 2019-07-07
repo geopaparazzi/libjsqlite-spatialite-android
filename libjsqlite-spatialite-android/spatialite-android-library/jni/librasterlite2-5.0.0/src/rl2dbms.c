@@ -187,6 +187,18 @@ insert_into_raster_coverages (sqlite3 * handle, const char *coverage,
       case RL2_COMPRESSION_LZMA_NO:
 	  xcompression = "LZMA_NO";
 	  break;
+      case RL2_COMPRESSION_LZ4:
+	  xcompression = "LZ4";
+	  break;
+      case RL2_COMPRESSION_LZ4_NO:
+	  xcompression = "LZ4_NO";
+	  break;
+      case RL2_COMPRESSION_ZSTD:
+	  xcompression = "ZSTD";
+	  break;
+      case RL2_COMPRESSION_ZSTD_NO:
+	  xcompression = "ZSTD_NO";
+	  break;
       case RL2_COMPRESSION_PNG:
 	  xcompression = "PNG";
 	  break;
@@ -1742,6 +1754,22 @@ rl2_drop_dbms_coverage (sqlite3 * handle, const char *coverage)
       }
     sqlite3_free (table);
 
+/* dropping the LEVELS table */
+    table = sqlite3_mprintf ("%s_section_levels", coverage);
+    xtable = rl2_double_quoted_sql (table);
+    sql = sqlite3_mprintf ("DROP TABLE IF EXISTS main.\"%s\"", xtable);
+    free (xtable);
+    ret = sqlite3_exec (handle, sql, NULL, NULL, &sql_err);
+    sqlite3_free (sql);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr, "DROP TABLE \"%s\" error: %s\n", table, sql_err);
+	  sqlite3_free (sql_err);
+	  sqlite3_free (table);
+	  goto error;
+      }
+    sqlite3_free (table);
+
 /* dropping the SECTIONS table */
     table = sqlite3_mprintf ("%s_sections", coverage);
     xtable = rl2_double_quoted_sql (table);
@@ -1761,7 +1789,7 @@ rl2_drop_dbms_coverage (sqlite3 * handle, const char *coverage)
 /* dropping the LEVELS table */
     table = sqlite3_mprintf ("%s_levels", coverage);
     xtable = rl2_double_quoted_sql (table);
-    sql = sqlite3_mprintf ("DROP TABLE main.\"%s\"", xtable);
+    sql = sqlite3_mprintf ("DROP TABLE IF EXISTS main.\"%s\"", xtable);
     free (xtable);
     ret = sqlite3_exec (handle, sql, NULL, NULL, &sql_err);
     sqlite3_free (sql);
@@ -2353,6 +2381,26 @@ rl2_create_coverage_from_dbms (sqlite3 * handle, const char *db_prefix,
 			{
 			    ok_compression = 1;
 			    compression = RL2_COMPRESSION_LZMA_NO;
+			}
+		      if (strcasecmp (value, "LZ4") == 0)
+			{
+			    ok_compression = 1;
+			    compression = RL2_COMPRESSION_LZ4;
+			}
+		      if (strcasecmp (value, "LZ4_NO") == 0)
+			{
+			    ok_compression = 1;
+			    compression = RL2_COMPRESSION_LZ4_NO;
+			}
+		      if (strcasecmp (value, "ZSTD") == 0)
+			{
+			    ok_compression = 1;
+			    compression = RL2_COMPRESSION_ZSTD;
+			}
+		      if (strcasecmp (value, "ZSTD_NO") == 0)
+			{
+			    ok_compression = 1;
+			    compression = RL2_COMPRESSION_ZSTD_NO;
 			}
 		      if (strcasecmp (value, "PNG") == 0)
 			{
@@ -3186,6 +3234,235 @@ void_raw_buffer (unsigned char *buffer, unsigned int width,
       };
 }
 
+static void
+void_int8_raw_buffer_transparent (char *buffer, unsigned char *mask,
+				  unsigned int width, unsigned int height)
+{
+/* preparing an empty/void INT8 raw buffer */
+    unsigned int x;
+    unsigned int y;
+    char *p = buffer;
+    unsigned char *pmsk = mask;
+    char nd_value = 0;
+    for (y = 0; y < height; y++)
+      {
+	  for (x = 0; x < width; x++)
+	      *p++ = nd_value;
+      }
+    for (y = 0; y < height; y++)
+      {
+	  for (x = 0; x < width; x++)
+	      *pmsk++ = 1;
+      }
+}
+
+static void
+void_uint8_raw_buffer_transparent (unsigned char *buffer, unsigned char *mask,
+				   unsigned int width, unsigned int height,
+				   unsigned char num_bands)
+{
+/* preparing an empty/void UINT8 raw buffer */
+    unsigned int x;
+    unsigned int y;
+    unsigned char b;
+    unsigned char *p = buffer;
+    unsigned char *pmsk = mask;
+    unsigned char nd_value = 0;
+    for (y = 0; y < height; y++)
+      {
+	  for (x = 0; x < width; x++)
+	    {
+		for (b = 0; b < num_bands; b++)
+		    *p++ = nd_value;
+	    }
+      }
+    for (y = 0; y < height; y++)
+      {
+	  for (x = 0; x < width; x++)
+	      *pmsk++ = 1;
+      }
+}
+
+static void
+void_int16_raw_buffer_transparent (short *buffer, unsigned char *mask,
+				   unsigned int width, unsigned int height)
+{
+/* preparing an empty/void INT16 raw buffer */
+    unsigned int x;
+    unsigned int y;
+    short *p = buffer;
+    unsigned char *pmsk = mask;
+    short nd_value = 0;
+    for (y = 0; y < height; y++)
+      {
+	  for (x = 0; x < width; x++)
+	      *p++ = nd_value;
+      }
+    for (y = 0; y < height; y++)
+      {
+	  for (x = 0; x < width; x++)
+	      *pmsk++ = 1;
+      }
+}
+
+static void
+void_uint16_raw_buffer_transparent (unsigned short *buffer, unsigned char *mask,
+				    unsigned int width, unsigned int height,
+				    unsigned char num_bands)
+{
+/* preparing an empty/void UINT16 raw buffer */
+    unsigned int x;
+    unsigned int y;
+    unsigned char b;
+    unsigned short *p = buffer;
+    unsigned char *pmsk = mask;
+    unsigned short nd_value = 0;
+    for (y = 0; y < height; y++)
+      {
+	  for (x = 0; x < width; x++)
+	    {
+		for (b = 0; b < num_bands; b++)
+		    *p++ = nd_value;
+	    }
+      }
+    for (y = 0; y < height; y++)
+      {
+	  for (x = 0; x < width; x++)
+	      *pmsk++ = 1;
+      }
+}
+
+static void
+void_int32_raw_buffer_transparent (int *buffer, unsigned char *mask,
+				   unsigned int width, unsigned int height)
+{
+/* preparing an empty/void INT32 raw buffer */
+    unsigned int x;
+    unsigned int y;
+    int *p = buffer;
+    unsigned char *pmsk = mask;
+    int nd_value = 0;
+    for (y = 0; y < height; y++)
+      {
+	  for (x = 0; x < width; x++)
+	      *p++ = nd_value;
+      }
+    for (y = 0; y < height; y++)
+      {
+	  for (x = 0; x < width; x++)
+	      *pmsk++ = 1;
+      }
+}
+
+static void
+void_uint32_raw_buffer_transparent (unsigned int *buffer, unsigned char *mask,
+				    unsigned int width, unsigned int height)
+{
+/* preparing an empty/void UINT32 raw buffer */
+    unsigned int x;
+    unsigned int y;
+    unsigned int *p = buffer;
+    unsigned char *pmsk = mask;
+    unsigned int nd_value = 0;
+    for (y = 0; y < height; y++)
+      {
+	  for (x = 0; x < width; x++)
+	      *p++ = nd_value;
+      }
+    for (y = 0; y < height; y++)
+      {
+	  for (x = 0; x < width; x++)
+	      *pmsk++ = 1;
+      }
+}
+
+static void
+void_float_raw_buffer_transparent (float *buffer, unsigned char *mask,
+				   unsigned int width, unsigned int height)
+{
+/* preparing an empty/void FLOAT raw buffer */
+    unsigned int x;
+    unsigned int y;
+    float *p = buffer;
+    unsigned char *pmsk = mask;
+    float nd_value = 0.0;
+    for (y = 0; y < height; y++)
+      {
+	  for (x = 0; x < width; x++)
+	      *p++ = nd_value;
+      }
+    for (y = 0; y < height; y++)
+      {
+	  for (x = 0; x < width; x++)
+	      *pmsk++ = 1;
+      }
+}
+
+static void
+void_double_raw_buffer_transparent (double *buffer, unsigned char *mask,
+				    unsigned int width, unsigned int height)
+{
+/* preparing an empty/void DOUBLE raw buffer */
+    unsigned int x;
+    unsigned int y;
+    double *p = buffer;
+    unsigned char *pmsk = mask;
+    double nd_value = 0.0;
+    for (y = 0; y < height; y++)
+      {
+	  for (x = 0; x < width; x++)
+	      *p++ = nd_value;
+      }
+    for (y = 0; y < height; y++)
+      {
+	  for (x = 0; x < width; x++)
+	      *pmsk++ = 1;
+      }
+}
+
+RL2_PRIVATE void
+void_raw_buffer_transparent (unsigned char *buffer, unsigned char *mask,
+			     unsigned int width, unsigned int height,
+			     unsigned char sample_type, unsigned char num_bands)
+{
+/* preparing an empty/void buffer */
+    switch (sample_type)
+      {
+      case RL2_SAMPLE_INT8:
+	  void_int8_raw_buffer_transparent ((char *) buffer, mask, width,
+					    height);
+	  break;
+      case RL2_SAMPLE_INT16:
+	  void_int16_raw_buffer_transparent ((short *) buffer, mask, width,
+					     height);
+	  break;
+      case RL2_SAMPLE_UINT16:
+	  void_uint16_raw_buffer_transparent ((unsigned short *) buffer, mask,
+					      width, height, num_bands);
+	  break;
+      case RL2_SAMPLE_INT32:
+	  void_int32_raw_buffer_transparent ((int *) buffer, mask, width,
+					     height);
+	  break;
+      case RL2_SAMPLE_UINT32:
+	  void_uint32_raw_buffer_transparent ((unsigned int *) buffer, mask,
+					      width, height);
+	  break;
+      case RL2_SAMPLE_FLOAT:
+	  void_float_raw_buffer_transparent ((float *) buffer, mask, width,
+					     height);
+	  break;
+      case RL2_SAMPLE_DOUBLE:
+	  void_double_raw_buffer_transparent ((double *) buffer, mask, width,
+					      height);
+	  break;
+      default:
+	  void_uint8_raw_buffer_transparent ((unsigned char *) buffer, mask,
+					     width, height, num_bands);
+	  break;
+      };
+}
+
 RL2_PRIVATE void
 void_raw_buffer_palette (unsigned char *buffer, unsigned int width,
 			 unsigned int height, rl2PixelPtr no_data)
@@ -3232,6 +3509,28 @@ void_raw_buffer_palette (unsigned char *buffer, unsigned int width,
       }
 }
 
+RL2_PRIVATE void
+void_raw_buffer_palette_transparent (unsigned char *buffer, unsigned char *mask,
+				     unsigned int width, unsigned int height)
+{
+/* preparing an empty/void buffer (PALETTE) */
+    unsigned int row;
+    unsigned int col;
+    unsigned char index = 0;
+    unsigned char *p = buffer;
+    unsigned char *pmsk = mask;
+    for (row = 0; row < height; row++)
+      {
+	  for (col = 0; col < width; col++)
+	      *p++ = index;
+      }
+    for (row = 0; row < height; row++)
+      {
+	  for (col = 0; col < width; col++)
+	      *pmsk++ = 1;
+      }
+}
+
 static void
 do_decode_tile (rl2AuxDecoderPtr decoder)
 {
@@ -3256,13 +3555,13 @@ do_decode_tile (rl2AuxDecoderPtr decoder)
 	  decoder->retcode = RL2_ERROR;
 	  return;
       }
-    if (!rl2_copy_raw_pixels
-	((rl2RasterPtr) (decoder->raster), decoder->outbuf, decoder->width,
-	 decoder->height, decoder->sample_type, decoder->num_bands,
-	 decoder->auto_ndvi, decoder->red_band_index, decoder->nir_band_index,
-	 decoder->x_res, decoder->y_res, decoder->minx, decoder->maxy,
-	 decoder->tile_minx, decoder->tile_maxy,
-	 (rl2PixelPtr) (decoder->no_data),
+    if (!rl2_copy_raw_pixels_transparent
+	((rl2RasterPtr) (decoder->raster), decoder->outbuf, decoder->mask,
+	 decoder->width, decoder->height, decoder->sample_type,
+	 decoder->num_bands, decoder->auto_ndvi, decoder->red_band_index,
+	 decoder->nir_band_index, decoder->x_res, decoder->y_res,
+	 decoder->minx, decoder->maxy, decoder->tile_minx,
+	 decoder->tile_maxy, (rl2PixelPtr) (decoder->no_data),
 	 (rl2RasterSymbolizerPtr) (decoder->style),
 	 (rl2RasterStatisticsPtr) (decoder->stats)))
       {
@@ -3831,6 +4130,236 @@ rl2_load_dbms_tiles_common (sqlite3 * handle, int max_threads,
 	  decoder->blob_odd_sz = 0;
 	  decoder->blob_even_sz = 0;
 	  decoder->outbuf = outbuf;
+	  decoder->mask = NULL;
+	  decoder->width = width;
+	  decoder->height = height;
+	  decoder->sample_type = sample_type;
+	  decoder->num_bands = num_bands;
+	  decoder->auto_ndvi = auto_ndvi;
+	  decoder->red_band_index = red_band_index;
+	  decoder->nir_band_index = nir_band_index;
+	  decoder->x_res = x_res;
+	  decoder->y_res = y_res;
+	  decoder->scale = scale;
+	  decoder->minx = minx;
+	  decoder->maxy = maxy;
+	  decoder->no_data = (rl2PrivPixelPtr) no_data;
+	  decoder->style = (rl2PrivRasterSymbolizerPtr) style;
+	  decoder->stats = (rl2PrivRasterStatisticsPtr) stats;
+	  decoder->raster = NULL;
+	  decoder->palette = NULL;
+      }
+
+/* preparing the thread_slots stuct */
+    thread_slots = malloc (sizeof (rl2AuxDecoderPtr) * max_threads);
+    for (thread_count = 0; thread_count < max_threads; thread_count++)
+	*(thread_slots + thread_count) = NULL;
+    thread_count = 0;
+
+/* querying the tiles */
+    while (1)
+      {
+	  ret = sqlite3_step (stmt_tiles);
+	  if (ret == SQLITE_DONE)
+	      break;
+	  if (ret == SQLITE_ROW)
+	    {
+		int ok = 0;
+		const unsigned char *blob_odd = NULL;
+		int blob_odd_sz = 0;
+		const unsigned char *blob_even = NULL;
+		int blob_even_sz = 0;
+		sqlite3_int64 tile_id = sqlite3_column_int64 (stmt_tiles, 0);
+		double tile_minx = sqlite3_column_double (stmt_tiles, 1);
+		double tile_maxy = sqlite3_column_double (stmt_tiles, 2);
+		decoder = aux + thread_count;
+		decoder->tile_id = tile_id;
+		decoder->tile_minx = tile_minx;
+		decoder->tile_maxy = tile_maxy;
+
+		/* retrieving tile raw data from BLOBs */
+		sqlite3_reset (stmt_data);
+		sqlite3_clear_bindings (stmt_data);
+		sqlite3_bind_int64 (stmt_data, 1, tile_id);
+		ret = sqlite3_step (stmt_data);
+		if (ret == SQLITE_DONE)
+		    break;
+		if (ret == SQLITE_ROW)
+		  {
+		      /* decoding a Tile - may be by using concurrent multithreading */
+		      if (sqlite3_column_type (stmt_data, 0) == SQLITE_BLOB)
+			{
+			    blob_odd = sqlite3_column_blob (stmt_data, 0);
+			    blob_odd_sz = sqlite3_column_bytes (stmt_data, 0);
+			    decoder->blob_odd = malloc (blob_odd_sz);
+			    if (decoder->blob_odd == NULL)
+				goto error;
+			    memcpy (decoder->blob_odd, blob_odd, blob_odd_sz);
+			    decoder->blob_odd_sz = blob_odd_sz;
+			    ok = 1;
+			}
+		      if (scale == RL2_SCALE_1)
+			{
+			    if (sqlite3_column_type (stmt_data, 1) ==
+				SQLITE_BLOB)
+			      {
+				  blob_even =
+				      sqlite3_column_blob (stmt_data, 1);
+				  blob_even_sz =
+				      sqlite3_column_bytes (stmt_data, 1);
+				  decoder->blob_even = malloc (blob_even_sz);
+				  if (decoder->blob_even == NULL)
+				      goto error;
+				  memcpy (decoder->blob_even, blob_even,
+					  blob_even_sz);
+				  decoder->blob_even_sz = blob_even_sz;
+			      }
+			}
+		  }
+		else
+		  {
+		      fprintf (stderr,
+			       "SELECT tiles data; sqlite3_step() error: %s\n",
+			       sqlite3_errmsg (handle));
+		      goto error;
+		  }
+		if (!ok)
+		  {
+		      if (decoder->blob_odd != NULL)
+			  free (decoder->blob_odd);
+		      if (decoder->blob_even != NULL)
+			  free (decoder->blob_even);
+		      decoder->blob_odd = NULL;
+		      decoder->blob_even = NULL;
+		      decoder->blob_odd_sz = 0;
+		      decoder->blob_even_sz = 0;
+		  }
+		else
+		  {
+		      /* processing a Tile request (may be under parallel execution) */
+		      decoder->palette =
+			  (rl2PrivPalettePtr) rl2_clone_palette (palette);
+		      if (max_threads > 1)
+			{
+			    /* adopting a multithreaded strategy */
+			    *(thread_slots + thread_count) = decoder;
+			    thread_count++;
+			    if (thread_count == max_threads)
+			      {
+				  if (!do_run_decoder_children
+				      (thread_slots, thread_count))
+				      goto error;
+				  thread_count = 0;
+			      }
+			}
+		      else
+			{
+			    /* single thread execution */
+			    do_decode_tile (decoder);
+			    if (decoder->retcode != RL2_OK)
+			      {
+				  fprintf (stderr, ERR_FRMT64, tile_id);
+				  goto error;
+			      }
+			}
+		  }
+	    }
+	  else
+	    {
+		fprintf (stderr,
+			 "SELECT tiles; sqlite3_step() error: %s\n",
+			 sqlite3_errmsg (handle));
+		goto error;
+	    }
+      }
+    if (max_threads > 1 && thread_count > 0)
+      {
+	  /* launching the last multithreaded burst */
+	  if (!do_run_decoder_children (thread_slots, thread_count))
+	      goto error;
+      }
+
+    free (aux);
+    free (thread_slots);
+    return 1;
+
+  error:
+    if (aux != NULL)
+      {
+	  /* AuxDecoder cleanup */
+	  for (iaux = 0; iaux < max_threads; iaux++)
+	    {
+		decoder = aux + iaux;
+		if (decoder->blob_odd != NULL)
+		    free (decoder->blob_odd);
+		if (decoder->blob_even != NULL)
+		    free (decoder->blob_even);
+		if (decoder->raster != NULL)
+		    rl2_destroy_raster ((rl2RasterPtr) (decoder->raster));
+		if (decoder->palette != NULL)
+		    rl2_destroy_palette ((rl2PalettePtr) (decoder->palette));
+		if (decoder->opaque_thread_id != NULL)
+		    free (decoder->opaque_thread_id);
+	    }
+	  free (aux);
+      }
+    if (thread_slots != NULL)
+	free (thread_slots);
+    if (raster != NULL)
+	rl2_destroy_raster (raster);
+    if (plt != NULL)
+	rl2_destroy_palette (plt);
+    return 0;
+}
+
+static int
+load_dbms_tiles_common_transparent (sqlite3 * handle, int max_threads,
+				    sqlite3_stmt * stmt_tiles,
+				    sqlite3_stmt * stmt_data,
+				    unsigned char *outbuf,
+				    unsigned char *mask, unsigned int width,
+				    unsigned int height,
+				    unsigned char sample_type,
+				    unsigned char num_bands,
+				    unsigned char auto_ndvi,
+				    unsigned char red_band_index,
+				    unsigned char nir_band_index,
+				    double x_res, double y_res, double minx,
+				    double maxy, int scale,
+				    rl2PalettePtr palette,
+				    rl2PixelPtr no_data,
+				    rl2RasterSymbolizerPtr style,
+				    rl2RasterStatisticsPtr stats)
+{
+/* retrieving a full image from DBMS tiles */
+    rl2RasterPtr raster = NULL;
+    rl2PalettePtr plt = NULL;
+    int ret;
+    rl2AuxDecoderPtr aux = NULL;
+    rl2AuxDecoderPtr decoder;
+    rl2AuxDecoderPtr *thread_slots = NULL;
+    int thread_count;
+    int iaux;
+
+    if (max_threads < 1)
+	max_threads = 1;
+    if (max_threads > 64)
+	max_threads = 64;
+/* allocating the AuxDecoder array */
+    aux = malloc (sizeof (rl2AuxDecoder) * max_threads);
+    if (aux == NULL)
+	return 0;
+    for (iaux = 0; iaux < max_threads; iaux++)
+      {
+	  /* initializing an empty AuxDecoder */
+	  decoder = aux + iaux;
+	  decoder->opaque_thread_id = NULL;
+	  decoder->blob_odd = NULL;
+	  decoder->blob_even = NULL;
+	  decoder->blob_odd_sz = 0;
+	  decoder->blob_even_sz = 0;
+	  decoder->outbuf = outbuf;
+	  decoder->mask = mask;
 	  decoder->width = width;
 	  decoder->height = height;
 	  decoder->sample_type = sample_type;
@@ -4874,6 +5403,80 @@ rl2_load_dbms_tiles_section (sqlite3 * handle, int max_threads,
     return 1;
 }
 
+RL2_PRIVATE int
+rl2_load_dbms_tiles_transparent (sqlite3 * handle, int max_threads,
+				 sqlite3_stmt * stmt_tiles,
+				 sqlite3_stmt * stmt_data,
+				 unsigned char *outbuf, unsigned char *mask,
+				 unsigned int width, unsigned int height,
+				 unsigned char sample_type,
+				 unsigned char num_bands,
+				 unsigned char auto_ndvi,
+				 unsigned char red_band_index,
+				 unsigned char nir_band_index, double x_res,
+				 double y_res, double minx, double miny,
+				 double maxx, double maxy, int level, int scale,
+				 rl2PalettePtr palette, rl2PixelPtr no_data,
+				 rl2RasterSymbolizerPtr style,
+				 rl2RasterStatisticsPtr stats)
+{
+/* binding the query args */
+    sqlite3_reset (stmt_tiles);
+    sqlite3_clear_bindings (stmt_tiles);
+    sqlite3_bind_int (stmt_tiles, 1, level);
+    sqlite3_bind_double (stmt_tiles, 2, minx);
+    sqlite3_bind_double (stmt_tiles, 3, miny);
+    sqlite3_bind_double (stmt_tiles, 4, maxx);
+    sqlite3_bind_double (stmt_tiles, 5, maxy);
+
+    if (!load_dbms_tiles_common_transparent
+	(handle, max_threads, stmt_tiles, stmt_data, outbuf, mask, width,
+	 height, sample_type, num_bands, auto_ndvi, red_band_index,
+	 nir_band_index, x_res, y_res, minx, maxy, scale, palette, no_data,
+	 style, stats))
+	return 0;
+    return 1;
+}
+
+RL2_PRIVATE int
+rl2_load_dbms_tiles_section_transparent (sqlite3 * handle, int max_threads,
+					 sqlite3_int64 section_id,
+					 sqlite3_stmt * stmt_tiles,
+					 sqlite3_stmt * stmt_data,
+					 unsigned char *outbuf,
+					 unsigned char *mask,
+					 unsigned int width,
+					 unsigned int height,
+					 unsigned char sample_type,
+					 unsigned char num_bands,
+					 unsigned char auto_ndvi,
+					 unsigned char red_band_index,
+					 unsigned char nir_band_index,
+					 double x_res, double y_res,
+					 double minx, double miny, double maxx,
+					 double maxy, int level, int scale,
+					 rl2PalettePtr palette,
+					 rl2PixelPtr no_data)
+{
+/* binding the query args */
+    sqlite3_reset (stmt_tiles);
+    sqlite3_clear_bindings (stmt_tiles);
+    sqlite3_bind_int (stmt_tiles, 1, section_id);
+    sqlite3_bind_int (stmt_tiles, 2, level);
+    sqlite3_bind_double (stmt_tiles, 3, minx);
+    sqlite3_bind_double (stmt_tiles, 4, miny);
+    sqlite3_bind_double (stmt_tiles, 5, maxx);
+    sqlite3_bind_double (stmt_tiles, 6, maxy);
+
+    if (!load_dbms_tiles_common_transparent
+	(handle, max_threads, stmt_tiles, stmt_data, outbuf, mask, width,
+	 height, sample_type, num_bands, auto_ndvi, red_band_index,
+	 nir_band_index, x_res, y_res, minx, maxy, scale, palette, no_data,
+	 NULL, NULL))
+	return 0;
+    return 1;
+}
+
 RL2_DECLARE int
 rl2_find_matching_resolution (sqlite3 * handle, rl2CoveragePtr cvg,
 			      int by_section, sqlite3_int64 section_id,
@@ -5101,44 +5704,9 @@ rl2_has_styled_rgb_colors (rl2RasterSymbolizerPtr style)
     if (stl->shadedRelief && stl->brightnessOnly)
 	return 0;
     if (stl->categorize != NULL)
-      {
-	  if (stl->categorize->dfltRed == stl->categorize->dfltGreen
-	      && stl->categorize->dfltRed == stl->categorize->dfltBlue)
-	      ;
-	  else
-	      return 1;
-	  if (stl->categorize->baseRed == stl->categorize->baseGreen
-	      && stl->categorize->baseRed == stl->categorize->baseBlue)
-	      ;
-	  else
-	      return 1;
-	  color = stl->categorize->first;
-	  while (color != NULL)
-	    {
-		if (color->red == color->green && color->red == color->blue)
-		    ;
-		else
-		    return 1;
-		color = color->next;
-	    }
-      }
+	return 1;
     if (stl->interpolate != NULL)
-      {
-	  if (stl->interpolate->dfltRed == stl->interpolate->dfltGreen
-	      && stl->interpolate->dfltRed == stl->interpolate->dfltBlue)
-	      ;
-	  else
-	      return 1;
-	  color = stl->interpolate->first;
-	  while (color != NULL)
-	    {
-		if (color->red == color->green && color->red == color->blue)
-		    ;
-		else
-		    return 1;
-		color = color->next;
-	    }
-      }
+	return 1;
     return 0;
 }
 
@@ -5292,7 +5860,6 @@ rl2_get_raw_raster_mask_common (sqlite3 * handle, int max_threads,
     sqlite3_free (xtiles);
     free (xdb_prefix);
     free (xxtiles);
-    fprintf (stderr, "%s\n", sql);
     ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt_tiles, NULL);
     sqlite3_free (sql);
     if (ret != SQLITE_OK)
@@ -5788,6 +6355,8 @@ rl2_get_raw_raster_data_common (sqlite3 * handle, int max_threads,
     *buf_size = bufpix_size;
     if (palette != NULL)
 	*palette = plt;
+    else if (plt)		/* patch suggested by Even Rouault 2019-01-28 */
+	rl2_destroy_palette (plt);
     if (shaded_relief != NULL)
 	free (shaded_relief);
 
@@ -5802,6 +6371,794 @@ rl2_get_raw_raster_data_common (sqlite3 * handle, int max_threads,
 	free (bufpix);
     if (kill_no_data != NULL)
 	rl2_destroy_pixel (kill_no_data);
+    if (shaded_relief != NULL)
+	free (shaded_relief);
+    if (plt)			/* patch suggested by Even Rouault 2019-01-28 */
+	rl2_destroy_palette (plt);
+    return RL2_ERROR;
+}
+
+RL2_PRIVATE int
+rl2_get_raw_raster_data_common_transparent (sqlite3 * handle, int max_threads,
+					    rl2CoveragePtr cvg, int by_section,
+					    sqlite3_int64 section_id,
+					    unsigned int width,
+					    unsigned int height, double minx,
+					    double miny, double maxx,
+					    double maxy, double x_res,
+					    double y_res,
+					    unsigned char **buffer,
+					    int *buf_size, unsigned char **mask,
+					    int *mask_size,
+					    rl2PalettePtr * palette,
+					    unsigned char out_pixel,
+					    rl2PixelPtr no_data,
+					    rl2RasterSymbolizerPtr style,
+					    rl2RasterStatisticsPtr stats)
+{
+/* attempting to return a buffer containing raw pixels from the DBMS Coverage */
+    rl2PalettePtr plt = NULL;
+    const char *db_prefix;
+    const char *coverage;
+    unsigned char level;
+    unsigned char scale;
+    double xx_res = x_res;
+    double yy_res = y_res;
+    unsigned char *bufpix = NULL;
+    int bufpix_size;
+    unsigned char *bufmask = NULL;
+    int bufmask_size;
+    int pix_sz = 1;
+    unsigned char sample_type;
+    unsigned char pixel_type;
+    unsigned char cvg_pixel_type;
+    unsigned char num_bands;
+    char *xdb_prefix;
+    char *xtiles;
+    char *xxtiles;
+    char *xdata;
+    char *xxdata;
+    char *sql;
+    sqlite3_stmt *stmt_tiles = NULL;
+    sqlite3_stmt *stmt_data = NULL;
+    int ret;
+    int has_shaded_relief;
+    int brightness_only;
+    double relief_factor;
+    float *shaded_relief = NULL;
+    int shaded_relief_sz;
+    unsigned char red_band = 0;
+    unsigned char green_band = 0;
+    unsigned char blue_band = 0;
+    unsigned char nir_band = 0;
+    unsigned char auto_ndvi = 0;
+
+    if (cvg == NULL || handle == NULL)
+	goto error;
+    db_prefix = rl2_get_coverage_prefix (cvg);
+    coverage = rl2_get_coverage_name (cvg);
+    if (coverage == NULL)
+	goto error;
+    if (rl2_find_matching_resolution
+	(handle, cvg, by_section, section_id, &xx_res, &yy_res, &level,
+	 &scale) != RL2_OK)
+	goto error;
+    if (rl2_get_coverage_type (cvg, &sample_type, &pixel_type, &num_bands) !=
+	RL2_OK)
+	goto error;
+
+    if (rl2_get_dbms_coverage_default_bands
+	(handle, NULL, coverage, &red_band, &green_band, &blue_band,
+	 &nir_band) == RL2_OK)
+      {
+	  /* testing for Auto NDVI */
+	  if (rl2_is_dbms_coverage_auto_ndvi_enabled
+	      (handle, db_prefix, coverage) == RL2_TRUE)
+	      auto_ndvi = 1;
+      }
+    cvg_pixel_type = pixel_type;
+
+    if (pixel_type == RL2_PIXEL_MONOCHROME && out_pixel == RL2_PIXEL_GRAYSCALE)
+      {
+	  /* Pyramid tiles MONOCHROME */
+	  sample_type = RL2_SAMPLE_UINT8;
+	  pixel_type = RL2_PIXEL_GRAYSCALE;
+	  num_bands = 1;
+      }
+    else if (pixel_type == RL2_PIXEL_PALETTE && out_pixel == RL2_PIXEL_RGB)
+      {
+	  /* Pyramid tiles PALETTE */
+	  sample_type = RL2_SAMPLE_UINT8;
+	  pixel_type = RL2_PIXEL_RGB;
+	  num_bands = 3;
+      }
+
+    if (style != NULL && stats != NULL)
+      {
+	  if (out_pixel == RL2_PIXEL_RGB)
+	    {
+		sample_type = RL2_SAMPLE_UINT8;
+		pixel_type = RL2_PIXEL_RGB;
+		num_bands = 3;
+	    }
+	  if (out_pixel == RL2_PIXEL_GRAYSCALE)
+	    {
+		sample_type = RL2_SAMPLE_UINT8;
+		pixel_type = RL2_PIXEL_GRAYSCALE;
+		num_bands = 1;
+	    }
+      }
+
+    switch (sample_type)
+      {
+      case RL2_SAMPLE_INT16:
+      case RL2_SAMPLE_UINT16:
+	  pix_sz = 2;
+	  break;
+      case RL2_SAMPLE_INT32:
+      case RL2_SAMPLE_UINT32:
+      case RL2_SAMPLE_FLOAT:
+	  pix_sz = 4;
+	  break;
+      case RL2_SAMPLE_DOUBLE:
+	  pix_sz = 8;
+	  break;
+      };
+    if (out_pixel == RL2_PIXEL_GRAYSCALE
+	&& cvg_pixel_type == RL2_PIXEL_DATAGRID)
+      {
+	  if (rl2_has_styled_rgb_colors (style))
+	    {
+		/* RGB RasterSymbolizer: promoting to RGB */
+		out_pixel = RL2_PIXEL_RGB;
+		sample_type = RL2_SAMPLE_UINT8;
+		pixel_type = RL2_PIXEL_RGB;
+		pix_sz = 1;
+		num_bands = 3;
+	    }
+      }
+    bufpix_size = pix_sz * num_bands * width * height;
+    bufpix = malloc (bufpix_size);
+    if (bufpix == NULL)
+      {
+	  fprintf (stderr,
+		   "rl2_get_raw_raster_data: Insufficient Memory !!!\n");
+	  goto error;
+      }
+    bufmask_size = width * height;
+    bufmask = malloc (bufmask_size);
+    if (bufmask == NULL)
+      {
+	  fprintf (stderr,
+		   "rl2_get_raw_raster_data: Insufficient Memory !!!\n");
+	  goto error;
+      }
+    memset (bufmask, 0, bufmask_size);	/* priming a full transparent mask */
+
+    if (style != NULL)
+      {
+	  /* testing for Shaded Relief */
+	  if (rl2_has_raster_symbolizer_shaded_relief
+	      (style, &has_shaded_relief) != RL2_OK)
+	      goto error;
+	  if (has_shaded_relief)
+	    {
+		/* preparing a Shaded Relief mask */
+		double scale_factor =
+		    rl2_get_shaded_relief_scale_factor (handle, db_prefix,
+							coverage);
+		if (rl2_get_raster_symbolizer_shaded_relief
+		    (style, &brightness_only, &relief_factor) != RL2_OK)
+		    goto error;
+		if (rl2_build_shaded_relief_mask
+		    (handle, max_threads, cvg, by_section, section_id,
+		     relief_factor, scale_factor, width, height, minx, miny,
+		     maxx, maxy, x_res, y_res, &shaded_relief,
+		     &shaded_relief_sz) != RL2_OK)
+		    goto error;
+
+		if (brightness_only || !rl2_has_styled_rgb_colors (style))
+		  {
+		      /* returning a Grayscale ShadedRelief (BrightnessOnly) */
+		      unsigned int row;
+		      unsigned int col;
+		      float *p_in = shaded_relief;
+		      unsigned char *p_out = bufpix;
+		      void_raw_buffer (bufpix, width, height, sample_type,
+				       num_bands, no_data);
+/*
+ *
+ * 
+ * sicuri che serva ?
+ * 
+ */
+		      for (row = 0; row < height; row++)
+			{
+			    for (col = 0; col < width; col++)
+			      {
+				  float coeff = *p_in++;
+				  if (coeff < 0.0)
+				      p_out++;	/* transparent */
+				  else
+				      *p_out++ =
+					  (unsigned char) (255.0 * coeff);
+			      }
+			}
+		      free (shaded_relief);
+		      *buffer = bufpix;
+		      *buf_size = bufpix_size;
+		      return RL2_OK;
+		  }
+	    }
+      }
+
+/* preparing the "tiles" SQL query */
+    if (db_prefix == NULL)
+	db_prefix = "main";
+    xdb_prefix = rl2_double_quoted_sql (db_prefix);
+    xtiles = sqlite3_mprintf ("%s_tiles", coverage);
+    xxtiles = rl2_double_quoted_sql (xtiles);
+    sqlite3_free (xtiles);
+    xtiles = sqlite3_mprintf ("DB=%s.%s_tiles", db_prefix, coverage);
+    if (by_section)
+      {
+	  /* only from a single Section */
+	  sql =
+	      sqlite3_mprintf
+	      ("SELECT tile_id, MbrMinX(geometry), MbrMaxY(geometry) "
+	       "FROM \"%s\".\"%s\" "
+	       "WHERE section_id = ? AND pyramid_level = ? AND ROWID IN ( "
+	       "SELECT ROWID FROM SpatialIndex WHERE f_table_name = %Q "
+	       "AND search_frame = BuildMBR(?, ?, ?, ?))", xdb_prefix, xxtiles,
+	       xtiles);
+      }
+    else
+      {
+	  /* whole Coverage */
+	  sql =
+	      sqlite3_mprintf
+	      ("SELECT tile_id, MbrMinX(geometry), MbrMaxY(geometry) "
+	       "FROM \"%s\".\"%s\" " "WHERE pyramid_level = ? AND ROWID IN ( "
+	       "SELECT ROWID FROM SpatialIndex WHERE f_table_name = %Q "
+	       "AND search_frame = BuildMBR(?, ?, ?, ?))", xdb_prefix, xxtiles,
+	       xtiles);
+      }
+    sqlite3_free (xtiles);
+    free (xdb_prefix);
+    free (xxtiles);
+    ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt_tiles, NULL);
+    sqlite3_free (sql);
+    if (ret != SQLITE_OK)
+      {
+	  printf ("SELECT raw tiles SQL error: %s\n", sqlite3_errmsg (handle));
+	  goto error;
+      }
+
+    if (scale == RL2_SCALE_1)
+      {
+	  /* preparing the data SQL query - both ODD and EVEN */
+	  xdb_prefix = rl2_double_quoted_sql (db_prefix);
+	  xdata = sqlite3_mprintf ("%s_tile_data", coverage);
+	  xxdata = rl2_double_quoted_sql (xdata);
+	  sqlite3_free (xdata);
+	  sql = sqlite3_mprintf ("SELECT tile_data_odd, tile_data_even "
+				 "FROM \"%s\".\"%s\" WHERE tile_id = ?",
+				 xdb_prefix, xxdata);
+	  free (xdb_prefix);
+	  free (xxdata);
+	  ret =
+	      sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt_data, NULL);
+	  sqlite3_free (sql);
+	  if (ret != SQLITE_OK)
+	    {
+		printf ("SELECT raw tiles data(2) SQL error: %s\n",
+			sqlite3_errmsg (handle));
+		goto error;
+	    }
+      }
+    else
+      {
+	  /* preparing the data SQL query - only ODD */
+	  xdb_prefix = rl2_double_quoted_sql (db_prefix);
+	  xdata = sqlite3_mprintf ("%s_tile_data", coverage);
+	  xxdata = rl2_double_quoted_sql (xdata);
+	  sqlite3_free (xdata);
+	  sql = sqlite3_mprintf ("SELECT tile_data_odd "
+				 "FROM \"%s\".\"%s\" WHERE tile_id = ?",
+				 xdb_prefix, xxdata);
+	  free (xdb_prefix);
+	  free (xxdata);
+	  ret =
+	      sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt_data, NULL);
+	  sqlite3_free (sql);
+	  if (ret != SQLITE_OK)
+	    {
+		printf ("SELECT raw tiles data(1) SQL error: %s\n",
+			sqlite3_errmsg (handle));
+		goto error;
+	    }
+      }
+
+/* preparing a raw pixels buffer */
+    if (pixel_type == RL2_PIXEL_PALETTE)
+	void_raw_buffer_palette (bufpix, width, height, no_data);
+    else
+      {
+	  void_raw_buffer (bufpix, width, height, sample_type, num_bands,
+			   no_data);
+      }
+    if (by_section)
+      {
+	  /* only from a single Section */
+	  if (!rl2_load_dbms_tiles_section_transparent
+	      (handle, max_threads, section_id, stmt_tiles, stmt_data, bufpix,
+	       bufmask, width, height, sample_type, num_bands, auto_ndvi,
+	       red_band, nir_band, xx_res, yy_res, minx, miny, maxx, maxy,
+	       level, scale, plt, no_data))
+	      goto error;
+      }
+    else
+      {
+	  /* whole Coverage */
+	  if (!rl2_load_dbms_tiles_transparent
+	      (handle, max_threads, stmt_tiles, stmt_data, bufpix, bufmask,
+	       width, height, sample_type, num_bands, auto_ndvi, red_band,
+	       nir_band, xx_res, yy_res, minx, miny, maxx, maxy, level, scale,
+	       plt, no_data, style, stats))
+	      goto error;
+      }
+    sqlite3_finalize (stmt_tiles);
+    sqlite3_finalize (stmt_data);
+    if (shaded_relief != NULL)
+      {
+	  /* applying the Shaded Relief */
+	  unsigned int row;
+	  unsigned int col;
+	  float *p_in = shaded_relief;
+	  unsigned char *p_out = bufpix;
+	  for (row = 0; row < height; row++)
+	    {
+		for (col = 0; col < width; col++)
+		  {
+		      float coeff = *p_in++;
+		      if (coeff < 0.0)
+			  p_out += 3;	/* unaffected */
+		      else
+			{
+			    unsigned char r = *p_out;
+			    unsigned char g = *(p_out + 1);
+			    unsigned char b = *(p_out + 2);
+			    *p_out++ = (unsigned char) (r * coeff);
+			    *p_out++ = (unsigned char) (g * coeff);
+			    *p_out++ = (unsigned char) (b * coeff);
+			}
+		  }
+	    }
+      }
+    *buffer = bufpix;
+    *buf_size = bufpix_size;
+    *mask = bufmask;
+    *mask_size = bufmask_size;
+    if (palette != NULL)
+	*palette = plt;
+    if (shaded_relief != NULL)
+	free (shaded_relief);
+
+    return RL2_OK;
+
+  error:
+    if (stmt_tiles != NULL)
+	sqlite3_finalize (stmt_tiles);
+    if (stmt_data != NULL)
+	sqlite3_finalize (stmt_data);
+    if (bufpix != NULL)
+	free (bufpix);
+    if (bufmask != NULL)
+	free (bufmask);
+    if (shaded_relief != NULL)
+	free (shaded_relief);
+    return RL2_ERROR;
+}
+
+static int
+get_raw_raster_data_nodata (sqlite3 * handle, int max_threads,
+			    rl2CoveragePtr cvg, int by_section,
+			    sqlite3_int64 section_id, unsigned int width,
+			    unsigned int height, double minx, double miny,
+			    double maxx, double maxy, double x_res,
+			    double y_res, unsigned char **buffer,
+			    int *buf_size, unsigned char **mask,
+			    int *mask_size, rl2PalettePtr * palette,
+			    unsigned char *out_pixel, rl2PixelPtr no_data,
+			    rl2RasterSymbolizerPtr style,
+			    rl2RasterStatisticsPtr stats)
+{
+/* 
+/ attempting to return a buffer containing raw pixels from the DBMS Coverage 
+/ carefully preserving NODATA 
+*/
+    rl2PalettePtr plt = NULL;
+    const char *db_prefix;
+    const char *coverage;
+    unsigned char level;
+    unsigned char scale;
+    double xx_res = x_res;
+    double yy_res = y_res;
+    unsigned char *bufpix = NULL;
+    int bufpix_size;
+    unsigned char *bufmask = NULL;
+    int bufmask_size;
+    int pix_sz = 1;
+    unsigned char sample_type;
+    unsigned char pixel_type;
+    unsigned char cvg_pixel_type;
+    unsigned char num_bands;
+    char *xdb_prefix;
+    char *xtiles;
+    char *xxtiles;
+    char *xdata;
+    char *xxdata;
+    char *sql;
+    sqlite3_stmt *stmt_tiles = NULL;
+    sqlite3_stmt *stmt_data = NULL;
+    int ret;
+    int has_shaded_relief;
+    int brightness_only;
+    double relief_factor;
+    float *shaded_relief = NULL;
+    int shaded_relief_sz;
+    unsigned char red_band = 0;
+    unsigned char green_band = 0;
+    unsigned char blue_band = 0;
+    unsigned char nir_band = 0;
+    unsigned char auto_ndvi = 0;
+
+    if (cvg == NULL || handle == NULL)
+	goto error;
+    db_prefix = rl2_get_coverage_prefix (cvg);
+    coverage = rl2_get_coverage_name (cvg);
+    if (coverage == NULL)
+	goto error;
+    if (rl2_find_matching_resolution
+	(handle, cvg, by_section, section_id, &xx_res, &yy_res, &level,
+	 &scale) != RL2_OK)
+	goto error;
+    if (rl2_get_coverage_type (cvg, &sample_type, &pixel_type, &num_bands) !=
+	RL2_OK)
+	goto error;
+
+    if (rl2_get_dbms_coverage_default_bands
+	(handle, NULL, coverage, &red_band, &green_band, &blue_band,
+	 &nir_band) == RL2_OK)
+      {
+	  /* testing for Auto NDVI */
+	  if (rl2_is_dbms_coverage_auto_ndvi_enabled
+	      (handle, db_prefix, coverage) == RL2_TRUE)
+	      auto_ndvi = 1;
+      }
+
+    cvg_pixel_type = pixel_type;
+
+    if (pixel_type == RL2_PIXEL_MONOCHROME && *out_pixel == RL2_PIXEL_GRAYSCALE)
+      {
+	  /* Pyramid tiles MONOCHROME */
+	  sample_type = RL2_SAMPLE_UINT8;
+	  pixel_type = RL2_PIXEL_GRAYSCALE;
+	  num_bands = 1;
+      }
+    else if (pixel_type == RL2_PIXEL_PALETTE && *out_pixel == RL2_PIXEL_RGB)
+      {
+	  /* Pyramid tiles PALETTE */
+	  sample_type = RL2_SAMPLE_UINT8;
+	  pixel_type = RL2_PIXEL_RGB;
+	  num_bands = 3;
+      }
+    else
+      {
+	  if (pixel_type == RL2_PIXEL_PALETTE)
+	    {
+		/* attempting to retrieve the Coverage's Palette */
+		plt = rl2_get_dbms_palette (handle, db_prefix, coverage);
+		if (plt == NULL)
+		    goto error;
+	    }
+      }
+
+    if (style != NULL && stats != NULL)
+      {
+	  if (*out_pixel == RL2_PIXEL_RGB)
+	    {
+		sample_type = RL2_SAMPLE_UINT8;
+		pixel_type = RL2_PIXEL_RGB;
+		num_bands = 3;
+	    }
+	  if (*out_pixel == RL2_PIXEL_GRAYSCALE)
+	    {
+		sample_type = RL2_SAMPLE_UINT8;
+		pixel_type = RL2_PIXEL_GRAYSCALE;
+		num_bands = 1;
+	    }
+      }
+
+    switch (sample_type)
+      {
+      case RL2_SAMPLE_INT16:
+      case RL2_SAMPLE_UINT16:
+	  pix_sz = 2;
+	  break;
+      case RL2_SAMPLE_INT32:
+      case RL2_SAMPLE_UINT32:
+      case RL2_SAMPLE_FLOAT:
+	  pix_sz = 4;
+	  break;
+      case RL2_SAMPLE_DOUBLE:
+	  pix_sz = 8;
+	  break;
+      };
+    if (*out_pixel == RL2_PIXEL_GRAYSCALE
+	&& cvg_pixel_type == RL2_PIXEL_DATAGRID)
+      {
+	  if (rl2_has_styled_rgb_colors (style))
+	    {
+		/* RGB RasterSymbolizer: promoting to RGB */
+		*out_pixel = RL2_PIXEL_RGB;
+		sample_type = RL2_SAMPLE_UINT8;
+		pixel_type = RL2_PIXEL_RGB;
+		pix_sz = 1;
+		num_bands = 3;
+	    }
+      }
+    if (cvg_pixel_type == RL2_PIXEL_MONOCHROME)
+      {
+	  if (rl2_has_styled_rgb_colors (style))
+	    {
+		/* RGB RasterSymbolizer: promoting to RGB */
+		*out_pixel = RL2_PIXEL_RGB;
+		sample_type = RL2_SAMPLE_UINT8;
+		pixel_type = RL2_PIXEL_RGB;
+		pix_sz = 1;
+		num_bands = 3;
+	    }
+      }
+    bufpix_size = pix_sz * num_bands * width * height;
+    bufpix = malloc (bufpix_size);
+    if (bufpix == NULL)
+      {
+	  fprintf (stderr,
+		   "rl2_get_raw_raster_data: Insufficient Memory !!!\n");
+	  goto error;
+      }
+    bufmask_size = width * height;
+    bufmask = malloc (bufmask_size);
+    if (bufmask == NULL)
+      {
+	  fprintf (stderr,
+		   "rl2_get_raw_raster_data: Insufficient Memory !!!\n");
+	  goto error;
+      }
+
+    if (style != NULL)
+      {
+	  /* testing for Shaded Relief */
+	  if (rl2_has_raster_symbolizer_shaded_relief
+	      (style, &has_shaded_relief) != RL2_OK)
+	      goto error;
+	  if (has_shaded_relief)
+	    {
+		/* preparing a Shaded Relief mask */
+		double scale_factor =
+		    rl2_get_shaded_relief_scale_factor (handle, db_prefix,
+							coverage);
+		if (rl2_get_raster_symbolizer_shaded_relief
+		    (style, &brightness_only, &relief_factor) != RL2_OK)
+		    goto error;
+		if (rl2_build_shaded_relief_mask
+		    (handle, max_threads, cvg, by_section, section_id,
+		     relief_factor, scale_factor, width, height, minx, miny,
+		     maxx, maxy, x_res, y_res, &shaded_relief,
+		     &shaded_relief_sz) != RL2_OK)
+		    goto error;
+
+		if (brightness_only || !rl2_has_styled_rgb_colors (style))
+		  {
+		      /* returning a Grayscale ShadedRelief (BrightnessOnly) */
+		      unsigned int row;
+		      unsigned int col;
+		      float *p_in = shaded_relief;
+		      unsigned char *p_out = bufpix;
+		      unsigned char *p_msk = bufmask;
+		      void_raw_buffer_transparent (bufpix, bufmask, width,
+						   height, sample_type,
+						   num_bands);
+		      for (row = 0; row < height; row++)
+			{
+			    for (col = 0; col < width; col++)
+			      {
+				  float coeff = *p_in++;
+				  if (coeff <= 0.0)
+				    {
+					p_out++;	/* transparent */
+					*p_msk++ = 1;
+				    }
+				  else
+				    {
+					*p_out++ =
+					    (unsigned char) (255.0 * coeff);
+					*p_msk++ = 0;
+				    }
+			      }
+			}
+		      free (shaded_relief);
+		      *buffer = bufpix;
+		      *buf_size = bufpix_size;
+		      *mask = bufmask;
+		      *mask_size = bufmask_size;
+		      return RL2_OK;
+		  }
+	    }
+      }
+
+/* preparing the "tiles" SQL query */
+    if (db_prefix == NULL)
+	db_prefix = "main";
+    xdb_prefix = rl2_double_quoted_sql (db_prefix);
+    xtiles = sqlite3_mprintf ("%s_tiles", coverage);
+    xxtiles = rl2_double_quoted_sql (xtiles);
+    sqlite3_free (xtiles);
+    xtiles = sqlite3_mprintf ("DB=%s.%s_tiles", db_prefix, coverage);
+    if (by_section)
+      {
+	  /* only from a single Section */
+	  sql =
+	      sqlite3_mprintf
+	      ("SELECT tile_id, MbrMinX(geometry), MbrMaxY(geometry) "
+	       "FROM \"%s\".\"%s\" "
+	       "WHERE section_id = ? AND pyramid_level = ? AND ROWID IN ( "
+	       "SELECT ROWID FROM SpatialIndex WHERE f_table_name = %Q "
+	       "AND search_frame = BuildMBR(?, ?, ?, ?))", xdb_prefix, xxtiles,
+	       xtiles);
+      }
+    else
+      {
+	  /* whole Coverage */
+	  sql =
+	      sqlite3_mprintf
+	      ("SELECT tile_id, MbrMinX(geometry), MbrMaxY(geometry) "
+	       "FROM \"%s\".\"%s\" " "WHERE pyramid_level = ? AND ROWID IN ( "
+	       "SELECT ROWID FROM SpatialIndex WHERE f_table_name = %Q "
+	       "AND search_frame = BuildMBR(?, ?, ?, ?))", xdb_prefix, xxtiles,
+	       xtiles);
+      }
+    sqlite3_free (xtiles);
+    free (xdb_prefix);
+    free (xxtiles);
+    ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt_tiles, NULL);
+    sqlite3_free (sql);
+    if (ret != SQLITE_OK)
+      {
+	  printf ("SELECT raw tiles SQL error: %s\n", sqlite3_errmsg (handle));
+	  goto error;
+      }
+
+    if (scale == RL2_SCALE_1)
+      {
+	  /* preparing the data SQL query - both ODD and EVEN */
+	  xdb_prefix = rl2_double_quoted_sql (db_prefix);
+	  xdata = sqlite3_mprintf ("%s_tile_data", coverage);
+	  xxdata = rl2_double_quoted_sql (xdata);
+	  sqlite3_free (xdata);
+	  sql = sqlite3_mprintf ("SELECT tile_data_odd, tile_data_even "
+				 "FROM \"%s\".\"%s\" WHERE tile_id = ?",
+				 xdb_prefix, xxdata);
+	  free (xdb_prefix);
+	  free (xxdata);
+	  ret =
+	      sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt_data, NULL);
+	  sqlite3_free (sql);
+	  if (ret != SQLITE_OK)
+	    {
+		printf ("SELECT raw tiles data(2) SQL error: %s\n",
+			sqlite3_errmsg (handle));
+		goto error;
+	    }
+      }
+    else
+      {
+	  /* preparing the data SQL query - only ODD */
+	  xdb_prefix = rl2_double_quoted_sql (db_prefix);
+	  xdata = sqlite3_mprintf ("%s_tile_data", coverage);
+	  xxdata = rl2_double_quoted_sql (xdata);
+	  sqlite3_free (xdata);
+	  sql = sqlite3_mprintf ("SELECT tile_data_odd "
+				 "FROM \"%s\".\"%s\" WHERE tile_id = ?",
+				 xdb_prefix, xxdata);
+	  free (xdb_prefix);
+	  free (xxdata);
+	  ret =
+	      sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt_data, NULL);
+	  sqlite3_free (sql);
+	  if (ret != SQLITE_OK)
+	    {
+		printf ("SELECT raw tiles data(1) SQL error: %s\n",
+			sqlite3_errmsg (handle));
+		goto error;
+	    }
+      }
+
+/* preparing a raw pixels buffer */
+    if (pixel_type == RL2_PIXEL_PALETTE)
+	void_raw_buffer_palette_transparent (bufpix, bufmask, width, height);
+    else
+	void_raw_buffer_transparent (bufpix, bufmask, width, height,
+				     sample_type, num_bands);
+    if (by_section)
+      {
+	  /* only from a single Section */
+	  if (!rl2_load_dbms_tiles_section_transparent
+	      (handle, max_threads, section_id, stmt_tiles, stmt_data, bufpix,
+	       bufmask, width, height, sample_type, num_bands, auto_ndvi,
+	       red_band, nir_band, xx_res, yy_res, minx, miny, maxx, maxy,
+	       level, scale, plt, no_data))
+	      goto error;
+      }
+    else
+      {
+	  /* whole Coverage */
+	  if (!rl2_load_dbms_tiles_transparent
+	      (handle, max_threads, stmt_tiles, stmt_data, bufpix, bufmask,
+	       width, height, sample_type, num_bands, auto_ndvi, red_band,
+	       nir_band, xx_res, yy_res, minx, miny, maxx, maxy, level, scale,
+	       plt, no_data, style, stats))
+	      goto error;
+      }
+    sqlite3_finalize (stmt_tiles);
+    sqlite3_finalize (stmt_data);
+    if (shaded_relief != NULL)
+      {
+	  /* applying the Shaded Relief */
+	  unsigned int row;
+	  unsigned int col;
+	  float *p_in = shaded_relief;
+	  unsigned char *p_out = bufpix;
+	  for (row = 0; row < height; row++)
+	    {
+		for (col = 0; col < width; col++)
+		  {
+		      float coeff = *p_in++;
+		      if (coeff < 0.0)
+			  p_out += 3;	/* unaffected */
+		      else
+			{
+			    unsigned char r = *p_out;
+			    unsigned char g = *(p_out + 1);
+			    unsigned char b = *(p_out + 2);
+			    *p_out++ = (unsigned char) (r * coeff);
+			    *p_out++ = (unsigned char) (g * coeff);
+			    *p_out++ = (unsigned char) (b * coeff);
+			}
+		  }
+	    }
+      }
+    *buffer = bufpix;
+    *buf_size = bufpix_size;
+    *mask = bufmask;
+    *mask_size = bufmask_size;
+    if (palette != NULL)
+	*palette = plt;
+    if (shaded_relief != NULL)
+	free (shaded_relief);
+
+    return RL2_OK;
+
+  error:
+    if (stmt_tiles != NULL)
+	sqlite3_finalize (stmt_tiles);
+    if (stmt_data != NULL)
+	sqlite3_finalize (stmt_data);
+    if (bufpix != NULL)
+	free (bufpix);
+    if (bufmask != NULL)
+	free (bufmask);
     if (shaded_relief != NULL)
 	free (shaded_relief);
     return RL2_ERROR;
@@ -6603,6 +7960,38 @@ rl2_get_raw_raster_data_bgcolor (sqlite3 * handle, int max_threads,
 	    }
       }
 
+    return ret;
+}
+
+RL2_DECLARE int
+rl2_get_raw_raster_data_transparent (sqlite3 * handle, int max_threads,
+				     rl2CoveragePtr cvg, unsigned int width,
+				     unsigned int height, double minx,
+				     double miny, double maxx, double maxy,
+				     double x_res, double y_res,
+				     unsigned char **buffer, int *buf_size,
+				     unsigned char **mask, int *mask_size,
+				     rl2PalettePtr * palette,
+				     unsigned char *out_pixel,
+				     rl2PixelPtr no_data,
+				     rl2RasterSymbolizerPtr style,
+				     rl2RasterStatisticsPtr stats)
+{
+/*
+/ attempting to return a buffer containing raw pixels from the DBMS Coverage 
+/ transparent background
+*/
+    int ret;
+
+    if (cvg == NULL || handle == NULL)
+	return RL2_ERROR;
+
+    ret =
+	get_raw_raster_data_nodata (handle, max_threads, cvg, 0, 0, width,
+				    height, minx, miny, maxx, maxy, x_res,
+				    y_res, buffer, buf_size, mask,
+				    mask_size, palette, out_pixel, no_data,
+				    style, stats);
     return ret;
 }
 
@@ -8266,6 +9655,26 @@ rl2_copy_raster_coverage (sqlite3 * sqlite, const char *db_prefix,
 			    ok_compression = 1;
 			    compression = value;
 			}
+		      if (strcasecmp (value, "LZ4") == 0)
+			{
+			    ok_compression = 1;
+			    compression = value;
+			}
+		      if (strcasecmp (value, "LZ4_NO") == 0)
+			{
+			    ok_compression = 1;
+			    compression = value;
+			}
+		      if (strcasecmp (value, "ZSTD") == 0)
+			{
+			    ok_compression = 1;
+			    compression = value;
+			}
+		      if (strcasecmp (value, "ZSTD_NO") == 0)
+			{
+			    ok_compression = 1;
+			    compression = value;
+			}
 		      if (strcasecmp (value, "PNG") == 0)
 			{
 			    ok_compression = 1;
@@ -8319,6 +9728,14 @@ rl2_copy_raster_coverage (sqlite3 * sqlite, const char *db_prefix,
 				compr = RL2_COMPRESSION_LZMA;
 			    if (strcasecmp (compression, "LZMA_NO") == 0)
 				compr = RL2_COMPRESSION_LZMA_NO;
+			    if (strcasecmp (compression, "LZ4") == 0)
+				compr = RL2_COMPRESSION_LZ4;
+			    if (strcasecmp (compression, "LZ4_NO") == 0)
+				compr = RL2_COMPRESSION_LZ4_NO;
+			    if (strcasecmp (compression, "ZSTD") == 0)
+				compr = RL2_COMPRESSION_ZSTD;
+			    if (strcasecmp (compression, "ZSTD_NO") == 0)
+				compr = RL2_COMPRESSION_ZSTD_NO;
 			    if (strcasecmp (compression, "PNG") == 0)
 				compr = RL2_COMPRESSION_PNG;
 			    if (strcasecmp (compression, "GIF") == 0)

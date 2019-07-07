@@ -1,0 +1,7 @@
+StoredProc_ExecuteLoop - NULL vararg
+sql_stmt_proc_tests/storproc_x.sqlite
+SELECT StoredProc_ExecuteLoop('test_loop', NULL);
+1 # rows (not including the header row)
+1 # columns
+StoredProc_ExecuteLoop('test_loop', NULL)
+SqlProc exception - the List of Variables with Values contains illegal items.

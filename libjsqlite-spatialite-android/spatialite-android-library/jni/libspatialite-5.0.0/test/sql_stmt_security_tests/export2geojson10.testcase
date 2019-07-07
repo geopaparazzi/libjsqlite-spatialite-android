@@ -1,0 +1,7 @@
+exportGeoJSON2 - TEXT colname_case UPPER
+:memory: #use in-memory database
+SELECT ExportGeoJSON2('table', 'geom', 'sample.geojson', 6, 0, 0, 1, 'UPPER');
+1 # rows (not including the header row)
+1 # columns
+ExportGeoJSON2('table', 'geom', 'sample.geojson', 6, 0, 0, 1, 'UPPER')
+(NULL)

@@ -62,6 +62,8 @@ CIG: 6038019AE5
 
 #if defined(_WIN32) && !defined(__MINGW32__)
 #include "process.h"
+#else
+#include "unistd.h"
 #endif
 
 #if defined(_WIN32) && !defined(__MINGW32__)
@@ -1199,7 +1201,11 @@ do_verify_blade_spatial_index (sqlite3 * handle, const char *db_prefix,
     int declared = 0;
     char *errMsg = NULL;
     time_t now;
+#if defined(_WIN32) && !defined(__MINGW32__)
+    int pid;
+#else
     pid_t pid;
+#endif
 
     xprefix = gaiaDoubleQuotedSql (db_prefix);
 
@@ -2434,7 +2440,11 @@ do_prepare_temp_points (struct output_table *tbl, sqlite3 * handle,
     char *sql;
     char *prev;
     time_t now;
+#if defined(_WIN32) && !defined(__MINGW32__)
+    int pid;
+#else
     pid_t pid;
+#endif
     struct output_column *col;
     int comma = 0;
 
@@ -2594,7 +2604,11 @@ do_create_temp_linestrings (struct output_table *tbl, sqlite3 * handle,
     char *sql;
     char *prev;
     time_t now;
+#if defined(_WIN32) && !defined(__MINGW32__)
+    int pid;
+#else
     pid_t pid;
+#endif
     struct output_column *col;
     int comma = 0;
 
@@ -2705,7 +2719,11 @@ do_create_temp_polygons (struct output_table *tbl, sqlite3 * handle,
     char *sql;
     char *prev;
     time_t now;
+#if defined(_WIN32) && !defined(__MINGW32__)
+    int pid;
+#else
     pid_t pid;
+#endif
     struct output_column *col;
     int comma = 0;
 
@@ -3749,14 +3767,11 @@ do_cut_tmp_linestrings (sqlite3 * handle, const void *cache,
 			    gaiaToSpatiaLiteBlobWkbEx2 (result, &blob, &blob_sz,
 							gpkg_mode, tiny_point);
 			    gaiaFreeGeomColl (result);
+			    if (!do_update_tmp_cut_linestring
+				(handle, stmt_upd, pk, blob, blob_sz, message))
+				goto error;
 			}
 		      gaiaFreeGeomColl (input_g);
-		  }
-		if (blob != NULL)
-		  {
-		      if (!do_update_tmp_cut_linestring
-			  (handle, stmt_upd, pk, blob, blob_sz, message))
-			  goto error;
 		  }
 	    }
 	  else
@@ -4951,14 +4966,11 @@ do_cut_tmp_polygons (sqlite3 * handle, const void *cache,
 			    gaiaToSpatiaLiteBlobWkbEx2 (result, &blob, &blob_sz,
 							gpkg_mode, tiny_point);
 			    gaiaFreeGeomColl (result);
+			    if (!do_update_tmp_cut_polygon
+				(handle, stmt_upd, pk, blob, blob_sz, message))
+				goto error;
 			}
 		      gaiaFreeGeomColl (input_g);
-		  }
-		if (blob != NULL)
-		  {
-		      if (!do_update_tmp_cut_polygon
-			  (handle, stmt_upd, pk, blob, blob_sz, message))
-			  goto error;
 		  }
 	    }
 	  else

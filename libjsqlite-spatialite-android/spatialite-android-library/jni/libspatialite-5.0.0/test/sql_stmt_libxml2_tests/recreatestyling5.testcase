@@ -1,0 +1,8 @@
+ReCreateStylingTriggers - no args
+NEW:memory: #use in-memory database
+SELECT ReCreateStylingTriggers();
+1 # rows (not including the header row)
+1 # columns
+ReCreateStylingTriggers()
+1
+

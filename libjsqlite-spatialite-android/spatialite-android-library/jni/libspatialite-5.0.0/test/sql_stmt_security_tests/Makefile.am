@@ -32,6 +32,16 @@ EXTRA_DIST = blobfromfile1.testcase \
 	exportdxf8.testcase \
 	exportdxf9.testcase \
 	exportdxf10.testcase \
+	export2geojson1.testcase \
+	export2geojson2.testcase \
+	export2geojson3.testcase \
+	export2geojson4.testcase \
+	export2geojson5.testcase \
+	export2geojson6.testcase \
+	export2geojson7.testcase \
+	export2geojson8.testcase \
+	export2geojson9.testcase \
+	export2geojson10.testcase \
 	exportgeojson1.testcase \
 	exportgeojson2.testcase \
 	exportgeojson3.testcase \
@@ -147,6 +157,13 @@ EXTRA_DIST = blobfromfile1.testcase \
 	importxls15.testcase \
 	importxls16.testcase \
 	importxls17.testcase \
+	importgeojson1.testcase \
+	importgeojson2.testcase \
+	importgeojson3.testcase \
+	importgeojson4.testcase \
+	importgeojson5.testcase \
+	importgeojson6.testcase \
+	importgeojson7.testcase \
 	isXblob1.testcase \
 	isXblob2.testcase \
 	isXblob3.testcase \

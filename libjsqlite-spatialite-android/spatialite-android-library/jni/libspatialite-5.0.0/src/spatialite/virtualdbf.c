@@ -722,7 +722,12 @@ vdbf_eval_constraints (VirtualDbfCursorPtr cursor)
 					      break;
 #ifdef HAVE_DECL_SQLITE_INDEX_CONSTRAINT_LIKE
 					  case SQLITE_INDEX_CONSTRAINT_LIKE:
-					      if (ret >= 0)
+					      ret =
+						  sqlite3_strlike (pC->txtValue,
+								   pFld->
+								   Value->TxtValue,
+								   0);
+					      if (ret == 0)
 						  ok = 1;
 					      break;
 #endif

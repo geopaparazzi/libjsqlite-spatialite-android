@@ -1,0 +1,8 @@
+ReCreateVectorCoveragesTriggers
+NEW:memory: #use in-memory database
+SELECT ReCreateVectorCoveragesTriggers();
+1 # rows (not including the header row)
+1 # columns
+ReCreateVectorCoveragesTriggers()
+1
+

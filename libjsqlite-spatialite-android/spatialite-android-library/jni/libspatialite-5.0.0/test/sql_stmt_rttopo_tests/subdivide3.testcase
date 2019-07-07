@@ -1,0 +1,7 @@
+ST_Subdivide - DOUBLE Geometry
+:memory: #use in-memory database
+SELECT ST_Subdivide(1.2);
+1 # rows (not including the header row)
+1 # columns
+ST_Subdivide(1.2)
+(NULL)

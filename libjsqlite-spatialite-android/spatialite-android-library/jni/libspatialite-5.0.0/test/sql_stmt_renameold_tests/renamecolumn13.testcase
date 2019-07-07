@@ -1,0 +1,7 @@
+RenameColumn - TEXT, TEXT, TEXT
+:memory: #use in-memory database
+SELECT RenameColumn(NULL, 'table', 'old_column', 'new_column');
+1 # rows (not including the header row)
+1 # columns
+RenameColumn(NULL, 'table', 'old_column', 'new_column');
+RenameColumn exception - libsqlite 3.25 or later is strictly required.

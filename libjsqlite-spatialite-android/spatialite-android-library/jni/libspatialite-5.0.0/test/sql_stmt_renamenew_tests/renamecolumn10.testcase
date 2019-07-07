@@ -1,0 +1,7 @@
+RenameColumn - INT newcolumn
+:memory: #use in-memory database
+SELECT RenameColumn(NULL, 'table', 'old_column', 1);
+1 # rows (not including the header row)
+1 # columns
+RenameColumn(NULL, 'table', 'old_column', 1);
+RenameColumn exception - invalid argument (4th arg).

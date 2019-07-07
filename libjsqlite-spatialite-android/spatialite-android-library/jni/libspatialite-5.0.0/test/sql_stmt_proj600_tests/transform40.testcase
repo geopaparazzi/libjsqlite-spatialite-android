@@ -1,0 +1,7 @@
+transform - PROJ.6 extra-args - proj_string TEXT (valid pipeline)
+:memory: #use in-memory database
+SELECT AsText(Transform(MakePoint(700000, 4700000, 32632), 32633, NULL, '+proj=pipeline +step +inv +proj=utm +zone=32 +ellps=WGS84 +step +proj=utm +zone=33 +ellps=WGS84'));
+1 # rows (not including the header row)
+1 # columns
+AsText(Transform(MakePoint(700000, 4700000, 32632), 32633, NULL, '+proj=pipeline +step +inv +proj=utm +zone=32 +ellps=WGS84 +step +proj=utm +zone=33 +ellps=WGS84'))
+POINT(206403.752236 4703309.384202)

@@ -161,7 +161,8 @@ test_srid (sqlite3 * sqlite, int extended)
 			      }
 			    value =
 				(const char *) sqlite3_column_text (stmt, 9);
-			    if (strcasecmp (value, "Latitude") != 0)
+			    if (strcasecmp (value, "Geodetic latitude") != 0
+				&& strcasecmp (value, "Latitude") != 0)
 			      {
 				  fprintf (stderr,
 					   "4326: Unexpected GetAxis_1_Name result (%s)\n",
@@ -179,7 +180,8 @@ test_srid (sqlite3 * sqlite, int extended)
 			      }
 			    value =
 				(const char *) sqlite3_column_text (stmt, 11);
-			    if (strcasecmp (value, "Longitude") != 0)
+			    if (strcasecmp (value, "Geodetic longitude") != 0
+				&& strcasecmp (value, "Longitude") != 0)
 			      {
 				  fprintf (stderr,
 					   "4326: Unexpected GetAxis_2_Name result (%s)\n",

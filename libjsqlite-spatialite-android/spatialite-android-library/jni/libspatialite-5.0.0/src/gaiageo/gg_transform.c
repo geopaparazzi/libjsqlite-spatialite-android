@@ -44,9 +44,14 @@ the terms of any one of the MPL, the GPL or the LGPL.
 */
 
 #include <sys/types.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+
+#if defined(_WIN32)
+#include <libloaderapi.h>
+#endif
 
 #if defined(_WIN32) && !defined(__MINGW32__)
 #include "config-msvc.h"
@@ -55,11 +60,16 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #endif
 
 #ifndef OMIT_PROJ		/* including PROJ.4 */
+#ifdef PROJ_NEW			/* supporting PROJ.6 */
+#include <proj.h>
+#else /* supporting old PROJ.4 */
 #include <proj_api.h>
 #endif
 
 #include <spatialite/sqlite.h>
+#include <spatialite/debug.h>
 #include <spatialite_private.h>
+#include <spatialite.h>
 
 #include <spatialite/gaiageo.h>
 
@@ -1603,34 +1613,145 @@ gaiaSwapCoords (gaiaGeomCollPtr geom)
 
 #ifndef OMIT_PROJ		/* including PROJ.4 */
 
+#ifndef PROJ_NEW		/* supporting old PROJ.4 */
 static int
-gaiaIsLongLat (char *str)
+gaiaIsLongLat (const char *str)
 {
 /* checks if we have to do with ANGLES if +proj=longlat is defined */
+    if (str == NULL)
+	return 0;
     if (strstr (str, "+proj=longlat") != NULL)
 	return 1;
     return 0;
 }
+#endif
+
+#ifdef PROJ_NEW			/* only if PROJ.6 is supported */
+
+GAIAGEO_DECLARE void
+gaiaResetProjErrorMsg_r (const void *p_cache)
+{
+/* resets the PROJ error message */
+    struct splite_internal_cache *cache =
+	(struct splite_internal_cache *) p_cache;
+    if (cache != NULL)
+      {
+	  if (cache->magic1 == SPATIALITE_CACHE_MAGIC1
+	      && cache->magic2 == SPATIALITE_CACHE_MAGIC2)
+	    {
+		if (cache->gaia_proj_error_msg != NULL)
+		    sqlite3_free (cache->gaia_proj_error_msg);
+		cache->gaia_proj_error_msg = NULL;
+	    }
+      }
+}
+
+GAIAGEO_DECLARE const char *
+gaiaSetProjDatabasePath (const void *p_cache, const char *path)
+{
+/* return the currently set PATH leading to the private PROJ.6 database */
+    struct splite_internal_cache *cache =
+	(struct splite_internal_cache *) p_cache;
+    if (cache != NULL)
+      {
+	  if (cache->magic1 == SPATIALITE_CACHE_MAGIC1
+	      && cache->magic2 == SPATIALITE_CACHE_MAGIC2)
+	    {
+		if (!proj_context_set_database_path
+		    (cache->PROJ_handle, path, NULL, NULL))
+		    return NULL;
+		return proj_context_get_database_path (cache->PROJ_handle);
+	    }
+      }
+    return NULL;
+}
+
+GAIAGEO_DECLARE const char *
+gaiaGetProjDatabasePath (const void *p_cache)
+{
+/* return the currently set PATH leading to the private PROJ.6 database */
+    struct splite_internal_cache *cache =
+	(struct splite_internal_cache *) p_cache;
+    if (cache != NULL)
+      {
+	  if (cache->magic1 == SPATIALITE_CACHE_MAGIC1
+	      && cache->magic2 == SPATIALITE_CACHE_MAGIC2)
+	      return proj_context_get_database_path (cache->PROJ_handle);
+      }
+    return NULL;
+}
+
+GAIAGEO_DECLARE const char *
+gaiaGetProjErrorMsg_r (const void *p_cache)
+{
+/* return the latest PROJ error message */
+    struct splite_internal_cache *cache =
+	(struct splite_internal_cache *) p_cache;
+    if (cache != NULL)
+      {
+	  if (cache->magic1 == SPATIALITE_CACHE_MAGIC1
+	      && cache->magic2 == SPATIALITE_CACHE_MAGIC2)
+	    {
+		if (cache->gaia_proj_error_msg != NULL)
+		    return cache->gaia_proj_error_msg;
+	    }
+      }
+    return NULL;
+}
+
+GAIAGEO_DECLARE void
+gaiaSetProjErrorMsg_r (const void *p_cache, const char *msg)
+{
+/* setting the latest PROJ error message */
+    struct splite_internal_cache *cache =
+	(struct splite_internal_cache *) p_cache;
+    if (cache != NULL)
+      {
+	  if (cache->magic1 == SPATIALITE_CACHE_MAGIC1
+	      && cache->magic2 == SPATIALITE_CACHE_MAGIC2)
+	    {
+		if (cache->gaia_proj_error_msg != NULL)
+		    sqlite3_free (cache->gaia_proj_error_msg);
+		cache->gaia_proj_error_msg = sqlite3_mprintf ("%s", msg);
+	    }
+      }
+}
+#endif
+
 
 GAIAGEO_DECLARE double
 gaiaRadsToDegs (double rads)
 {
 /* converts an ANGLE from radians to degrees */
+#ifdef PROJ_NEW			/* supporting new PROJ.6 */
+    return proj_todeg (rads);
+#else /* supporting old PROJ.4 */
     return rads * RAD_TO_DEG;
+#endif
 }
 
 GAIAGEO_DECLARE double
 gaiaDegsToRads (double degs)
 {
 /* converts an ANGLE from degrees to radians */
+#ifdef PROJ_NEW			/* supporting new PROJ.6 */
+    return proj_torad (degs);
+#else /* supporting old PROJ.4 */
     return degs * DEG_TO_RAD;
+#endif
 }
 
-static gaiaGeomCollPtr
-gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
-		     char *proj_to, int ignore_zm)
+static int
+do_transfom_proj (gaiaGeomCollPtr org, gaiaGeomCollPtr dst, int ignore_z,
+		  int ignore_m, int from_radians, int to_radians, void *xfrom,
+		  void *xto, void *x_from_to)
 {
-/* creates a new GEOMETRY reprojecting coordinates from the original one */
+/* supporting either old PROJ.4 or new PROJ.6 */
+    int error = 0;
+    int ret;
+#ifdef PROJ_NEW			/* supporting new PROJ.6 */
+    int result_count;
+#endif
     int ib;
     int cnt;
     int i;
@@ -1639,13 +1760,11 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
     double *zz;
     double *old_zz = NULL;
     double *mm = NULL;
+    double *old_mm = NULL;
     double x;
     double y;
-    double z = 0.0;
-    double m = 0.0;
-    int error = 0;
-    int from_angle;
-    int to_angle;
+    double z;
+    double m;
     gaiaPointPtr pt;
     gaiaLinestringPtr ln;
     gaiaLinestringPtr dst_ln;
@@ -1653,41 +1772,19 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
     gaiaPolygonPtr dst_pg;
     gaiaRingPtr rng;
     gaiaRingPtr dst_rng;
-    projPJ from_cs;
-    projPJ to_cs;
-    gaiaGeomCollPtr dst;
-    if (handle != NULL)
-      {
-	  from_cs = pj_init_plus_ctx (handle, proj_from);
-	  to_cs = pj_init_plus_ctx (handle, proj_to);
-      }
-    else
-      {
-	  from_cs = pj_init_plus (proj_from);
-	  to_cs = pj_init_plus (proj_to);
-      }
-    if (!from_cs)
-      {
-	  if (to_cs)
-	      pj_free (to_cs);
-	  return NULL;
-      }
-    if (!to_cs)
-      {
-	  pj_free (from_cs);
-	  return NULL;
-      }
-    if (org->DimensionModel == GAIA_XY_Z)
-	dst = gaiaAllocGeomCollXYZ ();
-    else if (org->DimensionModel == GAIA_XY_M)
-	dst = gaiaAllocGeomCollXYM ();
-    else if (org->DimensionModel == GAIA_XY_Z_M)
-	dst = gaiaAllocGeomCollXYZM ();
-    else
-	dst = gaiaAllocGeomColl ();
-/* setting up projection parameters */
-    from_angle = gaiaIsLongLat (proj_from);
-    to_angle = gaiaIsLongLat (proj_to);
+#ifdef PROJ_NEW			/* only if new PROJ.6 is supported */
+    PJ *from_to_cs = (PJ *) x_from_to;
+    if (xfrom == NULL)
+	xfrom = NULL;		/* silencing stupid compiler warnings - unused arg */
+    if (xto == NULL)
+	xto = NULL;		/* silencing stupid compiler warnings - unused arg */
+#else /* only id old PROJ.4 is supported */
+    projPJ from_cs = (projPJ) xfrom;
+    projPJ to_cs = (projPJ) xto;
+    if (x_from_to == NULL)
+	x_from_to = NULL;	/* silencing stupid compiler warnings - unused arg */
+#endif
+
     cnt = 0;
     pt = org->FirstPoint;
     while (pt)
@@ -1702,19 +1799,31 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
 	  xx = malloc (sizeof (double) * cnt);
 	  yy = malloc (sizeof (double) * cnt);
 	  zz = malloc (sizeof (double) * cnt);
-	  if (ignore_zm
+	  mm = malloc (sizeof (double) * cnt);
+	  for (i = 0; i < cnt; i++)
+	    {
+		/* zeroing unused coordinates */
+		if (ignore_z || org->DimensionModel == GAIA_XY
+		    || org->DimensionModel == GAIA_XY_M)
+		    zz[i] = 0.0;
+		if (ignore_m || org->DimensionModel == GAIA_XY
+		    || org->DimensionModel == GAIA_XY_Z)
+		    mm[i] = 0.0;
+	    }
+	  if (ignore_z
 	      && (org->DimensionModel == GAIA_XY_Z
 		  || org->DimensionModel == GAIA_XY_Z_M))
 	      old_zz = malloc (sizeof (double) * cnt);
-	  if (org->DimensionModel == GAIA_XY_M
-	      || org->DimensionModel == GAIA_XY_Z_M)
-	      mm = malloc (sizeof (double) * cnt);
+	  if (ignore_m
+	      && (org->DimensionModel == GAIA_XY_M
+		  || org->DimensionModel == GAIA_XY_Z_M))
+	      old_mm = malloc (sizeof (double) * cnt);
 	  i = 0;
 	  pt = org->FirstPoint;
 	  while (pt)
 	    {
 		/* inserting points to be converted in temporary arrays */
-		if (from_angle)
+		if (from_radians)
 		  {
 		      xx[i] = gaiaDegsToRads (pt->X);
 		      yy[i] = gaiaDegsToRads (pt->Y);
@@ -1726,29 +1835,42 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
 		  }
 		if (org->DimensionModel == GAIA_XY_Z
 		    || org->DimensionModel == GAIA_XY_Z_M)
-		    zz[i] = pt->Z;
-		else
-		    zz[i] = 0.0;
-		if (ignore_zm
-		    && (org->DimensionModel == GAIA_XY_Z
-			|| org->DimensionModel == GAIA_XY_Z_M))
 		  {
-		      zz[i] = 0.0;
-		      old_zz[i] = pt->Z;
+		      if (ignore_z)
+			  old_zz[i] = pt->Z;
+		      else
+			  zz[i] = pt->Z;
 		  }
 		if (org->DimensionModel == GAIA_XY_M
 		    || org->DimensionModel == GAIA_XY_Z_M)
-		    mm[i] = pt->M;
+		  {
+		      if (ignore_m)
+			  old_mm[i] = pt->M;
+		      else
+			  mm[i] = pt->M;
+		  }
 		i++;
 		pt = pt->Next;
 	    }
-	  /* applying reprojection        */
-	  if (pj_transform (from_cs, to_cs, cnt, 0, xx, yy, zz) == 0)
+	  /* applying reprojection */
+#ifdef PROJ_NEW			/* supporting new PROJ.6 */
+	  result_count =
+	      proj_trans_generic (from_to_cs, PJ_FWD, xx, sizeof (double), cnt,
+				  yy, sizeof (double), cnt, zz, sizeof (double),
+				  cnt, mm, sizeof (double), cnt);
+	  if (result_count == cnt)
+	      ret = 0;
+	  else
+	      ret = 1;
+#else /* supporting old PROJ.4 */
+	  ret = pj_transform (from_cs, to_cs, cnt, 0, xx, yy, zz);
+#endif
+	  if (ret == 0)
 	    {
 		/* inserting the reprojected POINTs in the new GEOMETRY */
 		for (i = 0; i < cnt; i++)
 		  {
-		      if (to_angle)
+		      if (to_radians)
 			{
 			    x = gaiaRadsToDegs (xx[i]);
 			    y = gaiaRadsToDegs (yy[i]);
@@ -1760,18 +1882,20 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
 			}
 		      if (org->DimensionModel == GAIA_XY_Z
 			  || org->DimensionModel == GAIA_XY_Z_M)
-			  z = zz[i];
-		      else
-			  z = 0.0;
-		      if (ignore_zm
-			  && (org->DimensionModel == GAIA_XY_Z
-			      || org->DimensionModel == GAIA_XY_Z_M))
-			  z = old_zz[i];
+			{
+			    if (ignore_z)
+				z = old_zz[i];
+			    else
+				z = zz[i];
+			}
 		      if (org->DimensionModel == GAIA_XY_M
 			  || org->DimensionModel == GAIA_XY_Z_M)
-			  m = mm[i];
-		      else
-			  m = 0.0;
+			{
+			    if (ignore_m)
+				m = old_mm[i];
+			    else
+				m = mm[i];
+			}
 		      if (dst->DimensionModel == GAIA_XY_Z)
 			  gaiaAddPointToGeomCollXYZ (dst, x, y, z);
 		      else if (dst->DimensionModel == GAIA_XY_M)
@@ -1787,11 +1911,17 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
 	  free (xx);
 	  free (yy);
 	  free (zz);
+	  free (mm);
 	  if (old_zz != NULL)
 	      free (old_zz);
-	  if (org->DimensionModel == GAIA_XY_M
-	      || org->DimensionModel == GAIA_XY_Z_M)
-	      free (mm);
+	  if (old_mm != NULL)
+	      free (old_mm);
+	  xx = NULL;
+	  yy = NULL;
+	  zz = NULL;
+	  mm = NULL;
+	  old_zz = NULL;
+	  old_mm = NULL;
       }
     if (error)
 	goto stop;
@@ -1803,16 +1933,30 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
 	  xx = malloc (sizeof (double) * cnt);
 	  yy = malloc (sizeof (double) * cnt);
 	  zz = malloc (sizeof (double) * cnt);
-	  if (ignore_zm
-	      && (ln->DimensionModel == GAIA_XY_Z
-		  || ln->DimensionModel == GAIA_XY_Z_M))
+	  mm = malloc (sizeof (double) * cnt);
+	  for (i = 0; i < cnt; i++)
+	    {
+		/* zeroing unused coordinates */
+		if (ignore_z || org->DimensionModel == GAIA_XY
+		    || org->DimensionModel == GAIA_XY_M)
+		    zz[i] = 0.0;
+		if (ignore_m || org->DimensionModel == GAIA_XY
+		    || org->DimensionModel == GAIA_XY_Z)
+		    mm[i] = 0.0;
+	    }
+	  if (ignore_z
+	      && (org->DimensionModel == GAIA_XY_Z
+		  || org->DimensionModel == GAIA_XY_Z_M))
 	      old_zz = malloc (sizeof (double) * cnt);
-	  if (ln->DimensionModel == GAIA_XY_M
-	      || ln->DimensionModel == GAIA_XY_Z_M)
-	      mm = malloc (sizeof (double) * cnt);
+	  if (ignore_m
+	      && (org->DimensionModel == GAIA_XY_M
+		  || org->DimensionModel == GAIA_XY_Z_M))
+	      old_mm = malloc (sizeof (double) * cnt);
 	  for (i = 0; i < cnt; i++)
 	    {
 		/* inserting points to be converted in temporary arrays */
+		z = 0.0;
+		m = 0.0;
 		if (ln->DimensionModel == GAIA_XY_Z)
 		  {
 		      gaiaGetPointXYZ (ln->Coords, i, &x, &y, &z);
@@ -1829,7 +1973,7 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
 		  {
 		      gaiaGetPoint (ln->Coords, i, &x, &y);
 		  }
-		if (from_angle)
+		if (from_radians)
 		  {
 		      xx[i] = gaiaDegsToRads (x);
 		      yy[i] = gaiaDegsToRads (y);
@@ -1841,29 +1985,42 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
 		  }
 		if (ln->DimensionModel == GAIA_XY_Z
 		    || ln->DimensionModel == GAIA_XY_Z_M)
-		    zz[i] = z;
-		else
-		    zz[i] = 0.0;
-		if (ignore_zm
-		    && (ln->DimensionModel == GAIA_XY_Z
-			|| ln->DimensionModel == GAIA_XY_Z_M))
 		  {
-		      zz[i] = 0.0;
-		      old_zz[i] = z;
+		      if (ignore_z)
+			  old_zz[i] = z;
+		      else
+			  zz[i] = z;
 		  }
 		if (ln->DimensionModel == GAIA_XY_M
 		    || ln->DimensionModel == GAIA_XY_Z_M)
-		    mm[i] = m;
+		  {
+		      if (ignore_m)
+			  old_mm[i] = m;
+		      else
+			  mm[i] = m;
+		  }
 	    }
-	  /* applying reprojection        */
-	  if (pj_transform (from_cs, to_cs, cnt, 0, xx, yy, zz) == 0)
+	  /* applying reprojection */
+#ifdef PROJ_NEW			/* supporting new PROJ.6 */
+	  result_count =
+	      proj_trans_generic (from_to_cs, PJ_FWD, xx, sizeof (double), cnt,
+				  yy, sizeof (double), cnt, zz, sizeof (double),
+				  cnt, mm, sizeof (double), cnt);
+	  if (result_count == cnt)
+	      ret = 0;
+	  else
+	      ret = 1;
+#else /* supporting old PROJ.4 */
+	  ret = pj_transform (from_cs, to_cs, cnt, 0, xx, yy, zz);
+#endif
+	  if (ret == 0)
 	    {
 		/* inserting the reprojected LINESTRING in the new GEOMETRY */
 		dst_ln = gaiaAddLinestringToGeomColl (dst, cnt);
 		for (i = 0; i < cnt; i++)
 		  {
 		      /* setting LINESTRING points */
-		      if (to_angle)
+		      if (to_radians)
 			{
 			    x = gaiaRadsToDegs (xx[i]);
 			    y = gaiaRadsToDegs (yy[i]);
@@ -1875,18 +2032,20 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
 			}
 		      if (ln->DimensionModel == GAIA_XY_Z
 			  || ln->DimensionModel == GAIA_XY_Z_M)
-			  z = zz[i];
-		      else
-			  z = 0.0;
-		      if (ignore_zm
-			  && (ln->DimensionModel == GAIA_XY_Z
-			      || ln->DimensionModel == GAIA_XY_Z_M))
-			  z = old_zz[i];
+			{
+			    if (ignore_z)
+				z = old_zz[i];
+			    else
+				z = zz[i];
+			}
 		      if (ln->DimensionModel == GAIA_XY_M
 			  || ln->DimensionModel == GAIA_XY_Z_M)
-			  m = mm[i];
-		      else
-			  m = 0.0;
+			{
+			    if (ignore_m)
+				m = old_mm[i];
+			    else
+				m = mm[i];
+			}
 		      if (dst_ln->DimensionModel == GAIA_XY_Z)
 			{
 			    gaiaSetPointXYZ (dst_ln->Coords, i, x, y, z);
@@ -1910,11 +2069,17 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
 	  free (xx);
 	  free (yy);
 	  free (zz);
+	  free (mm);
 	  if (old_zz != NULL)
 	      free (old_zz);
-	  if (ln->DimensionModel == GAIA_XY_M
-	      || ln->DimensionModel == GAIA_XY_Z_M)
-	      free (mm);
+	  if (old_mm != NULL)
+	      free (old_mm);
+	  xx = NULL;
+	  yy = NULL;
+	  zz = NULL;
+	  mm = NULL;
+	  old_zz = NULL;
+	  old_mm = NULL;
 	  if (error)
 	      goto stop;
 	  ln = ln->Next;
@@ -1929,16 +2094,30 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
 	  xx = malloc (sizeof (double) * cnt);
 	  yy = malloc (sizeof (double) * cnt);
 	  zz = malloc (sizeof (double) * cnt);
-	  if (ignore_zm
+	  mm = malloc (sizeof (double) * cnt);
+	  for (i = 0; i < cnt; i++)
+	    {
+		/* zeroing unused coordinates */
+		if (ignore_z || org->DimensionModel == GAIA_XY
+		    || org->DimensionModel == GAIA_XY_M)
+		    zz[i] = 0.0;
+		if (ignore_m || org->DimensionModel == GAIA_XY
+		    || org->DimensionModel == GAIA_XY_Z)
+		    mm[i] = 0.0;
+	    }
+	  if (ignore_z
 	      && (org->DimensionModel == GAIA_XY_Z
 		  || org->DimensionModel == GAIA_XY_Z_M))
 	      old_zz = malloc (sizeof (double) * cnt);
-	  if (rng->DimensionModel == GAIA_XY_M
-	      || rng->DimensionModel == GAIA_XY_Z_M)
-	      mm = malloc (sizeof (double) * cnt);
+	  if (ignore_m
+	      && (org->DimensionModel == GAIA_XY_M
+		  || org->DimensionModel == GAIA_XY_Z_M))
+	      old_mm = malloc (sizeof (double) * cnt);
 	  for (i = 0; i < cnt; i++)
 	    {
 		/* inserting points to be converted in temporary arrays [EXTERIOR RING] */
+		z = 0.0;
+		m = 0.0;
 		if (rng->DimensionModel == GAIA_XY_Z)
 		  {
 		      gaiaGetPointXYZ (rng->Coords, i, &x, &y, &z);
@@ -1955,7 +2134,7 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
 		  {
 		      gaiaGetPoint (rng->Coords, i, &x, &y);
 		  }
-		if (from_angle)
+		if (from_radians)
 		  {
 		      xx[i] = gaiaDegsToRads (x);
 		      yy[i] = gaiaDegsToRads (y);
@@ -1967,29 +2146,42 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
 		  }
 		if (rng->DimensionModel == GAIA_XY_Z
 		    || rng->DimensionModel == GAIA_XY_Z_M)
-		    zz[i] = z;
-		else
-		    zz[i] = 0.0;
-		if (ignore_zm
-		    && (rng->DimensionModel == GAIA_XY_Z
-			|| rng->DimensionModel == GAIA_XY_Z_M))
 		  {
-		      zz[i] = 0.0;
-		      old_zz[i] = z;
+		      if (ignore_z)
+			  old_zz[i] = z;
+		      else
+			  zz[i] = z;
 		  }
 		if (rng->DimensionModel == GAIA_XY_M
 		    || rng->DimensionModel == GAIA_XY_Z_M)
-		    mm[i] = m;
+		  {
+		      if (ignore_m)
+			  old_mm[i] = m;
+		      else
+			  mm[i] = m;
+		  }
 	    }
-	  /* applying reprojection        */
-	  if (pj_transform (from_cs, to_cs, cnt, 0, xx, yy, zz) == 0)
+	  /* applying reprojection */
+#ifdef PROJ_NEW			/* supporting new PROJ.6 */
+	  result_count =
+	      proj_trans_generic (from_to_cs, PJ_FWD, xx, sizeof (double), cnt,
+				  yy, sizeof (double), cnt, zz, sizeof (double),
+				  cnt, mm, sizeof (double), cnt);
+	  if (result_count == cnt)
+	      ret = 0;
+	  else
+	      ret = 1;
+#else /* supporting old PROJ.4 */
+	  ret = pj_transform (from_cs, to_cs, cnt, 0, xx, yy, zz);
+#endif
+	  if (ret == 0)
 	    {
 		/* inserting the reprojected POLYGON in the new GEOMETRY */
 		dst_rng = dst_pg->Exterior;
 		for (i = 0; i < cnt; i++)
 		  {
 		      /* setting EXTERIOR RING points */
-		      if (to_angle)
+		      if (to_radians)
 			{
 			    x = gaiaRadsToDegs (xx[i]);
 			    y = gaiaRadsToDegs (yy[i]);
@@ -2001,18 +2193,20 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
 			}
 		      if (rng->DimensionModel == GAIA_XY_Z
 			  || rng->DimensionModel == GAIA_XY_Z_M)
-			  z = zz[i];
-		      else
-			  z = 0.0;
-		      if (ignore_zm
-			  && (rng->DimensionModel == GAIA_XY_Z
-			      || rng->DimensionModel == GAIA_XY_Z_M))
-			  z = old_zz[i];
+			{
+			    if (ignore_z)
+				z = old_zz[i];
+			    else
+				z = zz[i];
+			}
 		      if (rng->DimensionModel == GAIA_XY_M
 			  || rng->DimensionModel == GAIA_XY_Z_M)
-			  m = mm[i];
-		      else
-			  m = 0.0;
+			{
+			    if (ignore_m)
+				m = old_mm[i];
+			    else
+				m = mm[i];
+			}
 		      if (dst_rng->DimensionModel == GAIA_XY_Z)
 			{
 			    gaiaSetPointXYZ (dst_rng->Coords, i, x, y, z);
@@ -2036,11 +2230,17 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
 	  free (xx);
 	  free (yy);
 	  free (zz);
+	  free (mm);
 	  if (old_zz != NULL)
 	      free (old_zz);
-	  if (rng->DimensionModel == GAIA_XY_M
-	      || rng->DimensionModel == GAIA_XY_Z_M)
-	      free (mm);
+	  if (old_mm != NULL)
+	      free (old_mm);
+	  xx = NULL;
+	  yy = NULL;
+	  zz = NULL;
+	  mm = NULL;
+	  old_zz = NULL;
+	  old_mm = NULL;
 	  if (error)
 	      goto stop;
 	  for (ib = 0; ib < pg->NumInteriors; ib++)
@@ -2051,16 +2251,30 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
 		xx = malloc (sizeof (double) * cnt);
 		yy = malloc (sizeof (double) * cnt);
 		zz = malloc (sizeof (double) * cnt);
-		if (ignore_zm
+		mm = malloc (sizeof (double) * cnt);
+		for (i = 0; i < cnt; i++)
+		  {
+		      /* zeroing unused coordinates */
+		      if (ignore_z || org->DimensionModel == GAIA_XY
+			  || org->DimensionModel == GAIA_XY_M)
+			  zz[i] = 0.0;
+		      if (ignore_m || org->DimensionModel == GAIA_XY
+			  || org->DimensionModel == GAIA_XY_Z)
+			  mm[i] = 0.0;
+		  }
+		if (ignore_z
 		    && (org->DimensionModel == GAIA_XY_Z
 			|| org->DimensionModel == GAIA_XY_Z_M))
 		    old_zz = malloc (sizeof (double) * cnt);
-		if (rng->DimensionModel == GAIA_XY_M
-		    || rng->DimensionModel == GAIA_XY_Z_M)
-		    mm = malloc (sizeof (double) * cnt);
+		if (ignore_m
+		    && (org->DimensionModel == GAIA_XY_M
+			|| org->DimensionModel == GAIA_XY_Z_M))
+		    old_mm = malloc (sizeof (double) * cnt);
 		for (i = 0; i < cnt; i++)
 		  {
 		      /* inserting points to be converted in temporary arrays [INTERIOR RING] */
+		      z = 0.0;
+		      m = 0.0;
 		      if (rng->DimensionModel == GAIA_XY_Z)
 			{
 			    gaiaGetPointXYZ (rng->Coords, i, &x, &y, &z);
@@ -2077,7 +2291,7 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
 			{
 			    gaiaGetPoint (rng->Coords, i, &x, &y);
 			}
-		      if (from_angle)
+		      if (from_radians)
 			{
 			    xx[i] = gaiaDegsToRads (x);
 			    yy[i] = gaiaDegsToRads (y);
@@ -2089,29 +2303,43 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
 			}
 		      if (rng->DimensionModel == GAIA_XY_Z
 			  || rng->DimensionModel == GAIA_XY_Z_M)
-			  zz[i] = z;
-		      else
-			  zz[i] = 0.0;
-		      if (ignore_zm
-			  && (rng->DimensionModel == GAIA_XY_Z
-			      || rng->DimensionModel == GAIA_XY_Z_M))
 			{
-			    zz[i] = 0.0;
-			    old_zz[i] = z;
+			    if (ignore_z)
+				old_zz[i] = z;
+			    else
+				zz[i] = z;
 			}
 		      if (rng->DimensionModel == GAIA_XY_M
 			  || rng->DimensionModel == GAIA_XY_Z_M)
-			  mm[i] = m;
+			{
+			    if (ignore_m)
+				old_mm[i] = m;
+			    else
+				mm[i] = m;
+			}
 		  }
-		/* applying reprojection        */
-		if (pj_transform (from_cs, to_cs, cnt, 0, xx, yy, zz) == 0)
+		/* applying reprojection */
+#ifdef PROJ_NEW			/* supporting new PROJ.6 */
+		result_count =
+		    proj_trans_generic (from_to_cs, PJ_FWD, xx, sizeof (double),
+					cnt, yy, sizeof (double), cnt, zz,
+					sizeof (double), cnt, mm,
+					sizeof (double), cnt);
+		if (result_count == cnt)
+		    ret = 0;
+		else
+		    ret = 1;
+#else /* supporting old PROJ.4 */
+		ret = pj_transform (from_cs, to_cs, cnt, 0, xx, yy, zz);
+#endif
+		if (ret == 0)
 		  {
 		      /* inserting the reprojected POLYGON in the new GEOMETRY */
 		      dst_rng = gaiaAddInteriorRing (dst_pg, ib, cnt);
 		      for (i = 0; i < cnt; i++)
 			{
 			    /* setting INTERIOR RING points */
-			    if (to_angle)
+			    if (to_radians)
 			      {
 				  x = gaiaRadsToDegs (xx[i]);
 				  y = gaiaRadsToDegs (yy[i]);
@@ -2123,18 +2351,20 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
 			      }
 			    if (rng->DimensionModel == GAIA_XY_Z
 				|| rng->DimensionModel == GAIA_XY_Z_M)
-				z = zz[i];
-			    else
-				z = 0.0;
-			    if (ignore_zm
-				&& (rng->DimensionModel == GAIA_XY_Z
-				    || rng->DimensionModel == GAIA_XY_Z_M))
-				z = old_zz[i];
+			      {
+				  if (ignore_z)
+				      z = old_zz[i];
+				  else
+				      z = zz[i];
+			      }
 			    if (rng->DimensionModel == GAIA_XY_M
 				|| rng->DimensionModel == GAIA_XY_Z_M)
-				m = mm[i];
-			    else
-				m = 0.0;
+			      {
+				  if (ignore_m)
+				      m = old_mm[i];
+				  else
+				      m = mm[i];
+			      }
 			    if (dst_rng->DimensionModel == GAIA_XY_Z)
 			      {
 				  gaiaSetPointXYZ (dst_rng->Coords, i, x, y, z);
@@ -2159,20 +2389,162 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
 		free (xx);
 		free (yy);
 		free (zz);
+		free (mm);
 		if (old_zz != NULL)
 		    free (old_zz);
-		if (rng->DimensionModel == GAIA_XY_M
-		    || rng->DimensionModel == GAIA_XY_Z_M)
-		    free (mm);
+		if (old_mm != NULL)
+		    free (old_mm);
+		xx = NULL;
+		yy = NULL;
+		zz = NULL;
+		mm = NULL;
+		old_zz = NULL;
+		old_mm = NULL;
 		if (error)
 		    goto stop;
 	    }
 	  pg = pg->Next;
       }
-/* destroying the PROJ4 params */
   stop:
+#endif
+    return error;
+}
+
+static gaiaGeomCollPtr
+gaiaTransformCommon (void *x_handle, const void *p_cache, gaiaGeomCollPtr org,
+		     const char *proj_string_1,
+		     const char *proj_string_2, gaiaProjAreaPtr proj_bbox,
+		     int ignore_z, int ignore_m)
+{
+/* creates a new GEOMETRY reprojecting coordinates from the original one */
+    int error = 0;
+#ifdef PROJ_NEW			/* supporting new PROJ.6 */
+    PJ_CONTEXT *handle = (PJ_CONTEXT *) x_handle;
+    PJ *from_to_pre;
+    PJ *from_to_cs;
+    int proj_is_cached = 0;
+#else /* supporting old PROJ.4 */
+    if (p_cache == NULL)
+	p_cache = NULL;		/* silencing stupid compiler warnings about unused args */
+    projCtx handle = (projCtx) x_handle;
+    projPJ from_cs;
+    projPJ to_cs;
+#endif
+    int from_radians;
+    int to_radians;
+    gaiaGeomCollPtr dst;
+
+/* preliminary validity check */
+#ifdef PROJ_NEW			/* supporting new PROJ.6 */
+    gaiaResetProjErrorMsg_r (p_cache);
+#endif
+    if (proj_bbox == NULL)
+	proj_bbox = NULL;	/* silencing stupid compiler warnings about unused args */
+    if (proj_string_1 == NULL)
+	return NULL;
+
+#ifdef PROJ_NEW			/* supporting new PROJ.6 */
+    if (gaiaCurrentCachedProjMatches
+	(p_cache, proj_string_1, proj_string_2, proj_bbox))
+      {
+	  from_to_cs = gaiaGetCurrentCachedProj (p_cache);
+	  if (from_to_cs != NULL)
+	    {
+		proj_is_cached = 1;
+		goto skip_cached;
+	    }
+      }
+    if (proj_string_2 != NULL)
+      {
+	  PJ_AREA *area = NULL;
+	  if (proj_bbox != NULL)
+	    {
+		area = proj_area_create ();
+		proj_area_set_bbox (area, proj_bbox->WestLongitude,
+				    proj_bbox->SouthLatitude,
+				    proj_bbox->EastLongitude,
+				    proj_bbox->NorthLatitude);
+	    }
+	  from_to_pre =
+	      proj_create_crs_to_crs (handle, proj_string_1, proj_string_2,
+				      area);
+	  if (!from_to_pre)
+	      return NULL;
+	  from_to_cs = proj_normalize_for_visualization (handle, from_to_pre);
+	  proj_destroy (from_to_pre);
+	  if (area != NULL)
+	      proj_area_destroy (area);
+	  if (!from_to_cs)
+	      return NULL;
+	  proj_is_cached =
+	      gaiaSetCurrentCachedProj (p_cache, from_to_cs, proj_string_1,
+					proj_string_2, proj_bbox);
+      }
+    else			/* PROJ_STRING - PIPELINE */
+      {
+	  from_to_cs = proj_create (handle, proj_string_1);
+	  if (!from_to_cs)
+	      return NULL;
+	  proj_is_cached =
+	      gaiaSetCurrentCachedProj (p_cache, from_to_cs, proj_string_1,
+					NULL, NULL);
+      }
+  skip_cached:
+#else /* supporting old PROJ.4 */
+    if (proj_string_2 == NULL)
+	return NULL;
+    if (handle != NULL)
+      {
+	  from_cs = pj_init_plus_ctx (handle, proj_string_1);
+	  to_cs = pj_init_plus_ctx (handle, proj_string_2);
+      }
+    else
+      {
+	  from_cs = pj_init_plus (proj_string_1);
+	  to_cs = pj_init_plus (proj_string_2);
+      }
+    if (!from_cs)
+      {
+	  if (to_cs)
+	      pj_free (to_cs);
+	  return NULL;
+      }
+    if (!to_cs)
+      {
+	  pj_free (from_cs);
+	  return NULL;
+      }
+#endif
+    if (org->DimensionModel == GAIA_XY_Z)
+	dst = gaiaAllocGeomCollXYZ ();
+    else if (org->DimensionModel == GAIA_XY_M)
+	dst = gaiaAllocGeomCollXYM ();
+    else if (org->DimensionModel == GAIA_XY_Z_M)
+	dst = gaiaAllocGeomCollXYZM ();
+    else
+	dst = gaiaAllocGeomColl ();
+#ifdef PROJ_NEW			/* supporting new PROJ.6 */
+    from_radians = proj_angular_input (from_to_cs, PJ_FWD);
+    to_radians = proj_angular_output (from_to_cs, PJ_FWD);
+    error =
+	do_transfom_proj (org, dst, ignore_z, ignore_m, from_radians,
+			  to_radians, NULL, NULL, from_to_cs);
+#else /* supporting old PROJ.4 */
+    from_radians = gaiaIsLongLat (proj_string_1);
+    to_radians = gaiaIsLongLat (proj_string_2);
+    error =
+	do_transfom_proj (org, dst, ignore_z, ignore_m, from_radians,
+			  to_radians, from_cs, to_cs, NULL);
+#endif
+
+/* destroying the PROJ4 params */
+#ifdef PROJ_NEW			/* supporting new PROJ.6 */
+    if (!proj_is_cached)
+	proj_destroy (from_to_cs);
+#else /* supporting old PROJ.4 */
     pj_free (from_cs);
     pj_free (to_cs);
+#endif
     if (error)
       {
 	  /* some error occurred */
@@ -2219,18 +2591,34 @@ gaiaTransformCommon (projCtx handle, gaiaGeomCollPtr org, char *proj_from,
 }
 
 GAIAGEO_DECLARE gaiaGeomCollPtr
-gaiaTransform (gaiaGeomCollPtr org, char *proj_from, char *proj_to)
+gaiaTransform (gaiaGeomCollPtr org, const char *proj_from, const char *proj_to)
 {
-    return gaiaTransformCommon (NULL, org, proj_from, proj_to, 0);
+    return gaiaTransformEx (org, proj_from, proj_to, NULL);
 }
 
 GAIAGEO_DECLARE gaiaGeomCollPtr
-gaiaTransform_r (const void *p_cache, gaiaGeomCollPtr org, char *proj_from,
-		 char *proj_to)
+gaiaTransform_r (const void *p_cache, gaiaGeomCollPtr org,
+		 const char *proj_from, const char *proj_to)
+{
+    return gaiaTransformEx_r (p_cache, org, proj_from, proj_to, NULL);
+}
+
+GAIAGEO_DECLARE gaiaGeomCollPtr
+gaiaTransformEx (gaiaGeomCollPtr org, const char *proj_string_1,
+		 const char *proj_string_2, gaiaProjAreaPtr proj_bbox)
+{
+    return gaiaTransformCommon (NULL, NULL, org, proj_string_1, proj_string_2,
+				proj_bbox, 0, 0);
+}
+
+GAIAGEO_DECLARE gaiaGeomCollPtr
+gaiaTransformEx_r (const void *p_cache, gaiaGeomCollPtr org,
+		   const char *proj_string_1, const char *proj_string_2,
+		   gaiaProjAreaPtr proj_bbox)
 {
     struct splite_internal_cache *cache =
 	(struct splite_internal_cache *) p_cache;
-    projCtx handle = NULL;
+    void *handle = NULL;
     if (cache == NULL)
 	return NULL;
     if (cache->magic1 != SPATIALITE_CACHE_MAGIC1
@@ -2239,22 +2627,25 @@ gaiaTransform_r (const void *p_cache, gaiaGeomCollPtr org, char *proj_from,
     handle = cache->PROJ_handle;
     if (handle == NULL)
 	return NULL;
-    return gaiaTransformCommon (handle, org, proj_from, proj_to, 0);
+    return gaiaTransformCommon (handle, cache, org, proj_string_1,
+				proj_string_2, proj_bbox, 0, 0);
 }
 
 GAIAGEO_DECLARE gaiaGeomCollPtr
-gaiaTransformXY (gaiaGeomCollPtr org, char *proj_from, char *proj_to)
+gaiaTransformXY (gaiaGeomCollPtr org, const char *proj_from,
+		 const char *proj_to)
 {
-    return gaiaTransformCommon (NULL, org, proj_from, proj_to, 1);
+    return gaiaTransformCommon (NULL, NULL, org,
+				proj_from, proj_to, NULL, 1, 1);
 }
 
 GAIAGEO_DECLARE gaiaGeomCollPtr
-gaiaTransformXY_r (const void *p_cache, gaiaGeomCollPtr org, char *proj_from,
-		   char *proj_to)
+gaiaTransformXY_r (const void *p_cache, gaiaGeomCollPtr org,
+		   const char *proj_from, const char *proj_to)
 {
     struct splite_internal_cache *cache =
 	(struct splite_internal_cache *) p_cache;
-    projCtx handle = NULL;
+    void *handle = NULL;
     if (cache == NULL)
 	return NULL;
     if (cache->magic1 != SPATIALITE_CACHE_MAGIC1
@@ -2263,7 +2654,218 @@ gaiaTransformXY_r (const void *p_cache, gaiaGeomCollPtr org, char *proj_from,
     handle = cache->PROJ_handle;
     if (handle == NULL)
 	return NULL;
-    return gaiaTransformCommon (handle, org, proj_from, proj_to, 1);
+    return gaiaTransformCommon (handle, cache, org,
+				proj_from, proj_to, NULL, 1, 1);
 }
+
+GAIAGEO_DECLARE gaiaGeomCollPtr
+gaiaTransformXYZ (gaiaGeomCollPtr org, const char *proj_from,
+		  const char *proj_to)
+{
+    return gaiaTransformCommon (NULL, NULL, org,
+				proj_from, proj_to, NULL, 0, 1);
+}
+
+GAIAGEO_DECLARE gaiaGeomCollPtr
+gaiaTransformXYZ_r (const void *p_cache, gaiaGeomCollPtr org,
+		    const char *proj_from, const char *proj_to)
+{
+    struct splite_internal_cache *cache =
+	(struct splite_internal_cache *) p_cache;
+    void *handle = NULL;
+    if (cache == NULL)
+	return NULL;
+    if (cache->magic1 != SPATIALITE_CACHE_MAGIC1
+	|| cache->magic2 != SPATIALITE_CACHE_MAGIC2)
+	return NULL;
+    handle = cache->PROJ_handle;
+    if (handle == NULL)
+	return NULL;
+    return gaiaTransformCommon (handle, cache, org,
+				proj_from, proj_to, NULL, 0, 1);
+}
+
+#ifdef PROJ_NEW			/* only if new PROJ.6 is supported */
+GAIAGEO_DECLARE char *
+gaiaGetProjString (const void *p_cache, const char *auth_name, int auth_srid)
+{
+/* return the proj-string expression corresponding to some CRS */
+    PJ *crs_def;
+    struct splite_internal_cache *cache =
+	(struct splite_internal_cache *) p_cache;
+    const char *proj_string;
+    int len;
+    char *result;
+    char xsrid[64];
+
+    sprintf (xsrid, "%d", auth_srid);
+    crs_def =
+	proj_create_from_database (cache->PROJ_handle, auth_name, xsrid,
+				   PJ_CATEGORY_CRS, 0, NULL);
+    if (crs_def == NULL)
+	return NULL;
+    proj_string =
+	proj_as_proj_string (cache->PROJ_handle, crs_def, PJ_PROJ_5, NULL);
+    if (proj_string == NULL)
+      {
+	  proj_destroy (crs_def);
+	  return NULL;
+      }
+    len = strlen (proj_string);
+    result = malloc (len + 1);
+    strcpy (result, proj_string);
+    proj_destroy (crs_def);
+    return result;
+}
+
+GAIAGEO_DECLARE char *
+gaiaGetProjWKT (const void *p_cache, const char *auth_name, int auth_srid,
+		int style, int indented, int indentation)
+{
+/* return the WKT expression corresponding to some CRS */
+    PJ *crs_def;
+    struct splite_internal_cache *cache =
+	(struct splite_internal_cache *) p_cache;
+    int proj_style;
+    const char *wkt;
+    int len;
+    char *result;
+    char xsrid[64];
+    char dummy[64];
+    char *options[4];
+    options[1] = dummy;
+    options[2] = "OUTPUT_AXIS=AUTO";
+    options[3] = NULL;
+
+    sprintf (xsrid, "%d", auth_srid);
+    crs_def =
+	proj_create_from_database (cache->PROJ_handle, auth_name, xsrid,
+				   PJ_CATEGORY_CRS, 0, NULL);
+    if (crs_def == NULL)
+	return NULL;
+
+    switch (style)
+      {
+      case GAIA_PROJ_WKT_GDAL:
+	  proj_style = PJ_WKT1_GDAL;
+	  break;
+      case GAIA_PROJ_WKT_ESRI:
+	  proj_style = PJ_WKT1_ESRI;
+	  break;
+      case GAIA_PROJ_WKT_ISO_2015:
+	  proj_style = PJ_WKT2_2015;
+	  break;
+      default:
+	  proj_style = PJ_WKT2_2015;
+	  break;
+      };
+    if (indented)
+	options[0] = "MULTILINE=YES";
+    else
+	options[0] = "MULTILINE=NO";
+    if (indentation < 1)
+	indentation = 1;
+    if (indentation > 8)
+	indentation = 8;
+    sprintf (dummy, "INDENTATION_WIDTH=%d", indentation);
+    wkt =
+	proj_as_wkt (cache->PROJ_handle, crs_def, proj_style,
+		     (const char *const *) options);
+    if (wkt == NULL)
+      {
+	  proj_destroy (crs_def);
+	  return NULL;
+      }
+    len = strlen (wkt);
+    result = malloc (len + 1);
+    strcpy (result, wkt);
+    proj_destroy (crs_def);
+    return result;
+}
+
+GAIAGEO_DECLARE int
+gaiaGuessSridFromWKT (sqlite3 * sqlite, const void *p_cache, const char *wkt,
+		      int *srid)
+{
+/* return the SRID value corresponding to a given WKT expression */
+    PJ *crs1 = NULL;
+    PJ *crs2 = NULL;
+    struct splite_internal_cache *cache =
+	(struct splite_internal_cache *) p_cache;
+    sqlite3_stmt *stmt = NULL;
+    int ret;
+    const char *sql;
+    int xsrid = -1;
+
+/* sanity check */
+    if (cache == NULL)
+	goto error;
+    if (cache->PROJ_handle == NULL)
+	goto error;
+
+/* attempting to parse the WKT expression */
+    crs1 = proj_create_from_wkt (cache->PROJ_handle, wkt, NULL, NULL, NULL);
+    if (crs1 == NULL)
+      {
+	  spatialite_e
+	      ("gaiaGuessSridFromWKT: invalid/malformed WKT expression\n");
+	  goto error;
+      }
+
+    sql = "SELECT srid, Upper(auth_name), auth_srid FROM spatial_ref_sys";
+    ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("gaiaGuessSridFromWKT: %s\n", sqlite3_errmsg (sqlite));
+	  goto error;
+      }
+    while (1)
+      {
+	  /* scrolling the result set rows */
+	  ret = sqlite3_step (stmt);
+	  if (ret == SQLITE_DONE)
+	      break;		/* end of result set */
+	  if (ret == SQLITE_ROW)
+	    {
+		char dummy[64];
+		int srid = sqlite3_column_int (stmt, 0);
+		const char *auth_name =
+		    (const char *) sqlite3_column_text (stmt, 1);
+		int auth_srid = sqlite3_column_int (stmt, 2);
+		sprintf (dummy, "%d", auth_srid);
+		/* parsing some CRS */
+		crs2 =
+		    proj_create_from_database (cache->PROJ_handle, auth_name,
+					       dummy, PJ_CATEGORY_CRS, 0, NULL);
+		if (crs2 != NULL)
+		  {
+		      /* ok, it's a valid CRS - comparing */
+		      if (proj_is_equivalent_to
+			  (crs1, crs2,
+			   PJ_COMP_EQUIVALENT_EXCEPT_AXIS_ORDER_GEOGCRS))
+			{
+			    xsrid = srid;
+			    proj_destroy (crs2);
+			    break;
+			}
+		      proj_destroy (crs2);
+		  }
+	    }
+      }
+    sqlite3_finalize (stmt);
+    proj_destroy (crs1);
+    *srid = xsrid;
+    gaiaResetProjErrorMsg_r (cache);
+    return 1;
+
+  error:
+    if (stmt != NULL)
+	sqlite3_finalize (stmt);
+    if (crs1 != NULL)
+	proj_destroy (crs1);
+    *srid = xsrid;
+    return 0;
+}
+#endif
 
 #endif /* end including PROJ.4 */

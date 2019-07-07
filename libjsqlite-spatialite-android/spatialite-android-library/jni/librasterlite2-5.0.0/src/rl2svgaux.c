@@ -1548,6 +1548,7 @@ svg_clone_item (rl2PrivSvgItemPtr in)
       case RL2_SVG_ITEM_USE:
 	  use = in->pointer;
 	  p->pointer = svg_clone_use (use);
+	  break;
       case RL2_SVG_ITEM_CLIP:
 	  clip = in->pointer;
 	  p->pointer = svg_clone_clip (clip);

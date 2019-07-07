@@ -1,0 +1,7 @@
+PROJ_GuessSridFromSHP() - TEXT path (valid)
+:memory: #use in-memory database
+SELECT PROJ_GuessSridFromSHP('./shp/gaza/aeroway');
+1 # rows (not including the header row)
+1 # columns
+PROJ_GuessSridFromSHP('./shp/gaza/aeroway')
+4326

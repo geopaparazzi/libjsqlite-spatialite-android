@@ -5546,7 +5546,7 @@ do_build_124_bit_section_pyramid (sqlite3 * handle, int max_threads,
 							 1);
 				  rl2_set_pixel_sample_uint8 (nd,
 							      RL2_GRAYSCALE_BAND,
-							      bgRed);
+							      255);
 			      }
 			}
 		      else
@@ -5935,6 +5935,8 @@ get_background_color (sqlite3 * handle, rl2CoveragePtr coverage,
     if (cvg->noData == NULL)
 	return;
     pxl = (rl2PrivPixelPtr) (cvg->noData);
+    if (rl2_is_pixel_none (pxl) == RL2_TRUE)
+	return;
     smp = pxl->Samples;
     index = smp->uint8;
 
@@ -6531,20 +6533,12 @@ rl2_build_monolithic_pyramid (sqlite3 * handle, const char *coverage,
 				nd = NULL;
 			    else
 			      {
-				  rl2PrivPixelPtr pxl =
-				      (rl2PrivPixelPtr) no_data;
-				  rl2PrivSamplePtr sample = pxl->Samples + 0;
 				  nd = rl2_create_pixel (RL2_SAMPLE_UINT8,
 							 RL2_PIXEL_GRAYSCALE,
 							 1);
-				  if (sample->uint8 == 0)
-				      rl2_set_pixel_sample_uint8 (nd,
-								  RL2_GRAYSCALE_BAND,
-								  255);
-				  else
-				      rl2_set_pixel_sample_uint8 (nd,
-								  RL2_GRAYSCALE_BAND,
-								  0);
+				  rl2_set_pixel_sample_uint8 (nd,
+							      RL2_GRAYSCALE_BAND,
+							      255);
 			      }
 			}
 		      else if (pixel_type == RL2_PIXEL_PALETTE)

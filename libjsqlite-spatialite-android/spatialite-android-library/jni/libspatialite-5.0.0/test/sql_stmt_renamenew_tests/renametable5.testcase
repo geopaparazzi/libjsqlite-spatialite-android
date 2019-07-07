@@ -1,0 +1,7 @@
+RenameTable - NULL new_name
+:memory: #use in-memory database
+SELECT RenameTable(NULL, 'old_table', NULL);
+1 # rows (not including the header row)
+1 # columns
+RenameTable(NULL, 'old_table', NULL);
+RenameTable exception - invalid argument (3rd arg).

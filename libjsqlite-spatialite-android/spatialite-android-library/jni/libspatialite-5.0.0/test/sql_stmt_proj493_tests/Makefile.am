@@ -1,5 +1,11 @@
 
-EXTRA_DIST = transform10.testcase \
+EXTRA_DIST = sridax1name6.testcase \
+	sridax1orient6.testcase \
+	sridax2name6.testcase \
+	sridax2orient6.testcase \
+	sriddatum6.testcase \
+	sridprojection6.testcase \
+	transform10.testcase \
 	transform11.testcase \
 	transform12.testcase \
 	transform13.testcase \
@@ -12,6 +18,7 @@ EXTRA_DIST = transform10.testcase \
 	transform1.testcase \
 	transform20.testcase \
 	transform21.testcase \
+	transform22.testcase \
 	transform2.testcase \
 	transform3.testcase \
 	transform4.testcase \
@@ -30,4 +37,16 @@ EXTRA_DIST = transform10.testcase \
 	transformxy6.testcase \
 	transformxy7.testcase \
 	transformxy8.testcase \
-	transformxy9.testcase 
+	transformxy9.testcase \
+	transformxyz10.testcase \
+	transformxyz11.testcase \
+	transformxyz12.testcase \
+	transformxyz1.testcase \
+	transformxyz2.testcase \
+	transformxyz3.testcase \
+	transformxyz4.testcase \
+	transformxyz5.testcase \
+	transformxyz6.testcase \
+	transformxyz7.testcase \
+	transformxyz8.testcase \
+	transformxyz9.testcase  

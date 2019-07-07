@@ -336,7 +336,7 @@ splite_xmlSchemaCacheFind (struct splite_internal_cache *cache,
 			   xmlSchemaParserCtxtPtr * parser_ctxt,
 			   xmlSchemaPtr * schema)
 {
-/* attempting to retrive some XmlSchema from within the Cache */
+/* attempting to retrieve some XmlSchema from within the Cache */
     int i;
     time_t now;
     struct splite_xmlSchema_cache_item *p;

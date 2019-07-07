@@ -1,0 +1,7 @@
+RenameColumn - DOUBLE DB-prefix
+:memory: #use in-memory database
+SELECT RenameColumn(1.5, 'table', 'old_column', 'new_column');
+1 # rows (not including the header row)
+1 # columns
+RenameColumn(1.5, 'table', 'old_column', 'new_column');
+RenameColumn exception - invalid argument (1st arg).

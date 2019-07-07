@@ -1,0 +1,7 @@
+transform - PROJ.6 extra-args - Area BBOX - NULL
+:memory: #use in-memory database
+SELECT AsText(Transform(MakePoint(11, 43, 4326), 3003, NULL, NULL));
+1 # rows (not including the header row)
+1 # columns
+AsText(Transform(MakePoint(11, 43, 4326), 3003, NULL, NULL))
+POINT(1663048.753255 4762769.893191)

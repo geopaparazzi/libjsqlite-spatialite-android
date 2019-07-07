@@ -91,6 +91,7 @@ rl2_alloc_private (void)
 	  ptr->coverage = NULL;
 	  ptr->raster = NULL;
       }
+    priv_data->draping_message = NULL;
     return priv_data;
 }
 
@@ -157,6 +158,8 @@ rl2_cleanup_private (const void *ptr)
 	      rl2_destroy_raster ((rl2RasterPtr) (ptr->raster));
       }
     free (priv_data->raster_cache);
+    if (priv_data->draping_message != NULL)
+	free (priv_data->draping_message);
     free (priv_data);
 }
 
@@ -412,4 +415,42 @@ rl2_load_cached_raster (sqlite3 * handle, const void *data,
     if (stmt != NULL)
 	sqlite3_finalize (stmt);
     return RL2_ERROR;
+}
+
+RL2_PRIVATE const char *
+rl2_get_draping_message (const void *data)
+{
+/* will return the latest Draping Message (if any) */
+    struct rl2_private_data *priv_data = (struct rl2_private_data *) data;
+    if (priv_data == NULL)
+	return NULL;
+    return priv_data->draping_message;
+}
+
+RL2_PRIVATE void
+rl2_set_draping_message (const void *data, const char *msg)
+{
+/* will set the current Draping Message */
+    int len;
+    struct rl2_private_data *priv_data = (struct rl2_private_data *) data;
+    if (priv_data == NULL)
+	return;
+    rl2_reset_draping_message (data);
+    if (msg == NULL)
+	return;
+    len = strlen (msg);
+    priv_data->draping_message = malloc (len + 1);
+    strcpy (priv_data->draping_message, msg);
+}
+
+RL2_PRIVATE void
+rl2_reset_draping_message (const void *data)
+{
+/* will reset the current Draping Message */
+    struct rl2_private_data *priv_data = (struct rl2_private_data *) data;
+    if (priv_data == NULL)
+	return;
+    if (priv_data->draping_message != NULL)
+	free (priv_data->draping_message);
+    priv_data->draping_message = NULL;
 }

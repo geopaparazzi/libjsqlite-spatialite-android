@@ -1,0 +1,7 @@
+StoredProc_ExecuteLoop - all varargs
+sql_stmt_proc_tests/storproc_x.sqlite
+SELECT StoredProc_ExecuteLoop('test_loop', '$col1$=srid', '@col2@=ref_sys_name', '@table@=spatial_ref_sys', '@filter@=%deprecated%');
+1 # rows (not including the header row)
+1 # columns
+StoredProc_ExecuteLoop('test_loop', '$col1$=srid', '@col2@=ref_sys_name', '@table@=spatial_ref_sys', '@filter@=%deprecated%')
+1

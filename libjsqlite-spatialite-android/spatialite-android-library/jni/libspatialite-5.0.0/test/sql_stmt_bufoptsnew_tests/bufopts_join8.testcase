@@ -1,0 +1,7 @@
+BufferOptions JoinStyle - BLOB
+:memory: #use in-memory database
+SELECT BufferOptions_SetJoinStyle(zeroblob(5));
+1 # rows (not including the header row)
+1 # columns
+BufferOptions_SetJoinStyle(zeroblob(5))
+0

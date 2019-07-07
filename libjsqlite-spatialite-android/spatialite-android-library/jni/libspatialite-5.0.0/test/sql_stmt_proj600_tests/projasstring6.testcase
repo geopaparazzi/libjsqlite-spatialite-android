@@ -1,0 +1,7 @@
+PROJ_AsProjString() - TEXT auth_srid
+:memory: #use in-memory database
+SELECT PROJ_AsProjString('EPSG', 'srid');
+1 # rows (not including the header row)
+1 # columns
+PROJ_AsProjString('EPSG', 'srid')
+(NULL)

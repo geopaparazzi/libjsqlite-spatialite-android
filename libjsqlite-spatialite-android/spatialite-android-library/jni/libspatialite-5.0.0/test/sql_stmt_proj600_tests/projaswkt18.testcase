@@ -1,0 +1,7 @@
+PROJ_AsWKT() - BLOB indentation
+:memory: #use in-memory database
+SELECT PROJ_AsWKT('EPSG', 4326, 'GDAL', 0, zeroblob(6));
+1 # rows (not including the header row)
+1 # columns
+PROJ_AsWKT('EPSG', 4326, 'GDAL', 0, zeroblob(6))
+(NULL)

@@ -73,6 +73,15 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #define strcasecmp	_stricmp
 #endif /* not WIN32 */
 
+struct rtree_envelope
+{
+    int valid;
+    double minx;
+    double maxx;
+    double miny;
+    double maxy;
+};
+
 struct spatial_index_str
 {
 /* a struct to implement a linked list of spatial-indexes */
@@ -6462,4 +6471,167 @@ gaiaStatisticsInvalidate (sqlite3 * sqlite, const char *table,
       }
     else
 	return 0;
+}
+
+static int
+rtree_bbox_callback (sqlite3_rtree_query_info * info)
+{
+/*
+
+ R*Tree Query Callback function 
+
+----------------------------------------------------------
+
+ this function will evaluate all first-level R*Tree Nodes
+ (direct children of the Root Node) so to get the Full
+ Extent of the R*Tree as a whole.
+
+ further descending in the Tree's hierarchy will be
+ carefully avoided, so to ensure that also in the case  
+ of an R*Tree containing many million entries just few
+ dozens of top level Nodes will require to be evaluated.
+ 
+*/
+    double minx;
+    double maxx;
+    double miny;
+    double maxy;
+    struct rtree_envelope *data = (struct rtree_envelope *) (info->pContext);
+    if (info->nCoord != 4)
+      {
+	  /* invalid RTree; not 2D */
+	  goto end;
+      }
+
+/* fetching the Node's BBOX */
+    minx = info->aCoord[0];
+    maxx = info->aCoord[1];
+    miny = info->aCoord[2];
+    maxy = info->aCoord[3];
+
+/* updating the Full Extent BBOX */
+    if (data->valid == 0)
+      {
+	  /* first Node retrieved */
+	  data->valid = 1;
+	  data->minx = minx;
+	  data->maxx = maxx;
+	  data->miny = miny;
+	  data->maxy = maxy;
+      }
+    else
+      {
+	  /* any other further Node */
+	  if (minx < data->minx)
+	      data->minx = minx;
+	  if (maxx > data->maxx)
+	      data->maxx = maxx;
+	  if (miny < data->miny)
+	      data->miny = miny;
+	  if (maxy > data->maxy)
+	      data->maxy = maxy;
+      }
+
+  end:
+/* setting NOT_WITHIN so to stop further descending into the tree */
+    info->eWithin = NOT_WITHIN;
+    return SQLITE_OK;
+}
+
+SPATIALITE_DECLARE gaiaGeomCollPtr
+gaiaGetRTreeFullExtent (sqlite3 * db_handle, const char *db_prefix,
+			const char *name, int srid)
+{
+/* Will attempt to retrieve the Full Extent from an R*Tree - SpatiaLite */
+    char *sql;
+    int ret;
+    char *xprefix;
+    char *xname;
+    gaiaGeomCollPtr envelope;
+    gaiaPolygonPtr polyg;
+    gaiaRingPtr rect;
+    struct rtree_envelope data;
+
+    data.valid = 0;
+
+/* registering the Geometry Query Callback SQL function */
+    sqlite3_rtree_query_callback (db_handle, "rtree_bbox",
+				  rtree_bbox_callback, &data, NULL);
+
+/* executing the SQL Query statement */
+    xprefix = gaiaDoubleQuotedSql (db_prefix);
+    xname = gaiaDoubleQuotedSql (name);
+    sql =
+	sqlite3_mprintf
+	("SELECT pkid FROM \"%s\".\"%s\" WHERE pkid MATCH rtree_bbox(1)",
+	 xprefix, xname);
+    free (xprefix);
+    free (xname);
+    ret = sqlite3_exec (db_handle, sql, NULL, NULL, NULL);
+    sqlite3_free (sql);
+    if (ret != SQLITE_OK)
+	return NULL;
+    if (data.valid == 0)
+	return NULL;
+
+/* building the Envelope of the R*Tree */
+    envelope = gaiaAllocGeomColl ();
+    envelope->Srid = srid;
+    polyg = gaiaAddPolygonToGeomColl (envelope, 5, 0);
+    rect = polyg->Exterior;
+    gaiaSetPoint (rect->Coords, 0, data.minx, data.miny);	/* vertex # 1 */
+    gaiaSetPoint (rect->Coords, 1, data.maxx, data.miny);	/* vertex # 2 */
+    gaiaSetPoint (rect->Coords, 2, data.maxx, data.maxy);	/* vertex # 3 */
+    gaiaSetPoint (rect->Coords, 3, data.minx, data.maxy);	/* vertex # 4 */
+    gaiaSetPoint (rect->Coords, 4, data.minx, data.miny);	/* vertex # 5 [same as vertex # 1 to close the polygon] */
+    return envelope;
+}
+
+SPATIALITE_DECLARE gaiaGeomCollPtr
+gaiaGetGpkgRTreeFullExtent (sqlite3 * db_handle, const char *db_prefix,
+			    const char *name, int srid)
+{
+/* Will attempt to retrieve the Full Extent from an R*Tree - GeoPacage */
+    char *sql;
+    int ret;
+    char *xprefix;
+    char *xname;
+    gaiaGeomCollPtr envelope;
+    gaiaPolygonPtr polyg;
+    gaiaRingPtr rect;
+    struct rtree_envelope data;
+
+    data.valid = 0;
+
+/* registering the Geometry Query Callback SQL function */
+    sqlite3_rtree_query_callback (db_handle, "rtree_bbox",
+				  rtree_bbox_callback, &data, NULL);
+
+/* executing the SQL Query statement */
+    xprefix = gaiaDoubleQuotedSql (db_prefix);
+    xname = gaiaDoubleQuotedSql (name);
+    sql =
+	sqlite3_mprintf
+	("SELECT id FROM \"%s\".\"%s\" WHERE id MATCH rtree_bbox(1)",
+	 xprefix, xname);
+    free (xprefix);
+    free (xname);
+    ret = sqlite3_exec (db_handle, sql, NULL, NULL, NULL);
+    sqlite3_free (sql);
+    if (ret != SQLITE_OK)
+	return NULL;
+    if (data.valid == 0)
+	return NULL;
+
+/* building the Envelope of the R*Tree */
+    envelope = gaiaAllocGeomColl ();
+    envelope->Srid = srid;
+    polyg = gaiaAddPolygonToGeomColl (envelope, 5, 0);
+    rect = polyg->Exterior;
+    gaiaSetPoint (rect->Coords, 0, data.minx, data.miny);	/* vertex # 1 */
+    gaiaSetPoint (rect->Coords, 1, data.maxx, data.miny);	/* vertex # 2 */
+    gaiaSetPoint (rect->Coords, 2, data.maxx, data.maxy);	/* vertex # 3 */
+    gaiaSetPoint (rect->Coords, 3, data.minx, data.maxy);	/* vertex # 4 */
+    gaiaSetPoint (rect->Coords, 4, data.minx, data.miny);	/* vertex # 5 [same as vertex # 1 to close the polygon] */
+    return envelope;
 }

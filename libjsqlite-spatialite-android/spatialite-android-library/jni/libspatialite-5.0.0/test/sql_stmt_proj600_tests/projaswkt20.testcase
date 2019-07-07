@@ -1,0 +1,7 @@
+PROJ_AsWKT() - invalid CRS
+:memory: #use in-memory database
+SELECT PROJ_AsWKT('EPSG', -4326, 'ISO-2015', 0, 4);
+1 # rows (not including the header row)
+1 # columns
+PROJ_AsWKT('EPSG', -4326, 'ISO-2015', 0, 4)
+(NULL)

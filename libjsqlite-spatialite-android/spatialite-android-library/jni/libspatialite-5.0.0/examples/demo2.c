@@ -200,8 +200,8 @@ main (int argc, char *argv[])
     gaiaOutBuffer wkt;
     int ret;
     sqlite3 *handle;
-    void *cache;
-
+    void *cache; 
+    
     if (argc > 1 || argv[0] == NULL)
 	argc = 1;		/* silencing stupid compiler warnings */
 

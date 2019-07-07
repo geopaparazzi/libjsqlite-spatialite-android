@@ -187,7 +187,7 @@ do_help ()
 
 int
 main (int argc, char *argv[])
-{
+{ 
     int ret;
     sqlite3 *handle;
     int i;
@@ -199,9 +199,6 @@ main (int argc, char *argv[])
     const char *geometry = NULL;
     gaiaVectorLayersListPtr list;
     void *cache;
-
-    if (argc > 1 || argv[0] == NULL)
-	argc = 1;		/* silencing stupid compiler warnings */
 
     for (i = 1; i < argc; i++)
       {

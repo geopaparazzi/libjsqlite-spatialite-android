@@ -261,7 +261,7 @@ extern "C"
  \param column the name of the geometry column
  \param shp_path pathname of the Shapefile to be exported (no suffix) 
  \param charset a valid GNU ICONV charset to be used for DBF text strings
- \param geom_type "POINT", "LINESTRING", "POLYGON", "MULTIPOLYGON" or NULL
+ \param geom_type "POINT", "LINESTRING", "POLYGON", "MULTIPOINT" or NULL
  \param verbose if TRUE a short report is shown on stderr
  \param rows on completion will contain the total number of exported rows
  \param err_msg on completion will contain an error message (if any)
@@ -284,7 +284,7 @@ extern "C"
  \param column the name of the geometry column
  \param shp_path pathname of the Shapefile to be exported (no suffix) 
  \param charset a valid GNU ICONV charset to be used for DBF text strings
- \param geom_type "POINT", "LINESTRING", "POLYGON", "MULTIPOLYGON" or NULL
+ \param geom_type "POINT", "LINESTRING", "POLYGON", "MULTIPOINT" or NULL
  \param verbose if TRUE a short report is shown on stderr
  \param rows on completion will contain the total number of exported rows
  \param colname_case one between GAIA_DBF_COLNAME_LOWERCASE, 
@@ -300,6 +300,33 @@ extern "C"
 					      char *charset, char *geom_type,
 					      int verbose, int *rows,
 					      int colcase_name, char *err_msg);
+
+/**
+ Dumps a full geometry-table into an external Shapefile
+
+ \param sqlite handle to current DB connection
+ \param proj_ctx pointer to the current PROJ.6 context (may be NULL)
+ \param table the name of the table to be exported
+ \param column the name of the geometry column
+ \param shp_path pathname of the Shapefile to be exported (no suffix) 
+ \param charset a valid GNU ICONV charset to be used for DBF text strings
+ \param geom_type "POINT", "LINESTRING", "POLYGON", "MULTIPOINT" or NULL
+ \param verbose if TRUE a short report is shown on stderr
+ \param rows on completion will contain the total number of exported rows
+ \param colname_case one between GAIA_DBF_COLNAME_LOWERCASE, 
+	GAIA_DBF_COLNAME_UPPERCASE or GAIA_DBF_COLNAME_CASE_IGNORE.
+ \param err_msg on completion will contain an error message (if any)
+ 
+ \sa dump_shapefile
+
+ \return 0 on failure, any other value on success
+ */
+    SPATIALITE_DECLARE int dump_shapefile_ex2 (sqlite3 * sqlite, void *proj_ctx,
+					       char *table, char *column,
+					       char *shp_path, char *charset,
+					       char *geom_type, int verbose,
+					       int *rows, int colcase_name,
+					       char *err_msg);
 
 /**
  Loads an external Shapefile into a newly created table
@@ -1058,7 +1085,7 @@ extern "C"
 						       int transaction);
 
 /**
- Dumps a full geometry-table into an external GeoJSON file
+ Dumps a full geometry-table into an external GeoJSON file (old specification)
 
  \param sqlite handle to current DB connection
  \param table the name of the table to be exported
@@ -1067,7 +1094,7 @@ extern "C"
  \param precision number of decimal digits for coordinates
  \param option the format to use for output
  
- \sa dump_geojson_rx
+ \sa dump_geojson_ex, dump_geojson2
 
  \note valid values for option are:
    - 0 no option
@@ -1084,7 +1111,7 @@ extern "C"
 					 int precision, int option);
 
 /**
- Dumps a full geometry-table into an external GeoJSON file
+ Dumps a full geometry-table into an external GeoJSON file (old specification)
 
  \param sqlite handle to current DB connection
  \param table the name of the table to be exported
@@ -1094,7 +1121,7 @@ extern "C"
  \param option the format to use for output
  \param rows on completion will contain the total number of exported rows
  
- \sa dump_geojson
+ \sa dump_geojson, dump_geojson2
 
  \note valid values for option are:
    - 0 no option
@@ -1110,6 +1137,71 @@ extern "C"
 					    char *geom_col, char *outfile_path,
 					    int precision, int option,
 					    int *rows);
+
+/**
+ Dumps a full geometry-table into an external GeoJSON file (RFC 7946)
+
+ \param sqlite handle to current DB connection
+ \param table the name of the table to be exported
+ \param geom_col the name of the geometry column
+ \param outfile_path pathname for the GeoJSON file to be written to
+ \param precision number of decimal digits for coordinates
+ \param lon_lat TRUE if all coordinates are expressed as WGS84 longitudes
+  and latitudes (as required by RFC 7946); FALSE if they are in some
+  other (undefined) CRS
+ \param m_coords TRUE if M-values will be exported as ordinary coordinates;
+ FALSE for strict RFC 4796 conformance (no M-Values at all)
+ \param indent TRUE if the GeoJSON file will be properly indented for enhanced
+ human readibility; FALSE if the GeoJSON file will be in a single monolithic
+ line without blank spaces.
+ \param colname_case one between GAIA_DBF_COLNAME_LOWERCASE, 
+	GAIA_DBF_COLNAME_UPPERCASE or GAIA_DBF_COLNAME_CASE_IGNORE.
+ \param rows on completion will contain the total number of exported rows
+ \param error_message: will point to a diagnostic error message
+  in case of failure, otherwise NULL
+ 
+ \sa dump_geojson, dump_geojson_ex
+
+ \return 0 on failure, any other value on success
+ 
+ \note you are expected to free before or later an eventual error
+ message by calling sqlite3_free()
+ */
+    SPATIALITE_DECLARE int dump_geojson2 (sqlite3 * sqlite, char *table,
+					  char *geom_col, char *outfile_path,
+					  int precision, int lon_lat,
+					  int m_coords, int indented,
+					  int colname_case, int *rows,
+					  char **error_message);
+
+/**
+ Loads an external GeoJSON file into a newly created table
+
+ \param sqlite handle to current DB connection
+ \param path pathname of the GeoJSON file to be imported 
+ \param table the name of the table to be created
+ \param column the name of the geometry column. If NULL the column
+ will be silently named "geometry".
+ \param spatial_index if TRUE an R*Tree Spatial Index will be created
+ \param srid when positive, the SRID value to be assigned to all Geometries.
+ If 0 or negative SRID=4326 (lon-lat WGS84) will be always assumed accordingly
+ to RFC 7946.
+ \param colname_case one between GAIA_DBF_COLNAME_LOWERCASE, 
+	GAIA_DBF_COLNAME_UPPERCASE or GAIA_DBF_COLNAME_CASE_IGNORE.
+ \param rows on completion will contain the total number of imported rows
+ \param error_message: will point to a diagnostic error message
+  in case of failure, otherwise NULL
+
+ \return 0 on failure, any other value on success
+ 
+ \note you are expected to free before or later an eventual error
+ message by calling sqlite3_free()
+ */
+    SPATIALITE_DECLARE int load_geojson (sqlite3 * sqlite, char *path,
+					 char *table, char *column,
+					 int spatial_index, int srid,
+					 int colname_case, int *rows,
+					 char **error_message);
 
 /**
  Updates the LAYER_STATICS metadata table
@@ -1293,7 +1385,7 @@ extern "C"
 
  \return 0 on failure, any other value on success
 
- \sa gaiaDropTableEx
+ \sa gaiaDropTableEx, gaiaRenameTable, gaiaRenameColumn
 
  \note this one simply is a convenience method alway defaulting to
  gaiaDropTableEx(sqlite, "main", table);
@@ -1315,7 +1407,7 @@ extern "C"
 
  \return 0 on failure, any other value on success
 
- \sa gaiaDropTableEx2
+ \sa gaiaDropTableEx2, gaiaRenameTable, gaiaRenameColumn
  */
     SPATIALITE_DECLARE int gaiaDropTableEx (sqlite3 * sqlite,
 					    const char *prefix,
@@ -1338,7 +1430,7 @@ extern "C"
 
  \return 0 on failure, any other value on success
 
- \sa gaiaDropTable
+ \sa gaiaDropTable, gaiaRenameTable, gaiaRenameColumn
  */
     SPATIALITE_DECLARE int gaiaDropTableEx2 (sqlite3 * sqlite,
 					     const char *prefix,
@@ -1355,7 +1447,7 @@ extern "C"
  \param transaction boolean; if set to TRUE will internally handle
  a SQL Transaction
  \param error_message: will point to a diagnostic error message
-  in case of failute
+  in case of failure, otherwise NULL
 
  \note this function will drop a SpatialTable, SpatialView or VirtualShape being
  properly registered within the Metadata tables.
@@ -1366,12 +1458,102 @@ extern "C"
 
  \return 0 on failure, any other value on success
 
- \sa gaiaDropTable
+ \sa gaiaDropTable5, gaiaRenameTable, gaiaRenameColumn
+ 
+ \deprecated use gaiaDropTable5() as a full replacement
  */
     SPATIALITE_DECLARE int gaiaDropTableEx3 (sqlite3 * sqlite,
 					     const char *prefix,
 					     const char *table,
 					     int transaction,
+					     char **error_message);
+
+/**
+ Drops a layer-table, removing any related dependency
+
+ \param sqlite handle to current DB connection
+ \param prefix schema prefix identifying the target DB\n
+ "main" always identifies the main DB (primary, not Attached).
+ \param table name of the table or view to be dropped
+ \param error_message: will point to a diagnostic error message
+  in case of failure, otherwise NULL
+
+ \note this function will drop a SpatialTable, SpatialView or VirtualShape being
+ properly registered within the Metadata tables.
+ \n an eventual Spatial Index will be dropped as well, and any row referring the
+ selected table will be removed from the Metadata tables.
+ \n an eventual diagnostic message pointed by error_message must be
+ freed by calling sqlite3_free()
+
+ \return 0 on failure, any other value on success
+
+ \sa gaiaDropTableEx3, gaiaRenameTable, gaiaRenameColumn
+ */
+    SPATIALITE_DECLARE int gaiaDropTable5 (sqlite3 * sqlite,
+					   const char *prefix,
+					   const char *table,
+					   char **error_message);
+
+/**
+ Renames a Table
+
+ \param sqlite handle to current DB connection
+ \param prefix schema prefix identifying the target DB\n
+ "main" always identifies the main DB (primary, not Attached).
+ \param old_name current name of the table to be renamed
+ (always expected to be in the MAIN database).
+ \param new_name new table name to be set
+ \param error_message: will point to a diagnostic error message
+  in case of failure, otherwise NULL
+
+ \note this function will corretly rename a SpatialTable being properly 
+ registered within the Metadata tables.
+ \n all triggers, Spatial Index and alike will be correctly recovered.
+ \n an eventual diagnostic message pointed by error_message must be
+ freed by calling sqlite3_free()
+
+ \return 0 on failure, any other value on success
+
+ \sa gaiaDropTable, gaiaRenameColumn
+ 
+ \note SQLite 3.25 (or later) is stricly required.
+ */
+    SPATIALITE_DECLARE int gaiaRenameTable (sqlite3 * sqlite,
+					    const char *prefix,
+					    const char *old_name,
+					    const char *new_name,
+					    char **error_message);
+
+/**
+ Renames a Table's Column
+
+ \param sqlite handle to current DB connection
+ \param prefix schema prefix identifying the target DB\n
+ "main" always identifies the main DB (primary, not Attached).
+ \param table name of the table containing the column to be renamed
+ (always expected to be in the MAIN database).
+ \param old_name current name of the column to be renamed
+ \param new_name new column name to be set
+ \param error_message: will point to a diagnostic error message
+  in case of failure, otherwise NULL
+
+ \note this function will corretly rename a Geometry Column being properly 
+ registered within the Metadata tables.
+ \n all triggers, Spatial Index and alike will be correctly recovered.
+ \n an eventual diagnostic message pointed by error_message must be
+ freed by calling sqlite3_free()
+
+ \return 0 on failure, any other value on success
+
+ \sa gaiaDropTable, gaiaRenameTable
+ 
+ \note SQLite 3.25 (or later) is stricly required.
+ */
+    SPATIALITE_DECLARE int gaiaRenameColumn (sqlite3 * sqlite,
+					     const char *prefix,
+					     const char *table,
+					     const char *old_name,
+					     const char *new_name,
 					     char **error_message);
 
 /**
@@ -1783,6 +1965,49 @@ extern "C"
 						const char *oneway_to,
 						int overwrite);
 
+/**
+  Will attempt to retrieve the Full Extent from an R*Tree (SpatiaLite)
+   
+ \param db_handle handle to the current SQLite connection
+ \param prefix schema prefix identifying the DB containing the R*Tree\n
+ "main" always identifies the main DB (primary, not Attached).
+ \param name the name of the R*Tree table
+ \param srid the intended SRID for the R*Tree
+ 
+ \sa gaiaGetGpkgRTreeFullExtent
+ 
+ \return a Rectangle Geometry corresponding to the Full Extent,\n
+ NULL on failure.
+ */
+    SPATIALITE_DECLARE gaiaGeomCollPtr gaiaGetRTreeFullExtent (sqlite3 *
+							       db_handle,
+							       const char
+							       *db_prefix,
+							       const char *name,
+							       int srid);
+
+/**
+  Will attempt to retrieve the Full Extent from an R*Tree (GeoPackage)
+   
+ \param db_handle handle to the current SQLite connection
+ \param prefix schema prefix identifying the DB containing the R*Tree\n
+ "main" always identifies the main DB (primary, not Attached).
+ \param name the name of the R*Tree table
+ \param srid the intended SRID for the R*Tree
+ 
+ \sa gaiaGetRTreeFullExtent
+ 
+ \return a Rectangle Geometry corresponding to the Full Extent,\n
+ NULL on failure.
+ */
+    SPATIALITE_DECLARE gaiaGeomCollPtr gaiaGetGpkgRTreeFullExtent (sqlite3 *
+								   db_handle,
+								   const char
+								   *db_prefix,
+								   const char
+								   *name,
+								   int srid);
+
     SPATIALITE_DECLARE const char *gaia_create_routing_get_last_error (const
 								       void
 								       *cache);
@@ -1791,10 +2016,33 @@ extern "C"
 						const char *gpkg_in_path,
 						sqlite3 * handle_out,
 						const char *splite_out_path);
+
     SPATIALITE_DECLARE int gaiaSpatialite2GPKG (sqlite3 * handle_in,
 						const char *splite_in_path,
 						sqlite3 * handle_out,
 						const char *gpkg_out_path);
+
+    SPATIALITE_DECLARE const void *gaiaGetCurrentProjContext (const void
+							      *cache);
+
+    SPATIALITE_DECLARE int gaiaSetCurrentCachedProj (const void
+						     *cache, void *pj,
+						     const char *proj_string_1,
+						     const char *proj_string_2,
+						     void *area);
+
+    SPATIALITE_DECLARE void *gaiaGetCurrentCachedProj (const void *cache);
+
+    SPATIALITE_DECLARE int gaiaCurrentCachedProjMatches (const void *cache,
+							 const char
+							 *proj_string_1,
+							 const char
+							 *proj_string_2,
+							 void *area);
+
+    SPATIALITE_DECLARE char *gaiaGetDbObjectScope (sqlite3 * handle,
+						   const char *db_prefix,
+						   const char *obj_name);
 
 #ifdef __cplusplus
 }

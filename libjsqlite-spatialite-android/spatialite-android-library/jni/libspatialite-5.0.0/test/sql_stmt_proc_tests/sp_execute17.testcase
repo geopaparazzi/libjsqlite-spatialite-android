@@ -1,0 +1,7 @@
+SqlProc_Execute - BLOB retval
+:memory: #use in-memory database
+SELECT Hex(SqlProc_Execute(SqlProc_FromText('SELECT SqlProc_Return(@value@);'), '@value@=zeroblob(5)'));
+1 # rows (not including the header row)
+1 # columns
+Hex(SqlProc_Execute(SqlProc_FromText('SELECT SqlProc_Return(@value@);'), '@value@=zeroblob(5)'));
+0000000000

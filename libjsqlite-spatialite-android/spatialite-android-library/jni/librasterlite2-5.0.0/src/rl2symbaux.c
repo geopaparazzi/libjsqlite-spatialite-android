@@ -2130,9 +2130,9 @@ rl2_line_symbolizer_get_graphic_stroke_recode_count (rl2LineSymbolizerPtr
 			{
 			    int cnt = 0;
 			    rl2PrivExternalGraphicPtr ext =
-				(rl2PrivExternalGraphicPtr) (sym->
-							     stroke->graphic->
-							     first->item);
+				(rl2PrivExternalGraphicPtr) (sym->stroke->
+							     graphic->first->
+							     item);
 			    rl2PrivColorReplacementPtr repl = ext->first;
 			    while (repl != NULL)
 			      {
@@ -2171,9 +2171,9 @@ rl2_line_symbolizer_get_graphic_stroke_recode_color (rl2LineSymbolizerPtr
 			{
 			    int cnt = 0;
 			    rl2PrivExternalGraphicPtr ext =
-				(rl2PrivExternalGraphicPtr) (sym->
-							     stroke->graphic->
-							     first->item);
+				(rl2PrivExternalGraphicPtr) (sym->stroke->
+							     graphic->first->
+							     item);
 			    rl2PrivColorReplacementPtr repl = ext->first;
 			    while (repl != NULL)
 			      {
@@ -2216,9 +2216,9 @@ rl2_line_symbolizer_get_stroke_color_replacement_ref (rl2LineSymbolizerPtr
 			{
 			    int cnt = 0;
 			    rl2PrivExternalGraphicPtr ext =
-				(rl2PrivExternalGraphicPtr) (sym->
-							     stroke->graphic->
-							     first->item);
+				(rl2PrivExternalGraphicPtr) (sym->stroke->
+							     graphic->first->
+							     item);
 			    rl2PrivColorReplacementPtr repl = ext->first;
 			    while (repl != NULL)
 			      {
@@ -2279,9 +2279,9 @@ rl2_line_symbolizer_get_col_graphic_stroke_recode_color (rl2LineSymbolizerPtr
 			{
 			    int cnt = 0;
 			    rl2PrivExternalGraphicPtr ext =
-				(rl2PrivExternalGraphicPtr) (sym->
-							     stroke->graphic->
-							     first->item);
+				(rl2PrivExternalGraphicPtr) (sym->stroke->
+							     graphic->first->
+							     item);
 			    rl2PrivColorReplacementPtr repl = ext->first;
 			    while (repl != NULL)
 			      {
@@ -2591,9 +2591,9 @@ rl2_polygon_symbolizer_get_stroke_color_replacement_ref (rl2PolygonSymbolizerPtr
 			{
 			    int cnt = 0;
 			    rl2PrivExternalGraphicPtr ext =
-				(rl2PrivExternalGraphicPtr) (sym->
-							     stroke->graphic->
-							     first->item);
+				(rl2PrivExternalGraphicPtr) (sym->stroke->
+							     graphic->first->
+							     item);
 			    rl2PrivColorReplacementPtr repl = ext->first;
 			    while (repl != NULL)
 			      {
@@ -2675,9 +2675,9 @@ RL2_DECLARE int
 			{
 			    int cnt = 0;
 			    rl2PrivExternalGraphicPtr ext =
-				(rl2PrivExternalGraphicPtr) (sym->
-							     stroke->graphic->
-							     first->item);
+				(rl2PrivExternalGraphicPtr) (sym->stroke->
+							     graphic->first->
+							     item);
 			    rl2PrivColorReplacementPtr repl = ext->first;
 			    while (repl != NULL)
 			      {
@@ -2713,9 +2713,9 @@ RL2_DECLARE int
 			{
 			    int cnt = 0;
 			    rl2PrivExternalGraphicPtr ext =
-				(rl2PrivExternalGraphicPtr) (sym->
-							     stroke->graphic->
-							     first->item);
+				(rl2PrivExternalGraphicPtr) (sym->stroke->
+							     graphic->first->
+							     item);
 			    rl2PrivColorReplacementPtr repl = ext->first;
 			    while (repl != NULL)
 			      {
@@ -2778,9 +2778,9 @@ RL2_DECLARE const char
 			{
 			    int cnt = 0;
 			    rl2PrivExternalGraphicPtr ext =
-				(rl2PrivExternalGraphicPtr) (sym->
-							     stroke->graphic->
-							     first->item);
+				(rl2PrivExternalGraphicPtr) (sym->stroke->
+							     graphic->first->
+							     item);
 			    rl2PrivColorReplacementPtr repl = ext->first;
 			    while (repl != NULL)
 			      {
@@ -3073,9 +3073,9 @@ rl2_polygon_symbolizer_get_fill_color_replacement_ref (rl2PolygonSymbolizerPtr
 			{
 			    int cnt = 0;
 			    rl2PrivExternalGraphicPtr ext =
-				(rl2PrivExternalGraphicPtr) (sym->
-							     fill->graphic->
-							     first->item);
+				(rl2PrivExternalGraphicPtr) (sym->fill->
+							     graphic->first->
+							     item);
 			    rl2PrivColorReplacementPtr repl = ext->first;
 			    while (repl != NULL)
 			      {
@@ -3157,9 +3157,9 @@ rl2_polygon_symbolizer_get_graphic_fill_recode_count (rl2PolygonSymbolizerPtr
 			{
 			    int cnt = 0;
 			    rl2PrivExternalGraphicPtr ext =
-				(rl2PrivExternalGraphicPtr) (sym->
-							     fill->graphic->
-							     first->item);
+				(rl2PrivExternalGraphicPtr) (sym->fill->
+							     graphic->first->
+							     item);
 			    rl2PrivColorReplacementPtr repl = ext->first;
 			    while (repl != NULL)
 			      {
@@ -3198,9 +3198,9 @@ rl2_polygon_symbolizer_get_graphic_fill_recode_color (rl2PolygonSymbolizerPtr
 			{
 			    int cnt = 0;
 			    rl2PrivExternalGraphicPtr ext =
-				(rl2PrivExternalGraphicPtr) (sym->
-							     fill->graphic->
-							     first->item);
+				(rl2PrivExternalGraphicPtr) (sym->fill->
+							     graphic->first->
+							     item);
 			    rl2PrivColorReplacementPtr repl = ext->first;
 			    while (repl != NULL)
 			      {
@@ -3262,9 +3262,9 @@ RL2_DECLARE const char *rl2_polygon_symbolizer_get_col_graphic_fill_recode_color
 			{
 			    int cnt = 0;
 			    rl2PrivExternalGraphicPtr ext =
-				(rl2PrivExternalGraphicPtr) (sym->
-							     fill->graphic->
-							     first->item);
+				(rl2PrivExternalGraphicPtr) (sym->fill->
+							     graphic->first->
+							     item);
 			    rl2PrivColorReplacementPtr repl = ext->first;
 			    while (repl != NULL)
 			      {

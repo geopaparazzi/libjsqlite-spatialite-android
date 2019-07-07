@@ -1,0 +1,7 @@
+exportGeoJSON2 - NULL geometry-column
+:memory: #use in-memory database
+SELECT ExportGeoJSON2('table', NULL, 'sample.geojson');
+1 # rows (not including the header row)
+1 # columns
+ExportGeoJSON2('table', NULL, 'sample.geojson')
+(NULL)

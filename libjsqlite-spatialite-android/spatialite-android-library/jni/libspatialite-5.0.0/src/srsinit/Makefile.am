@@ -1,8 +1,8 @@
 
 SUBDIRS = epsg_update
 
-AM_CPPFLAGS = @CFLAGS@ @CPPFLAGS@
-AM_CPPFLAGS += -I$(top_srcdir)/src/headers
+AM_CPPFLAGS = -I$(top_srcdir)/src/headers
+AM_CPPFLAGS += @CFLAGS@ @CPPFLAGS@
 
 noinst_LTLIBRARIES = libsrsinit.la srsinit.la
 
@@ -59,6 +59,12 @@ SRSINIT_COMMON_SOURCES = srs_init.c \
 	epsg_inlined_49.c \
 	epsg_inlined_50.c \
 	epsg_inlined_51.c \
+	epsg_inlined_52.c \
+	epsg_inlined_53.c \
+	epsg_inlined_54.c \
+	epsg_inlined_55.c \
+	epsg_inlined_56.c \
+	epsg_inlined_57.c \
 	epsg_inlined_wgs84_00.c \
 	epsg_inlined_wgs84_01.c \
 	epsg_inlined_prussian.c \
@@ -70,8 +76,8 @@ libsrsinit_la_CFLAGS = -fvisibility=hidden
 
 srsinit_la_SOURCES = $(SRSINIT_COMMON_SOURCES)
 
-srsinit_la_CPPFLAGS = @CFLAGS@ @CPPFLAGS@
-srsinit_la_CPPFLAGS += -I$(top_srcdir)/src/headers -I.
+srsinit_la_CPPFLAGS = -I$(top_srcdir)/src/headers -I.
+srsinit_la_CPPFLAGS += @CFLAGS@ @CPPFLAGS@
 srsinit_la_CPPFLAGS += -DLOADABLE_EXTENSION
 srsinit_la_CPPFLAGS += -fvisibility=hidden
 srsinit_la_LDFLAGS = -module

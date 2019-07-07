@@ -66,7 +66,7 @@ extern "C"
 #ifdef _WIN32			/* windows */
 #define gaia_off_t	__int64
 #define gaia_fseek	_fseeki64
-#else /* not windows */
+#else				/* not windows */
 #define gaia_off_t	off_t
 #define gaia_fseek	fseeko
 #endif
@@ -827,6 +827,24 @@ extern "C"
  \sa gaiaVectorLayersList
  */
     typedef gaiaVectorLayersList *gaiaVectorLayersListPtr;
+
+/**
+ BBOX corresponding to PROJ.6 AREA
+ */
+    typedef struct gaiaProjAreaStr
+    {
+	double WestLongitude;
+	double SouthLatitude;
+	double EastLongitude;
+	double NorthLatitude;
+    } gaiaProjArea;
+
+/**
+ Typedef for BBOX corresponding to PROJ.6 AREA
+
+ \sa gaiaProjArea
+ */
+    typedef gaiaProjArea *gaiaProjAreaPtr;
 
 #ifdef __cplusplus
 }

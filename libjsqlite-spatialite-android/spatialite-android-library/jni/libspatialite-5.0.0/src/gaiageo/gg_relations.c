@@ -3622,14 +3622,24 @@ gaiaGeomCollBuffer (gaiaGeomCollPtr geom, double radius, int points)
 #ifndef GEOS_USE_ONLY_R_API	/* obsolete versions non fully thread-safe */
     GEOSGeometry *g1;
     GEOSGeometry *g2;
+    GEOSBufferParams *params = NULL;
     gaiaResetGeosMsg ();
     if (!geom)
 	return NULL;
     if (gaiaIsToxic (geom))
 	return NULL;
     g1 = gaiaToGeos (geom);
-    g2 = GEOSBuffer (g1, radius, points);
+/* setting up Buffer params */
+    params = GEOSBufferParams_create ();
+    GEOSBufferParams_setEndCapStyle (params, GEOSBUF_CAP_ROUND);
+    GEOSBufferParams_setJoinStyle (params, GEOSBUF_JOIN_ROUND);
+    GEOSBufferParams_setMitreLimit (params, 5.0);
+    GEOSBufferParams_setQuadrantSegments (params, points);
+    GEOSBufferParams_setSingleSided (params, 0);
+
+    g2 = GEOSBufferWithParams (g1, params, radius);
     GEOSGeom_destroy (g1);
+    GEOSBufferParams_destroy (params);
     if (!g2)
 	return NULL;
     if (geom->DimensionModel == GAIA_XY_Z)
@@ -3659,9 +3669,11 @@ gaiaGeomCollBuffer_r (const void *p_cache, gaiaGeomCollPtr geom, double radius,
     gaiaGeomCollPtr geo;
     GEOSGeometry *g1;
     GEOSGeometry *g2;
+    GEOSBufferParams *params = NULL;
     struct splite_internal_cache *cache =
 	(struct splite_internal_cache *) p_cache;
     GEOSContextHandle_t handle = NULL;
+    int quadsegs = 30;
     if (cache == NULL)
 	return NULL;
     if (cache->magic1 != SPATIALITE_CACHE_MAGIC1
@@ -3676,8 +3688,23 @@ gaiaGeomCollBuffer_r (const void *p_cache, gaiaGeomCollPtr geom, double radius,
     if (gaiaIsToxic_r (cache, geom))
 	return NULL;
     g1 = gaiaToGeos_r (cache, geom);
-    g2 = GEOSBuffer_r (handle, g1, radius, points);
+/* setting up Buffer params */
+    params = GEOSBufferParams_create_r (handle);
+    GEOSBufferParams_setEndCapStyle_r (handle, params,
+				       cache->buffer_end_cap_style);
+    GEOSBufferParams_setJoinStyle_r (handle, params, cache->buffer_join_style);
+    GEOSBufferParams_setMitreLimit_r (handle, params,
+				      cache->buffer_mitre_limit);
+    if (points > 0)
+	quadsegs = points;
+    else if (cache->buffer_quadrant_segments > 0)
+	quadsegs = cache->buffer_quadrant_segments;
+    GEOSBufferParams_setQuadrantSegments_r (handle, params, quadsegs);
+    GEOSBufferParams_setSingleSided_r (handle, params, 0);
+
+    g2 = GEOSBufferWithParams_r (handle, g1, params, radius);
     GEOSGeom_destroy_r (handle, g1);
+    GEOSBufferParams_destroy_r (handle, params);
     if (!g2)
 	return NULL;
     if (geom->DimensionModel == GAIA_XY_Z)
@@ -4129,7 +4156,7 @@ gaiaPolygonizeCommon (const void *cache, GEOSContextHandle_t handle,
       }
 
 /* identifying valid Polygons [excluding holes] */
-    valid_polygons = malloc (items);
+    valid_polygons = malloc (sizeof (char *) * items);
     for (ig = 0; ig < items; ig++)
 	valid_polygons[ig] = 'Y';
     for (ig = 0; ig < items; ig++)

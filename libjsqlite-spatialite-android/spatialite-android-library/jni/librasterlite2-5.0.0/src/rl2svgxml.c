@@ -367,7 +367,7 @@ svg_consume_float (const char **ptr, double *value)
     int count_pt = 0;
     if (ptr == NULL)
 	return 0;
-    if (*ptr == '\0')
+    if (*(*ptr) == '\0')
 	return 0;
 
     while (1)

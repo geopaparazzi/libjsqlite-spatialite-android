@@ -27,6 +27,7 @@ LIBOBJ = src\gaiaaux\gg_sqlaux.obj src\gaiaaux\gg_utf8.obj \
 	src\spatialite\spatialite_init.obj src\spatialite\se_helpers.obj \
 	src\spatialite\srid_aux.obj src\spatialite\table_cloner.obj \
 	src\spatialite\virtualelementary.obj src\spatialite\virtualrouting.obj \
+	src\spatialite\create_routing.obj \
 	src\wfs\wfs_in.obj src\srsinit\srs_init.obj \
 	src\dxf\dxf_parser.obj src\dxf\dxf_loader.obj src\dxf\dxf_writer.obj \
 	src\dxf\dxf_load_distinct.obj src\dxf\dxf_load_mixed.obj \
@@ -54,7 +55,10 @@ LIBOBJ = src\gaiaaux\gg_sqlaux.obj src\gaiaaux\gg_utf8.obj \
 	src\srsinit\epsg_inlined_40.obj src\srsinit\epsg_inlined_41.obj \
 	src\srsinit\epsg_inlined_42.obj src\srsinit\epsg_inlined_43.obj \
 	src\srsinit\epsg_inlined_44.obj src\srsinit\epsg_inlined_45.obj \
-	src\srsinit\epsg_inlined_46.obj src\srsinit\epsg_inlined_extra.obj \
+	src\srsinit\epsg_inlined_46.obj src\srsinit\epsg_inlined_47.obj \
+	src\srsinit\epsg_inlined_48.obj src\srsinit\epsg_inlined_49.obj \
+	src\srsinit\epsg_inlined_50.obj src\srsinit\epsg_inlined_51.obj \
+	src\srsinit\epsg_inlined_extra.obj \
 	src\srsinit\epsg_inlined_prussian.obj \
 	src\srsinit\epsg_inlined_wgs84_00.obj src\srsinit\epsg_inlined_wgs84_01.obj \
 	src\versioninfo\version.obj src\virtualtext\virtualtext.obj \
@@ -63,7 +67,8 @@ LIBOBJ = src\gaiaaux\gg_sqlaux.obj src\gaiaaux\gg_utf8.obj \
 	src\topology\gaia_auxtopo.obj src\topology\lwn_network.obj \
 	src\topology\gaia_netstmts.obj src\topology\net_callbacks.obj \
 	src\topology\gaia_network.obj src\topology\topo_callbacks.obj \
-	src\topology\gaia_topology.obj
+	src\topology\gaia_topology.obj \
+	src\stored_procedures\stored_procedures.obj
 
 SPATIALITE_DLL = spatialite$(VERSION).dll
 
@@ -113,6 +118,7 @@ clean:
 	del src\dxf\*.obj
 	del src\md5\*.obj
 	del src\topology\*.obj
+	del src\stored_procedures\*.obj
 	del *.pdb
 
 install: all

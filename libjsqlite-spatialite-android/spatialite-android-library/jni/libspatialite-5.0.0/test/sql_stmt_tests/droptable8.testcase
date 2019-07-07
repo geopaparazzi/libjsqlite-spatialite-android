@@ -1,0 +1,7 @@
+DropTable - NULL permissive
+:memory: #use in-memory database
+SELECT DropTable('main', 'table', NULL);
+1 # rows (not including the header row)
+1 # columns
+DropTable('main', 'table', NULL);
+DropTable exception - invalid argument (3rd arg).

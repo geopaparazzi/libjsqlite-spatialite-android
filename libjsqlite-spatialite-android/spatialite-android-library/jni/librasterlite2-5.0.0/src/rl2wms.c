@@ -3241,8 +3241,7 @@ parse_wms_GetTileService_HTTP_Get (xmlNodePtr node, wmsCapabilitiesPtr cap)
 					      if (cap->GetTileServiceURLGet !=
 						  NULL)
 						{
-						    free (cap->
-							  GetTileServiceURLGet);
+						    free (cap->GetTileServiceURLGet);
 						    cap->GetMapURLGet = NULL;
 						}
 					      p = (const char
@@ -3293,8 +3292,7 @@ parse_wms_GetTileService_HTTP_Post (xmlNodePtr node, wmsCapabilitiesPtr cap)
 					      if (cap->GetTileServiceURLPost
 						  != NULL)
 						{
-						    free (cap->
-							  GetTileServiceURLPost);
+						    free (cap->GetTileServiceURLPost);
 						    cap->GetTileServiceURLPost =
 							NULL;
 						}
@@ -3346,7 +3344,8 @@ parse_wms_GetInfo_HTTP_Get (xmlNodePtr node, wmsCapabilitiesPtr cap)
 					      if (cap->GetFeatureInfoURLGet !=
 						  NULL)
 						{
-						    free (cap->GetFeatureInfoURLGet);
+						    free (cap->
+							  GetFeatureInfoURLGet);
 						    cap->GetFeatureInfoURLGet =
 							NULL;
 						}
@@ -3398,7 +3397,8 @@ parse_wms_GetInfo_HTTP_Post (xmlNodePtr node, wmsCapabilitiesPtr cap)
 					      if (cap->GetFeatureInfoURLPost
 						  != NULL)
 						{
-						    free (cap->GetFeatureInfoURLPost);
+						    free (cap->
+							  GetFeatureInfoURLPost);
 						    cap->GetFeatureInfoURLPost =
 							NULL;
 						}
@@ -5007,6 +5007,36 @@ create_wms_catalog (rl2WmsCachePtr cache_handle, const char *url,
 
 	  /* verifying the HTTP status code */
 	  check_http_header (&headerBuf, &http_status, &http_code);
+	  if (http_status == 302)
+	    {
+		while (1)
+		  {
+		      /* following a redirect */
+		      char *redir = parse_http_redirect (&headerBuf);
+		      if (redir == NULL)
+			  break;
+		      /* resetting all buffers */
+		      if (http_code != NULL)
+			  free (http_code);
+		      wmsMemBufferReset (&headerBuf);
+		      wmsMemBufferReset (&bodyBuf);
+		      curl_easy_setopt (curl, CURLOPT_URL, redir);
+		      if (proxy != NULL)
+			  curl_easy_setopt (curl, CURLOPT_PROXY, proxy);
+		      res = curl_easy_perform (curl);
+		      if (res != CURLE_OK)
+			{
+			    fprintf (stderr, "CURL error: %s\n",
+				     curl_easy_strerror (res));
+			    goto stop;
+			}
+		      free (redir);
+		      check_http_header (&headerBuf, &http_status, &http_code);
+		      if (http_status == 302)
+			  continue;
+		      break;
+		  }
+	    }
 	  if (http_status != 200)
 	    {
 		fprintf (stderr, "Invalid HTTP status code: %d %s\n",
@@ -7289,6 +7319,176 @@ do_wms_GetMap_post (rl2WmsCachePtr cache_handle, const char *url,
 }
 
 RL2_DECLARE unsigned char *
+do_wms_GetMap_blob (const char *url, const char *version, const char *layer,
+		    int swap_xy, const char *crs, double minx, double miny,
+		    double maxx, double maxy, int width, int height,
+		    const char *style, const char *format, int opaque,
+		    const char *bg_color, int *blob_size)
+{
+/* attempting to execute a WMS GepMap request [returning a BLOB image] */
+    CURL *curl = NULL;
+    CURLcode res;
+    wmsMemBuffer headerBuf;
+    wmsMemBuffer bodyBuf;
+    int http_status;
+    char *http_code;
+    char *request;
+    int force_marker = check_marker (url);
+    const char *crs_prefix = "CRS";
+    unsigned char *blob = NULL;
+    int blob_sz = 0;
+
+/* masking NULL arguments */
+    if (url == NULL)
+	url = "";
+    if (version == NULL)
+	version = "";
+    if (layer == NULL)
+	layer = "";
+    if (style == NULL)
+	style = "";
+    if (format == NULL)
+	format = "";
+
+/* preparing the request URL */
+    if (strcmp (version, "1.3.0") < 0)
+      {
+	  /* earlier versions of the protocol require SRS instead of CRS */
+	  crs_prefix = "SRS";
+      }
+    if (force_marker)
+      {
+	  /* "?" marker not declared */
+	  if (swap_xy)
+	      request =
+		  sqlite3_mprintf ("%s?SERVICE=WMS&REQUEST=GetMap&VERSION=%s"
+				   "&LAYERS=%s&%s=%s&BBOX=%1.6f,%1.6f,%1.6f,%1.6f"
+				   "&WIDTH=%d&HEIGHT=%d&STYLES=%s&FORMAT=%s"
+				   "&TRANSPARENT=%s&BGCOLOR=%s", url,
+				   version, layer, crs_prefix, crs, miny,
+				   minx, maxy, maxx, width, height, style,
+				   format, (opaque == 0) ? "TRUE" : "FALSE",
+				   bg_color);
+	  else
+	      request =
+		  sqlite3_mprintf ("%s?SERVICE=WMS&REQUEST=GetMap&VERSION=%s"
+				   "&LAYERS=%s&%s=%s&BBOX=%1.6f,%1.6f,%1.6f,%1.6f"
+				   "&WIDTH=%d&HEIGHT=%d&STYLES=%s&FORMAT=%s"
+				   "&TRANSPARENT=%s&BGCOLOR=%s", url,
+				   version, layer, crs_prefix, crs, minx,
+				   miny, maxx, maxy, width, height, style,
+				   format, (opaque == 0) ? "TRUE" : "FALSE",
+				   bg_color);
+      }
+    else
+      {
+	  /* "?" marker already defined */
+	  if (swap_xy)
+	      request =
+		  sqlite3_mprintf ("%sSERVICE=WMS&REQUEST=GetMap&VERSION=%s"
+				   "&LAYERS=%s&%s=%s&BBOX=%1.6f,%1.6f,%1.6f,%1.6f"
+				   "&WIDTH=%d&HEIGHT=%d&STYLES=%s&FORMAT=%s"
+				   "&TRANSPARENT=%s&BGCOLOR=%s", url,
+				   version, layer, crs_prefix, crs, miny,
+				   minx, maxy, maxx, width, height, style,
+				   format, (opaque == 0) ? "TRUE" : "FALSE",
+				   bg_color);
+	  else
+	      request =
+		  sqlite3_mprintf ("%sSERVICE=WMS&REQUEST=GetMap&VERSION=%s"
+				   "&LAYERS=%s&%s=%s&BBOX=%1.6f,%1.6f,%1.6f,%1.6f"
+				   "&WIDTH=%d&HEIGHT=%d&STYLES=%s&FORMAT=%s"
+				   "&TRANSPARENT=%s&BGCOLOR=%s", url,
+				   version, layer, crs_prefix, crs, minx,
+				   miny, maxx, maxy, width, height, style,
+				   format, (opaque == 0) ? "TRUE" : "FALSE",
+				   bg_color);
+      }
+
+    curl = curl_easy_init ();
+    if (curl)
+      {
+	  /* setting the URL */
+	  curl_easy_setopt (curl, CURLOPT_URL, request);
+
+	  /* no progress meter please */
+	  curl_easy_setopt (curl, CURLOPT_NOPROGRESS, 1L);
+	  /* setting the output callback function */
+	  curl_easy_setopt (curl, CURLOPT_WRITEFUNCTION, store_data);
+
+	  /* initializes the dynamically growing buffers */
+	  wmsMemBufferInitialize (&headerBuf);
+	  wmsMemBufferInitialize (&bodyBuf);
+	  curl_easy_setopt (curl, CURLOPT_WRITEHEADER, &headerBuf);
+	  curl_easy_setopt (curl, CURLOPT_WRITEDATA, &bodyBuf);
+
+	  /* Perform the request, res will get the return code */
+	  res = curl_easy_perform (curl);
+	  /* Check for errors */
+	  if (res != CURLE_OK)
+	    {
+		fprintf (stderr, "CURL error: %s\n", curl_easy_strerror (res));
+		goto stop;
+	    }
+
+	  /* verifying the HTTP status code */
+	  check_http_header (&headerBuf, &http_status, &http_code);
+	  if (http_status == 302)
+	    {
+		while (1)
+		  {
+		      /* following a redirect */
+		      char *redir = parse_http_redirect (&headerBuf);
+		      if (redir == NULL)
+			  break;
+		      /* resetting all buffers */
+		      if (http_code != NULL)
+			  free (http_code);
+		      wmsMemBufferReset (&headerBuf);
+		      wmsMemBufferReset (&bodyBuf);
+		      curl_easy_setopt (curl, CURLOPT_URL, redir);
+		      res = curl_easy_perform (curl);
+		      if (res != CURLE_OK)
+			{
+			    fprintf (stderr, "CURL error: %s\n",
+				     curl_easy_strerror (res));
+			    goto stop;
+			}
+		      free (redir);
+		      check_http_header (&headerBuf, &http_status, &http_code);
+		      if (http_status == 302)
+			  continue;
+		      break;
+		  }
+	    }
+	  if (http_status != 200)
+	    {
+		fprintf (stderr, "Invalid HTTP status code: %d %s\n",
+			 http_status, http_code);
+		if (http_code != NULL)
+		    free (http_code);
+		goto stop;
+	    }
+	  if (http_code != NULL)
+	      free (http_code);
+
+	  wmsMemBufferReset (&headerBuf);
+	  blob = bodyBuf.Buffer;
+	  blob_sz = bodyBuf.WriteOffset;
+	  goto image_ready;
+
+	stop:
+	  wmsMemBufferReset (&headerBuf);
+	  wmsMemBufferReset (&bodyBuf);
+	  curl_easy_cleanup (curl);
+      }
+
+  image_ready:
+    *blob_size = blob_sz;
+    return blob;
+}
+
+RL2_DECLARE unsigned char *
 do_wms_GetMap_TileService_get (rl2WmsCachePtr cache_handle, const char *url,
 			       const char *proxy, int width, int height,
 			       int from_cache)
@@ -7408,7 +7608,6 @@ do_wms_GetMap_TileService_get (rl2WmsCachePtr cache_handle, const char *url,
 			  continue;
 		      break;
 		  }
-
 	    }
 	  if (http_status != 200)
 	    {

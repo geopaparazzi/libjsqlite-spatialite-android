@@ -1,0 +1,7 @@
+PROJ_AsWKT() - NULL indentation
+:memory: #use in-memory database
+SELECT PROJ_AsWKT('EPSG', 4326, 'ISO-2018', 0, NULL);
+1 # rows (not including the header row)
+1 # columns
+PROJ_AsWKT('EPSG', 4326, 'ISO-2018', 0, NULL)
+(NULL)

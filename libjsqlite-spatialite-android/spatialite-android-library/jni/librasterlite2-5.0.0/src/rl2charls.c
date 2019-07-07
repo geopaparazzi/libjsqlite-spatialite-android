@@ -59,7 +59,11 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #ifdef __ANDROID__		/* Android specific */
 #include <interface.h>
 #else
+#ifdef CHARLS_2			/* CharLS version 2 or later */
+#include <CharLS/charls.h>
+#else
 #include <CharLS/interface.h>
+#endif
 #endif
 
 static int
@@ -196,25 +200,55 @@ rl2_data_to_charls (const unsigned char *pixels, unsigned int width,
     memset (&params, 0, sizeof (params));
     params.width = width;
     params.height = height;
+#ifdef CHARLS_2			/* CharLS version 2 or later */
+    if (sample_type == RL2_SAMPLE_UINT16)
+	params.bitsPerSample = 16;
+    else
+	params.bitsPerSample = 8;
+#else
     if (sample_type == RL2_SAMPLE_UINT16)
 	params.bitspersample = 16;
     else
 	params.bitspersample = 8;
+#endif
+#ifdef CHARLS_2			/* CharLS version 2 or later */
+    params.stride = width * num_bands * sample_sz;
+#else
     params.bytesperline = width * num_bands * sample_sz;
+#endif
     params.components = num_bands;
+#ifdef CHARLS_2			/* CharLS version 2 or later */
+    params.allowedLossyError = 0;
+#else
     params.allowedlossyerror = 0;
+#endif
+#ifdef CHARLS_2			/* CharLS version 2 or later */
+    if (num_bands == 1)
+	params.interleaveMode = 0;	/* None */
+    else
+	params.interleaveMode = 1;	/* Line */
+#else
     if (num_bands == 1)
 	params.ilv = ILV_NONE;
     else
 	params.ilv = ILV_LINE;
+#endif
+#ifdef CHARLS_2			/* CharLS version 2 or later */
+    params.colorTransformation = 0;
+#else
     params.colorTransform = 0;
+#endif
     params.outputBgr = 0;
     params.custom.MAXVAL = 0;
     params.custom.T1 = 0;
     params.custom.T2 = 0;
     params.custom.T3 = 0;
     params.custom.RESET = 0;
+#ifdef CHARLS_2			/* CharLS version 2 or later */
+    params.jfif.version = 0;
+#else
     params.jfif.Ver = 0;
+#endif
 /* allocating and populating the uncompressed buffer */
     in_sz = width * height * num_bands * sample_sz;
     in_buffer = malloc (in_sz);
@@ -235,9 +269,16 @@ rl2_data_to_charls (const unsigned char *pixels, unsigned int width,
     out_sz = width * height * num_bands * sample_sz;
     out_buffer = malloc (out_sz + 9);
 
+#ifdef CHARLS_2			/* CharLS version 2 or later */
+    if (JpegLsEncode
+	(out_buffer + 9, out_sz, &compr_sz, in_buffer, in_sz, &params,
+	 NULL) != 0)
+#else
     if (JpegLsEncode
 	(out_buffer + 9, out_sz, &compr_sz, in_buffer, in_sz, &params) != 0)
+#endif
 	goto error;
+
 
 /* installing the CharLS micro-header */
     *(out_buffer + 0) = RL2_CHARLS_START;
@@ -419,18 +460,44 @@ rl2_decode_charls (const unsigned char *charls_buf, int charls_sz,
     memset (&params, 0, sizeof (params));
     params.width = *width;
     params.height = *height;
+#ifdef CHARLS_2			/* CharLS version 2 or later */
+    if (*sample_type == RL2_SAMPLE_UINT16)
+	params.bitsPerSample = 16;
+    else
+	params.bitsPerSample = 8;
+#else
     if (*sample_type == RL2_SAMPLE_UINT16)
 	params.bitspersample = 16;
     else
 	params.bitspersample = 8;
+#endif
+#ifdef CHARLS_2			/* CharLS version 2 or later */
+    params.stride = *width * *num_bands * sample_sz;
+#else
     params.bytesperline = *width * *num_bands * sample_sz;
+#endif
     params.components = *num_bands;
+#ifdef CHARLS_2			/* CharLS version 2 or later */
+    params.allowedLossyError = 0;
+#else
     params.allowedlossyerror = 0;
+#endif
+#ifdef CHARLS_2			/* CharLS version 2 or later */
+    if (*num_bands == 1)
+	params.interleaveMode = 0;	/* None */
+    else
+	params.interleaveMode = 1;	/* Line */
+#else
     if (*num_bands == 1)
 	params.ilv = ILV_NONE;
     else
 	params.ilv = ILV_LINE;
+#endif
+#ifdef CHARLS_2			/* CharLS version 2 or later */
+    params.colorTransformation = 0;
+#else
     params.colorTransform = 0;
+#endif
     params.outputBgr = 0;
     params.custom.MAXVAL = 0;
     params.custom.T1 = 0;
@@ -441,8 +508,13 @@ rl2_decode_charls (const unsigned char *charls_buf, int charls_sz,
     out_sz = *width * *height * *num_bands * sample_sz;
     out_buffer = malloc (out_sz);
 
+#ifdef CHARLS_2			/* CharLS version 2 or later */
+    if (JpegLsDecode
+	(out_buffer, out_sz, charls_buf + 9, charls_sz - 9, &params, NULL) != 0)
+#else
     if (JpegLsDecode
 	(out_buffer, out_sz, charls_buf + 9, charls_sz - 9, &params) != 0)
+#endif
 	goto error;
 
     *pixels = malloc (out_sz);
@@ -477,7 +549,11 @@ rl2_charLS_version (void)
 /* returning the CharLS version string */
     static char version[128];
 #ifndef OMIT_CHARLS
-    sprintf (version, "libchals 1.0");
+#ifdef CHARLS_2			/* CharLS version 2 or later */
+    sprintf (version, "libcharls 2.0");
+#else
+    sprintf (version, "libcharls 1.0");
+#endif
 #else
     strcpy (version, "unsupported");
     return version;

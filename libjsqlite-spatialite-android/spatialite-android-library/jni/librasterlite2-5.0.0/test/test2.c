@@ -272,6 +272,20 @@ main (int argc, char *argv[])
     unsigned char *blob_stat;
     int blob_stat_size;
 
+#ifndef OMIT_LZ4		/* only if LZ4 is enabled */
+    unsigned char *blob_odd_lz4;
+    int blob_odd_sz_lz4;
+    unsigned char *blob_even_lz4;
+    int blob_even_sz_lz4;
+#endif /* end LZ4 conditional */
+
+#ifndef OMIT_ZSTD		/* only if ZSTD is enabled */
+    unsigned char *blob_odd_zstd;
+    int blob_odd_sz_zstd;
+    unsigned char *blob_even_zstd;
+    int blob_even_sz_zstd;
+#endif /* end ZSTD conditional */
+
 #ifndef OMIT_LZMA		/* only if LZMA is enabled */
     unsigned char *blob_odd_lzma;
     int blob_odd_sz_lzma;
@@ -366,13 +380,49 @@ main (int argc, char *argv[])
 	  return -9;
       }
 
+#ifndef OMIT_LZ4		/* only if LZ4 is enabled */
+    if (rl2_raster_encode
+	(raster, RL2_COMPRESSION_LZ4, &blob_odd_lz4, &blob_odd_sz_lz4,
+	 &blob_even_lz4, &blob_even_sz_lz4, 0, anti_endian) != RL2_OK)
+      {
+	  fprintf (stderr, "Unexpected result - LZ4 compressed\n");
+	  return -10;
+      }
+
+    if (rl2_raster_encode
+	(raster, RL2_COMPRESSION_LZ4_NO, &blob_odd_lz4, &blob_odd_sz_lz4,
+	 &blob_even_lz4, &blob_even_sz_lz4, 0, anti_endian) != RL2_OK)
+      {
+	  fprintf (stderr, "Unexpected result - LZ4_NO compressed\n");
+	  return -11;
+      }
+#endif /* end LZ4 conditional */
+
+#ifndef OMIT_ZSTD		/* only if ZSTD is enabled */
+    if (rl2_raster_encode
+	(raster, RL2_COMPRESSION_ZSTD, &blob_odd_zstd, &blob_odd_sz_zstd,
+	 &blob_even_zstd, &blob_even_sz_zstd, 0, anti_endian) != RL2_OK)
+      {
+	  fprintf (stderr, "Unexpected result - ZSTD compressed\n");
+	  return -12;
+      }
+
+    if (rl2_raster_encode
+	(raster, RL2_COMPRESSION_ZSTD_NO, &blob_odd_zstd, &blob_odd_sz_zstd,
+	 &blob_even_zstd, &blob_even_sz_zstd, 0, anti_endian) != RL2_OK)
+      {
+	  fprintf (stderr, "Unexpected result - ZSTD_NO compressed\n");
+	  return -13;
+      }
+#endif /* end ZSTD conditional */
+
 #ifndef OMIT_LZMA		/* only if LZMA is enabled */
     if (rl2_raster_encode
 	(raster, RL2_COMPRESSION_LZMA, &blob_odd_lzma, &blob_odd_sz_lzma,
 	 &blob_even_lzma, &blob_even_sz_lzma, 0, anti_endian) != RL2_OK)
       {
 	  fprintf (stderr, "Unexpected result - LZMA compressed\n");
-	  return -10;
+	  return -14;
       }
 
     if (rl2_raster_encode
@@ -380,7 +430,7 @@ main (int argc, char *argv[])
 	 &blob_even_lzma, &blob_even_sz_lzma, 0, anti_endian) != RL2_OK)
       {
 	  fprintf (stderr, "Unexpected result - LZMA_NO compressed\n");
-	  return -11;
+	  return -15;
       }
 #endif /* end LZMA conditional */
 
@@ -389,7 +439,7 @@ main (int argc, char *argv[])
 	 &blob_even_jpeg, &blob_even_sz_jpeg, 70, anti_endian) != RL2_OK)
       {
 	  fprintf (stderr, "Unable to Encode - JPEG compressed\n");
-	  return -12;
+	  return -16;
       }
 
     stats =

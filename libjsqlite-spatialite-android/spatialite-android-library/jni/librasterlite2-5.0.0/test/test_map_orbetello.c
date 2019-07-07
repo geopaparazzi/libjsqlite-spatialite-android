@@ -277,17 +277,14 @@ do_export_tile_image (sqlite3 * sqlite, const char *coverage, int tile_id)
     char *sql;
     char *path;
     int ret;
-    int transparent = 1;
 
-    if (tile_id > 10)
-	transparent = 0;
     if (tile_id < 0)
 	tile_id = get_max_tile_id (sqlite, coverage);
     path = sqlite3_mprintf ("./%s_tile_%d.png", coverage, tile_id);
     sql =
 	sqlite3_mprintf
-	("SELECT BlobToFile(RL2_GetTileImage(NULL, %Q, %d, '#e0ffe0', %d), %Q)",
-	 coverage, tile_id, transparent, path);
+	("SELECT BlobToFile(RL2_GetTileImage(NULL, %Q, %d), %Q)",
+	 coverage, tile_id, path);
     ret = execute_check (sqlite, sql);
     sqlite3_free (sql);
     unlink (path);
@@ -2676,6 +2673,44 @@ main (int argc, char *argv[])
     if (ret != result)
       {
 	  fprintf (stderr, "rl2_has_codec_lzma_no() unexpected result: %d\n",
+		   ret);
+	  return -1;
+      }
+
+#ifndef OMIT_LZ4
+    result = 1;
+#else
+    result = 0;
+#endif /* ; */
+    ret = execute_with_retval (db_handle, "SELECT rl2_has_codec_lz4()");
+    if (ret != result)
+      {
+	  fprintf (stderr, "rl2_has_codec_lz4() unexpected result: %d\n", ret);
+	  return -1;
+      }
+    ret = execute_with_retval (db_handle, "SELECT rl2_has_codec_lz4_no()");
+    if (ret != result)
+      {
+	  fprintf (stderr, "rl2_has_codec_lz4_no() unexpected result: %d\n",
+		   ret);
+	  return -1;
+      }
+
+#ifndef OMIT_ZSTD
+    result = 1;
+#else
+    result = 0;
+#endif /* ; */
+    ret = execute_with_retval (db_handle, "SELECT rl2_has_codec_zstd()");
+    if (ret != result)
+      {
+	  fprintf (stderr, "rl2_has_codec_zstd() unexpected result: %d\n", ret);
+	  return -1;
+      }
+    ret = execute_with_retval (db_handle, "SELECT rl2_has_codec_zstd_no()");
+    if (ret != result)
+      {
+	  fprintf (stderr, "rl2_has_codec_zstd_no() unexpected result: %d\n",
 		   ret);
 	  return -1;
       }

@@ -1436,7 +1436,7 @@ main (int argc, char *argv[])
 
 	  if (check_linked (cache_mode) != 0)
 	      return -7;
-
+ 
 	  if (check_linked_legacy (cache_mode) != 0)
 	      return -8;
 

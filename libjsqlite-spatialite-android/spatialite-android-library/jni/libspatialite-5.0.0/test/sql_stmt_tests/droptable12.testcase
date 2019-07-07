@@ -1,0 +1,7 @@
+DropTable - valid - permissive
+:memory: #use in-memory database
+SELECT DropTable(NULL, 'crazytable', 1);
+1 # rows (not including the header row)
+1 # columns
+DropTable(NULL, 'crazytable', 1);
+0

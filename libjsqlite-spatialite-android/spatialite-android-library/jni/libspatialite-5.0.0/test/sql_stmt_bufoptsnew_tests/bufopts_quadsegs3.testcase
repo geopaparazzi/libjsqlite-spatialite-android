@@ -1,0 +1,7 @@
+BufferOptions QuadrantSegments TEXT
+:memory: #use in-memory database
+SELECT BufferOptions_SetQuadrantSegments('one');
+1 # rows (not including the header row)
+1 # columns
+BufferOptions_SetQuadrantSegments('one')
+0

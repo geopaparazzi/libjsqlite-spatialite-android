@@ -1,7 +1,7 @@
-RL2_GetTileImage - NULL background color
+RL2_GetTileImage - Integer db-prefix 
 :memory: #use in-memory database
-SELECT RL2_GetTileImage(NULL, 'alpha', 1, NULL);
+SELECT RL2_GetTileImage(1, 'alpha', 1);
 1 # rows (not including the header row)
 1 # columns
-RL2_GetTileImage(NULL, 'alpha', 1, NULL)
+RL2_GetTileImage(1, 'alpha', 1)
 (NULL)

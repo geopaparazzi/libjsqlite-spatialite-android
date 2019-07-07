@@ -95,6 +95,8 @@ struct aux_raster_render
     int height;
     int reaspect;
     const char *style;
+    unsigned char *xml_style;
+    unsigned char out_pixel;
     struct aux_raster_image *output;
 };
 
@@ -286,6 +288,14 @@ get_coverage_defs (sqlite3 * sqlite, const char *db_prefix,
 		    xcompression = RL2_COMPRESSION_DEFLATE;
 		if (strcmp (compr, "DEFLATE_NO") == 0)
 		    xcompression = RL2_COMPRESSION_DEFLATE_NO;
+		if (strcmp (compr, "LZ4") == 0)
+		    xcompression = RL2_COMPRESSION_LZ4;
+		if (strcmp (compr, "LZ4_NO") == 0)
+		    xcompression = RL2_COMPRESSION_LZ4_NO;
+		if (strcmp (compr, "ZSTD") == 0)
+		    xcompression = RL2_COMPRESSION_ZSTD;
+		if (strcmp (compr, "ZSTD_NO") == 0)
+		    xcompression = RL2_COMPRESSION_ZSTD_NO;
 		if (strcmp (compr, "LZMA") == 0)
 		    xcompression = RL2_COMPRESSION_LZMA;
 		if (strcmp (compr, "LZMA_NO") == 0)
@@ -2387,17 +2397,20 @@ test_no_data_8 (rl2PrivPixelPtr no_data, char *p_in)
 /* testing for NO-DATA - INT8 */
     if (no_data != NULL)
       {
-	  unsigned char band;
-	  int match = 0;
-	  rl2PrivSamplePtr sample;
-	  for (band = 0; band < no_data->nBands; band++)
+	  if (rl2_is_pixel_none ((rl2PixelPtr) no_data) == RL2_FALSE)
 	    {
-		sample = no_data->Samples + band;
-		if (*(p_in + band) == sample->int8)
-		    match++;
+		unsigned char band;
+		int match = 0;
+		rl2PrivSamplePtr sample;
+		for (band = 0; band < no_data->nBands; band++)
+		  {
+		      sample = no_data->Samples + band;
+		      if (*(p_in + band) == sample->int8)
+			  match++;
+		  }
+		if (match == no_data->nBands)
+		    return 1;
 	    }
-	  if (match == no_data->nBands)
-	      return 1;
       }
     return 0;
 }
@@ -2408,17 +2421,20 @@ test_no_data_u8 (rl2PrivPixelPtr no_data, unsigned char *p_in)
 /* testing for NO-DATA - UINT8 */
     if (no_data != NULL)
       {
-	  unsigned char band;
-	  int match = 0;
-	  rl2PrivSamplePtr sample;
-	  for (band = 0; band < no_data->nBands; band++)
+	  if (rl2_is_pixel_none ((rl2PixelPtr) no_data) == RL2_FALSE)
 	    {
-		sample = no_data->Samples + band;
-		if (*(p_in + band) == sample->uint8)
-		    match++;
+		unsigned char band;
+		int match = 0;
+		rl2PrivSamplePtr sample;
+		for (band = 0; band < no_data->nBands; band++)
+		  {
+		      sample = no_data->Samples + band;
+		      if (*(p_in + band) == sample->uint8)
+			  match++;
+		  }
+		if (match == no_data->nBands)
+		    return 1;
 	    }
-	  if (match == no_data->nBands)
-	      return 1;
       }
     return 0;
 }
@@ -2429,17 +2445,20 @@ test_no_data_16 (rl2PrivPixelPtr no_data, short *p_in)
 /* testing for NO-DATA - INT16 */
     if (no_data != NULL)
       {
-	  unsigned char band;
-	  int match = 0;
-	  rl2PrivSamplePtr sample;
-	  for (band = 0; band < no_data->nBands; band++)
+	  if (rl2_is_pixel_none ((rl2PixelPtr) no_data) == RL2_FALSE)
 	    {
-		sample = no_data->Samples + band;
-		if (*(p_in + band) == sample->int16)
-		    match++;
+		unsigned char band;
+		int match = 0;
+		rl2PrivSamplePtr sample;
+		for (band = 0; band < no_data->nBands; band++)
+		  {
+		      sample = no_data->Samples + band;
+		      if (*(p_in + band) == sample->int16)
+			  match++;
+		  }
+		if (match == no_data->nBands)
+		    return 1;
 	    }
-	  if (match == no_data->nBands)
-	      return 1;
       }
     return 0;
 }
@@ -2450,17 +2469,20 @@ test_no_data_u16 (rl2PrivPixelPtr no_data, unsigned short *p_in)
 /* testing for NO-DATA - UINT16 */
     if (no_data != NULL)
       {
-	  unsigned char band;
-	  int match = 0;
-	  rl2PrivSamplePtr sample;
-	  for (band = 0; band < no_data->nBands; band++)
+	  if (rl2_is_pixel_none ((rl2PixelPtr) no_data) == RL2_FALSE)
 	    {
-		sample = no_data->Samples + band;
-		if (*(p_in + band) == sample->uint16)
-		    match++;
+		unsigned char band;
+		int match = 0;
+		rl2PrivSamplePtr sample;
+		for (band = 0; band < no_data->nBands; band++)
+		  {
+		      sample = no_data->Samples + band;
+		      if (*(p_in + band) == sample->uint16)
+			  match++;
+		  }
+		if (match == no_data->nBands)
+		    return 1;
 	    }
-	  if (match == no_data->nBands)
-	      return 1;
       }
     return 0;
 }
@@ -2471,17 +2493,20 @@ test_no_data_32 (rl2PrivPixelPtr no_data, int *p_in)
 /* testing for NO-DATA - INT32 */
     if (no_data != NULL)
       {
-	  unsigned char band;
-	  int match = 0;
-	  rl2PrivSamplePtr sample;
-	  for (band = 0; band < no_data->nBands; band++)
+	  if (rl2_is_pixel_none ((rl2PixelPtr) no_data) == RL2_FALSE)
 	    {
-		sample = no_data->Samples + band;
-		if (*(p_in + band) == sample->int32)
-		    match++;
+		unsigned char band;
+		int match = 0;
+		rl2PrivSamplePtr sample;
+		for (band = 0; band < no_data->nBands; band++)
+		  {
+		      sample = no_data->Samples + band;
+		      if (*(p_in + band) == sample->int32)
+			  match++;
+		  }
+		if (match == no_data->nBands)
+		    return 1;
 	    }
-	  if (match == no_data->nBands)
-	      return 1;
       }
     return 0;
 }
@@ -2492,17 +2517,20 @@ test_no_data_u32 (rl2PrivPixelPtr no_data, unsigned int *p_in)
 /* testing for NO-DATA - UINT32 */
     if (no_data != NULL)
       {
-	  unsigned char band;
-	  int match = 0;
-	  rl2PrivSamplePtr sample;
-	  for (band = 0; band < no_data->nBands; band++)
+	  if (rl2_is_pixel_none ((rl2PixelPtr) no_data) == RL2_FALSE)
 	    {
-		sample = no_data->Samples + band;
-		if (*(p_in + band) == sample->uint32)
-		    match++;
+		unsigned char band;
+		int match = 0;
+		rl2PrivSamplePtr sample;
+		for (band = 0; band < no_data->nBands; band++)
+		  {
+		      sample = no_data->Samples + band;
+		      if (*(p_in + band) == sample->uint32)
+			  match++;
+		  }
+		if (match == no_data->nBands)
+		    return 1;
 	    }
-	  if (match == no_data->nBands)
-	      return 1;
       }
     return 0;
 }
@@ -2513,17 +2541,20 @@ test_no_data_flt (rl2PrivPixelPtr no_data, float *p_in)
 /* testing for NO-DATA - FLOAT */
     if (no_data != NULL)
       {
-	  unsigned char band;
-	  int match = 0;
-	  rl2PrivSamplePtr sample;
-	  for (band = 0; band < no_data->nBands; band++)
+	  if (rl2_is_pixel_none ((rl2PixelPtr) no_data) == RL2_FALSE)
 	    {
-		sample = no_data->Samples + band;
-		if (*(p_in + band) == sample->float32)
-		    match++;
+		unsigned char band;
+		int match = 0;
+		rl2PrivSamplePtr sample;
+		for (band = 0; band < no_data->nBands; band++)
+		  {
+		      sample = no_data->Samples + band;
+		      if (*(p_in + band) == sample->float32)
+			  match++;
+		  }
+		if (match == no_data->nBands)
+		    return 1;
 	    }
-	  if (match == no_data->nBands)
-	      return 1;
       }
     return 0;
 }
@@ -2534,17 +2565,20 @@ test_no_data_dbl (rl2PrivPixelPtr no_data, double *p_in)
 /* testing for NO-DATA - DOUBLE */
     if (no_data != NULL)
       {
-	  unsigned char band;
-	  int match = 0;
-	  rl2PrivSamplePtr sample;
-	  for (band = 0; band < no_data->nBands; band++)
+	  if (rl2_is_pixel_none ((rl2PixelPtr) no_data) == RL2_FALSE)
 	    {
-		sample = no_data->Samples + band;
-		if (*(p_in + band) == sample->float64)
-		    match++;
+		unsigned char band;
+		int match = 0;
+		rl2PrivSamplePtr sample;
+		for (band = 0; band < no_data->nBands; band++)
+		  {
+		      sample = no_data->Samples + band;
+		      if (*(p_in + band) == sample->float64)
+			  match++;
+		  }
+		if (match == no_data->nBands)
+		    return 1;
 	    }
-	  if (match == no_data->nBands)
-	      return 1;
       }
     return 0;
 }
@@ -2552,7 +2586,7 @@ test_no_data_dbl (rl2PrivPixelPtr no_data, double *p_in)
 RL2_PRIVATE int
 get_rgba_from_monochrome_mask (unsigned int width, unsigned int height,
 			       unsigned char *pixels, unsigned char *mask,
-			       rl2PrivPixelPtr no_data, unsigned char *rgba)
+			       unsigned char *rgba)
 {
 /* input: Monochrome    output: Grayscale */
     unsigned char *p_in;
@@ -2569,70 +2603,29 @@ get_rgba_from_monochrome_mask (unsigned int width, unsigned int height,
       {
 	  for (col = 0; col < width; col++)
 	    {
-		unsigned char value = 255;
 		transparent = 0;
 		if (p_msk != NULL)
 		  {
 		      if (*p_msk++ == 0)
 			  transparent = 1;
 		  }
-		if (!transparent)
-		    transparent = test_no_data_u8 (no_data, p_in);
+		if (*p_in == 0)
+		    transparent = 1;
+		p_in++;
 		if (transparent)
-		  {
-		      p_out += 4;
-		      p_in++;
-		  }
+		    p_out += 4;
 		else
 		  {
-		      if (*p_in++ == 1)
-			  value = 0;
-		      *p_out++ = value;
-		      *p_out++ = value;
-		      *p_out++ = value;
-		      *p_out++ = 255;	/* opaque */
+		      *p_out++ = 0;
+		      *p_out++ = 0;
+		      *p_out++ = 0;
+		      *p_out++ = 255;	/* block, opaque */
 		  }
 	    }
       }
     free (pixels);
     if (mask != NULL)
 	free (mask);
-    return 1;
-}
-
-RL2_PRIVATE int
-get_rgba_from_monochrome_opaque (unsigned int width, unsigned int height,
-				 unsigned char *pixels, unsigned char *rgba)
-{
-/* input: Monochrome    output: Grayscale */
-    unsigned char *p_in;
-    unsigned char *p_out;
-    unsigned int row;
-    unsigned int col;
-
-    p_in = pixels;
-    p_out = rgba;
-    for (row = 0; row < height; row++)
-      {
-	  for (col = 0; col < width; col++)
-	    {
-		if (*p_in++ == 0)
-		  {
-		      *p_out++ = 0;	/* Black */
-		      *p_out++ = 0;
-		      *p_out++ = 0;
-		      *p_out++ = 255;	/* alpha */
-		  }
-		else
-		  {
-		      *p_out++ = 255;	/* White */
-		      *p_out++ = 255;
-		      *p_out++ = 255;
-		      *p_out++ = 255;	/* alpha */
-		  }
-	    }
-      }
-    free (pixels);
     return 1;
 }
 
@@ -2671,6 +2664,56 @@ get_rgba_from_monochrome_transparent (unsigned int width,
 	    }
       }
     free (pixels);
+    return 1;
+}
+
+RL2_PRIVATE int
+get_rgba_from_monochrome_transparent_mask (unsigned int width,
+					   unsigned int height,
+					   unsigned char *pixels,
+					   unsigned char *mask,
+					   unsigned char *rgba)
+{
+/* input: Monochrome    output: Grayscale */
+    unsigned char *p_in;
+    unsigned char *p_msk;
+    unsigned char *p_out;
+    unsigned int row;
+    unsigned int col;
+
+    p_in = pixels;
+    p_msk = mask;
+    p_out = rgba;
+    for (row = 0; row < height; row++)
+      {
+	  for (col = 0; col < width; col++)
+	    {
+		if (*p_msk++ == 0)
+		  {
+		      /* Opaque pixel  */
+		      if (*p_in++ == 0)
+			{
+			    /* White is assumed to be always transparent */
+			    p_out += 4;
+			}
+		      else
+			{
+			    *p_out++ = 0;	/* Black */
+			    *p_out++ = 0;
+			    *p_out++ = 0;
+			    *p_out++ = 255;	/* alpha */
+			}
+		  }
+		else
+		  {
+		      /* Transparent Pixel */
+		      p_in++;
+		      p_out += 4;
+		  }
+	    }
+      }
+    free (pixels);
+    free (mask);
     return 1;
 }
 
@@ -2784,20 +2827,23 @@ get_rgba_from_palette_mask (unsigned int width, unsigned int height,
 }
 
 RL2_PRIVATE int
-get_rgba_from_palette_opaque (unsigned int width, unsigned int height,
-			      unsigned char *pixels, rl2PalettePtr palette,
-			      unsigned char *rgba)
+get_rgba_from_palette (unsigned int width, unsigned int height,
+		       unsigned char *pixels, unsigned char *mask,
+		       rl2PalettePtr palette, unsigned char *rgba)
 {
 /* input: Palette    output: Grayscale or RGB */
     rl2PrivPalettePtr plt = (rl2PrivPalettePtr) palette;
     unsigned char *p_in;
     unsigned char *p_out;
+    unsigned char *p_msk;
     unsigned int row;
     unsigned int col;
     unsigned char out_format;
+    int transparent;
 
     p_in = pixels;
     p_out = rgba;
+    p_msk = mask;
     out_format = get_palette_format (plt);
     if (out_format == RL2_PIXEL_RGB)
       {
@@ -2809,18 +2855,34 @@ get_rgba_from_palette_opaque (unsigned int width, unsigned int height,
 		      unsigned char red = 0;
 		      unsigned char green = 0;
 		      unsigned char blue = 0;
-		      unsigned char index = *p_in++;
-		      if (index < plt->nEntries)
+		      unsigned char index;
+		      transparent = 0;
+		      if (p_msk != NULL)
 			{
-			    rl2PrivPaletteEntryPtr entry = plt->entries + index;
-			    red = entry->red;
-			    green = entry->green;
-			    blue = entry->blue;
+			    if (*p_msk++ != 0)
+				transparent = 1;
 			}
-		      *p_out++ = red;	/* red */
-		      *p_out++ = green;	/* green */
-		      *p_out++ = blue;	/* blue */
-		      *p_out++ = 255;	/* alpha */
+		      if (transparent)
+			{
+			    p_out += 4;
+			    p_in++;
+			}
+		      else
+			{
+			    index = *p_in++;
+			    if (index < plt->nEntries)
+			      {
+				  rl2PrivPaletteEntryPtr entry =
+				      plt->entries + index;
+				  red = entry->red;
+				  green = entry->green;
+				  blue = entry->blue;
+			      }
+			    *p_out++ = red;	/* red */
+			    *p_out++ = green;	/* green */
+			    *p_out++ = blue;	/* blue */
+			    *p_out++ = 255;	/* opaque */
+			}
 		  }
 	    }
       }
@@ -2838,20 +2900,35 @@ get_rgba_from_palette_opaque (unsigned int width, unsigned int height,
 			    rl2PrivPaletteEntryPtr entry = plt->entries + index;
 			    value = entry->red;
 			}
-		      *p_out++ = value;	/* red */
-		      *p_out++ = value;	/* green */
-		      *p_out++ = value;	/* blue */
-		      *p_out++ = 255;	/* alpha */
+		      transparent = 0;
+		      if (p_msk != NULL)
+			{
+			    if (*p_msk++ != 0)
+				transparent = 1;
+			}
+		      if (transparent)
+			  p_out += 4;
+		      else
+			{
+			    *p_out++ = value;	/* red */
+			    *p_out++ = value;	/* green */
+			    *p_out++ = value;	/* blue */
+			    *p_out++ = 255;	/* opaque */
+			}
 		  }
 	    }
       }
     else
 	goto error;
     free (pixels);
+    if (mask)
+	free (mask);
     return 1;
 
   error:
     free (pixels);
+    if (mask)
+	free (mask);
     return 0;
 }
 
@@ -2937,6 +3014,83 @@ get_rgba_from_palette_transparent (unsigned int width, unsigned int height,
 }
 
 RL2_PRIVATE int
+get_rgba_from_palette_transparent_mask (unsigned int width, unsigned int height,
+					unsigned char *pixels,
+					unsigned char *mask,
+					rl2PalettePtr palette,
+					unsigned char *rgba)
+{
+/* input: Palette    output: Grayscale or RGB */
+    rl2PrivPalettePtr plt = (rl2PrivPalettePtr) palette;
+    unsigned char *p_in;
+    unsigned char *p_msk;
+    unsigned char *p_out;
+    unsigned int row;
+    unsigned int col;
+    unsigned char out_format;
+
+    p_in = pixels;
+    p_msk = mask;
+    p_out = rgba;
+    out_format = get_palette_format (plt);
+    for (row = 0; row < height; row++)
+      {
+	  for (col = 0; col < width; col++)
+	    {
+		if (*p_msk++ == 0)
+		  {
+		      /* opaque pixel */
+		      if (out_format == RL2_PIXEL_RGB)
+			{
+			    /* converting from Palette to RGB */
+			    unsigned char red = 0;
+			    unsigned char green = 0;
+			    unsigned char blue = 0;
+			    unsigned char index = *p_in++;
+			    if (index < plt->nEntries)
+			      {
+				  rl2PrivPaletteEntryPtr entry =
+				      plt->entries + index;
+				  red = entry->red;
+				  green = entry->green;
+				  blue = entry->blue;
+			      }
+			    *p_out++ = red;	/* red */
+			    *p_out++ = green;	/* green */
+			    *p_out++ = blue;	/* blue */
+			    *p_out++ = 255;	/* Opaque */
+			}
+		      else if (out_format == RL2_PIXEL_GRAYSCALE)
+			{
+			    /* converting from Palette to Grayscale */
+			    unsigned char value = 0;
+			    unsigned char index = *p_in++;
+			    if (index < plt->nEntries)
+			      {
+				  rl2PrivPaletteEntryPtr entry =
+				      plt->entries + index;
+				  value = entry->red;
+			      }
+			    *p_out++ = value;	/* red */
+			    *p_out++ = value;	/* green */
+			    *p_out++ = value;	/* blue */
+			    *p_out++ = 255;	/* Opaque */
+			}
+		  }
+		else
+		  {
+		      /* transparent pixel */
+		      p_in++;
+		      p_out += 4;
+		  }
+	    }
+      }
+    free (pixels);
+    free (mask);
+    return 1;
+}
+
+RL2_PRIVATE int
 get_rgba_from_grayscale_mask (unsigned int width, unsigned int height,
 			      unsigned char *pixels, unsigned char *mask,
 			      rl2PrivPixelPtr no_data, unsigned char *rgba)
@@ -2986,29 +3140,49 @@ get_rgba_from_grayscale_mask (unsigned int width, unsigned int height,
 }
 
 RL2_PRIVATE int
-get_rgba_from_grayscale_opaque (unsigned int width, unsigned int height,
-				unsigned char *pixels, unsigned char *rgba)
+get_rgba_from_grayscale (unsigned int width, unsigned int height,
+			 unsigned char *pixels, unsigned char *mask,
+			 unsigned char *rgba)
 {
 /* input: Grayscale    output: Grayscale */
     unsigned char *p_in;
     unsigned char *p_out;
+    unsigned char *p_msk;
     unsigned int row;
     unsigned int col;
+    int transparent;
 
     p_in = pixels;
     p_out = rgba;
+    p_msk = mask;
     for (row = 0; row < height; row++)
       {
 	  for (col = 0; col < width; col++)
 	    {
-		unsigned char gray = *p_in++;
-		*p_out++ = gray;	/* red */
-		*p_out++ = gray;	/* green */
-		*p_out++ = gray;	/* blue */
-		*p_out++ = 255;	/* alpha */
+		transparent = 0;
+		if (p_msk != NULL)
+		  {
+		      if (*p_msk++ != 0)
+			  transparent = 1;
+		  }
+		if (transparent)
+		  {
+		      p_out += 4;
+		      p_in++;
+		  }
+		else
+		  {
+		      unsigned char gray = *p_in++;
+		      *p_out++ = gray;	/* red */
+		      *p_out++ = gray;	/* green */
+		      *p_out++ = gray;	/* blue */
+		      *p_out++ = 255;	/* opaque */
+		  }
 	    }
       }
     free (pixels);
+    if (mask != NULL)
+	free (mask);
     return 1;
 }
 
@@ -3041,6 +3215,45 @@ get_rgba_from_grayscale_transparent (unsigned int width,
 	    }
       }
     free (pixels);
+    return 1;
+}
+
+RL2_PRIVATE int
+get_rgba_from_grayscale_transparent_mask (unsigned int width,
+					  unsigned int height,
+					  unsigned char *pixels,
+					  unsigned char *mask,
+					  unsigned char *rgba)
+{
+/* input: Grayscale    output: Grayscale */
+    unsigned char *p_in;
+    unsigned char *p_msk;
+    unsigned char *p_out;
+    unsigned int row;
+    unsigned int col;
+
+    p_in = pixels;
+    p_msk = mask;
+    p_out = rgba;
+    for (row = 0; row < height; row++)
+      {
+	  for (col = 0; col < width; col++)
+	    {
+		unsigned char gray = *p_in++;
+		if (*p_msk++ == 0)
+		  {
+		      /* Opaque pixel */
+		      *p_out++ = gray;	/* red */
+		      *p_out++ = gray;	/* green */
+		      *p_out++ = gray;	/* blue */
+		      *p_out++ = 255;	/* Opaque */
+		  }
+		else
+		    p_out += 4;
+	    }
+      }
+    free (pixels);
+    free (mask);
     return 1;
 }
 
@@ -3093,28 +3306,48 @@ get_rgba_from_rgb_mask (unsigned int width, unsigned int height,
 }
 
 RL2_PRIVATE int
-get_rgba_from_rgb_opaque (unsigned int width, unsigned int height,
-			  unsigned char *pixels, unsigned char *rgba)
+get_rgba_from_rgb (unsigned int width, unsigned int height,
+		   unsigned char *pixels, unsigned char *mask,
+		   unsigned char *rgba)
 {
 /* input: RGB    output: RGB */
     unsigned char *p_in;
     unsigned char *p_out;
+    unsigned char *p_msk;
     unsigned int row;
     unsigned int col;
+    int transparent;
 
     p_in = pixels;
     p_out = rgba;
+    p_msk = mask;
     for (row = 0; row < height; row++)
       {
 	  for (col = 0; col < width; col++)
 	    {
-		*p_out++ = *p_in++;	/* red */
-		*p_out++ = *p_in++;	/* green */
-		*p_out++ = *p_in++;	/* blue */
-		*p_out++ = 255;	/* alpha */
+		transparent = 0;
+		if (p_msk != NULL)
+		  {
+		      if (*p_msk++ != 0)
+			  transparent = 1;
+		  }
+		if (transparent)
+		  {
+		      p_out += 4;
+		      p_in += 3;
+		  }
+		else
+		  {
+		      *p_out++ = *p_in++;	/* red */
+		      *p_out++ = *p_in++;	/* green */
+		      *p_out++ = *p_in++;	/* blue */
+		      *p_out++ = 255;	/* opaque */
+		  }
 	    }
       }
     free (pixels);
+    if (mask != NULL)
+	free (mask);
     return 1;
 }
 
@@ -3149,6 +3382,45 @@ get_rgba_from_rgb_transparent (unsigned int width, unsigned int height,
 	    }
       }
     free (pixels);
+    return 1;
+}
+
+RL2_PRIVATE int
+get_rgba_from_rgb_transparent_mask (unsigned int width, unsigned int height,
+				    unsigned char *pixels, unsigned char *mask,
+				    unsigned char *rgba)
+{
+/* input: RGB    output: RGB */
+    unsigned char *p_in;
+    unsigned char *p_msk;
+    unsigned char *p_out;
+    unsigned int row;
+    unsigned int col;
+
+    p_in = pixels;
+    p_msk = mask;
+    p_out = rgba;
+    for (row = 0; row < height; row++)
+      {
+	  for (col = 0; col < width; col++)
+	    {
+		unsigned char red = *p_in++;
+		unsigned char green = *p_in++;
+		unsigned char blue = *p_in++;
+		if (*p_msk++ == 0)
+		  {
+		      /* opaque pixel */
+		      *p_out++ = red;
+		      *p_out++ = green;
+		      *p_out++ = blue;
+		      *p_out++ = 255;
+		  }
+		else
+		    p_out += 4;
+	    }
+      }
+    free (pixels);
+    free (mask);
     return 1;
 }
 
@@ -3307,7 +3579,9 @@ rgba_from_int16 (unsigned int width, unsigned int height,
 	  for (col = 0; col < width; col++)
 	    {
 		short *p_sv = p_in;
-		double gray = (double) (*p_in++ - min) / tic;
+		double gray = 0.0;
+		if (tic > 0.0)
+		    gray = (double) (*p_in++ - min) / tic;
 		if (p_msk != NULL)
 		  {
 		      if (*p_msk++ == 0)
@@ -3453,7 +3727,11 @@ rgba_from_uint16 (unsigned int width, unsigned int height,
 	  for (col = 0; col < width; col++)
 	    {
 		unsigned short *p_sv = p_in;
-		double gray = (double) (*p_in++ - min) / tic;
+		double gray = 0.0;
+		if (tic > 0.0)
+		    gray = 0.0;
+		if (tic > 0.0)
+		    gray = (double) (*p_in++ - min) / tic;
 		if (p_msk != NULL)
 		  {
 		      if (*p_msk++ == 0)
@@ -3599,7 +3877,9 @@ rgba_from_int32 (unsigned int width, unsigned int height,
 	  for (col = 0; col < width; col++)
 	    {
 		int *p_sv = p_in;
-		double gray = (double) (*p_in++ - min) / tic;
+		double gray = 0.0;
+		if (tic > 0.0)
+		    gray = (double) (*p_in++ - min) / tic;
 		if (p_msk != NULL)
 		  {
 		      if (*p_msk++ == 0)
@@ -3745,7 +4025,9 @@ rgba_from_uint32 (unsigned int width, unsigned int height,
 	  for (col = 0; col < width; col++)
 	    {
 		unsigned int *p_sv = p_in;
-		double gray = (double) (*p_in++ - min) / tic;
+		double gray = 0.0;
+		if (tic > 0.0)
+		    gray = (double) (*p_in++ - min) / tic;
 		if (p_msk != NULL)
 		  {
 		      if (*p_msk++ == 0)
@@ -3891,7 +4173,9 @@ rgba_from_float (unsigned int width, unsigned int height,
 	  for (col = 0; col < width; col++)
 	    {
 		float *p_sv = p_in;
-		double gray = (double) (*p_in++ - min) / tic;
+		double gray = 0.0;
+		if (tic > 0.0)
+		    gray = (double) (*p_in++ - min) / tic;
 		if (p_msk != NULL)
 		  {
 		      if (*p_msk++ == 0)
@@ -4037,7 +4321,9 @@ rgba_from_double (unsigned int width, unsigned int height,
 	  for (col = 0; col < width; col++)
 	    {
 		double *p_sv = p_in;
-		double gray = (double) (*p_in++ - min) / tic;
+		double gray = 0.0;
+		if (tic > 0.0)
+		    gray = (double) (*p_in++ - min) / tic;
 		if (p_msk != NULL)
 		  {
 		      if (*p_msk++ == 0)
@@ -4288,7 +4574,9 @@ rgba_from_multi_uint16 (unsigned int width, unsigned int height,
 	  for (col = 0; col < width; col++)
 	    {
 		unsigned short *p_sv = p_in;
-		double gray = (double) (*p_in - min) / tic;
+		double gray = 0.0;
+		if (tic > 0.0)
+		    gray = (double) (*p_in - min) / tic;
 		p_in += num_bands;
 		if (p_msk != NULL)
 		  {
@@ -4644,6 +4932,28 @@ get_payload_from_rgb_rgba_transparent (unsigned int width,
 	  if (ret != RL2_OK)
 	      goto error;
       }
+    else if (format == RL2_OUTPUT_FORMAT_JPEG)
+      {
+	  ret = rl2_rgb_to_jpeg (width, height, rgb, quality, image, image_sz);
+	  if (ret != RL2_OK)
+	      goto error;
+      }
+    else if (format == RL2_OUTPUT_FORMAT_TIFF)
+      {
+	  ret = rl2_rgb_to_tiff (width, height, rgb, image, image_sz);
+	  if (ret != RL2_OK)
+	      goto error;
+      }
+    else if (format == RL2_OUTPUT_FORMAT_PDF)
+      {
+	  unsigned char *rgba = rgb_to_rgba (width, height, rgb);
+	  if (rgba == NULL)
+	      goto error;
+	  ret = rl2_rgba_to_pdf (width, height, rgba, image, image_sz);
+	  rgba = NULL;
+	  if (ret != RL2_OK)
+	      goto error;
+      }
     else
 	goto error;
     free (mask);
@@ -4691,6 +5001,55 @@ build_rgb_alpha (unsigned int width, unsigned int height,
 		*p_out++ = b;
 		if (r == bg_red && g == bg_green && b == bg_blue)
 		    alpha = 0;
+		*p_msk++ = alpha;
+	    }
+      }
+    return 1;
+
+  error:
+    if (*rgb != NULL)
+	free (*rgb);
+    if (*alpha != NULL)
+	free (*alpha);
+    *rgb = NULL;
+    *alpha = NULL;
+    return 0;
+}
+
+RL2_PRIVATE int
+build_rgb_alpha_transparent (unsigned int width, unsigned int height,
+			     unsigned char *rgba, unsigned char **rgb,
+			     unsigned char **alpha)
+{
+/* creating separate RGB and Alpha buffers from RGBA */
+    unsigned int row;
+    unsigned int col;
+    unsigned char *p_in = rgba;
+    unsigned char *p_out;
+    unsigned char *p_msk;
+
+    *rgb = NULL;
+    *alpha = NULL;
+    *rgb = malloc (width * height * 3);
+    if (*rgb == NULL)
+	goto error;
+    *alpha = malloc (width * height);
+    if (*alpha == NULL)
+	goto error;
+
+    p_out = *rgb;
+    p_msk = *alpha;
+    for (row = 0; row < height; row++)
+      {
+	  for (col = 0; col < width; col++)
+	    {
+		unsigned char r = *p_in++;
+		unsigned char g = *p_in++;
+		unsigned char b = *p_in++;
+		unsigned char alpha = *p_in++;
+		*p_out++ = r;
+		*p_out++ = g;
+		*p_out++ = b;
 		*p_msk++ = alpha;
 	    }
       }
@@ -4879,7 +5238,9 @@ get_rgba_from_multiband16 (unsigned int width, unsigned int height,
 		  }
 		for (band = 0; band < num_bands; band++)
 		  {
-		      double gray = (double) (*p_in++ - min) / tic;
+		      double gray = 0.0;
+		      if (tic > 0.0)
+			  gray = (double) (*p_in++ - min) / tic;
 		      if (band != red_band)
 			  continue;
 		      if (gray < 0.0)
@@ -4973,7 +5334,9 @@ get_rgba_from_multiband16 (unsigned int width, unsigned int height,
 		  }
 		for (band = 0; band < num_bands; band++)
 		  {
-		      double gray = (double) (*p_in++ - min) / tic;
+		      double gray = 0.0;
+		      if (tic > 0.0)
+			  gray = (double) (*p_in++ - min) / tic;
 		      if (band != green_band)
 			  continue;
 		      if (gray < 0.0)
@@ -5067,7 +5430,9 @@ get_rgba_from_multiband16 (unsigned int width, unsigned int height,
 		  }
 		for (band = 0; band < num_bands; band++)
 		  {
-		      double gray = (double) (*p_in++ - min) / tic;
+		      double gray = 0.0;
+		      if (tic > 0.0)
+			  gray = (double) (*p_in++ - min) / tic;
 		      if (band != blue_band)
 			  continue;
 		      if (gray < 0.0)
@@ -5723,7 +6088,7 @@ do_transform_raster_bbox (struct aux_renderer *aux)
 
     sqlite3_reset (stmt);
     sqlite3_clear_bindings (stmt);
-    line = rl2CreateLinestring (5);
+    line = rl2CreateLinestring (5, GAIA_XY);
     rl2SetPoint (line->coords, 0, minx, miny);
     rl2SetPoint (line->coords, 1, maxx, miny);
     rl2SetPoint (line->coords, 2, maxx, maxy);
@@ -6068,13 +6433,11 @@ do_get_raw_raster_data (struct aux_renderer *aux, int by_section)
 /* attempting to load raw raster data */
     int was_monochrome;
     unsigned char out_pixel = aux->out_pixel;
+    rl2PixelPtr no_data = aux->no_data;
     sqlite3 *sqlite = aux->sqlite;
     int max_threads = aux->max_threads;
     int base_width = aux->base_width;
     int base_height = aux->base_height;
-    unsigned char bg_red = aux->bg_red;
-    unsigned char bg_green = aux->bg_green;
-    unsigned char bg_blue = aux->bg_blue;
     int reproject_on_the_fly = aux->reproject_on_the_fly;
     double minx = aux->minx;
     double maxx = aux->maxx;
@@ -6091,6 +6454,8 @@ do_get_raw_raster_data (struct aux_renderer *aux, int by_section)
     int scale = aux->scale;
     unsigned char *outbuf = NULL;
     int outbuf_size;
+    unsigned char *mask = NULL;
+    int mask_size;
 
     if (reproject_on_the_fly)
       {
@@ -6113,16 +6478,19 @@ do_get_raw_raster_data (struct aux_renderer *aux, int by_section)
 	  was_monochrome = 0;
 	  if (out_pixel == RL2_PIXEL_MONOCHROME)
 	    {
-		out_pixel = RL2_PIXEL_GRAYSCALE;
+		if (rl2_has_styled_rgb_colors (symbolizer))
+		    out_pixel = RL2_PIXEL_RGB;
+		else
+		    out_pixel = RL2_PIXEL_GRAYSCALE;
 		was_monochrome = 1;
 	    }
 	  if (out_pixel == RL2_PIXEL_PALETTE)
 	      out_pixel = RL2_PIXEL_RGB;
-	  if (rl2_get_raw_raster_data_mixed_resolutions
+	  if (rl2_get_raw_raster_data_mixed_resolutions_transparent
 	      (sqlite, max_threads, coverage, base_width, base_height,
 	       minx, miny, maxx, maxy, xx_res, yy_res,
-	       &outbuf, &outbuf_size, &palette, &out_pixel, bg_red, bg_green,
-	       bg_blue, symbolizer, stats) != RL2_OK)
+	       &outbuf, &outbuf_size, &mask, &mask_size, &palette, &out_pixel,
+	       no_data, symbolizer, stats) != RL2_OK)
 	      goto error;
 	  if (was_monochrome && out_pixel == RL2_PIXEL_GRAYSCALE)
 	    {
@@ -6138,7 +6506,10 @@ do_get_raw_raster_data (struct aux_renderer *aux, int by_section)
 	    {
 		if (level_id != 0 && scale != 1)
 		  {
-		      out_pixel = RL2_PIXEL_GRAYSCALE;
+		      if (rl2_has_styled_rgb_colors (symbolizer))
+			  out_pixel = RL2_PIXEL_RGB;
+		      else
+			  out_pixel = RL2_PIXEL_GRAYSCALE;
 		      was_monochrome = 1;
 		  }
 	    }
@@ -6147,13 +6518,15 @@ do_get_raw_raster_data (struct aux_renderer *aux, int by_section)
 		if (level_id != 0 && scale != 1)
 		    out_pixel = RL2_PIXEL_RGB;
 	    }
-	  if (rl2_get_raw_raster_data_bgcolor
+	  if (rl2_get_raw_raster_data_transparent
 	      (sqlite, max_threads, coverage, base_width, base_height,
 	       minx, miny, maxx, maxy, xx_res, yy_res,
-	       &outbuf, &outbuf_size, &palette, &out_pixel, bg_red, bg_green,
-	       bg_blue, symbolizer, stats) != RL2_OK)
+	       &outbuf, &outbuf_size, &mask, &mask_size, &palette, &out_pixel,
+	       no_data, symbolizer, stats) != RL2_OK)
 	      goto error;
-	  if (was_monochrome && out_pixel == RL2_PIXEL_GRAYSCALE)
+	  if (was_monochrome
+	      && (out_pixel == RL2_PIXEL_GRAYSCALE
+		  || out_pixel == RL2_PIXEL_RGB))
 	    {
 		rl2_destroy_coverage_style (cvg_stl);
 		aux->cvg_stl = NULL;
@@ -6162,6 +6535,7 @@ do_get_raw_raster_data (struct aux_renderer *aux, int by_section)
 
 /* completing the aux struct for passing rendering arguments */
     aux->outbuf = outbuf;
+    aux->mask = mask;
     aux->palette = palette;
     aux->out_pixel = out_pixel;
     return 1;
@@ -6229,6 +6603,7 @@ do_paint_map_from_raster (struct aux_raster_render *args)
     struct aux_renderer aux;
     int by_section = 0;
     int reproject_on_the_fly = 0;
+    rl2PixelPtr no_data;
 
     sqlite = args->sqlite;
     data = args->data;
@@ -6254,6 +6629,8 @@ do_paint_map_from_raster (struct aux_raster_render *args)
 
 /* coarse args validation */
     if (sqlite == NULL)
+	goto error;
+    if (canvas == NULL)
 	goto error;
     if (data != NULL)
       {
@@ -6355,6 +6732,7 @@ do_paint_map_from_raster (struct aux_raster_render *args)
 	  if (out_srid != srid)
 	      reproject_on_the_fly = 1;
       }
+    no_data = rl2_get_coverage_no_data (coverage);
 
     if (reproject_on_the_fly)
       {
@@ -6410,16 +6788,14 @@ do_paint_map_from_raster (struct aux_raster_render *args)
 
 /* validating the style */
     ok_style = 0;
-    if (style == NULL)
-	style = "default";
-    if (strcasecmp (style, "default") == 0)
-	ok_style = 1;
-    else
+    if (args->xml_style != NULL)
       {
-	  /* attempting to get a Coverage Style */
+	  /* attempting to apply a QuickStyle */
+	  char *style2 = malloc (strlen (style) + 1);
+	  strcpy (style2, style);
 	  cvg_stl =
-	      rl2_create_coverage_style_from_dbms (sqlite, db_prefix,
-						   cvg_name, style);
+	      coverage_style_from_xml (style2,
+				       (unsigned char *) (args->xml_style));
 	  if (cvg_stl == NULL)
 	      goto error;
 	  symbolizer =
@@ -6439,6 +6815,39 @@ do_paint_map_from_raster (struct aux_raster_render *args)
 	  if (stats == NULL)
 	      goto error;
 	  ok_style = 1;
+      }
+    else
+      {
+	  if (style == NULL)
+	      style = "default";
+	  if (strcasecmp (style, "default") == 0)
+	      ok_style = 1;
+	  else
+	    {
+		/* attempting to get a Coverage Style */
+		cvg_stl =
+		    rl2_create_coverage_style_from_dbms (sqlite, db_prefix,
+							 cvg_name, style);
+		if (cvg_stl == NULL)
+		    goto error;
+		symbolizer =
+		    rl2_get_symbolizer_from_coverage_style (cvg_stl, map_scale);
+		if (symbolizer == NULL)
+		  {
+		      /* invisible at the currect scale */
+		      if (!rl2_aux_default_image
+			  (width, height, bg_red, bg_green, bg_blue, format_id,
+			   transparent, quality, &image, &image_size))
+			  goto error;
+		      goto done;
+		  }
+		stats =
+		    rl2_create_raster_statistics_from_dbms (sqlite, db_prefix,
+							    cvg_name);
+		if (stats == NULL)
+		    goto error;
+		ok_style = 1;
+	    }
       }
     if (!ok_style)
 	goto error;
@@ -6675,11 +7084,17 @@ do_paint_map_from_raster (struct aux_raster_render *args)
     aux.level_id = level_id;
     aux.scale = scale;
     aux.outbuf = NULL;
+    aux.mask = NULL;
     aux.palette = NULL;
+    aux.no_data = no_data;
     aux.out_pixel = out_pixel;
+    if (args->output != NULL)
+	aux.is_blob_image = 1;
+    else
+	aux.is_blob_image = 0;
     aux.image = NULL;
     aux.image_size = 0;
-    aux.graphics_ctx = NULL;
+    aux.graphics_ctx = rl2_get_canvas_ctx (canvas, RL2_CANVAS_BASE_CTX);
 
     if (!do_get_raw_raster_data (&aux, by_section))
       {
@@ -6687,11 +7102,6 @@ do_paint_map_from_raster (struct aux_raster_render *args)
 	  goto error;
       }
     cvg_stl = aux.cvg_stl;
-    if (args->output == NULL)
-      {
-	  /* using the Canvas Base Graphics Context */
-	  aux.graphics_ctx = rl2_get_canvas_ctx (canvas, RL2_CANVAS_BASE_CTX);
-      }
     if (rl2_aux_render_image (&aux) != RL2_OK)
 	goto error;
 
@@ -6710,8 +7120,7 @@ do_paint_map_from_raster (struct aux_raster_render *args)
 	rl2_destroy_raster_statistics (stats);
     if (aux_symbolizer && symbolizer)
 	rl2_destroy_raster_symbolizer ((rl2PrivRasterSymbolizerPtr) symbolizer);
-    if (canvas)
-	do_set_canvas_ready (canvas, RL2_CANVAS_BASE_CTX);
+    do_set_canvas_ready (canvas, RL2_CANVAS_BASE_CTX);
     return RL2_OK;
 
   error:
@@ -6725,8 +7134,11 @@ do_paint_map_from_raster (struct aux_raster_render *args)
 	rl2_destroy_raster_statistics (stats);
     if (aux_symbolizer && symbolizer)
 	rl2_destroy_raster_symbolizer ((rl2PrivRasterSymbolizerPtr) symbolizer);
-    args->output->img = NULL;
-    args->output->img_size = 0;
+    if (args->output != NULL)
+      {
+	  args->output->img = NULL;
+	  args->output->img_size = 0;
+      }
     return RL2_ERROR;
 }
 
@@ -6757,6 +7169,122 @@ do_compute_bbox_aspect_ratio (sqlite3 * sqlite, const unsigned char *blob,
     return ratio;
 }
 
+RL2_DECLARE unsigned char *
+rl2_map_image_from_wms (sqlite3 * sqlite,
+			const char *db_prefix, const char *cvg_name,
+			const unsigned char *blob, int blob_sz,
+			int width, int height, const char *version,
+			const char *style, const char *format, int transparent,
+			const char *bg_color, int *image_size)
+{
+/* returning a Map Image from a WMS Coverage - BLOB */
+    int opaque;
+    int srid;
+    double minx;
+    double maxx;
+    double miny;
+    double maxy;
+    int i;
+    char **results;
+    int rows;
+    int columns;
+    char *sql;
+    int ret;
+    char *xdb_prefix;
+    int ok = 0;
+    char *url = NULL;
+    char *srs = NULL;
+    int flip_axes;
+    int valid_bg_color = 1;
+    char *xbg_color;
+    int len;
+    unsigned char *image;
+
+/* checking the Geometry */
+    if (rl2_parse_bbox_srid
+	(sqlite, blob, blob_sz, &srid, &minx, &miny, &maxx, &maxy) != RL2_OK)
+	return NULL;
+
+/* querying the WMS Coverage */
+    if (db_prefix == NULL)
+	db_prefix = "MAIN";
+    xdb_prefix = rl2_double_quoted_sql (db_prefix);
+    sql = sqlite3_mprintf ("SELECT w.url, s.has_flipped_axes "
+			   "FROM \"%s\".wms_getmap AS w, \"%s\".spatial_ref_sys_aux AS s "
+			   "WHERE w.layer_name = %Q AND s.srid = %d",
+			   xdb_prefix, xdb_prefix, cvg_name, srid);
+    free (xdb_prefix);
+    ret = sqlite3_get_table (sqlite, sql, &results, &rows, &columns, NULL);
+    sqlite3_free (sql);
+    if (ret != SQLITE_OK)
+	return NULL;
+    if (rows < 1)
+	;
+    else
+      {
+	  for (i = 1; i <= rows; i++)
+	    {
+		const char *val = results[(i * columns) + 0];
+		if (url != NULL)
+		    free (url);
+		len = strlen (val);
+		url = malloc (len + 1);
+		strcpy (url, val);
+		val = results[(i * columns) + 1];
+		flip_axes = atoi (val);
+		ok = 1;
+	    }
+      }
+    sqlite3_free_table (results);
+    if (!ok)
+	return NULL;
+
+    srs = sqlite3_mprintf ("EPSG:%d", srid);
+    if (version == NULL)
+	flip_axes = 0;
+    else
+      {
+	  if (strcmp (version, "1.3.0") != 0)
+	      flip_axes = 0;
+      }
+
+    if (transparent)
+	opaque = 0;
+    else
+	opaque = 1;
+
+/* validating the background color */
+    if (strlen (bg_color) != 7)
+	valid_bg_color = 0;
+    else
+      {
+	  int i;
+	  if (*(bg_color + 0) != '#')
+	      valid_bg_color = 0;
+	  for (i = 1; i < 7; i++)
+	    {
+		char h = *(bg_color + i);
+		if ((h >= '0' && h <= '9') || (h >= 'a' && h <= 'f')
+		    || (h >= 'A' && h <= 'F'))
+		    ;
+		else
+		    valid_bg_color = 0;
+	    }
+      }
+    if (valid_bg_color)
+	xbg_color = sqlite3_mprintf ("0x%s", bg_color + 1);
+    else
+	xbg_color = sqlite3_mprintf ("0xFFFFFF");
+    image =
+	do_wms_GetMap_blob (url, version, cvg_name,
+			    flip_axes, srs, minx, miny, maxx, maxy, width,
+			    height, style, format, opaque, xbg_color,
+			    image_size);
+    sqlite3_free (xbg_color);
+    sqlite3_free (srs);
+    return image;
+}
+
 RL2_DECLARE int
 rl2_map_image_blob_from_raster (sqlite3 * sqlite, const void *data,
 				const char *db_prefix, const char *cvg_name,
@@ -6783,6 +7311,7 @@ rl2_map_image_blob_from_raster (sqlite3 * sqlite, const void *data,
     aux.width = width;
     aux.height = height;
     aux.style = style;
+    aux.out_pixel = RL2_PIXEL_UNKNOWN;
     aux.output = malloc (sizeof (struct aux_raster_image));
     aux.output->bg_red = 255;
     aux.output->bg_green = 255;
@@ -6792,6 +7321,7 @@ rl2_map_image_blob_from_raster (sqlite3 * sqlite, const void *data,
     aux.output->quality = quality;
     aux.output->img = NULL;
     aux.output->img_size = 0;
+    aux.xml_style = NULL;
 
     if (reaspect == 0)
       {
@@ -6815,7 +7345,7 @@ rl2_map_image_blob_from_raster (sqlite3 * sqlite, const void *data,
     ctx = rl2_graph_create_context (width, height);
     if (ctx == NULL)
 	goto error;
-    aux.canvas = rl2_create_vector_canvas (ctx, NULL);
+    aux.canvas = rl2_create_raster_canvas (ctx);
     if (aux.canvas == NULL)
 	goto error;
     if (!transparent)
@@ -6842,6 +7372,8 @@ rl2_map_image_blob_from_raster (sqlite3 * sqlite, const void *data,
 	  *img = aux.output->img;
 	  *img_size = aux.output->img_size;
 	  free (aux.output);
+	  rl2_destroy_canvas (aux.canvas);
+	  rl2_graph_destroy_context (ctx);
 	  return RL2_OK;
       }
 
@@ -6850,6 +7382,10 @@ rl2_map_image_blob_from_raster (sqlite3 * sqlite, const void *data,
 	free (aux.output);
     *img = NULL;
     *img_size = 0;
+    if (aux.canvas != NULL)
+	rl2_destroy_canvas (aux.canvas);
+    if (ctx != NULL)
+	rl2_graph_destroy_context (ctx);
     return RL2_ERROR;
 }
 
@@ -7141,7 +7677,7 @@ rl2_map_image_paint_from_raster (sqlite3 * sqlite, const void *data,
 				 rl2CanvasPtr canvas, const char *db_prefix,
 				 const char *cvg_name,
 				 const unsigned char *blob, int blob_sz,
-				 const char *style)
+				 const char *style, unsigned char *xml_style)
 {
 /* rendering a Map Image from a Raster Coverage - Graphics Context */
     struct aux_raster_render aux;
@@ -7167,6 +7703,8 @@ rl2_map_image_paint_from_raster (sqlite3 * sqlite, const void *data,
     aux.width = width;
     aux.height = height;
     aux.style = style;
+    aux.xml_style = xml_style;
+    aux.out_pixel = RL2_PIXEL_RGB;
     aux.output = NULL;
     return do_paint_map_from_raster (&aux);
 }
@@ -7495,15 +8033,15 @@ do_paint_map_from_vector (struct aux_vector_render *aux)
 		if (reproject_on_the_fly)
 		    sql =
 			sqlite3_mprintf
-			("SELECT ST_Intersection(ST_Transform(ST_GetFaceGeometry(%Q, face_id), %d), "
-			 "BuildMbr(%f, %f, %f, %f))",
+			("SELECT CastToXY(ST_Intersection(ST_Transform(ST_GetFaceGeometry(%Q, face_id), %d), "
+			 "BuildMbr(%f, %f, %f, %f)))",
 			 toponame, out_srid, ext_min_x, ext_min_y, ext_max_x,
 			 ext_max_y);
 		else
 		    sql =
 			sqlite3_mprintf
-			("SELECT ST_Intersection(ST_GetFaceGeometry(%Q, face_id), "
-			 "BuildMbr(%f, %f, %f, %f))", toponame, ext_min_x,
+			("SELECT CastToXY(ST_Intersection(ST_GetFaceGeometry(%Q, face_id), "
+			 "BuildMbr(%f, %f, %f, %f)))", toponame, ext_min_x,
 			 ext_min_y, ext_max_x, ext_max_y);
 	    }
 	  else
@@ -7515,14 +8053,15 @@ do_paint_map_from_vector (struct aux_vector_render *aux)
 		if (reproject_on_the_fly)
 		    sql =
 			sqlite3_mprintf
-			("SELECT ST_Intersection(ST_Transform(\"%s\", %d), "
-			 "BuildMbr(%f, %f, %f, %f))", quoted, out_srid,
+			("SELECT CastToXY(ST_Intersection(ST_Transform(\"%s\", %d), "
+			 "BuildMbr(%f, %f, %f, %f)))", quoted, out_srid,
 			 ext_min_x, ext_min_y, ext_max_x, ext_max_y);
 		else
-		    sql = sqlite3_mprintf ("SELECT ST_Intersection(\"%s\", "
-					   "BuildMbr(%f, %f, %f, %f))", quoted,
-					   ext_min_x, ext_min_y, ext_max_x,
-					   ext_max_y);
+		    sql =
+			sqlite3_mprintf
+			("SELECT CastToXY(ST_Intersection(\"%s\", "
+			 "BuildMbr(%f, %f, %f, %f)))", quoted, ext_min_x,
+			 ext_min_y, ext_max_x, ext_max_y);
 		free (quoted);
 	    }
 	  sqlite3_free (toponame);
@@ -7889,6 +8428,7 @@ do_paint_map_from_vector (struct aux_vector_render *aux)
 	    }
 
 	  /* preparing the SQL statement */
+	  fprintf (stderr, "%s\n", sql);
 	  ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
 	  sqlite3_free (sql);
 	  if (ret != SQLITE_OK)

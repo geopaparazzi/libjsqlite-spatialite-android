@@ -1,0 +1,7 @@
+transform - PROJ.6 extra-args - Area BBOX - generic BLOB
+:memory: #use in-memory database
+SELECT Transform(MakePoint(11, 43, 4326), 3003, zeroblob(10), NULL);
+1 # rows (not including the header row)
+1 # columns
+Transform(MakePoint(11, 43, 4326), 3003, zeroblob(10), NULL)
+ST_Transform exception - 3rd argument is not a valid BLOB Geometry.

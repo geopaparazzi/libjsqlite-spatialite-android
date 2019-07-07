@@ -881,7 +881,7 @@ main (int argc, char *argv[])
 	  return -66;
       }
     value = results[1];
-    if (strcmp ("325834", value) != 0)
+    if (strcmp ("900914", value) != 0)
       {
 	  fprintf (stderr, "Unexpected result (SRID from Auth): %s\n",
 		   results[1]);

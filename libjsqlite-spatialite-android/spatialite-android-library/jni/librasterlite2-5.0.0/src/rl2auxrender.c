@@ -693,6 +693,9 @@ do_aux_render_image_graphics (struct aux_renderer *aux)
 {
 /* rendering a raster image - Graphics Context */
     unsigned char *rgba = NULL;
+    unsigned char *p;
+    int r;
+    int c;
     rl2GraphicsBitmapPtr base_img = NULL;
     rl2GraphicsContextPtr ctx = NULL;
     double rescale_x = (double) aux->width / (double) aux->base_width;
@@ -710,6 +713,22 @@ do_aux_render_image_graphics (struct aux_renderer *aux)
     if (rgba == NULL)
 	goto error;
 
+/* priming the RGBA buffer */
+    p = rgba;
+    for (r = 0; r < aux->base_height; r++)
+      {
+	  for (c = 0; c < aux->base_width; c++)
+	    {
+		*p++ = aux->bg_red;
+		*p++ = aux->bg_green;
+		*p++ = aux->bg_blue;
+		if (aux->transparent)
+		    *p++ = 0;
+		else
+		    *p++ = 255;
+	    }
+      }
+
     /* using the Canvas Base Graphics Context */
     ctx = aux->graphics_ctx;
     if (ctx == NULL)
@@ -717,45 +736,50 @@ do_aux_render_image_graphics (struct aux_renderer *aux)
     if (aux->out_pixel == RL2_PIXEL_MONOCHROME)
       {
 	  /* Monochrome */
-	  if (!get_rgba_from_monochrome_transparent
-	      (aux->base_width, aux->base_height, aux->outbuf, rgba))
+	  if (!get_rgba_from_monochrome_transparent_mask
+	      (aux->base_width, aux->base_height, aux->outbuf, aux->mask, rgba))
 	    {
 		aux->outbuf = NULL;
 		goto error;
 	    }
 	  aux->outbuf = NULL;
+	  aux->mask = NULL;
       }
     else if (aux->out_pixel == RL2_PIXEL_PALETTE)
       {
 	  /* Palette */
-	  if (!get_rgba_from_palette_transparent
-	      (aux->base_width, aux->base_height, aux->outbuf,
-	       aux->palette, rgba, 255, 255, 255))
+	  if (!get_rgba_from_palette_transparent_mask
+	      (aux->base_width, aux->base_height, aux->outbuf, aux->mask,
+	       aux->palette, rgba))
 	    {
 		aux->outbuf = NULL;
+		aux->mask = NULL;
 		goto error;
 	    }
 	  aux->outbuf = NULL;
+	  aux->mask = NULL;
       }
     else if (aux->out_pixel == RL2_PIXEL_GRAYSCALE)
       {
 	  /* Grayscale */
-	  if (!get_rgba_from_grayscale_transparent
-	      (aux->base_width, aux->base_height, aux->outbuf, rgba, 255))
+	  if (!get_rgba_from_grayscale_transparent_mask
+	      (aux->base_width, aux->base_height, aux->outbuf, aux->mask, rgba))
 	    {
 		aux->outbuf = NULL;
+		aux->mask = NULL;
 		goto error;
 	    }
 	  aux->outbuf = NULL;
+	  aux->mask = NULL;
       }
     else
       {
 	  /* RGB */
-	  if (!get_rgba_from_rgb_transparent
-	      (aux->base_width, aux->base_height, aux->outbuf,
-	       rgba, 255, 255, 255))
+	  if (!get_rgba_from_rgb_transparent_mask
+	      (aux->base_width, aux->base_height, aux->outbuf, aux->mask, rgba))
 	    {
 		aux->outbuf = NULL;
+		aux->mask = NULL;
 		goto error;
 	    }
 	  aux->outbuf = NULL;
@@ -776,6 +800,8 @@ do_aux_render_image_graphics (struct aux_renderer *aux)
   error:
     if (aux->outbuf != NULL)
 	free (aux->outbuf);
+    if (aux->mask != NULL)
+	free (aux->mask);
     if (rgba != NULL)
 	free (rgba);
     return RL2_ERROR;
@@ -992,6 +1018,13 @@ do_aux_render_image_blob (struct aux_renderer *aux)
 
     if (aux->reproject_on_the_fly)
 	return do_aux_reproject_image_blob (aux);
+    /*
+       if (aux->mask != NULL)
+       {
+       free (aux->mask);
+       aux->mask = NULL;
+       }
+     */
 
     if (aux->base_width == aux->width && aux->base_height == aux->height)
       {
@@ -1115,110 +1148,85 @@ do_aux_render_image_blob (struct aux_renderer *aux)
     else
       {
 	  /* rescaling */
+	  unsigned char *p;
+	  int r;
+	  int c;
 	  ctx = rl2_graph_create_context (aux->width, aux->height);
 	  if (ctx == NULL)
 	      goto error;
 	  rgba = malloc (aux->base_width * aux->base_height * 4);
+	  if (rgba == NULL)
+	      goto error;
+	  /* priming the RGBA buffer */
+	  p = rgba;
+	  for (r = 0; r < aux->base_height; r++)
+	    {
+		for (c = 0; c < aux->base_width; c++)
+		  {
+		      *p++ = aux->bg_red;
+		      *p++ = aux->bg_green;
+		      *p++ = aux->bg_blue;
+		      if (aux->transparent)
+			  *p++ = 0;
+		      else
+			  *p++ = 255;
+		  }
+	    }
 	  if (aux->out_pixel == RL2_PIXEL_MONOCHROME)
 	    {
 		/* Monochrome - upsampled */
-		if (aux->transparent && aux->format_id == RL2_OUTPUT_FORMAT_PNG)
+		if (!get_rgba_from_monochrome_mask
+		    (aux->base_width, aux->base_height, aux->outbuf, aux->mask,
+		     rgba))
 		  {
-		      if (!get_rgba_from_monochrome_transparent
-			  (aux->base_width, aux->base_height, aux->outbuf,
-			   rgba))
-			{
-			    aux->outbuf = NULL;
-			    goto error;
-			}
-		  }
-		else
-		  {
-		      if (!get_rgba_from_monochrome_opaque
-			  (aux->base_width, aux->base_height, aux->outbuf,
-			   rgba))
-			{
-			    aux->outbuf = NULL;
-			    goto error;
-			}
+		      aux->outbuf = NULL;
+		      aux->mask = NULL;
+		      goto error;
 		  }
 		aux->outbuf = NULL;
+		aux->mask = NULL;
 	    }
 	  else if (aux->out_pixel == RL2_PIXEL_PALETTE)
 	    {
 		/* Palette - upsampled */
-		if (aux->transparent && aux->format_id == RL2_OUTPUT_FORMAT_PNG)
+		if (!get_rgba_from_palette
+		    (aux->base_width, aux->base_height, aux->outbuf, aux->mask,
+		     aux->palette, rgba))
 		  {
-		      if (!get_rgba_from_palette_transparent
-			  (aux->base_width, aux->base_height, aux->outbuf,
-			   aux->palette, rgba, aux->bg_red, aux->bg_green,
-			   aux->bg_blue))
-			{
-			    aux->outbuf = NULL;
-			    goto error;
-			}
-		  }
-		else
-		  {
-		      if (!get_rgba_from_palette_opaque
-			  (aux->base_width, aux->base_height, aux->outbuf,
-			   aux->palette, rgba))
-			{
-			    aux->outbuf = NULL;
-			    goto error;
-			}
+		      aux->outbuf = NULL;
+		      aux->mask = NULL;
+		      goto error;
 		  }
 		aux->outbuf = NULL;
+		aux->mask = NULL;
 	    }
 	  else if (aux->out_pixel == RL2_PIXEL_GRAYSCALE)
 	    {
 		/* Grayscale */
-		if (aux->transparent && aux->format_id == RL2_OUTPUT_FORMAT_PNG)
+		if (!get_rgba_from_grayscale
+		    (aux->base_width, aux->base_height, aux->outbuf, aux->mask,
+		     rgba))
 		  {
-		      if (!get_rgba_from_grayscale_transparent
-			  (aux->base_width, aux->base_height, aux->outbuf,
-			   rgba, aux->bg_red))
-			{
-			    aux->outbuf = NULL;
-			    goto error;
-			}
-		  }
-		else
-		  {
-		      if (!get_rgba_from_grayscale_opaque
-			  (aux->base_width, aux->base_height, aux->outbuf,
-			   rgba))
-			{
-			    aux->outbuf = NULL;
-			    goto error;
-			}
+		      aux->outbuf = NULL;
+		      aux->mask = NULL;
+		      goto error;
 		  }
 		aux->outbuf = NULL;
+		aux->mask = NULL;
 	    }
 	  else
 	    {
 		/* RGB */
-		if (aux->transparent && aux->format_id == RL2_OUTPUT_FORMAT_PNG)
+		if (!get_rgba_from_rgb
+		    (aux->base_width, aux->base_height, aux->outbuf, aux->mask,
+		     rgba))
 		  {
-		      if (!get_rgba_from_rgb_transparent
-			  (aux->base_width, aux->base_height, aux->outbuf,
-			   rgba, aux->bg_red, aux->bg_green, aux->bg_blue))
-			{
-			    aux->outbuf = NULL;
-			    goto error;
-			}
-		  }
-		else
-		  {
-		      if (!get_rgba_from_rgb_opaque
-			  (aux->base_width, aux->base_height, aux->outbuf,
-			   rgba))
-			{
-			    aux->outbuf = NULL;
-			    goto error;
-			}
+		      aux->outbuf = NULL;
+		      aux->mask = NULL;
+		      goto error;
 		  }
 		aux->outbuf = NULL;
+		aux->mask = NULL;
 	    }
 	  base_img =
 	      rl2_graph_create_bitmap (rgba, aux->base_width, aux->base_height);
@@ -1294,12 +1302,18 @@ do_aux_render_image_blob (struct aux_renderer *aux)
 	free (rgb);
     if (alpha != NULL)
 	free (alpha);
+    if (aux->mask != NULL)
+	free (aux->mask);
+    aux->mask = NULL;
     return RL2_OK;
 
   error:
     if (aux->outbuf != NULL)
 	free (aux->outbuf);
     aux->outbuf = NULL;
+    if (aux->mask != NULL)
+	free (aux->mask);
+    aux->mask = NULL;
     if (rgb != NULL)
 	free (rgb);
     if (alpha != NULL)
@@ -1313,7 +1327,7 @@ RL2_PRIVATE int
 rl2_aux_render_image (struct aux_renderer *aux)
 {
 /* rendering a raster image */
-    if (aux->graphics_ctx != NULL)
+    if (aux->is_blob_image == 0)
 	return do_aux_render_image_graphics (aux);
     else
 	return do_aux_render_image_blob (aux);
@@ -1947,6 +1961,95 @@ do_copy_gray (unsigned char *out, const unsigned char *in, unsigned int width,
       }
 }
 
+static void
+do_copy_rgb_transparent (unsigned char *out, unsigned char *out_mask,
+			 const unsigned char *in, const unsigned char *mask,
+			 unsigned int width, unsigned int height,
+			 unsigned int w, unsigned int h, int base_x, int base_y)
+{
+/* copying RGB pixels */
+    int x;
+    int y;
+    unsigned char *p_out;
+    unsigned char *p_outmsk;
+    const unsigned char *p_in = in;
+    const unsigned char *p_msk = mask;
+
+    for (y = 0; y < (int) h; y++)
+      {
+	  if ((base_y + y) >= (int) height)
+	      break;
+	  if ((base_y + y) < 0)
+	    {
+		p_in += w * 3;
+		p_msk += w;
+		continue;
+	    }
+	  for (x = 0; x < (int) w; x++)
+	    {
+		if ((base_x + x) < 0 || (base_x + x) >= (int) width)
+		  {
+		      p_in += 3;
+		      p_msk++;
+		      continue;
+		  }
+		p_out = out + ((base_y + y) * width * 3) + ((base_x + x) * 3);
+		p_outmsk = out_mask + ((base_y + y) * width) + (base_x + x);
+		*p_out++ = *p_in++;
+		*p_out++ = *p_in++;
+		*p_out++ = *p_in++;
+		if (p_msk != NULL)
+		    *p_outmsk++ = *p_msk++;
+		else
+		    *p_outmsk++ = 0;
+	    }
+      }
+}
+
+static void
+do_copy_gray_transparent (unsigned char *out, unsigned char *out_mask,
+			  const unsigned char *in, const unsigned char *mask,
+			  unsigned int width, unsigned int height,
+			  unsigned int w, unsigned int h, int base_x,
+			  int base_y)
+{
+/* copying Grayscale pixels */
+    int x;
+    int y;
+    unsigned char *p_out;
+    unsigned char *p_outmsk;
+    const unsigned char *p_in = in;
+    const unsigned char *p_msk = mask;
+
+    for (y = 0; y < (int) h; y++)
+      {
+	  if ((base_y + y) >= (int) height)
+	      break;
+	  if ((base_y + y) < 0)
+	    {
+		p_in += w;
+		p_msk += w;
+		continue;
+	    }
+	  for (x = 0; x < (int) w; x++)
+	    {
+		if ((base_x + x) < 0 || (base_x + x) >= (int) width)
+		  {
+		      p_in++;
+		      p_msk++;
+		      continue;
+		  }
+		p_out = out + ((base_y + y) * width) + (base_x + x);
+		p_outmsk = out_mask + ((base_y + y) * width) + (base_x + x);
+		*p_out++ = *p_in++;
+		if (p_msk != NULL)
+		    *p_outmsk++ = *p_msk++;
+		else
+		    *p_outmsk++ = 0;
+	    }
+      }
+}
+
 RL2_DECLARE int
 rl2_get_raw_raster_data_mixed_resolutions (sqlite3 * handle, int max_threads,
 					   rl2CoveragePtr cvg,
@@ -2209,6 +2312,280 @@ rl2_get_raw_raster_data_mixed_resolutions (sqlite3 * handle, int max_threads,
     return RL2_ERROR;
 }
 
+RL2_DECLARE int
+rl2_get_raw_raster_data_mixed_resolutions_transparent (sqlite3 * handle,
+						       int max_threads,
+						       rl2CoveragePtr cvg,
+						       unsigned int width,
+						       unsigned int height,
+						       double minx, double miny,
+						       double maxx, double maxy,
+						       double x_res,
+						       double y_res,
+						       unsigned char **buffer,
+						       int *buf_size,
+						       unsigned char **mask,
+						       int *mask_size,
+						       rl2PalettePtr * palette,
+						       unsigned char *out_pixel,
+						       rl2PixelPtr no_data,
+						       rl2RasterSymbolizerPtr
+						       style,
+						       rl2RasterStatisticsPtr
+						       stats)
+{
+/* attempting to return raw pixels from the DBMS Coverage - Mixed Resolutions */
+    int ret;
+    const char *db_prefix;
+    const char *coverage;
+    unsigned char sample_type;
+    unsigned char pixel_type;
+    unsigned char num_bands;
+    unsigned char pixel = *out_pixel;
+    unsigned char *outbuf = NULL;
+    int out_size;
+    unsigned char *outmask = NULL;
+    int out_masksize;
+    unsigned char *p;
+    unsigned int x;
+    unsigned int y;
+    rl2RasterSymbolizerPtr xstyle = style;
+    char *xdb_prefix;
+    char *xsections;
+    char *xxsections;
+    char *sql;
+    sqlite3_stmt *stmt = NULL;
+
+    if (cvg == NULL || handle == NULL)
+	return RL2_ERROR;
+    if (rl2_get_coverage_type (cvg, &sample_type, &pixel_type, &num_bands) !=
+	RL2_OK)
+	return RL2_ERROR;
+    db_prefix = rl2_get_coverage_prefix (cvg);
+    coverage = rl2_get_coverage_name (cvg);
+    if (coverage == NULL)
+	return RL2_ERROR;
+
+    *buffer = NULL;
+    *buf_size = 0;
+    if (pixel == RL2_PIXEL_GRAYSCALE && pixel_type == RL2_PIXEL_DATAGRID)
+      {
+	  if (rl2_has_styled_rgb_colors (style))
+	    {
+		/* RGB RasterSymbolizer: promoting to RGB */
+		pixel = RL2_PIXEL_RGB;
+	    }
+      }
+    if (pixel == RL2_PIXEL_RGB)
+      {
+	  /* RGB */
+	  *out_pixel = RL2_PIXEL_RGB;
+      }
+    if (pixel_type == RL2_PIXEL_MONOCHROME)
+	xstyle = NULL;
+
+/* preparing the "sections" SQL query */
+    if (db_prefix == NULL)
+	db_prefix = "main";
+    xdb_prefix = rl2_double_quoted_sql (db_prefix);
+    xsections = sqlite3_mprintf ("%s_sections", coverage);
+    xxsections = rl2_double_quoted_sql (xsections);
+    sqlite3_free (xsections);
+    xsections = sqlite3_mprintf ("DB=%s.%s_sections", db_prefix, coverage);
+    sql =
+	sqlite3_mprintf
+	("SELECT section_id, MbrMinX(geometry), MbrMinY(geometry), "
+	 "MbrMaxX(geometry), MbrMaxY(geometry) "
+	 "FROM \"%s\".\"%s\" WHERE ROWID IN ( "
+	 "SELECT ROWID FROM SpatialIndex WHERE f_table_name = %Q "
+	 "AND search_frame = BuildMBR(?, ?, ?, ?))", xdb_prefix, xxsections,
+	 xsections);
+    sqlite3_free (xsections);
+    free (xdb_prefix);
+    free (xxsections);
+    ret = sqlite3_prepare_v2 (handle, sql, strlen (sql), &stmt, NULL);
+    sqlite3_free (sql);
+    if (ret != SQLITE_OK)
+      {
+	  printf ("SELECT mixed-res Sections SQL error: %s\n",
+		  sqlite3_errmsg (handle));
+	  goto error;
+      }
+
+/* allocating the output buffer */
+    if (*out_pixel == RL2_PIXEL_RGB)
+	out_size = width * height * 3;
+    else
+	out_size = width * height;
+    outbuf = malloc (out_size);
+    p = outbuf;
+    for (y = 0; y < height; y++)
+      {
+	  /* priming the background color */
+	  for (x = 0; x < width; x++)
+	    {
+		if (*out_pixel == RL2_PIXEL_RGB)
+		  {
+		      *p++ = 0;
+		      *p++ = 0;
+		      *p++ = 0;
+		  }
+		else
+		    *p++ = 0;
+	    }
+      }
+    out_masksize = width * height;
+    outmask = malloc (out_masksize);
+    p = outmask;
+    for (y = 0; y < height; y++)
+      {
+	  /* priming a full transparent mask */
+	  for (x = 0; x < width; x++)
+	      *p++ = 1;
+      }
+
+    sqlite3_reset (stmt);
+    sqlite3_clear_bindings (stmt);
+    sqlite3_bind_double (stmt, 1, minx);
+    sqlite3_bind_double (stmt, 2, miny);
+    sqlite3_bind_double (stmt, 3, maxx);
+    sqlite3_bind_double (stmt, 4, maxy);
+    while (1)
+      {
+	  /* scrolling the result set rows */
+	  ret = sqlite3_step (stmt);
+	  if (ret == SQLITE_DONE)
+	      break;		/* end of result set */
+	  if (ret == SQLITE_ROW)
+	    {
+		sqlite3_int64 section_id = sqlite3_column_int64 (stmt, 0);
+		double section_minx = sqlite3_column_double (stmt, 1);
+		double section_miny = sqlite3_column_double (stmt, 2);
+		double section_maxx = sqlite3_column_double (stmt, 3);
+		double section_maxy = sqlite3_column_double (stmt, 4);
+		double xx_res;
+		double yy_res;
+		int level_id;
+		int scale;
+		int xscale;
+		unsigned int w;
+		unsigned int h;
+		unsigned int w2;
+		unsigned int h2;
+		int base_x;
+		int base_y;
+		unsigned char *bufpix = NULL;
+		int bufpix_size;
+		unsigned char *bufmask = NULL;
+		int bufmask_size;
+		double img_res_x = (maxx - minx) / (double) width;
+		double img_res_y = (maxy - miny) / (double) height;
+		double mnx = minx;
+		double mny = miny;
+		double mxx = maxx;
+		double mxy = maxy;
+		/* normalizing the visible portion of the Section */
+		if (mnx < section_minx)
+		    mnx = section_minx;
+		if (mny < section_miny)
+		    mny = section_miny;
+		if (mxx > section_maxx)
+		    mxx = section_maxx;
+		if (mxy > section_maxy)
+		    mxy = section_maxy;
+		/* retrieving the optimal resolution level */
+		if (!rl2_find_best_resolution_level
+		    (handle, db_prefix, coverage, 1, section_id, x_res, y_res,
+		     &level_id, &scale, &xscale, &xx_res, &yy_res))
+		    goto error;
+		w = (unsigned int) ((mxx - mnx) / xx_res);
+		if (((double) w * xx_res) < (mxx - mnx))
+		    w++;
+		h = (unsigned int) ((mxy - mny) / yy_res);
+		if (((double) h * yy_res) < (mxy - mny))
+		    h++;
+		base_x = (int) ((mnx - minx) / img_res_x);
+		base_y = (int) ((maxy - mxy) / img_res_y);
+
+		if (rl2_get_raw_raster_data_common_transparent
+		    (handle, max_threads, cvg, 1, section_id, w, h, mnx, mny,
+		     mxx, mxy, xx_res, yy_res, &bufpix, &bufpix_size, &bufmask,
+		     &bufmask_size, palette, *out_pixel, no_data, xstyle,
+		     stats) != RL2_OK)
+		    goto error;
+
+		w2 = (unsigned int) ((mxx - mnx) / img_res_x);
+		if (((double) w2 * img_res_x) < (mxx - mnx))
+		    w2++;
+		h2 = (unsigned int) ((mxy - mny) / img_res_y);
+		if (((double) h2 * img_res_y) < (mxy - mny))
+		    h2++;
+		if (w == w2 && h == h2)
+		  {
+		      /* already rescaled */
+		  }
+		else
+		  {
+		      /* rescaling the pixbuf */
+		      unsigned char *rescaled = NULL;
+		      unsigned char *rescaled_mask = NULL;
+		      int pix_sz = 1;
+		      if (*out_pixel == RL2_PIXEL_RGB)
+			  pix_sz = 3;
+		      rescaled = malloc (pix_sz * w2 * h2);
+		      rescaled_mask = malloc (w2 * h2);
+		      if (rescaled == NULL || rescaled_mask == NULL)
+			{
+			    fprintf (stderr,
+				     "rl2_get_raw_raster_data_mixed_resolutions: Insufficient Memory !!!\n");
+			    goto error;
+			}
+		      if (!rl2_rescale_pixbuf_transparent
+			  (bufpix, bufmask, w, h, *out_pixel, rescaled,
+			   rescaled_mask, w2, h2))
+			  goto error;
+		      free (bufpix);
+		      free (bufmask);
+		      bufpix = rescaled;
+		      bufmask = rescaled_mask;
+		  }
+
+		if (*out_pixel == RL2_PIXEL_RGB)
+		    do_copy_rgb_transparent (outbuf, outmask, bufpix, bufmask,
+					     width, height, w2, h2, base_x,
+					     base_y);
+		else
+		    do_copy_gray_transparent (outbuf, outmask, bufpix, bufmask,
+					      width, height, w2, h2, base_x,
+					      base_y);
+		free (bufpix);
+		free (bufmask);
+	    }
+	  else
+	    {
+		fprintf (stderr, "SQL error: %s\n%s\n", sql,
+			 sqlite3_errmsg (handle));
+		goto error;
+	    }
+      }
+    sqlite3_finalize (stmt);
+
+    *buffer = outbuf;
+    *buf_size = out_size;
+    *mask = outmask;
+    *mask_size = out_masksize;
+    return RL2_OK;
+
+  error:
+    if (stmt != NULL)
+	sqlite3_finalize (stmt);
+    if (outbuf != NULL)
+	free (outbuf);
+    if (outmask != NULL)
+	free (outmask);
+    return RL2_ERROR;
+}
+
 static int
 point_bbox_matches (rl2PointPtr point, double minx, double miny, double maxx,
 		    double maxy)
@@ -2288,16 +2665,16 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 					      if (mark->fill->graphic->first !=
 						  NULL)
 						{
-						    if (mark->fill->graphic->
-							first->type ==
+						    if (mark->fill->
+							graphic->first->type ==
 							RL2_EXTERNAL_GRAPHIC)
 						      {
 							  rl2PrivExternalGraphicPtr
 							      ext =
 							      (rl2PrivExternalGraphicPtr)
-							      (mark->fill->
-							       graphic->first->
-							       item);
+							      (mark->
+							       fill->graphic->
+							       first->item);
 							  xlink_href =
 							      ext->xlink_href;
 							  if (ext->first !=
@@ -2305,14 +2682,14 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 							    {
 								recolor = 1;
 								red =
-								    ext->first->
-								    red;
+								    ext->
+								    first->red;
 								green =
-								    ext->first->
-								    green;
+								    ext->
+								    first->green;
 								blue =
-								    ext->first->
-								    blue;
+								    ext->
+								    first->blue;
 							    }
 						      }
 						}
@@ -2333,15 +2710,16 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 						    if (mark->fill->opacity <=
 							0.0)
 							norm_opacity = 0;
-						    else if (mark->fill->
-							     opacity >= 1.0)
+						    else if (mark->
+							     fill->opacity >=
+							     1.0)
 							norm_opacity = 255;
 						    else
 						      {
 							  opacity =
 							      255.0 *
-							      mark->fill->
-							      opacity;
+							      mark->
+							      fill->opacity;
 							  if (opacity <= 0.0)
 							      norm_opacity = 0;
 							  else if (opacity >=
@@ -2389,12 +2767,12 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 							norm_opacity = opacity;
 						}
 					      rl2_graph_set_brush (ctx,
-								   mark->fill->
-								   red,
-								   mark->fill->
-								   green,
-								   mark->fill->
-								   blue,
+								   mark->
+								   fill->red,
+								   mark->
+								   fill->green,
+								   mark->
+								   fill->blue,
 								   norm_opacity);
 					      fill = 1;
 					  }
@@ -2409,19 +2787,19 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 					      unsigned char green;
 					      unsigned char blue;
 					      pattern_stroke = NULL;
-					      if (mark->stroke->graphic->
-						  first != NULL)
+					      if (mark->stroke->
+						  graphic->first != NULL)
 						{
-						    if (mark->stroke->graphic->
-							first->type ==
+						    if (mark->stroke->
+							graphic->first->type ==
 							RL2_EXTERNAL_GRAPHIC)
 						      {
 							  rl2PrivExternalGraphicPtr
 							      ext =
 							      (rl2PrivExternalGraphicPtr)
-							      (mark->stroke->
-							       graphic->first->
-							       item);
+							      (mark->
+							       stroke->graphic->
+							       first->item);
 							  xlink_href =
 							      ext->xlink_href;
 							  if (ext->first !=
@@ -2429,14 +2807,14 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 							    {
 								recolor = 1;
 								red =
-								    ext->first->
-								    red;
+								    ext->
+								    first->red;
 								green =
-								    ext->first->
-								    green;
+								    ext->
+								    first->green;
 								blue =
-								    ext->first->
-								    blue;
+								    ext->
+								    first->blue;
 							    }
 						      }
 						}
@@ -2457,15 +2835,16 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 						    if (mark->stroke->opacity <=
 							0.0)
 							norm_opacity = 0;
-						    else if (mark->stroke->
-							     opacity >= 1.0)
+						    else if (mark->
+							     stroke->opacity >=
+							     1.0)
 							norm_opacity = 255;
 						    else
 						      {
 							  opacity =
 							      255.0 *
-							      mark->stroke->
-							      opacity;
+							      mark->
+							      stroke->opacity;
 							  if (opacity <= 0.0)
 							      norm_opacity = 0;
 							  else if (opacity >=
@@ -2483,8 +2862,8 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 						    if (pattern_stroke != NULL)
 						      {
 							  switch
-							      (mark->stroke->
-							       linecap)
+							      (mark->
+							       stroke->linecap)
 							    {
 							    case RL2_STROKE_LINECAP_ROUND:
 								pen_cap =
@@ -2500,8 +2879,8 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 								break;
 							    };
 							  switch
-							      (mark->stroke->
-							       linejoin)
+							      (mark->
+							       stroke->linejoin)
 							    {
 							    case RL2_STROKE_LINEJOIN_BEVEL:
 								pen_join =
@@ -2516,29 +2895,31 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 								    RL2_PEN_JOIN_MITER;
 								break;
 							    };
-							  if (mark->stroke->
-							      dash_count > 0
-							      && mark->stroke->
-							      dash_list != NULL)
+							  if (mark->
+							      stroke->dash_count
+							      > 0
+							      && mark->
+							      stroke->dash_list
+							      != NULL)
 							      rl2_graph_set_pattern_dashed_pen
 								  (ctx,
 								   pattern_stroke,
-								   mark->stroke->
-								   width,
+								   mark->
+								   stroke->width,
 								   pen_cap,
 								   pen_join,
-								   mark->stroke->
-								   dash_count,
-								   mark->stroke->
-								   dash_list,
-								   mark->stroke->
-								   dash_offset);
+								   mark->
+								   stroke->dash_count,
+								   mark->
+								   stroke->dash_list,
+								   mark->
+								   stroke->dash_offset);
 							  else
 							      rl2_graph_set_pattern_solid_pen
 								  (ctx,
 								   pattern_stroke,
-								   mark->stroke->
-								   width,
+								   mark->
+								   stroke->width,
 								   pen_cap,
 								   pen_join);
 							  stroke = 1;
@@ -2595,27 +2976,19 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 						  && mark->stroke->dash_list !=
 						  NULL)
 						  rl2_graph_set_dashed_pen (ctx,
-									    mark->
-									    stroke->
-									    red,
-									    mark->
-									    stroke->
-									    green,
-									    mark->
-									    stroke->
-									    blue,
+									    mark->stroke->red,
+									    mark->stroke->green,
+									    mark->stroke->blue,
 									    norm_opacity,
-									    mark->
-									    stroke->
-									    width,
+									    mark->stroke->width,
 									    pen_cap,
 									    pen_join,
-									    mark->stroke->
-									    dash_count,
-									    mark->stroke->
-									    dash_list,
-									    mark->stroke->
-									    dash_offset);
+									    mark->
+									    stroke->dash_count,
+									    mark->
+									    stroke->dash_list,
+									    mark->
+									    stroke->dash_offset);
 					      else
 						  rl2_graph_set_solid_pen
 						      (ctx, mark->stroke->red,
@@ -2722,9 +3095,15 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 								    well_known_type,
 								    gr->size, x,
 								    y,
-								    point_sym->graphic->rotation,
-								    point_sym->graphic->anchor_point_x,
-								    point_sym->graphic->anchor_point_y,
+								    point_sym->
+								    graphic->
+								    rotation,
+								    point_sym->
+								    graphic->
+								    anchor_point_x,
+								    point_sym->
+								    graphic->
+								    anchor_point_y,
 								    fill,
 								    stroke);
 				    }
@@ -2743,22 +3122,12 @@ draw_points (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 								       out_width,
 								       out_height,
 								       x +
-								       point_sym->
-								       graphic->
-								       displacement_x,
+								       point_sym->graphic->displacement_x,
 								       y -
-								       point_sym->
-								       graphic->
-								       displacement_y,
-								       point_sym->
-								       graphic->
-								       rotation,
-								       point_sym->
-								       graphic->
-								       anchor_point_x,
-								       point_sym->
-								       graphic->
-								       anchor_point_y);
+								       point_sym->graphic->displacement_y,
+								       point_sym->graphic->rotation,
+								       point_sym->graphic->anchor_point_x,
+								       point_sym->graphic->anchor_point_y);
 				    }
 			      }
 			    point = point->next;
@@ -2889,8 +3258,8 @@ draw_lines (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 				    {
 					rl2PrivExternalGraphicPtr ext =
 					    (rl2PrivExternalGraphicPtr)
-					    (line_sym->stroke->graphic->first->
-					     item);
+					    (line_sym->stroke->graphic->
+					     first->item);
 					xlink_href = ext->xlink_href;
 					if (ext->first != NULL)
 					  {
@@ -2999,34 +3368,36 @@ draw_lines (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 			    if (line_sym->stroke->dash_count > 0
 				&& line_sym->stroke->dash_list != NULL)
 				rl2_add_to_multi_stroke_dash (multi_stroke,
-							      line_sym->stroke->
-							      red,
-							      line_sym->stroke->
-							      green,
-							      line_sym->stroke->
-							      blue,
+							      line_sym->
+							      stroke->red,
+							      line_sym->
+							      stroke->green,
+							      line_sym->
+							      stroke->blue,
 							      norm_opacity,
-							      line_sym->stroke->
-							      width, pen_cap,
-							      pen_join,
-							      line_sym->stroke->
-							      dash_count,
-							      line_sym->stroke->
-							      dash_list,
-							      line_sym->stroke->
-							      dash_offset,
-							      line_sym->perpendicular_offset);
+							      line_sym->
+							      stroke->width,
+							      pen_cap, pen_join,
+							      line_sym->
+							      stroke->dash_count,
+							      line_sym->
+							      stroke->dash_list,
+							      line_sym->
+							      stroke->dash_offset,
+							      line_sym->
+							      perpendicular_offset);
 			    else
 				rl2_add_to_multi_stroke (multi_stroke,
 							 line_sym->stroke->red,
-							 line_sym->stroke->
-							 green,
+							 line_sym->
+							 stroke->green,
 							 line_sym->stroke->blue,
 							 norm_opacity,
-							 line_sym->stroke->
-							 width, pen_cap,
+							 line_sym->
+							 stroke->width, pen_cap,
 							 pen_join,
-							 line_sym->perpendicular_offset);
+							 line_sym->
+							 perpendicular_offset);
 			}
 		  }
 	    }
@@ -3291,8 +3662,8 @@ draw_polygons (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 				    {
 					rl2PrivExternalGraphicPtr ext =
 					    (rl2PrivExternalGraphicPtr)
-					    (polyg_sym->fill->graphic->first->
-					     item);
+					    (polyg_sym->fill->graphic->
+					     first->item);
 					xlink_href = ext->xlink_href;
 					if (ext->first != NULL)
 					  {
@@ -3385,8 +3756,8 @@ draw_polygons (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 				    {
 					rl2PrivExternalGraphicPtr ext =
 					    (rl2PrivExternalGraphicPtr)
-					    (polyg_sym->stroke->graphic->first->
-					     item);
+					    (polyg_sym->stroke->graphic->
+					     first->item);
 					xlink_href = ext->xlink_href;
 					if (ext->first != NULL)
 					  {
@@ -3428,12 +3799,20 @@ draw_polygons (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 				      && polyg_sym->stroke->dash_list != NULL)
 				      rl2_graph_set_pattern_dashed_pen (ctx,
 									pattern_stroke,
-									polyg_sym->stroke->width,
+									polyg_sym->
+									stroke->
+									width,
 									pen_cap,
 									pen_join,
-									polyg_sym->stroke->dash_count,
-									polyg_sym->stroke->dash_list,
-									polyg_sym->stroke->dash_offset);
+									polyg_sym->
+									stroke->
+									dash_count,
+									polyg_sym->
+									stroke->
+									dash_list,
+									polyg_sym->
+									stroke->
+									dash_offset);
 				  else
 				      rl2_graph_set_pattern_solid_pen
 					  (ctx, pattern_stroke,
@@ -3491,30 +3870,32 @@ draw_polygons (rl2GraphicsContextPtr ctx, sqlite3 * handle,
 			    if (polyg_sym->stroke->dash_count > 0
 				&& polyg_sym->stroke->dash_list != NULL)
 				rl2_graph_set_dashed_pen (ctx,
-							  polyg_sym->stroke->
-							  red,
-							  polyg_sym->stroke->
-							  green,
-							  polyg_sym->stroke->
-							  blue, norm_opacity,
-							  polyg_sym->stroke->
-							  width, pen_cap,
-							  pen_join,
-							  polyg_sym->stroke->
-							  dash_count,
-							  polyg_sym->stroke->
-							  dash_list,
-							  polyg_sym->stroke->
-							  dash_offset);
+							  polyg_sym->
+							  stroke->red,
+							  polyg_sym->
+							  stroke->green,
+							  polyg_sym->
+							  stroke->blue,
+							  norm_opacity,
+							  polyg_sym->
+							  stroke->width,
+							  pen_cap, pen_join,
+							  polyg_sym->
+							  stroke->dash_count,
+							  polyg_sym->
+							  stroke->dash_list,
+							  polyg_sym->
+							  stroke->dash_offset);
 			    else
 				rl2_graph_set_solid_pen (ctx,
 							 polyg_sym->stroke->red,
-							 polyg_sym->stroke->
-							 green,
-							 polyg_sym->stroke->
-							 blue, norm_opacity,
-							 polyg_sym->stroke->
-							 width, pen_cap,
+							 polyg_sym->
+							 stroke->green,
+							 polyg_sym->
+							 stroke->blue,
+							 norm_opacity,
+							 polyg_sym->
+							 stroke->width, pen_cap,
 							 pen_join);
 			    stroke = 1;
 			}
@@ -4831,8 +5212,8 @@ rl2_draw_vector_feature (void *p_ctx, void *p_ctx_labels, sqlite3 * handle,
 				&& s->graphic->first->item != NULL)
 			      {
 				  rl2PrivMarkPtr mark =
-				      (rl2PrivMarkPtr) (s->graphic->first->
-							item);
+				      (rl2PrivMarkPtr) (s->graphic->
+							first->item);
 				  mark->well_known_type =
 				      RL2_GRAPHIC_MARK_SQUARE;
 				  mark->fill = rl2_create_default_fill ();

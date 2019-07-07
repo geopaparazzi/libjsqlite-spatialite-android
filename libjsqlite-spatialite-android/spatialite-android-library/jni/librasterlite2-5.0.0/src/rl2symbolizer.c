@@ -666,18 +666,17 @@ parse_sld_se_categorize (xmlNodePtr node, rl2PrivRasterSymbolizerPtr style)
 							red;
 						    style->categorize->baseGreen
 							= green;
-						    style->
-							categorize->baseBlue =
-							blue;
+						    style->categorize->
+							baseBlue = blue;
 						}
 					      else
 						{
-						    style->categorize->
-							last->red = red;
-						    style->categorize->
-							last->green = green;
-						    style->categorize->
-							last->blue = blue;
+						    style->categorize->last->
+							red = red;
+						    style->categorize->last->
+							green = green;
+						    style->categorize->last->
+							blue = blue;
 						}
 					  }
 					else
@@ -1575,17 +1574,18 @@ parse_mark_stroke (xmlNodePtr node, rl2PrivMarkPtr mark)
 						    if (mark->stroke->graphic !=
 							NULL)
 							rl2_destroy_graphic
-							    (mark->
-							     stroke->graphic);
+							    (mark->stroke->
+							     graphic);
 						    mark->stroke->graphic =
 							rl2_create_default_graphic
 							();
 						    if (mark->stroke->graphic !=
 							NULL)
 							parse_graphic
-							    (grandchild->children,
-							     mark->
-							     stroke->graphic);
+							    (grandchild->
+							     children,
+							     mark->stroke->
+							     graphic);
 						}
 					      grandchild = grandchild->next;
 					  }
@@ -1604,8 +1604,8 @@ parse_mark_stroke (xmlNodePtr node, rl2PrivMarkPtr mark)
 					  {
 					      if (mark->stroke->col_color !=
 						  NULL)
-						  free (mark->
-							stroke->col_color);
+						  free (mark->stroke->
+							col_color);
 					      mark->stroke->col_color = NULL;
 					      if (is_table_column (svg_value))
 						{
@@ -1614,12 +1614,12 @@ parse_mark_stroke (xmlNodePtr node, rl2PrivMarkPtr mark)
 							strlen (svg_value) - 1;
 						    mark->stroke->col_color =
 							malloc (len + 1);
-						    strcpy (mark->
-							    stroke->col_color,
+						    strcpy (mark->stroke->
+							    col_color,
 							    svg_value + 1);
 						    len =
-							strlen (mark->
-								stroke->col_color);
+							strlen (mark->stroke->
+								col_color);
 						    *(mark->stroke->col_color +
 						      len - 1) = '\0';
 						}
@@ -1646,8 +1646,8 @@ parse_mark_stroke (xmlNodePtr node, rl2PrivMarkPtr mark)
 					  {
 					      if (mark->stroke->col_width !=
 						  NULL)
-						  free (mark->
-							stroke->col_width);
+						  free (mark->stroke->
+							col_width);
 					      mark->stroke->col_width = NULL;
 					      if (is_table_column (svg_value))
 						{
@@ -1656,12 +1656,12 @@ parse_mark_stroke (xmlNodePtr node, rl2PrivMarkPtr mark)
 							strlen (svg_value) - 1;
 						    mark->stroke->col_width =
 							malloc (len + 1);
-						    strcpy (mark->
-							    stroke->col_width,
+						    strcpy (mark->stroke->
+							    col_width,
 							    svg_value + 1);
 						    len =
-							strlen (mark->
-								stroke->col_width);
+							strlen (mark->stroke->
+								col_width);
 						    *(mark->stroke->col_width +
 						      len - 1) = '\0';
 						}
@@ -1686,12 +1686,12 @@ parse_mark_stroke (xmlNodePtr node, rl2PrivMarkPtr mark)
 							strlen (svg_value) - 1;
 						    mark->stroke->col_join =
 							malloc (len + 1);
-						    strcpy (mark->
-							    stroke->col_join,
+						    strcpy (mark->stroke->
+							    col_join,
 							    svg_value + 1);
 						    len =
-							strlen (mark->
-								stroke->col_join);
+							strlen (mark->stroke->
+								col_join);
 						    *(mark->stroke->col_join +
 						      len - 1) = '\0';
 						}
@@ -1727,12 +1727,12 @@ parse_mark_stroke (xmlNodePtr node, rl2PrivMarkPtr mark)
 							strlen (svg_value) - 1;
 						    mark->stroke->col_cap =
 							malloc (len + 1);
-						    strcpy (mark->
-							    stroke->col_cap,
+						    strcpy (mark->stroke->
+							    col_cap,
 							    svg_value + 1);
 						    len =
-							strlen (mark->
-								stroke->col_cap);
+							strlen (mark->stroke->
+								col_cap);
 						    *(mark->stroke->col_cap +
 						      len - 1) = '\0';
 						}
@@ -1769,12 +1769,12 @@ parse_mark_stroke (xmlNodePtr node, rl2PrivMarkPtr mark)
 							strlen (svg_value) - 1;
 						    mark->stroke->col_dash =
 							malloc (len + 1);
-						    strcpy (mark->
-							    stroke->col_dash,
+						    strcpy (mark->stroke->
+							    col_dash,
 							    svg_value + 1);
 						    len =
-							strlen (mark->
-								stroke->col_dash);
+							strlen (mark->stroke->
+								col_dash);
 						    *(mark->stroke->col_dash +
 						      len - 1) = '\0';
 						}
@@ -1784,12 +1784,12 @@ parse_mark_stroke (xmlNodePtr node, rl2PrivMarkPtr mark)
 						    double *dash_list = NULL;
 						    if (parse_sld_se_stroke_dasharray (svg_value, &dash_count, &dash_list))
 						      {
-							  mark->
-							      stroke->dash_count
-							      = dash_count;
-							  mark->
-							      stroke->dash_list
-							      = dash_list;
+							  mark->stroke->
+							      dash_count =
+							      dash_count;
+							  mark->stroke->
+							      dash_list =
+							      dash_list;
 						      }
 						}
 					  }
@@ -1799,8 +1799,8 @@ parse_mark_stroke (xmlNodePtr node, rl2PrivMarkPtr mark)
 					  {
 					      if (mark->stroke->col_dashoff !=
 						  NULL)
-						  free (mark->
-							stroke->col_dashoff);
+						  free (mark->stroke->
+							col_dashoff);
 					      mark->stroke->col_dashoff = NULL;
 					      if (is_table_column (svg_value))
 						{
@@ -1809,15 +1809,15 @@ parse_mark_stroke (xmlNodePtr node, rl2PrivMarkPtr mark)
 							strlen (svg_value) - 1;
 						    mark->stroke->col_dashoff =
 							malloc (len + 1);
-						    strcpy (mark->
-							    stroke->col_dashoff,
+						    strcpy (mark->stroke->
+							    col_dashoff,
 							    svg_value + 1);
 						    len =
-							strlen (mark->
-								stroke->col_dashoff);
-						    *(mark->
-						      stroke->col_dashoff +
-						      len - 1) = '\0';
+							strlen (mark->stroke->
+								col_dashoff);
+						    *(mark->stroke->
+						      col_dashoff + len - 1) =
+					  '\0';
 						}
 					      else
 						  mark->stroke->dash_offset =
@@ -1867,17 +1867,18 @@ parse_mark_fill (xmlNodePtr node, rl2PrivMarkPtr mark)
 						    if (mark->fill->graphic !=
 							NULL)
 							rl2_destroy_graphic
-							    (mark->
-							     fill->graphic);
+							    (mark->fill->
+							     graphic);
 						    mark->fill->graphic =
 							rl2_create_default_graphic
 							();
 						    if (mark->fill->graphic !=
 							NULL)
 							parse_graphic
-							    (grandchild->children,
-							     mark->
-							     fill->graphic);
+							    (grandchild->
+							     children,
+							     mark->fill->
+							     graphic);
 						}
 					      grandchild = grandchild->next;
 					  }
@@ -1904,12 +1905,12 @@ parse_mark_fill (xmlNodePtr node, rl2PrivMarkPtr mark)
 							strlen (svg_value) - 1;
 						    mark->fill->col_color =
 							malloc (len + 1);
-						    strcpy (mark->
-							    fill->col_color,
+						    strcpy (mark->fill->
+							    col_color,
 							    svg_value + 1);
 						    len =
-							strlen (mark->
-								fill->col_color);
+							strlen (mark->fill->
+								col_color);
 						    *(mark->fill->col_color +
 						      len - 1) = '\0';
 						}
@@ -2043,17 +2044,18 @@ parse_line_stroke (xmlNodePtr node, rl2PrivLineSymbolizerPtr sym)
 						    if (sym->stroke->graphic !=
 							NULL)
 							rl2_destroy_graphic
-							    (sym->
-							     stroke->graphic);
+							    (sym->stroke->
+							     graphic);
 						    sym->stroke->graphic =
 							rl2_create_default_graphic
 							();
 						    if (sym->stroke->graphic !=
 							NULL)
 							parse_graphic
-							    (grandchild->children,
-							     sym->
-							     stroke->graphic);
+							    (grandchild->
+							     children,
+							     sym->stroke->
+							     graphic);
 						}
 					      grandchild = grandchild->next;
 					  }
@@ -2081,12 +2083,12 @@ parse_line_stroke (xmlNodePtr node, rl2PrivLineSymbolizerPtr sym)
 							strlen (svg_value) - 1;
 						    sym->stroke->col_color =
 							malloc (len + 1);
-						    strcpy (sym->
-							    stroke->col_color,
+						    strcpy (sym->stroke->
+							    col_color,
 							    svg_value + 1);
 						    len =
-							strlen (sym->
-								stroke->col_color);
+							strlen (sym->stroke->
+								col_color);
 						    *(sym->stroke->col_color +
 						      len - 1) = '\0';
 						}
@@ -2113,8 +2115,8 @@ parse_line_stroke (xmlNodePtr node, rl2PrivLineSymbolizerPtr sym)
 					  {
 					      if (sym->stroke->col_opacity !=
 						  NULL)
-						  free (sym->
-							stroke->col_opacity);
+						  free (sym->stroke->
+							col_opacity);
 					      sym->stroke->col_opacity = NULL;
 					      if (is_table_column (svg_value))
 						{
@@ -2123,12 +2125,12 @@ parse_line_stroke (xmlNodePtr node, rl2PrivLineSymbolizerPtr sym)
 							strlen (svg_value) - 1;
 						    sym->stroke->col_opacity =
 							malloc (len + 1);
-						    strcpy (sym->
-							    stroke->col_opacity,
+						    strcpy (sym->stroke->
+							    col_opacity,
 							    svg_value + 1);
 						    len =
-							strlen (sym->
-								stroke->col_opacity);
+							strlen (sym->stroke->
+								col_opacity);
 						    *(sym->stroke->col_opacity +
 						      len - 1) = '\0';
 						}
@@ -2153,12 +2155,12 @@ parse_line_stroke (xmlNodePtr node, rl2PrivLineSymbolizerPtr sym)
 							strlen (svg_value) - 1;
 						    sym->stroke->col_width =
 							malloc (len + 1);
-						    strcpy (sym->
-							    stroke->col_width,
+						    strcpy (sym->stroke->
+							    col_width,
 							    svg_value + 1);
 						    len =
-							strlen (sym->
-								stroke->col_width);
+							strlen (sym->stroke->
+								col_width);
 						    *(sym->stroke->col_width +
 						      len - 1) = '\0';
 						}
@@ -2182,12 +2184,12 @@ parse_line_stroke (xmlNodePtr node, rl2PrivLineSymbolizerPtr sym)
 							strlen (svg_value) - 1;
 						    sym->stroke->col_join =
 							malloc (len + 1);
-						    strcpy (sym->
-							    stroke->col_join,
+						    strcpy (sym->stroke->
+							    col_join,
 							    svg_value + 1);
 						    len =
-							strlen (sym->
-								stroke->col_join);
+							strlen (sym->stroke->
+								col_join);
 						    *(sym->stroke->col_join +
 						      len - 1) = '\0';
 						}
@@ -2223,12 +2225,12 @@ parse_line_stroke (xmlNodePtr node, rl2PrivLineSymbolizerPtr sym)
 							strlen (svg_value) - 1;
 						    sym->stroke->col_cap =
 							malloc (len + 1);
-						    strcpy (sym->
-							    stroke->col_cap,
+						    strcpy (sym->stroke->
+							    col_cap,
 							    svg_value + 1);
 						    len =
-							strlen (sym->
-								stroke->col_cap);
+							strlen (sym->stroke->
+								col_cap);
 						    *(sym->stroke->col_cap +
 						      len - 1) = '\0';
 						}
@@ -2264,12 +2266,12 @@ parse_line_stroke (xmlNodePtr node, rl2PrivLineSymbolizerPtr sym)
 							strlen (svg_value) - 1;
 						    sym->stroke->col_dash =
 							malloc (len + 1);
-						    strcpy (sym->
-							    stroke->col_dash,
+						    strcpy (sym->stroke->
+							    col_dash,
 							    svg_value + 1);
 						    len =
-							strlen (sym->
-								stroke->col_dash);
+							strlen (sym->stroke->
+								col_dash);
 						    *(sym->stroke->col_dash +
 						      len - 1) = '\0';
 						}
@@ -2279,12 +2281,12 @@ parse_line_stroke (xmlNodePtr node, rl2PrivLineSymbolizerPtr sym)
 						    double *dash_list = NULL;
 						    if (parse_sld_se_stroke_dasharray (svg_value, &dash_count, &dash_list))
 						      {
-							  sym->
-							      stroke->dash_count
-							      = dash_count;
-							  sym->
-							      stroke->dash_list
-							      = dash_list;
+							  sym->stroke->
+							      dash_count =
+							      dash_count;
+							  sym->stroke->
+							      dash_list =
+							      dash_list;
 						      }
 						}
 					  }
@@ -2294,8 +2296,8 @@ parse_line_stroke (xmlNodePtr node, rl2PrivLineSymbolizerPtr sym)
 					  {
 					      if (sym->stroke->col_dashoff !=
 						  NULL)
-						  free (sym->
-							stroke->col_dashoff);
+						  free (sym->stroke->
+							col_dashoff);
 					      sym->stroke->col_dashoff = NULL;
 					      if (is_table_column (svg_value))
 						{
@@ -2304,12 +2306,12 @@ parse_line_stroke (xmlNodePtr node, rl2PrivLineSymbolizerPtr sym)
 							strlen (svg_value) - 1;
 						    sym->stroke->col_dashoff =
 							malloc (len + 1);
-						    strcpy (sym->
-							    stroke->col_dashoff,
+						    strcpy (sym->stroke->
+							    col_dashoff,
 							    svg_value + 1);
 						    len =
-							strlen (sym->
-								stroke->col_dashoff);
+							strlen (sym->stroke->
+								col_dashoff);
 						    *(sym->stroke->col_dashoff +
 						      len - 1) = '\0';
 						}
@@ -2437,17 +2439,18 @@ parse_polygon_stroke (xmlNodePtr node, rl2PrivPolygonSymbolizerPtr sym)
 						    if (sym->stroke->graphic !=
 							NULL)
 							rl2_destroy_graphic
-							    (sym->
-							     stroke->graphic);
+							    (sym->stroke->
+							     graphic);
 						    sym->stroke->graphic =
 							rl2_create_default_graphic
 							();
 						    if (sym->stroke->graphic !=
 							NULL)
 							parse_graphic
-							    (grandchild->children,
-							     sym->
-							     stroke->graphic);
+							    (grandchild->
+							     children,
+							     sym->stroke->
+							     graphic);
 						}
 					      grandchild = grandchild->next;
 					  }
@@ -2475,12 +2478,12 @@ parse_polygon_stroke (xmlNodePtr node, rl2PrivPolygonSymbolizerPtr sym)
 							strlen (svg_value) - 1;
 						    sym->stroke->col_color =
 							malloc (len + 1);
-						    strcpy (sym->
-							    stroke->col_color,
+						    strcpy (sym->stroke->
+							    col_color,
 							    svg_value + 1);
 						    len =
-							strlen (sym->
-								stroke->col_color);
+							strlen (sym->stroke->
+								col_color);
 						    *(sym->stroke->col_color +
 						      len - 1) = '\0';
 						}
@@ -2507,8 +2510,8 @@ parse_polygon_stroke (xmlNodePtr node, rl2PrivPolygonSymbolizerPtr sym)
 					  {
 					      if (sym->stroke->col_opacity !=
 						  NULL)
-						  free (sym->
-							stroke->col_opacity);
+						  free (sym->stroke->
+							col_opacity);
 					      sym->stroke->col_opacity = NULL;
 					      if (is_table_column (svg_value))
 						{
@@ -2517,12 +2520,12 @@ parse_polygon_stroke (xmlNodePtr node, rl2PrivPolygonSymbolizerPtr sym)
 							strlen (svg_value) - 1;
 						    sym->stroke->col_opacity =
 							malloc (len + 1);
-						    strcpy (sym->
-							    stroke->col_opacity,
+						    strcpy (sym->stroke->
+							    col_opacity,
 							    svg_value + 1);
 						    len =
-							strlen (sym->
-								stroke->col_opacity);
+							strlen (sym->stroke->
+								col_opacity);
 						    *(sym->stroke->col_opacity +
 						      len - 1) = '\0';
 						}
@@ -2547,12 +2550,12 @@ parse_polygon_stroke (xmlNodePtr node, rl2PrivPolygonSymbolizerPtr sym)
 							strlen (svg_value) - 1;
 						    sym->stroke->col_width =
 							malloc (len + 1);
-						    strcpy (sym->
-							    stroke->col_width,
+						    strcpy (sym->stroke->
+							    col_width,
 							    svg_value + 1);
 						    len =
-							strlen (sym->
-								stroke->col_width);
+							strlen (sym->stroke->
+								col_width);
 						    *(sym->stroke->col_width +
 						      len - 1) = '\0';
 						}
@@ -2576,12 +2579,12 @@ parse_polygon_stroke (xmlNodePtr node, rl2PrivPolygonSymbolizerPtr sym)
 							strlen (svg_value) - 1;
 						    sym->stroke->col_join =
 							malloc (len + 1);
-						    strcpy (sym->
-							    stroke->col_join,
+						    strcpy (sym->stroke->
+							    col_join,
 							    svg_value + 1);
 						    len =
-							strlen (sym->
-								stroke->col_join);
+							strlen (sym->stroke->
+								col_join);
 						    *(sym->stroke->col_join +
 						      len - 1) = '\0';
 						}
@@ -2617,12 +2620,12 @@ parse_polygon_stroke (xmlNodePtr node, rl2PrivPolygonSymbolizerPtr sym)
 							strlen (svg_value) - 1;
 						    sym->stroke->col_cap =
 							malloc (len + 1);
-						    strcpy (sym->
-							    stroke->col_cap,
+						    strcpy (sym->stroke->
+							    col_cap,
 							    svg_value + 1);
 						    len =
-							strlen (sym->
-								stroke->col_cap);
+							strlen (sym->stroke->
+								col_cap);
 						    *(sym->stroke->col_cap +
 						      len - 1) = '\0';
 						}
@@ -2658,12 +2661,12 @@ parse_polygon_stroke (xmlNodePtr node, rl2PrivPolygonSymbolizerPtr sym)
 							strlen (svg_value) - 1;
 						    sym->stroke->col_dash =
 							malloc (len + 1);
-						    strcpy (sym->
-							    stroke->col_dash,
+						    strcpy (sym->stroke->
+							    col_dash,
 							    svg_value + 1);
 						    len =
-							strlen (sym->
-								stroke->col_dash);
+							strlen (sym->stroke->
+								col_dash);
 						    *(sym->stroke->col_dash +
 						      len - 1) = '\0';
 						}
@@ -2673,12 +2676,12 @@ parse_polygon_stroke (xmlNodePtr node, rl2PrivPolygonSymbolizerPtr sym)
 						    double *dash_list = NULL;
 						    if (parse_sld_se_stroke_dasharray (svg_value, &dash_count, &dash_list))
 						      {
-							  sym->
-							      stroke->dash_count
-							      = dash_count;
-							  sym->
-							      stroke->dash_list
-							      = dash_list;
+							  sym->stroke->
+							      dash_count =
+							      dash_count;
+							  sym->stroke->
+							      dash_list =
+							      dash_list;
 						      }
 						}
 					  }
@@ -2688,8 +2691,8 @@ parse_polygon_stroke (xmlNodePtr node, rl2PrivPolygonSymbolizerPtr sym)
 					  {
 					      if (sym->stroke->col_dashoff !=
 						  NULL)
-						  free (sym->
-							stroke->col_dashoff);
+						  free (sym->stroke->
+							col_dashoff);
 					      sym->stroke->col_dashoff = NULL;
 					      if (is_table_column (svg_value))
 						{
@@ -2698,12 +2701,12 @@ parse_polygon_stroke (xmlNodePtr node, rl2PrivPolygonSymbolizerPtr sym)
 							strlen (svg_value) - 1;
 						    sym->stroke->col_dashoff =
 							malloc (len + 1);
-						    strcpy (sym->
-							    stroke->col_dashoff,
+						    strcpy (sym->stroke->
+							    col_dashoff,
 							    svg_value + 1);
 						    len =
-							strlen (sym->
-								stroke->col_dashoff);
+							strlen (sym->stroke->
+								col_dashoff);
 						    *(sym->stroke->col_dashoff +
 						      len - 1) = '\0';
 						}
@@ -2755,17 +2758,18 @@ parse_polygon_fill (xmlNodePtr node, rl2PrivPolygonSymbolizerPtr sym)
 						    if (sym->fill->graphic !=
 							NULL)
 							rl2_destroy_graphic
-							    (sym->
-							     fill->graphic);
+							    (sym->fill->
+							     graphic);
 						    sym->fill->graphic =
 							rl2_create_default_graphic
 							();
 						    if (sym->fill->graphic !=
 							NULL)
 							parse_graphic
-							    (grandchild->children,
-							     sym->
-							     fill->graphic);
+							    (grandchild->
+							     children,
+							     sym->fill->
+							     graphic);
 						}
 					      grandchild = grandchild->next;
 					  }
@@ -2792,12 +2796,12 @@ parse_polygon_fill (xmlNodePtr node, rl2PrivPolygonSymbolizerPtr sym)
 							strlen (svg_value) - 1;
 						    sym->fill->col_color =
 							malloc (len + 1);
-						    strcpy (sym->
-							    fill->col_color,
+						    strcpy (sym->fill->
+							    col_color,
 							    svg_value + 1);
 						    len =
-							strlen (sym->
-								fill->col_color);
+							strlen (sym->fill->
+								col_color);
 						    *(sym->fill->col_color +
 						      len - 1) = '\0';
 						}
@@ -2832,12 +2836,12 @@ parse_polygon_fill (xmlNodePtr node, rl2PrivPolygonSymbolizerPtr sym)
 							strlen (svg_value) - 1;
 						    sym->fill->col_opacity =
 							malloc (len + 1);
-						    strcpy (sym->
-							    fill->col_opacity,
+						    strcpy (sym->fill->
+							    col_opacity,
 							    svg_value + 1);
 						    len =
-							strlen (sym->
-								fill->col_opacity);
+							strlen (sym->fill->
+								col_opacity);
 						    *(sym->fill->col_opacity +
 						      len - 1) = '\0';
 						}
@@ -3528,7 +3532,8 @@ parse_text_font (xmlNodePtr node, rl2PrivTextSymbolizerPtr sym)
 							< RL2_MAX_FONT_FAMILIES)
 						      {
 							  int idx =
-							      sym->font_families_count++;
+							      sym->
+							      font_families_count++;
 							  int len =
 							      strlen
 							      (svg_value);
@@ -3536,7 +3541,8 @@ parse_text_font (xmlNodePtr node, rl2PrivTextSymbolizerPtr sym)
 							    idx) =
 					 malloc (len + 1);
 							  strcpy (*
-								  (sym->font_families
+								  (sym->
+								   font_families
 								   + idx),
 								  svg_value);
 						      }
@@ -4210,7 +4216,8 @@ parse_text_label_placement (xmlNodePtr node, rl2PrivTextSymbolizerPtr sym)
 					    ();
 					parse_point_placement (child,
 							       (rl2PrivPointPlacementPtr)
-							       (sym->label_placement));
+							       (sym->
+								label_placement));
 				    }
 				  if (strcmp (name, "LinePlacement") == 0)
 				    {
@@ -4229,7 +4236,8 @@ parse_text_label_placement (xmlNodePtr node, rl2PrivTextSymbolizerPtr sym)
 					    ();
 					parse_line_placement (child,
 							      (rl2PrivLinePlacementPtr)
-							      (sym->label_placement));
+							      (sym->
+							       label_placement));
 				    };
 			      }
 			    child = child->next;
@@ -4287,12 +4295,12 @@ parse_halo_fill (xmlNodePtr node, rl2PrivHaloPtr halo)
 							strlen (svg_value) - 1;
 						    halo->fill->col_color =
 							malloc (len + 1);
-						    strcpy (halo->
-							    fill->col_color,
+						    strcpy (halo->fill->
+							    col_color,
 							    svg_value + 1);
 						    len =
-							strlen (halo->
-								fill->col_color);
+							strlen (halo->fill->
+								col_color);
 						    *(halo->fill->col_color +
 						      len - 1) = '\0';
 						}
@@ -4318,8 +4326,8 @@ parse_halo_fill (xmlNodePtr node, rl2PrivHaloPtr halo)
 					  {
 					      if (halo->fill->col_opacity !=
 						  NULL)
-						  free (halo->
-							fill->col_opacity);
+						  free (halo->fill->
+							col_opacity);
 					      halo->fill->col_opacity = NULL;
 					      if (is_table_column (svg_value))
 						{
@@ -4328,12 +4336,12 @@ parse_halo_fill (xmlNodePtr node, rl2PrivHaloPtr halo)
 							strlen (svg_value) - 1;
 						    halo->fill->col_opacity =
 							malloc (len + 1);
-						    strcpy (halo->
-							    fill->col_opacity,
+						    strcpy (halo->fill->
+							    col_opacity,
 							    svg_value + 1);
 						    len =
-							strlen (halo->
-								fill->col_opacity);
+							strlen (halo->fill->
+								col_opacity);
 						    *(halo->fill->col_opacity +
 						      len - 1) = '\0';
 						}
@@ -4394,8 +4402,8 @@ parse_text_halo (xmlNodePtr node, rl2PrivTextSymbolizerPtr sym)
 							(grandchild->content);
 						    if (sym->halo->col_radius !=
 							NULL)
-							free (sym->
-							      halo->col_radius);
+							free (sym->halo->
+							      col_radius);
 						    sym->halo->col_radius =
 							NULL;
 						    if (is_table_column
@@ -4405,18 +4413,19 @@ parse_text_halo (xmlNodePtr node, rl2PrivTextSymbolizerPtr sym)
 							  int len =
 							      strlen (radius) -
 							      1;
-							  sym->
-							      halo->col_radius =
+							  sym->halo->
+							      col_radius =
 							      malloc (len + 1);
-							  strcpy (sym->
-								  halo->col_radius,
+							  strcpy (sym->halo->
+								  col_radius,
 								  radius + 1);
 							  len =
-							      strlen
-							      (sym->halo->col_radius);
-							  *(sym->
-							    halo->col_radius +
-							    len - 1) = '\0';
+							      strlen (sym->
+								      halo->
+								      col_radius);
+							  *(sym->halo->
+							    col_radius + len -
+							    1) = '\0';
 						      }
 						    else
 						      {
@@ -4487,12 +4496,12 @@ parse_text_fill (xmlNodePtr node, rl2PrivTextSymbolizerPtr sym)
 							strlen (svg_value) - 1;
 						    sym->fill->col_color =
 							malloc (len + 1);
-						    strcpy (sym->
-							    fill->col_color,
+						    strcpy (sym->fill->
+							    col_color,
 							    svg_value + 1);
 						    len =
-							strlen (sym->
-								fill->col_color);
+							strlen (sym->fill->
+								col_color);
 						    *(sym->fill->col_color +
 						      len - 1) = '\0';
 						}
@@ -4527,12 +4536,12 @@ parse_text_fill (xmlNodePtr node, rl2PrivTextSymbolizerPtr sym)
 							strlen (svg_value) - 1;
 						    sym->fill->col_opacity =
 							malloc (len + 1);
-						    strcpy (sym->
-							    fill->col_opacity,
+						    strcpy (sym->fill->
+							    col_opacity,
 							    svg_value + 1);
 						    len =
-							strlen (sym->
-								fill->col_opacity);
+							strlen (sym->fill->
+								col_opacity);
 						    *(sym->fill->col_opacity +
 						      len - 1) = '\0';
 						}

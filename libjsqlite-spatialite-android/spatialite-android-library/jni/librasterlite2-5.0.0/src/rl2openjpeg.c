@@ -56,20 +56,7 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #include "rasterlite2_private.h"
 
 #ifndef OMIT_OPENJPEG		/* only if OpenJpeg is enabled */
-
-#ifdef HAVE_OPENJPEG_2_1_OPENJPEG_H
-#include <openjpeg-2.1/openjpeg.h>
-#else
-#ifdef HAVE_OPENJPEG_2_2_OPENJPEG_H
-#include <openjpeg-2.2/openjpeg.h>
-#else
-#ifdef __ANDROID__		/* Android specific */
 #include <openjpeg.h>
-#else
-#include <openjpeg-2.0/openjpeg.h>
-#endif
-#endif
-#endif
 
 struct jp2_memfile
 {
@@ -404,11 +391,7 @@ compress_jpeg2000 (rl2RasterPtr ptr, unsigned char **jpeg2000,
     opj_stream_set_write_function (stream, write_callback);
     opj_stream_set_seek_function (stream, seek_callback);
     opj_stream_set_skip_function (stream, skip_callback);
-#if defined(HAVE_OPENJPEG_2_1_OPENJPEG_H) || defined(HAVE_OPENJPEG_2_2_OPENJPEG_H)
     opj_stream_set_user_data (stream, &clientdata, NULL);
-#else
-    opj_stream_set_user_data (stream, &clientdata);
-#endif
 
     if (!opj_start_compress (codec, image, stream))
       {
@@ -764,11 +747,7 @@ rl2_decode_jpeg2000_scaled (int scale, const unsigned char *jpeg2000,
     clientdata.size = jpeg2000_sz;
     clientdata.eof = jpeg2000_sz;
     clientdata.current = 0;
-#if defined(HAVE_OPENJPEG_2_1_OPENJPEG_H) || defined(HAVE_OPENJPEG_2_2_OPENJPEG_H)
     opj_stream_set_user_data (stream, &clientdata, NULL);
-#else
-    opj_stream_set_user_data (stream, &clientdata);
-#endif
     if (!opj_read_header (stream, codec, &image))
       {
 	  fprintf (stderr, "OpenJpeg Error: opj_read_header() failed\n");
@@ -1336,11 +1315,7 @@ rl2_get_jpeg2000_infos (const char *path, unsigned int *xwidth,
     clientdata.size = jpeg2000_sz;
     clientdata.eof = jpeg2000_sz;
     clientdata.current = 0;
-#if defined(HAVE_OPENJPEG_2_1_OPENJPEG_H) || defined(HAVE_OPENJPEG_2_2_OPENJPEG_H)
     opj_stream_set_user_data (stream, &clientdata, NULL);
-#else
-    opj_stream_set_user_data (stream, &clientdata);
-#endif
     if (!opj_read_header (stream, codec, &image))
       {
 	  fprintf (stderr, "OpenJpeg Error: opj_read_header() failed\n");
@@ -1437,11 +1412,7 @@ rl2_get_jpeg2000_blob_type (const unsigned char *jpeg2000, int jpeg2000_sz,
     clientdata.size = jpeg2000_sz;
     clientdata.eof = jpeg2000_sz;
     clientdata.current = 0;
-#if defined(HAVE_OPENJPEG_2_1_OPENJPEG_H) || defined(HAVE_OPENJPEG_2_2_OPENJPEG_H)
     opj_stream_set_user_data (stream, &clientdata, NULL);
-#else
-    opj_stream_set_user_data (stream, &clientdata);
-#endif
     if (!opj_read_header (stream, codec, &image))
       {
 	  fprintf (stderr, "OpenJpeg Error: opj_read_header() failed\n");

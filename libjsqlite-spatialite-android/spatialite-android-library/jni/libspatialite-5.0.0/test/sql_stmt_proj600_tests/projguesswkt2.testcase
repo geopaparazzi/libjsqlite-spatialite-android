@@ -1,0 +1,7 @@
+PROJ_GuessSridFromWKT() - INT WKT expression
+:memory: #use in-memory database
+SELECT PROJ_GuessSridFromWKT(2);
+1 # rows (not including the header row)
+1 # columns
+PROJ_GuessSridFromWKT(2)
+(NULL)

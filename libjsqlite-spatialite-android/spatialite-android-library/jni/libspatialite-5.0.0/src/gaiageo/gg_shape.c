@@ -442,7 +442,7 @@ gaiaOpenShpRead (gaiaShapefilePtr shp, const char *path, const char *charFrom,
     int ind;
     char field_name[2048];
     char *sys_err;
-    char errMsg[1024];
+    char errMsg[4192];
     iconv_t iconv_ret;
     char utf8buf[2048];
 #if !defined(__MINGW32__) && defined(_WIN32)
@@ -578,6 +578,16 @@ gaiaOpenShpRead (gaiaShapefilePtr shp, const char *path, const char *charFrom,
     for (ind = 32; ind < dbf_size; ind += 32)
       {
 	  /* fetches DBF fields definitions */
+	  if ((dbf_size - ind) < 32)
+	    {
+		/* some odd DBF could contain some unexpected extra-padding */
+		int extra = dbf_size - ind;
+		rd = fread (bf, sizeof (unsigned char), extra, fl_dbf);
+		if (rd != extra)
+		    goto error;
+		/* ignoring the extra-padding */
+		break;
+	    }
 	  rd = fread (bf, sizeof (unsigned char), 32, fl_dbf);
 	  if (rd != 32)
 	      goto error;
@@ -957,7 +967,7 @@ gaiaOpenShpWriteEx (gaiaShapefilePtr shp, const char *path, int shape,
     unsigned char *dbf_buf = NULL;
     gaiaDbfFieldPtr fld;
     char *sys_err;
-    char errMsg[1024];
+    char errMsg[4192];
     short dbf_reclen = 0;
     int shp_size = 0;
     int shx_size = 0;
@@ -4833,6 +4843,16 @@ gaiaOpenDbfRead (gaiaDbfPtr dbf, const char *path, const char *charFrom,
     for (ind = 32; ind < dbf_size; ind += 32)
       {
 	  /* fetches DBF fields definitions */
+	  if ((dbf_size - ind) < 32)
+	    {
+		/* some odd DBF could contain some unexpected extra-padding */
+		int extra = dbf_size - ind;
+		rd = fread (bf, sizeof (unsigned char), extra, fl_dbf);
+		if (rd != extra)
+		    goto error;
+		/* ignoring the extra-padding */
+		break;
+	    }
 	  rd = fread (bf, sizeof (unsigned char), 32, fl_dbf);
 	  if (rd != 32)
 	      goto error;

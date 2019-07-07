@@ -1,0 +1,7 @@
+HausdorffDistance - NULL Geom2
+:memory: #use in-memory database
+SELECT HausdorffDistance(GeomFromText("MULTIPOINT(0 0, 10 0)"), NULL, 0.1)
+1 # rows (not including the header row)
+1 # columns
+HausdorffDistance(GeomFromText("MULTIPOINT(0 0, 10 0)"), NULL, 0.1)
+(NULL)

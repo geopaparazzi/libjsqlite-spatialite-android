@@ -1,6 +1,6 @@
 
-AM_CPPFLAGS = @CFLAGS@ @CPPFLAGS@
-AM_CPPFLAGS += -I$(top_srcdir)/src/headers -I.
+AM_CPPFLAGS = -I$(top_srcdir)/src/headers -I.
+AM_CPPFLAGS += @CFLAGS@ @CPPFLAGS@
 
 noinst_HEADERS = dxf_private.h
 noinst_LTLIBRARIES = libdxf.la dxf.la
@@ -13,8 +13,8 @@ libdxf_la_SOURCES = $(DXF_COMMON_SOURCES)
 
 dxf_la_SOURCES = $(DXF_COMMON_SOURCES)
 
-dxf_la_CPPFLAGS = @CFLAGS@ @CPPFLAGS@
-dxf_la_CPPFLAGS += -I$(top_srcdir)/src/headers -I.
+dxf_la_CPPFLAGS = -I$(top_srcdir)/src/headers -I.
+dxf_la_CPPFLAGS += @CFLAGS@ @CPPFLAGS@
 dxf_la_CPPFLAGS += -DLOADABLE_EXTENSION
 dxf_la_LDFLAGS = -module
 dxf_la_LIBTOOLFLAGS = --tag=disable-static

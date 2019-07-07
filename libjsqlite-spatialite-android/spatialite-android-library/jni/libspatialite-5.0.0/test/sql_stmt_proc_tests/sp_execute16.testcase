@@ -1,0 +1,7 @@
+SqlProc_Execute - TEXT retval
+:memory: #use in-memory database
+SELECT SqlProc_Execute(SqlProc_FromText('SELECT SqlProc_Return(@value@);'), '@value@=''yes''');
+1 # rows (not including the header row)
+1 # columns
+SqlProc_Execute(SqlProc_FromText('SELECT SqlProc_Return(@value@);'), '@value@=''yes''');
+yes

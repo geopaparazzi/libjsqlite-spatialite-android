@@ -1,0 +1,7 @@
+transform - PROJ.6 extra-args - proj_string TEXT (invalid)
+:memory: #use in-memory database
+SELECT AsText(Transform(MakePoint(11.5, 42.5, 4326), 3003, NULL, 'params'));
+1 # rows (not including the header row)
+1 # columns
+AsText(Transform(MakePoint(11.5, 42.5, 4326), 3003, NULL, 'params'))
+ST_Transform exception - PROJ reports "proj_create: unrecognized format / unknown name".

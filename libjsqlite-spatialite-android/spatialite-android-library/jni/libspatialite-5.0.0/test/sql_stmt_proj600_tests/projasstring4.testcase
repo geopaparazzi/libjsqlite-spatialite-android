@@ -1,0 +1,7 @@
+PROJ_AsProjString() - NULL auth_name, NULL auth_srid
+:memory: #use in-memory database
+SELECT PROJ_AsProjString(NULL, NULL);
+1 # rows (not including the header row)
+1 # columns
+PROJ_AsProjString(NULL, NULL)
+(NULL)

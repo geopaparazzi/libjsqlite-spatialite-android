@@ -62,6 +62,12 @@ CIG: 6038019AE5
 #include <math.h>
 
 #if defined(_WIN32) && !defined(__MINGW32__)
+#include "process.h"
+#else
+#include "unistd.h"
+#endif
+
+#if defined(_WIN32) && !defined(__MINGW32__)
 #include "config-msvc.h"
 #else
 #include "config.h"
@@ -107,6 +113,121 @@ free_internal_cache_topologies (void *firstTopology)
       }
 }
 
+SPATIALITE_PRIVATE void
+drop_topologies_triggers (void *sqlite_handle)
+{
+/* dropping all "topologies" triggers */
+    char *sql;
+    int ret;
+    char *err_msg = NULL;
+    char **results;
+    int rows;
+    int columns;
+    int i;
+    sqlite3 *sqlite = (sqlite3 *) sqlite_handle;
+
+/* checking for existing tables */
+    sql =
+	"SELECT name FROM sqlite_master WHERE type = 'trigger' AND tbl_name = 'topologies'";
+    ret = sqlite3_get_table (sqlite, sql, &results, &rows, &columns, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return;
+      }
+    for (i = 1; i <= rows; i++)
+      {
+	  const char *name = results[(i * columns) + 0];
+	  sql = sqlite3_mprintf ("DROP TRIGGER %s", name);
+	  ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+	  if (ret != SQLITE_OK)
+	    {
+		spatialite_e ("SQL error: %s\n", err_msg);
+		sqlite3_free (err_msg);
+		return;
+	    }
+	  sqlite3_free (sql);
+      }
+    sqlite3_free_table (results);
+}
+
+SPATIALITE_PRIVATE int
+do_create_topologies_triggers (void *sqlite_handle)
+{
+/* attempting to create the Topologies triggers */
+    const char *sql;
+    char *err_msg = NULL;
+    int ret;
+    char **results;
+    int rows;
+    int columns;
+    int i;
+    sqlite3 *handle = (sqlite3 *) sqlite_handle;
+    int ok_topologies = 0;
+
+/* checking for existing tables */
+    sql =
+	"SELECT tbl_name FROM sqlite_master WHERE type = 'table' AND tbl_name = 'topologies'";
+    ret = sqlite3_get_table (handle, sql, &results, &rows, &columns, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+    for (i = 1; i <= rows; i++)
+      {
+	  const char *name = results[(i * columns) + 0];
+	  if (strcasecmp (name, "topologies") == 0)
+	      ok_topologies = 1;
+      }
+    sqlite3_free_table (results);
+
+    if (ok_topologies)
+      {
+	  /* creating Topologies triggers */
+	  sql = "CREATE TRIGGER IF NOT EXISTS topology_name_insert\n"
+	      "BEFORE INSERT ON 'topologies'\nFOR EACH ROW BEGIN\n"
+	      "SELECT RAISE(ABORT,'insert on topologies violates constraint: "
+	      "topology_name value must not contain a single quote')\n"
+	      "WHERE NEW.topology_name LIKE ('%''%');\n"
+	      "SELECT RAISE(ABORT,'insert on topologies violates constraint: "
+	      "topology_name value must not contain a double quote')\n"
+	      "WHERE NEW.topology_name LIKE ('%\"%');\n"
+	      "SELECT RAISE(ABORT,'insert on topologies violates constraint: "
+	      "topology_name value must be lower case')\n"
+	      "WHERE NEW.topology_name <> lower(NEW.topology_name);\nEND";
+	  ret = sqlite3_exec (handle, sql, NULL, NULL, &err_msg);
+	  if (ret != SQLITE_OK)
+	    {
+		spatialite_e ("SQL error: %s\n", err_msg);
+		sqlite3_free (err_msg);
+		return 0;
+	    }
+	  sql = "CREATE TRIGGER IF NOT EXISTS topology_name_update\n"
+	      "BEFORE UPDATE OF 'topology_name' ON 'topologies'\nFOR EACH ROW BEGIN\n"
+	      "SELECT RAISE(ABORT,'update on topologies violates constraint: "
+	      "topology_name value must not contain a single quote')\n"
+	      "WHERE NEW.topology_name LIKE ('%''%');\n"
+	      "SELECT RAISE(ABORT,'update on topologies violates constraint: "
+	      "topology_name value must not contain a double quote')\n"
+	      "WHERE NEW.topology_name LIKE ('%\"%');\n"
+	      "SELECT RAISE(ABORT,'update on topologies violates constraint: "
+	      "topology_name value must be lower case')\n"
+	      "WHERE NEW.topology_name <> lower(NEW.topology_name);\nEND";
+	  ret = sqlite3_exec (handle, sql, NULL, NULL, &err_msg);
+	  if (ret != SQLITE_OK)
+	    {
+		spatialite_e ("SQL error: %s\n", err_msg);
+		sqlite3_free (err_msg);
+		return 0;
+	    }
+      }
+
+    return 1;
+}
+
 SPATIALITE_PRIVATE int
 do_create_topologies (void *sqlite_handle)
 {
@@ -132,44 +253,8 @@ do_create_topologies (void *sqlite_handle)
 	  return 0;
       }
 
-/* creating Topologies triggers */
-    sql = "CREATE TRIGGER IF NOT EXISTS topology_name_insert\n"
-	"BEFORE INSERT ON 'topologies'\nFOR EACH ROW BEGIN\n"
-	"SELECT RAISE(ABORT,'insert on topologies violates constraint: "
-	"topology_name value must not contain a single quote')\n"
-	"WHERE NEW.topology_name LIKE ('%''%');\n"
-	"SELECT RAISE(ABORT,'insert on topologies violates constraint: "
-	"topology_name value must not contain a double quote')\n"
-	"WHERE NEW.topology_name LIKE ('%\"%');\n"
-	"SELECT RAISE(ABORT,'insert on topologies violates constraint: "
-	"topology_name value must be lower case')\n"
-	"WHERE NEW.topology_name <> lower(NEW.topology_name);\nEND";
-    ret = sqlite3_exec (handle, sql, NULL, NULL, &err_msg);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("SQL error: %s\n", err_msg);
-	  sqlite3_free (err_msg);
-	  return 0;
-      }
-    sql = "CREATE TRIGGER IF NOT EXISTS topology_name_update\n"
-	"BEFORE UPDATE OF 'topology_name' ON 'topologies'\nFOR EACH ROW BEGIN\n"
-	"SELECT RAISE(ABORT,'update on topologies violates constraint: "
-	"topology_name value must not contain a single quote')\n"
-	"WHERE NEW.topology_name LIKE ('%''%');\n"
-	"SELECT RAISE(ABORT,'update on topologies violates constraint: "
-	"topology_name value must not contain a double quote')\n"
-	"WHERE NEW.topology_name LIKE ('%\"%');\n"
-	"SELECT RAISE(ABORT,'update on topologies violates constraint: "
-	"topology_name value must be lower case')\n"
-	"WHERE NEW.topology_name <> lower(NEW.topology_name);\nEND";
-    ret = sqlite3_exec (handle, sql, NULL, NULL, &err_msg);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("SQL error: %s\n", err_msg);
-	  sqlite3_free (err_msg);
-	  return 0;
-      }
-
+    if (!do_create_topologies_triggers (handle))
+	return 0;
     return 1;
 }
 
@@ -2253,7 +2338,7 @@ gaiaTopologyFromDBMS (sqlite3 * handle, const void *p_cache,
 	  char *msg =
 	      sqlite3_mprintf ("Topology \"%s\" is undefined !!!", topo_name);
 	  gaiaSetRtTopoErrorMsg (p_cache, msg);
-	  sqlite3_free(msg);
+	  sqlite3_free (msg);
 	  goto invalid;
       }
 
@@ -4483,10 +4568,20 @@ do_topo_check_create_aux_faces (GaiaTopologyAccessorPtr accessor)
     char *sql;
     char *errMsg;
     int ret;
+#if defined(_WIN32) && !defined(__MINGW32__)
+    int pid;
+#else
+    pid_t pid;
+#endif
     struct gaia_topology *topo = (struct gaia_topology *) accessor;
 
 /* creating the aux-face Temp Table */
-    table = sqlite3_mprintf ("%s_aux_face_%d", topo->topology_name, getpid ());
+#if defined(_WIN32) && !defined(__MINGW32__)
+    pid = _getpid ();
+#else
+    pid = getpid ();
+#endif
+    table = sqlite3_mprintf ("%s_aux_face_%d", topo->topology_name, pid);
     xtable = gaiaDoubleQuotedSql (table);
     sqlite3_free (table);
     sql = sqlite3_mprintf ("CREATE TEMPORARY TABLE \"%s\" (\n"
@@ -4507,9 +4602,7 @@ do_topo_check_create_aux_faces (GaiaTopologyAccessorPtr accessor)
       }
 
 /* creating the exotic spatial index */
-    table =
-	sqlite3_mprintf ("%s_aux_face_%d_rtree", topo->topology_name,
-			 getpid ());
+    table = sqlite3_mprintf ("%s_aux_face_%d_rtree", topo->topology_name, pid);
     xtable = gaiaDoubleQuotedSql (table);
     sqlite3_free (table);
     sql = sqlite3_mprintf ("CREATE VIRTUAL TABLE temp.\"%s\" USING RTree "
@@ -4543,9 +4636,19 @@ do_topo_check_build_aux_faces (GaiaTopologyAccessorPtr accessor,
     sqlite3_stmt *stmt_in = NULL;
     sqlite3_stmt *stmt_out = NULL;
     sqlite3_stmt *stmt_rtree = NULL;
+#if defined(_WIN32) && !defined(__MINGW32__)
+    int pid;
+#else
+    pid_t pid;
+#endif
     struct gaia_topology *topo = (struct gaia_topology *) accessor;
 
 /* preparing the input SQL statement */
+#if defined(_WIN32) && !defined(__MINGW32__)
+    pid = _getpid ();
+#else
+    pid = getpid ();
+#endif
     table = sqlite3_mprintf ("%s_face", topo->topology_name);
     xtable = gaiaDoubleQuotedSql (table);
     sqlite3_free (table);
@@ -4568,7 +4671,7 @@ do_topo_check_build_aux_faces (GaiaTopologyAccessorPtr accessor,
       }
 
 /* preparing the output SQL statement */
-    table = sqlite3_mprintf ("%s_aux_face_%d", topo->topology_name, getpid ());
+    table = sqlite3_mprintf ("%s_aux_face_%d", topo->topology_name, pid);
     xtable = gaiaDoubleQuotedSql (table);
     sqlite3_free (table);
     sql =
@@ -4590,9 +4693,7 @@ do_topo_check_build_aux_faces (GaiaTopologyAccessorPtr accessor,
       }
 
 /* preparing the RTree SQL statement */
-    table =
-	sqlite3_mprintf ("%s_aux_face_%d_rtree", topo->topology_name,
-			 getpid ());
+    table = sqlite3_mprintf ("%s_aux_face_%d_rtree", topo->topology_name, pid);
     xtable = gaiaDoubleQuotedSql (table);
     sqlite3_free (table);
     sql = sqlite3_mprintf ("INSERT INTO TEMP.\"%s\" "
@@ -4744,15 +4845,24 @@ do_topo_check_overlapping_faces (GaiaTopologyAccessorPtr accessor,
     char *xtable;
     char *rtree;
     int ret;
+#if defined(_WIN32) && !defined(__MINGW32__)
+    int pid;
+#else
+    pid_t pid;
+#endif
     sqlite3_stmt *stmt_in = NULL;
     struct gaia_topology *topo = (struct gaia_topology *) accessor;
 
 
-    table = sqlite3_mprintf ("%s_aux_face_%d", topo->topology_name, getpid ());
+#if defined(_WIN32) && !defined(__MINGW32__)
+    pid = _getpid ();
+#else
+    pid = getpid ();
+#endif
+    table = sqlite3_mprintf ("%s_aux_face_%d", topo->topology_name, pid);
     xtable = gaiaDoubleQuotedSql (table);
     sqlite3_free (table);
-    table = sqlite3_mprintf ("%s_aux_face_%d_rtree", topo->topology_name,
-			     getpid ());
+    table = sqlite3_mprintf ("%s_aux_face_%d_rtree", topo->topology_name, pid);
     rtree = gaiaDoubleQuotedSql (table);
     sqlite3_free (table);
     sql =
@@ -4843,15 +4953,24 @@ do_topo_check_face_within_face (GaiaTopologyAccessorPtr accessor,
     char *xtable;
     char *rtree;
     int ret;
+#if defined(_WIN32) && !defined(__MINGW32__)
+    int pid;
+#else
+    pid_t pid;
+#endif
     sqlite3_stmt *stmt_in = NULL;
     struct gaia_topology *topo = (struct gaia_topology *) accessor;
 
 
-    table = sqlite3_mprintf ("%s_aux_face_%d", topo->topology_name, getpid ());
+#if defined(_WIN32) && !defined(__MINGW32__)
+    pid = _getpid ();
+#else
+    pid = getpid ();
+#endif
+    table = sqlite3_mprintf ("%s_aux_face_%d", topo->topology_name, pid);
     xtable = gaiaDoubleQuotedSql (table);
     sqlite3_free (table);
-    table = sqlite3_mprintf ("%s_aux_face_%d_rtree", topo->topology_name,
-			     getpid ());
+    table = sqlite3_mprintf ("%s_aux_face_%d_rtree", topo->topology_name, pid);
     rtree = gaiaDoubleQuotedSql (table);
     sqlite3_free (table);
     sql =
@@ -4941,13 +5060,23 @@ do_topo_check_drop_aux_faces (GaiaTopologyAccessorPtr accessor)
     char *sql;
     char *errMsg;
     int ret;
+#if defined(_WIN32) && !defined(__MINGW32__)
+    int pid;
+#else
+    pid_t pid;
+#endif
     struct gaia_topology *topo = (struct gaia_topology *) accessor;
 
 /* finalizing all prepared Statements */
     finalize_all_topo_prepared_stmts (topo->cache);
 
 /* dropping the aux-face Temp Table */
-    table = sqlite3_mprintf ("%s_aux_face_%d", topo->topology_name, getpid ());
+#if defined(_WIN32) && !defined(__MINGW32__)
+    pid = _getpid ();
+#else
+    pid = getpid ();
+#endif
+    table = sqlite3_mprintf ("%s_aux_face_%d", topo->topology_name, pid);
     xtable = gaiaDoubleQuotedSql (table);
     sqlite3_free (table);
     sql = sqlite3_mprintf ("DROP TABLE TEMP.\"%s\"", xtable);
@@ -4966,9 +5095,7 @@ do_topo_check_drop_aux_faces (GaiaTopologyAccessorPtr accessor)
       }
 
 /* dropping the aux-face Temp RTree */
-    table =
-	sqlite3_mprintf ("%s_aux_face_%d_rtree", topo->topology_name,
-			 getpid ());
+    table = sqlite3_mprintf ("%s_aux_face_%d_rtree", topo->topology_name, pid);
     xtable = gaiaDoubleQuotedSql (table);
     sqlite3_free (table);
     sql = sqlite3_mprintf ("DROP TABLE TEMP.\"%s\"", xtable);

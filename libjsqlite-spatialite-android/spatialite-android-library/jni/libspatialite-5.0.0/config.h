@@ -13,6 +13,9 @@
 /* Should be defined in order to enable RTTOPO support. */
 #define ENABLE_RTTOPO 1
 
+/* Should be defined in order to enable GEOS_370 support. */
+#define GEOS_370 1
+
 /* Should be defined in order to enable GEOS_ADVANCED support. */
 #define GEOS_ADVANCED 1
 
@@ -88,6 +91,9 @@
 
 /* Define to 1 if you have the <proj_api.h> header file. */
 #define HAVE_PROJ_API_H 1
+
+/* Define to 1 if you have the <proj.h> header file. */
+/* #undef HAVE_PROJ_H */
 
 /* Define to 1 if you have the <sqlite3ext.h> header file. */
 #define HAVE_SQLITE3EXT_H 1
@@ -195,7 +201,7 @@
 #define PACKAGE_NAME "libspatialite"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "libspatialite 5.0.0-devel"
+#define PACKAGE_STRING "libspatialite 5.0.0-beta1"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "libspatialite"
@@ -204,13 +210,16 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "5.0.0-devel"
+#define PACKAGE_VERSION "5.0.0-beta1"
+
+/* Should be defined in order to enable PROJ.6 support. */
+/* #undef PROJ_NEW */
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Should contain a text-string describing the intended target CPU */
-/* #define TARGET_CPU "x86_64-linux-gnu" */
+#define TARGET_CPU "x86_64-linux-gnu"
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #define TIME_WITH_SYS_TIME 1
@@ -219,7 +228,7 @@
 /* #undef TM_IN_SYS_TIME */
 
 /* Version number of package */
-#define VERSION "5.0.0-devel"
+#define VERSION "5.0.0-beta1"
 
 /* Must be =64 in order to enable huge-file support. */
 #define _FILE_OFFSET_BITS 64

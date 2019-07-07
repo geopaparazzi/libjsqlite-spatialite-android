@@ -1,0 +1,7 @@
+transform - PROJ.6 extra-args - method proj_string INT
+:memory: #use in-memory database
+SELECT AsText(Transform(MakePoint(11.5, 42.5, 4326), 3003, NULL, 2));
+1 # rows (not including the header row)
+1 # columns
+AsText(Transform(MakePoint(11.5, 42.5, 4326), 3003, NULL, 2))
+ST_Transform exception - 4th argument is neither a TEXT string nor NULL.

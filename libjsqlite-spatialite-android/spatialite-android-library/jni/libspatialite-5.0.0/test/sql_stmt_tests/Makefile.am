@@ -753,6 +753,19 @@ EXTRA_DIST = addpoint10.testcase \
 	dropgeo7.testcase \
 	dropgeo8.testcase \
 	dropgeo9.testcase \
+	droptable1.testcase \
+	droptable2.testcase \
+	droptable3.testcase \
+	droptable4.testcase \
+	droptable5.testcase \
+	droptable6.testcase \
+	droptable7.testcase \
+	droptable8.testcase \
+	droptable9.testcase \
+	droptable10.testcase \
+	droptable11.testcase \
+	droptable12.testcase \
+	droptable13.testcase \
 	elemgeo1.testcase \
 	elemgeo2.testcase \
 	elemgeo3.testcase \
@@ -1403,11 +1416,11 @@ EXTRA_DIST = addpoint10.testcase \
 	getmimetype3.testcase \
 	getmimetype4.testcase \
 	getmimetype5.testcase \
-	getshapefileextent1.testcase \
-	getshapefileextent2.testcase \
-	getshapefileextent3.testcase \
-	getshapefileextent4.testcase \
-	getshapefileextent5.testcase \
+	getvtableextent1.testcase \
+	getvtableextent2.testcase \
+	getvtableextent3.testcase \
+	getvtableextent4.testcase \
+	getvtableextent5.testcase \
 	gml10.testcase \
 	gml11.testcase \
 	gml12.testcase \
@@ -1444,10 +1457,40 @@ EXTRA_DIST = addpoint10.testcase \
 	is3d4.testcase \
 	is3d5.testcase \
 	is3d6.testcase \
+	isdecimalnumber1.testcase \
+	isdecimalnumber2.testcase \
+	isdecimalnumber3.testcase \
+	isdecimalnumber4.testcase \
+	isdecimalnumber5.testcase \
+	isdecimalnumber6.testcase \
+	isdecimalnumber7.testcase \
+	isdecimalnumber8.testcase \
+	isdecimalnumber9.testcase \
+	isdecimalnumber10.testcase \
+	isdecimalnumber11.testcase \
+	isdecimalnumber12.testcase \
 	isempty2.testcase \
 	isempty3.testcase \
 	isempty4.testcase \
 	isempty.testcase \
+	isinteger1.testcase \
+	isinteger2.testcase \
+	isinteger3.testcase \
+	isinteger4.testcase \
+	isinteger5.testcase \
+	isinteger6.testcase \
+	isinteger7.testcase \
+	isinteger8.testcase \
+	isinteger9.testcase \
+	isinteger10.testcase \
+	isinteger11.testcase \
+	isnumber1.testcase \
+	isnumber2.testcase \
+	isnumber3.testcase \
+	isnumber4.testcase \
+	isnumber5.testcase \
+	isnumber7.testcase \
+	isnumber8.testcase \
 	ismeasured1.testcase \
 	ismeasured2.testcase \
 	ismeasured3.testcase \
@@ -1960,6 +2003,7 @@ EXTRA_DIST = addpoint10.testcase \
 	polygcw6.testcase \
 	polygonfromtext1.testcase \
 	polygonfromtext2.testcase \
+	recreaterastercoverages.testcase \
 	reflectcoords10.testcase \
 	reflectcoords11.testcase \
 	reflectcoords12.testcase \
@@ -2196,6 +2240,21 @@ EXTRA_DIST = addpoint10.testcase \
 	shiftlongitude8.testcase \
 	shiftlongitude9.testcase \
 	spatialindex.testcase \
+	spatialindexextent1.testcase \
+	spatialindexextent2.testcase \
+	spatialindexextent3.testcase \
+	spatialindexextent4.testcase \
+	spatialindexextent5.testcase \
+	spatialindexextent6.testcase \
+	spatialindexextent7.testcase \
+	spatialindexextent8.testcase \
+	spatialindexextent9.testcase \
+	spatialindexextent10.testcase \
+	spatialindexextent11.testcase \
+	spatialindexextent12.testcase \
+	spatialindexextent13.testcase \
+	spatialindexextent14.testcase \
+	spatialindexextent15.testcase \
 	srid10.testcase \
 	srid11.testcase \
 	srid1.testcase \
@@ -2421,6 +2480,11 @@ EXTRA_DIST = addpoint10.testcase \
 	todms11.testcase \
 	todms12.testcase \
 	todms13.testcase \
+	todms14.testcase \
+	todms15.testcase \
+	todms16.testcase \
+	todms17.testcase \
+	todms18.testcase \
 	fromdms1.testcase \
 	fromdms2.testcase \
 	fromdms3.testcase \
@@ -2468,7 +2532,6 @@ EXTRA_DIST = addpoint10.testcase \
 	sriddatum3.testcase \
 	sriddatum4.testcase \
 	sriddatum5.testcase \
-	sriddatum6.testcase \
 	sridunit1.testcase \
 	sridunit2.testcase \
 	sridunit3.testcase \
@@ -2480,31 +2543,26 @@ EXTRA_DIST = addpoint10.testcase \
 	sridprojection3.testcase \
 	sridprojection4.testcase \
 	sridprojection5.testcase \
-	sridprojection6.testcase \
 	sridax1name1.testcase \
 	sridax1name2.testcase \
 	sridax1name3.testcase \
 	sridax1name4.testcase \
 	sridax1name5.testcase \
-	sridax1name6.testcase \
 	sridax1orient1.testcase \
 	sridax1orient2.testcase \
 	sridax1orient3.testcase \
 	sridax1orient4.testcase \
 	sridax1orient5.testcase \
-	sridax1orient6.testcase \
 	sridax2name1.testcase \
 	sridax2name2.testcase \
 	sridax2name3.testcase \
 	sridax2name4.testcase \
 	sridax2name5.testcase \
-	sridax2name6.testcase \
 	sridax2orient1.testcase \
 	sridax2orient2.testcase \
 	sridax2orient3.testcase \
 	sridax2orient4.testcase \
 	sridax2orient5.testcase \
-	sridax2orient6.testcase \
 	stringlist1.testcase \
 	stringlist2.testcase \
 	stringlist3.testcase \

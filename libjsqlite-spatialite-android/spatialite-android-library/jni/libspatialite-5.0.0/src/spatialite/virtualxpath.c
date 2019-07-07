@@ -615,7 +615,7 @@ vxpath_create (sqlite3 * db, void *pAux, int argc, const char *const *argv,
     return SQLITE_OK;
   illegal:
 /* something is going the wrong way */
-    if (!okTable == 0)
+    if (!okTable)
 	*pzErr =
 	    sqlite3_mprintf
 	    ("[VirtualXPath module] table \"%s\" doesn't exists\n", table);

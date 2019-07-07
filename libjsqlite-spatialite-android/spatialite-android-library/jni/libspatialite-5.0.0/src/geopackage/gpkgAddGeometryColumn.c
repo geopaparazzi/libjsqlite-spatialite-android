@@ -179,7 +179,7 @@ fnct_gpkgAddGeometryColumn (sqlite3_context * context, int argc
     
     sql_stmt = sqlite3_mprintf("INSERT OR IGNORE INTO gpkg_contents "
                  "(table_name, data_type, srs_id, min_x, min_y, max_x, max_y) "
-                 "VALUES (%Q, 'feature', %i, NULL, NULL, NULL, NULL)",
+                 "VALUES (%Q, 'features', %i, NULL, NULL, NULL, NULL)",
                  table, srid);
 
     ret = sqlite3_exec (sqlite, sql_stmt, NULL, NULL, &errMsg);

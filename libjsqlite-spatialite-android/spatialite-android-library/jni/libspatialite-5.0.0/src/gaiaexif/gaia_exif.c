@@ -2356,6 +2356,240 @@ gaiaExifTagGetHumanReadable (const gaiaExifTagPtr tag, char *str, int len,
     *ok = 0;
 }
 
+static int
+parse_multi_geom (const unsigned char *blob, int size, int endian,
+		  int endian_arch, int *is_compr)
+{
+/* testing for a compressed multi-geometry */
+    int entities;
+    int type;
+    int ie;
+    int offset = 43;
+    int points;
+    int rings;
+    int ib;
+    int compressed = 0;
+    int not_compressed = 0;
+
+    if (size < offset + 4)
+	return 0;
+    entities = gaiaImport32 (blob + offset, endian, endian_arch);
+    offset += 4;
+    for (ie = 0; ie < entities; ie++)
+      {
+	  if (size < offset + 5)
+	      return 0;
+	  type = gaiaImport32 (blob + offset + 1, endian, endian_arch);
+	  offset += 5;
+	  switch (type)
+	    {
+	    case GAIA_POINT:
+		if (size < offset + 16)
+		    return 0;
+		offset += 16;
+		break;
+	    case GAIA_POINTZ:
+		if (size < offset + 24)
+		    return 0;
+		offset += 24;
+		break;
+	    case GAIA_POINTM:
+		if (size < offset + 24)
+		    return 0;
+		offset += 24;
+		break;
+	    case GAIA_POINTZM:
+		if (size < offset + 32)
+		    return 0;
+		offset += 32;
+		break;
+	    case GAIA_LINESTRING:
+		if (size < offset + 4)
+		    return 0;
+		points = gaiaImport32 (blob + offset, endian, endian_arch);
+		offset += 4 + (points * 16);
+		not_compressed = 1;
+		break;
+	    case GAIA_LINESTRINGZ:
+		if (size < offset + 4)
+		    return 0;
+		points = gaiaImport32 (blob + offset, endian, endian_arch);
+		offset += 4 + (points * 24);
+		not_compressed = 1;
+		break;
+	    case GAIA_LINESTRINGM:
+		if (size < offset + 4)
+		    return 0;
+		points = gaiaImport32 (blob + offset, endian, endian_arch);
+		offset += 4 + (points * 24);
+		not_compressed = 1;
+		break;
+	    case GAIA_LINESTRINGZM:
+		if (size < offset + 4)
+		    return 0;
+		points = gaiaImport32 (blob + offset, endian, endian_arch);
+		offset += 4 + (points * 32);
+		not_compressed = 1;
+		break;
+	    case GAIA_POLYGON:
+		if (size < offset + 4)
+		    return 0;
+		rings = gaiaImport32 (blob + offset, endian, endian_arch);
+		offset += 4;
+		for (ib = 0; ib < rings; ib++)
+		  {
+		      if (size < offset + 4)
+			  return 0;
+		      points =
+			  gaiaImport32 (blob + offset, endian, endian_arch);
+		      offset += 4 + (points * 16);
+		  }
+		not_compressed = 1;
+		break;
+	    case GAIA_POLYGONZ:
+		if (size < offset + 4)
+		    return 0;
+		rings = gaiaImport32 (blob + offset, endian, endian_arch);
+		offset += 4;
+		for (ib = 0; ib < rings; ib++)
+		  {
+		      if (size < offset + 4)
+			  return 0;
+		      points =
+			  gaiaImport32 (blob + offset, endian, endian_arch);
+		      offset += 4 + (points * 24);
+		  }
+		not_compressed = 1;
+		break;
+	    case GAIA_POLYGONM:
+		if (size < offset + 4)
+		    return 0;
+		rings = gaiaImport32 (blob + offset, endian, endian_arch);
+		offset += 4;
+		for (ib = 0; ib < rings; ib++)
+		  {
+		      if (size < offset + 4)
+			  return 0;
+		      points =
+			  gaiaImport32 (blob + offset, endian, endian_arch);
+		      offset += 4 + (points * 24);
+		  }
+		not_compressed = 1;
+		break;
+	    case GAIA_POLYGONZM:
+		if (size < offset + 4)
+		    return 0;
+		rings = gaiaImport32 (blob + offset, endian, endian_arch);
+		offset += 4;
+		for (ib = 0; ib < rings; ib++)
+		  {
+		      if (size < offset + 4)
+			  return 0;
+		      points =
+			  gaiaImport32 (blob + offset, endian, endian_arch);
+		      offset += 4 + (points * 32);
+		  }
+		not_compressed = 1;
+		break;
+	    case GAIA_COMPRESSED_LINESTRING:
+		if (size < offset + 4)
+		    return 0;
+		points = gaiaImport32 (blob + offset, endian, endian_arch);
+		offset += 4 + (points * 8) + 16;
+		compressed = 1;
+		break;
+	    case GAIA_COMPRESSED_LINESTRINGZ:
+		if (size < offset + 4)
+		    return 0;
+		points = gaiaImport32 (blob + offset, endian, endian_arch);
+		offset += 4 + (points * 12) + 24;
+		compressed = 1;
+		break;
+	    case GAIA_COMPRESSED_LINESTRINGM:
+		if (size < offset + 4)
+		    return 0;
+		points = gaiaImport32 (blob + offset, endian, endian_arch);
+		offset += 4 + (points * 16) + 16;
+		compressed = 1;
+		break;
+	    case GAIA_COMPRESSED_LINESTRINGZM:
+		if (size < offset + 4)
+		    return 0;
+		points = gaiaImport32 (blob + offset, endian, endian_arch);
+		offset += 4 + (points * 20) + 24;
+		compressed = 1;
+		break;
+	    case GAIA_COMPRESSED_POLYGON:
+		if (size < offset + 4)
+		    return 0;
+		rings = gaiaImport32 (blob + offset, endian, endian_arch);
+		offset += 4;
+		for (ib = 0; ib < rings; ib++)
+		  {
+		      if (size < offset + 4)
+			  return 0;
+		      points =
+			  gaiaImport32 (blob + offset, endian, endian_arch);
+		      offset += 4 + (points * 8) + 16;
+		  }
+		compressed = 1;
+		break;
+	    case GAIA_COMPRESSED_POLYGONZ:
+		if (size < offset + 4)
+		    return 0;
+		rings = gaiaImport32 (blob + offset, endian, endian_arch);
+		offset += 4;
+		for (ib = 0; ib < rings; ib++)
+		  {
+		      if (size < offset + 4)
+			  return 0;
+		      points =
+			  gaiaImport32 (blob + offset, endian, endian_arch);
+		      offset += 4 + (points * 12) + 24;
+		  }
+		compressed = 1;
+		break;
+	    case GAIA_COMPRESSED_POLYGONM:
+		if (size < offset + 4)
+		    return 0;
+		rings = gaiaImport32 (blob + offset, endian, endian_arch);
+		offset += 4;
+		for (ib = 0; ib < rings; ib++)
+		  {
+		      if (size < offset + 4)
+			  return 0;
+		      points =
+			  gaiaImport32 (blob + offset, endian, endian_arch);
+		      offset += 4 + (points * 16) + 16;
+		  }
+		compressed = 1;
+		break;
+	    case GAIA_COMPRESSED_POLYGONZM:
+		if (size < offset + 4)
+		    return 0;
+		rings = gaiaImport32 (blob + offset, endian, endian_arch);
+		offset += 4;
+		for (ib = 0; ib < rings; ib++)
+		  {
+		      if (size < offset + 4)
+			  return 0;
+		      points =
+			  gaiaImport32 (blob + offset, endian, endian_arch);
+		      offset += 4 + (points * 20) + 24;
+		  }
+		compressed = 1;
+		break;
+	    default:
+		return 0;
+	    };
+      }
+    if (compressed && !not_compressed)
+	*is_compr = 1;
+    else
+	*is_compr = 0;
+    return 1;
+}
+
 GAIAEXIF_DECLARE int
 gaiaGuessBlobType (const unsigned char *blob, int size)
 {
@@ -2553,8 +2787,54 @@ gaiaGuessBlobType (const unsigned char *blob, int size)
 	      geom = 0;
       }
     if (geom)
-	return GAIA_GEOMETRY_BLOB;
+      {
+	  int little_endian;
+	  int endian_arch = gaiaEndianArch ();
+	  int gtype;
+	  int is_compr;
+	  if (*(blob + 1) == GAIA_LITTLE_ENDIAN)
+	      little_endian = 1;
+	  else if (*(blob + 1) == GAIA_BIG_ENDIAN)
+	      little_endian = 0;
+	  else
+	      goto not_a_valid_geom;
+	  gtype = gaiaImport32 (blob + 39, little_endian, endian_arch);
+	  switch (gtype)
+	    {
+	    case GAIA_COMPRESSED_LINESTRING:
+	    case GAIA_COMPRESSED_LINESTRINGZ:
+	    case GAIA_COMPRESSED_LINESTRINGM:
+	    case GAIA_COMPRESSED_LINESTRINGZM:
+	    case GAIA_COMPRESSED_POLYGON:
+	    case GAIA_COMPRESSED_POLYGONZ:
+	    case GAIA_COMPRESSED_POLYGONM:
+	    case GAIA_COMPRESSED_POLYGONZM:
+		return GAIA_COMPRESSED_GEOMETRY_BLOB;
+	    case GAIA_MULTILINESTRING:
+	    case GAIA_MULTILINESTRINGZ:
+	    case GAIA_MULTILINESTRINGM:
+	    case GAIA_MULTILINESTRINGZM:
+	    case GAIA_MULTIPOLYGON:
+	    case GAIA_MULTIPOLYGONZ:
+	    case GAIA_MULTIPOLYGONM:
+	    case GAIA_MULTIPOLYGONZM:
+	    case GAIA_GEOMETRYCOLLECTION:
+	    case GAIA_GEOMETRYCOLLECTIONZ:
+	    case GAIA_GEOMETRYCOLLECTIONM:
+	    case GAIA_GEOMETRYCOLLECTIONZM:
+		if (!parse_multi_geom
+		    (blob, size, little_endian, endian_arch, &is_compr))
+		    goto not_a_valid_geom;
+		if (is_compr)
+		    return GAIA_COMPRESSED_GEOMETRY_BLOB;
+		else
+		    return GAIA_GEOMETRY_BLOB;
+	    default:
+		return GAIA_GEOMETRY_BLOB;
+	    }
+      }
 
+  not_a_valid_geom:
 /* testing for TinyPoint */
     if (size < 24)
 	tiny_point = 0;

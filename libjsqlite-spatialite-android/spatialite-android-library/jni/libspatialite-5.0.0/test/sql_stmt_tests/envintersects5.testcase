@@ -4,4 +4,4 @@ SELECT ST_EnvIntersects(zeroblob(50), 2, 2, 3, "alpha")
 1 # rows (not including the header row)
 1 # columns
 ST_EnvIntersects(zeroblob(50), 2, 2, 3, "alpha")
-(NULL)
+-1

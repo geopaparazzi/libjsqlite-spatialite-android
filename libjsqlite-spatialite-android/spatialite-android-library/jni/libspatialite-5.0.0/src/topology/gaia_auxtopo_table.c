@@ -3472,54 +3472,6 @@ insert_polyface_reverse (struct gaia_topology *topo, sqlite3_stmt * stmt_ins,
     return 1;
 }
 
-static sqlite3_int64
-check_hole_face (struct gaia_topology *topo, sqlite3_stmt * stmt_holes,
-		 sqlite3_int64 face_id)
-{
-/* checking if some Face actually is an "hole" within another Face */
-    int ret;
-    int count_edges = 0;
-    int count_valid = 0;
-    sqlite3_int64 containing_face = -1;
-
-    sqlite3_reset (stmt_holes);
-    sqlite3_clear_bindings (stmt_holes);
-    sqlite3_bind_int64 (stmt_holes, 1, face_id);
-
-    while (1)
-      {
-	  /* scrolling the result set rows - containing face */
-	  ret = sqlite3_step (stmt_holes);
-	  if (ret == SQLITE_DONE)
-	      break;		/* end of result set */
-	  if (ret == SQLITE_ROW)
-	    {
-		sqlite3_int64 other_face_id =
-		    sqlite3_column_int64 (stmt_holes, 0);
-		count_edges++;
-		if (containing_face < 0)
-		    containing_face = other_face_id;
-		if (containing_face == other_face_id)
-		    count_valid++;
-	    }
-	  else
-	    {
-		char *msg = sqlite3_mprintf ("PolyFacesList error: \"%s\"",
-					     sqlite3_errmsg (topo->db_handle));
-		gaiatopo_set_last_error_msg ((GaiaTopologyAccessorPtr) topo,
-					     msg);
-		sqlite3_free (msg);
-		return -1;
-	    }
-      }
-    if (count_edges == count_valid && count_edges > 0 && containing_face > 0)
-	;
-    else
-	containing_face = -1;
-
-    return containing_face;
-}
-
 SPATIALITE_PRIVATE int
 gaia_check_spatial_index (const void *handle, const char *db_prefix,
 			  const char *ref_table, const char *ref_column)
@@ -3562,15 +3514,16 @@ gaiaTopoGeo_PolyFacesList (GaiaTopologyAccessorPtr accessor,
 {
 /* creating and populating a new Table reporting about Faces/Polygon correspondencies */
     struct gaia_topology *topo = (struct gaia_topology *) accessor;
-    sqlite3_stmt *stmt_faces = NULL;
     sqlite3_stmt *stmt_holes = NULL;
     sqlite3_stmt *stmt_ref = NULL;
     sqlite3_stmt *stmt_rev = NULL;
     sqlite3_stmt *stmt_ins = NULL;
     int ret;
     char *sql;
+    char *face;
     char *table;
     char *idx_name;
+    char *xface;
     char *xtable;
     char *xprefix;
     char *xcolumn;
@@ -3642,34 +3595,22 @@ gaiaTopoGeo_PolyFacesList (GaiaTopologyAccessorPtr accessor,
 	  goto error;
       }
 
-/* building the Faces SQL statement */
-    table = sqlite3_mprintf ("%s_face", topo->topology_name);
+/* building the IsHole SQL statement */
+    face = sqlite3_mprintf ("%s_face", topo->topology_name);
+    xface = gaiaDoubleQuotedSql (face);
+    sqlite3_free (face);
+    table = sqlite3_mprintf ("%s_edge", topo->topology_name);
     xtable = gaiaDoubleQuotedSql (table);
     sqlite3_free (table);
     sql =
-	sqlite3_mprintf ("SELECT face_id FROM main.\"%s\" WHERE face_id > 0",
-			 xtable);
-    free (xtable);
-    ret =
-	sqlite3_prepare_v2 (topo->db_handle, sql, strlen (sql), &stmt_faces,
-			    NULL);
-    sqlite3_free (sql);
-    if (ret != SQLITE_OK)
-      {
-	  char *msg = sqlite3_mprintf ("PolyFacesList error: \"%s\"",
-				       sqlite3_errmsg (topo->db_handle));
-	  gaiatopo_set_last_error_msg (accessor, msg);
-	  sqlite3_free (msg);
-	  goto error;
-      }
-
-/* building the IsHole SQL statement */
-    table = sqlite3_mprintf ("%s_edge", topo->topology_name);
-    xtable = gaiaDoubleQuotedSql (table);
-    sql = sqlite3_mprintf ("SELECT left_face AS other_face FROM main.\"%s\" "
-			   "WHERE right_face = ? UNION "
-			   "SELECT right_face AS other_face FROM main.\"%s\" WHERE left_face = ?",
-			   xtable, xtable);
+	sqlite3_mprintf
+	("SELECT f.face_id, Count(DISTINCT r.left_face) AS cnt1, "
+	 "Count(DISTINCT l.right_face) AS cnt2, r.left_face, l.right_face "
+	 "FROM main.\"%s\" AS f "
+	 "LEFT JOIN main.\"%s\" AS r ON (f.face_id = r.right_face) "
+	 "LEFT JOIN main.\"%s\" AS l ON (f.face_id = l.left_face) "
+	 "GROUP BY f.face_id", xface, xtable, xtable);
+    free (xface);
     free (xtable);
     ret =
 	sqlite3_prepare_v2 (topo->db_handle, sql, strlen (sql), &stmt_holes,
@@ -3781,15 +3722,27 @@ gaiaTopoGeo_PolyFacesList (GaiaTopologyAccessorPtr accessor,
 
     while (1)
       {
-	  /* scrolling the result set rows - Faces */
-	  ret = sqlite3_step (stmt_faces);
+	  /* scrolling the result set rows - Faces/Holes */
+	  ret = sqlite3_step (stmt_holes);
 	  if (ret == SQLITE_DONE)
 	      break;		/* end of result set */
 	  if (ret == SQLITE_ROW)
 	    {
-		sqlite3_int64 face_id = sqlite3_column_int64 (stmt_faces, 0);
-		sqlite3_int64 containing_face =
-		    check_hole_face (topo, stmt_holes, face_id);
+		sqlite3_int64 containing_face = -1;
+		sqlite3_int64 face_id = sqlite3_column_int64 (stmt_holes, 0);
+		int count1 = sqlite3_column_int (stmt_holes, 1);
+		int count2 = sqlite3_column_int (stmt_holes, 2);
+		if (count1 == 1 && count2 == 1)
+		  {
+		      sqlite3_int64 id1 = sqlite3_column_int64 (stmt_holes, 3);
+		      sqlite3_int64 id2 = sqlite3_column_int64 (stmt_holes, 4);
+		      if (id1 == id2)
+			  containing_face = id1;
+		  }
+		else if (count1 == 1 && count2 == 0)
+		    containing_face = sqlite3_column_int64 (stmt_holes, 3);
+		else if (count1 == 0 && count2 == 1)
+		    containing_face = sqlite3_column_int64 (stmt_holes, 4);
 		if (!find_polyface_matches
 		    (topo, stmt_ref, stmt_ins, face_id, containing_face))
 		    goto error;
@@ -3826,7 +3779,6 @@ gaiaTopoGeo_PolyFacesList (GaiaTopologyAccessorPtr accessor,
 	    }
       }
 
-    sqlite3_finalize (stmt_faces);
     sqlite3_finalize (stmt_holes);
     sqlite3_finalize (stmt_ref);
     sqlite3_finalize (stmt_rev);
@@ -3834,8 +3786,6 @@ gaiaTopoGeo_PolyFacesList (GaiaTopologyAccessorPtr accessor,
     return 1;
 
   error:
-    if (stmt_faces != NULL)
-	sqlite3_finalize (stmt_faces);
     if (stmt_holes != NULL)
 	sqlite3_finalize (stmt_holes);
     if (stmt_ref != NULL)
@@ -4721,7 +4671,7 @@ auxtopo_retrieve_geometry_type (sqlite3 * db_handle, const char *db_prefix,
 				const char *table, const char *column,
 				int *ref_type)
 {
-/* attempting to retrive the reference Geometry Type */
+/* attempting to retrieve the reference Geometry Type */
     int ret;
     int i;
     char **results;
@@ -6671,6 +6621,7 @@ do_eval_topo_geometry (struct gaia_topology *topo, sqlite3_stmt * stmt_rels,
 	  auxtopo_select_valid_face_edges (list);
 	  rearranged = auxtopo_polygonize_face_edges (list, topo->cache);
 	  auxtopo_free_face_edges (list);
+	  list = NULL;
 	  if (rearranged != NULL)
 	    {
 		gaiaPolygonPtr pg = rearranged->FirstPolygon;
@@ -6689,12 +6640,15 @@ do_eval_topo_geometry (struct gaia_topology *topo, sqlite3_stmt * stmt_rels,
     if (geom->FirstPoint == NULL && geom->FirstLinestring == NULL
 	&& geom->FirstPolygon == NULL)
 	goto error;
+    auxtopo_free_face_edges (list);
     return geom;
 
   error:
     gaiaFreeGeomColl (geom);
     if (sparse_lines != NULL)
 	gaiaFreeGeomColl (sparse_lines);
+    if (list != NULL)
+	auxtopo_free_face_edges (list);
     return NULL;
 }
 

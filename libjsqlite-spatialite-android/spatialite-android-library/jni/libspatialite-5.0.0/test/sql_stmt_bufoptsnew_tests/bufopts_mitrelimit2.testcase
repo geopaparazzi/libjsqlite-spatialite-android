@@ -1,0 +1,7 @@
+BufferOptions MitreLimit NULL
+:memory: #use in-memory database
+SELECT BufferOptions_SetMitreLimit(NULL);
+1 # rows (not including the header row)
+1 # columns
+BufferOptions_SetMitreLimit(NULL)
+0

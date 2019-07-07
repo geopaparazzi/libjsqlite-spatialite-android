@@ -1,0 +1,11 @@
+BufferOptions EndCapStyle - wrong style
+:memory: #use in-memory database
+SELECT BufferOptions_Reset(), BufferOptions_SetEndCapStyle('OOPS'), BufferOptions_GetEndCapStyle();
+1 # rows (not including the header row)
+3 # columns
+BufferOptions_Reset()
+BufferOptions_SetEndCapStyle('OOPS')
+BufferOptions_GetEndCapStyle()
+1
+0
+ROUND

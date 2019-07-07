@@ -1,0 +1,7 @@
+RenameTable - BLOB old_name
+:memory: #use in-memory database
+SELECT RenameTable(NULL, zeroblob(4), 'new_table');
+1 # rows (not including the header row)
+1 # columns
+RenameTable(NULL, zeroblob(4), 'new_table');
+RenameTable exception - invalid argument (2nd arg).

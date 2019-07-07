@@ -1,0 +1,7 @@
+StoredProc_ExecuteLoop - DOUBLE
+:memory: #use in-memory database
+SELECT StoredProc_ExecuteLoop(1.2);
+1 # rows (not including the header row)
+1 # columns
+StoredProc_ExecuteLoop(1.2)
+StoredProc exception - illegal Stored Procedure Name [not a TEXT string].

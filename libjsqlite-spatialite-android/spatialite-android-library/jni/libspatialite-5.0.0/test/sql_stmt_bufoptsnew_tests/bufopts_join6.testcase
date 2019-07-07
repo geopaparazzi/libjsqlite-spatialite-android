@@ -1,0 +1,7 @@
+BufferOptions JoinStyle - INT
+:memory: #use in-memory database
+SELECT BufferOptions_SetJoinStyle(1);
+1 # rows (not including the header row)
+1 # columns
+BufferOptions_SetJoinStyle(1)
+0

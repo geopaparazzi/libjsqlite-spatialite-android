@@ -435,6 +435,16 @@ extern "C"
 /** Convert all DBF column names to UpperCase */
 #define GAIA_DBF_COLNAME_UPPERCASE	2
 
+/* constants used for PROJ.6 WKT styles */
+/** WKT style is ISO-2018 */
+#define GAIA_PROJ_WKT_ISO_2018	1
+/** WKT style is ISO-2015 */
+#define GAIA_PROJ_WKT_ISO_2015	2
+/** WKT style is GDAL */
+#define GAIA_PROJ_WKT_GDAL	3
+/** WKT style is ESRI */
+#define GAIA_PROJ_WKT_ESRI	4
+
 /* macros */
 /**
  macro extracting XY coordinates

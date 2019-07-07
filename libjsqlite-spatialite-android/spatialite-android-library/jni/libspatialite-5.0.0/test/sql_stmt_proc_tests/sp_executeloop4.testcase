@@ -1,0 +1,7 @@
+SqlProc_ExecuteLoop - TEXT
+:memory: #use in-memory database
+SELECT SqlProc_ExecuteLoop('text');
+1 # rows (not including the header row)
+1 # columns
+SqlProc_ExecuteLoop('text')
+SqlProc exception - illegal SQL Procedure arg [not a BLOB].

@@ -1,0 +1,7 @@
+RenameColumn - BLOB old_column
+:memory: #use in-memory database
+SELECT RenameColumn(NULL, 'table', zeroblob(4), 'new_column');
+1 # rows (not including the header row)
+1 # columns
+RenameColumn(NULL, 'table', zeroblob(4), 'new_column');
+RenameColumn exception - invalid argument (3rd arg).

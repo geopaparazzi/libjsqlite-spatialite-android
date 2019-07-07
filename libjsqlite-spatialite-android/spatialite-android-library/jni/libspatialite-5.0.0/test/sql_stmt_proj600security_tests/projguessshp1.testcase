@@ -1,0 +1,7 @@
+PROJ_GuessSridFromSHP() - NULL path
+:memory: #use in-memory database
+SELECT PROJ_GuessSridFromSHP(NULL);
+1 # rows (not including the header row)
+1 # columns
+PROJ_GuessSridFromSHP(NULL)
+(NULL)

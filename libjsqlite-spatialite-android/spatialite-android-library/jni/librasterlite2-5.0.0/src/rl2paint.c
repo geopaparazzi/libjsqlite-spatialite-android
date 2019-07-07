@@ -3623,7 +3623,7 @@ rl2_transform_bitmap (rl2AffineTransformDataPtr at_data,
 RL2_DECLARE int
 rl2_rescale_pixbuf (const unsigned char *inbuf, unsigned int inwidth,
 		    unsigned int inheight, unsigned char pixtype,
-		    const unsigned char *outbuf, unsigned int outwidth,
+		    unsigned char *outbuf, unsigned int outwidth,
 		    unsigned int outheight)
 {
 /* drawing a rescaled pixbufx (RGB or GRAYSCALE) */
@@ -3723,7 +3723,7 @@ rl2_rescale_pixbuf (const unsigned char *inbuf, unsigned int inwidth,
 
 /* exporting the rescaled image */
     p_in = cairo_image_surface_get_data (surface);
-    p_out = (unsigned char *) outbuf;
+    p_out = outbuf;
     for (y = 0; y < outheight; y++)
       {
 	  for (x = 0; x < outwidth; x++)
@@ -3755,6 +3755,180 @@ rl2_rescale_pixbuf (const unsigned char *inbuf, unsigned int inwidth,
 		  }
 		else
 		    *p_out++ = unpremultiply (r, a);
+	    }
+      }
+
+/* destroying the Cairo context */
+    cairo_destroy (cairo);
+    cairo_surface_destroy (surface);
+    return 1;
+
+  error2:
+    if (pixbuf != NULL)
+	free (pixbuf);
+    cairo_destroy (cairo);
+    cairo_surface_destroy (surface);
+    return 0;
+  error1:
+    cairo_surface_destroy (surface);
+    return 0;
+}
+
+RL2_DECLARE int
+rl2_rescale_pixbuf_transparent (const unsigned char *inbuf,
+				const unsigned char *inmask,
+				unsigned int inwidth, unsigned int inheight,
+				unsigned char pixtype, unsigned char *outbuf,
+				unsigned char *outmask, unsigned int outwidth,
+				unsigned int outheight)
+{
+/* drawing a rescaled pixbufx (RGB or GRAYSCALE) */
+    unsigned char *pixbuf = NULL;
+    int bufsz;
+    const unsigned char *p_in;
+    const unsigned char *p_msk;
+    unsigned char *p_out;
+    unsigned char *p_outmsk;
+    unsigned int x;
+    unsigned int y;
+    int stride;
+    double scale_x = (double) outwidth / (double) inwidth;
+    double scale_y = (double) outheight / (double) inheight;
+    int little_endian = rl2cr_endian_arch ();
+    cairo_t *cairo;
+    cairo_surface_t *surface;
+    cairo_surface_t *bitmap;
+    cairo_pattern_t *pattern;
+    if (pixtype != RL2_PIXEL_RGB && pixtype != RL2_PIXEL_GRAYSCALE)
+	return 0;
+
+/* creating a Cairo context */
+    surface =
+	cairo_image_surface_create (CAIRO_FORMAT_ARGB32, outwidth, outheight);
+    if (cairo_surface_status (surface) == CAIRO_STATUS_SUCCESS)
+	;
+    else
+	goto error1;
+    cairo = cairo_create (surface);
+    if (cairo_status (cairo) == CAIRO_STATUS_NO_MEMORY)
+	goto error2;
+
+/* allocating and populating data for Cairo */
+    stride = cairo_format_stride_for_width (CAIRO_FORMAT_ARGB32, inwidth);
+    bufsz = stride * inheight;
+    pixbuf = malloc (bufsz);
+    if (pixbuf == NULL)
+      {
+	  goto error2;
+      }
+    p_in = inbuf;
+    p_msk = inmask;
+    p_out = pixbuf;
+    for (y = 0; y < inheight; y++)
+      {
+	  for (x = 0; x < inwidth; x++)
+	    {
+		unsigned char r;
+		unsigned char g;
+		unsigned char b;
+		int transparent;
+		if (pixtype == RL2_PIXEL_RGB)
+		  {
+		      r = *p_in++;
+		      g = *p_in++;
+		      b = *p_in++;
+		  }
+		else
+		  {
+		      r = *p_in++;
+		      g = r;
+		      b = r;
+		  }
+		transparent = 0;
+		if (*p_msk++ != 0)
+		    transparent = 1;
+		if (little_endian)
+		  {
+		      *p_out++ = b;
+		      *p_out++ = g;
+		      *p_out++ = r;
+		      if (transparent)
+			  *p_out++ = 0x00;
+		      else
+			  *p_out++ = 0xff;
+		  }
+		else
+		  {
+		      if (transparent)
+			  *p_out++ = 0x00;
+		      else
+			  *p_out++ = 0xff;
+		      *p_out++ = r;
+		      *p_out++ = g;
+		      *p_out++ = b;
+		  }
+	    }
+      }
+
+/* creating the input pattern */
+    bitmap =
+	cairo_image_surface_create_for_data (pixbuf, CAIRO_FORMAT_ARGB32,
+					     inwidth, inheight, stride);
+    pattern = cairo_pattern_create_for_surface (bitmap);
+    cairo_pattern_set_extend (pattern, CAIRO_EXTEND_NONE);
+
+/* rescaling the image */
+    cairo_save (cairo);
+    cairo_scale (cairo, scale_x, scale_y);
+    cairo_set_source (cairo, pattern);
+    cairo_paint (cairo);
+    cairo_restore (cairo);
+    cairo_surface_flush (surface);
+
+/* cleaning up the input pattern */
+    cairo_pattern_destroy (pattern);
+    cairo_surface_destroy (bitmap);
+    free (pixbuf);
+
+/* exporting the rescaled image */
+    p_in = cairo_image_surface_get_data (surface);
+    p_out = outbuf;
+    p_outmsk = outmask;
+    for (y = 0; y < outheight; y++)
+      {
+	  for (x = 0; x < outwidth; x++)
+	    {
+		unsigned char r;
+		unsigned char g;
+		unsigned char b;
+		unsigned char a;
+		if (little_endian)
+		  {
+		      b = *p_in++;
+		      g = *p_in++;
+		      r = *p_in++;
+		      a = *p_in++;
+		  }
+		else
+		  {
+		      a = *p_in++;
+		      r = *p_in++;
+		      g = *p_in++;
+		      b = *p_in++;
+		  }
+		if (pixtype == RL2_PIXEL_RGB)
+		  {
+		      *p_out++ = unpremultiply (r, a);
+		      *p_out++ = unpremultiply (g, a);
+		      *p_out++ = unpremultiply (b, a);
+
+		  }
+		else
+		    *p_out++ = unpremultiply (r, a);
+		if (a != 0)
+		    *p_outmsk++ = 0;
+		else
+		    *p_outmsk++ = 1;
 	    }
       }
 

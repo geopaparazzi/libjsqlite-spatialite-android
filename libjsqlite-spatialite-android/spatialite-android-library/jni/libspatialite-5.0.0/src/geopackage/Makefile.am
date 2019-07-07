@@ -1,7 +1,7 @@
 AM_CFLAGS = $(GCOV_FLAGS)
 
-AM_CPPFLAGS = @CFLAGS@ @CPPFLAGS@
-AM_CPPFLAGS += -I$(top_srcdir)/src/headers
+AM_CPPFLAGS = -I$(top_srcdir)/src/headers
+AM_CPPFLAGS += @CFLAGS@ @CPPFLAGS@
 
 noinst_LTLIBRARIES = libgeopackage.la geopackage.la
 
@@ -27,8 +27,8 @@ libgeopackage_la_CFLAGS = -fvisibility=hidden
 
 geopackage_la_SOURCES = $(SHARED_SOURCES)
 
-geopackage_la_CPPFLAGS = @CFLAGS@ @CPPFLAGS@
-geopackage_la_CPPFLAGS += -I$(top_srcdir)/src/headers -I.
+geopackage_la_CPPFLAGS = -I$(top_srcdir)/src/headers -I.
+geopackage_la_CPPFLAGS += @CFLAGS@ @CPPFLAGS@
 geopackage_la_CPPFLAGS += -DLOADABLE_EXTENSION
 geopackage_la_CPPFLAGS += -fvisibility=hidden
 geopackage_la_LDFLAGS = -module

@@ -706,37 +706,115 @@ main (int argc, char *argv[])
 
     coverage =
 	rl2_create_coverage (NULL, "alpha", RL2_SAMPLE_UINT8,
-			     RL2_PIXEL_MULTIBAND, 2, RL2_COMPRESSION_LZMA, 0,
+			     RL2_PIXEL_MULTIBAND, 2, RL2_COMPRESSION_LZ4, 0,
 			     1024, 1024, NULL);
 
     if (coverage == NULL)
       {
-	  fprintf (stderr, "Unable to create coverage (invalid NoData)\n");
+	  fprintf (stderr, "Unable to create coverage LZ4 (invalid NoData)\n");
 	  return -89;
       }
 
     if (rl2_is_coverage_compression_lossless (coverage, &is_compressed) !=
 	RL2_OK)
       {
-	  fprintf (stderr, "Unable to get coverage compression lossless\n");
+	  fprintf (stderr, "Unable to get coverage compression LZ4 lossless\n");
 	  return -90;
       }
 
     if (is_compressed != RL2_TRUE)
       {
-	  fprintf (stderr, "Unexpected coverage compression lossless\n");
+	  fprintf (stderr, "Unexpected coverage compression lossless RL4\n");
 	  return -91;
       }
 
     if (rl2_is_coverage_compression_lossy (coverage, &is_compressed) != RL2_OK)
       {
-	  fprintf (stderr, "Unable to get coverage compression lossy\n");
+	  fprintf (stderr, "Unable to get coverage compression lossy RL4\n");
 	  return -92;
       }
 
     if (is_compressed != RL2_FALSE)
       {
-	  fprintf (stderr, "Unexpected coverage compression lossy\n");
+	  fprintf (stderr, "Unexpected coverage compression lossy RL4\n");
+	  return -93;
+      }
+
+    rl2_destroy_coverage (coverage);
+
+    coverage =
+	rl2_create_coverage (NULL, "alpha", RL2_SAMPLE_UINT8,
+			     RL2_PIXEL_MULTIBAND, 2, RL2_COMPRESSION_ZSTD, 0,
+			     1024, 1024, NULL);
+
+    if (coverage == NULL)
+      {
+	  fprintf (stderr, "Unable to create coverage (invalid NoData) ZSTD\n");
+	  return -89;
+      }
+
+    if (rl2_is_coverage_compression_lossless (coverage, &is_compressed) !=
+	RL2_OK)
+      {
+	  fprintf (stderr,
+		   "Unable to get coverage compression lossless ZSTD\n");
+	  return -90;
+      }
+
+    if (is_compressed != RL2_TRUE)
+      {
+	  fprintf (stderr, "Unexpected coverage compression lossless ZSTD\n");
+	  return -91;
+      }
+
+    if (rl2_is_coverage_compression_lossy (coverage, &is_compressed) != RL2_OK)
+      {
+	  fprintf (stderr, "Unable to get coverage compression lossy ZSTD\n");
+	  return -92;
+      }
+
+    if (is_compressed != RL2_FALSE)
+      {
+	  fprintf (stderr, "Unexpected coverage compression lossy ZSTD\n");
+	  return -93;
+      }
+
+    rl2_destroy_coverage (coverage);
+
+    coverage =
+	rl2_create_coverage (NULL, "alpha", RL2_SAMPLE_UINT8,
+			     RL2_PIXEL_MULTIBAND, 2, RL2_COMPRESSION_LZMA, 0,
+			     1024, 1024, NULL);
+
+    if (coverage == NULL)
+      {
+	  fprintf (stderr, "Unable to create coverage (invalid NoData) LZMA\n");
+	  return -89;
+      }
+
+    if (rl2_is_coverage_compression_lossless (coverage, &is_compressed) !=
+	RL2_OK)
+      {
+	  fprintf (stderr,
+		   "Unable to get coverage compression lossless LZMA\n");
+	  return -90;
+      }
+
+    if (is_compressed != RL2_TRUE)
+      {
+	  fprintf (stderr, "Unexpected coverage compression lossless LZMA\n");
+	  return -91;
+      }
+
+    if (rl2_is_coverage_compression_lossy (coverage, &is_compressed) != RL2_OK)
+      {
+	  fprintf (stderr, "Unable to get coverage compression lossy LZMA\n");
+	  return -92;
+      }
+
+    if (is_compressed != RL2_FALSE)
+      {
+	  fprintf (stderr, "Unexpected coverage compression lossy LZMA\n");
 	  return -93;
       }
 

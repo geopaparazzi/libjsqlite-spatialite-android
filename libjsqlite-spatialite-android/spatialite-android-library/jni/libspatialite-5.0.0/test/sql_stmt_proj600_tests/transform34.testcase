@@ -1,0 +1,7 @@
+transform - PROJ.6 extra-args - BLOB string_2
+:memory: #use in-memory database
+SELECT AsText(Transform(MakePoint(11.5, 42.5, 4326), 3003, NULL, '+proj=longlat +datum=WGS84 +no_defs', zeroblob(10)));
+1 # rows (not including the header row)
+1 # columns
+AsText(Transform(MakePoint(11.5, 42.5, 4326), 3003, NULL, '+proj=longlat +datum=WGS84 +no_defs', zeroblob(10)))
+ST_Transform exception - 5th argument is neither a TEXT string nor NULL.

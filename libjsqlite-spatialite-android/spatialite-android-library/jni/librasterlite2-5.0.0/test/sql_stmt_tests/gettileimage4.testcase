@@ -1,7 +1,7 @@
-RL2_GetTileImage - not existing coverage
+RL2_GetTileImage - Integer coverage 
 :memory: #use in-memory database
-SELECT RL2_GetTileImage('main', 'alpha', 1, '#ffffff');
+SELECT RL2_GetTileImage('main', 1, 1);
 1 # rows (not including the header row)
 1 # columns
-RL2_GetTileImage('main', 'alpha', 1, '#ffffff')
+RL2_GetTileImage('main', 1, 1)
 (NULL)

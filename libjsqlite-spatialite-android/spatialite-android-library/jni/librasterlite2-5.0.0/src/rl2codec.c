@@ -52,6 +52,12 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #ifndef OMIT_LZMA
 #include <lzma.h>
 #endif
+#ifndef OMIT_LZ4
+#include <lz4.h>
+#endif
+#ifndef OMIT_ZSTD
+#include <zstd.h>
+#endif
 
 #ifdef LOADABLE_EXTENSION
 #include "rasterlite2/sqlite.h"
@@ -60,6 +66,8 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #include "rasterlite2/rasterlite2.h"
 #include "rasterlite2/rl2tiff.h"
 #include "rasterlite2_private.h"
+
+#define ZSTD_LEVEL	3
 
 static int
 endianArch ()
@@ -833,6 +841,10 @@ check_encode_self_consistency (unsigned char sample_type,
 	    case RL2_COMPRESSION_DEFLATE_NO:
 	    case RL2_COMPRESSION_LZMA:
 	    case RL2_COMPRESSION_LZMA_NO:
+	    case RL2_COMPRESSION_LZ4:
+	    case RL2_COMPRESSION_LZ4_NO:
+	    case RL2_COMPRESSION_ZSTD:
+	    case RL2_COMPRESSION_ZSTD_NO:
 	    case RL2_COMPRESSION_PNG:
 	    case RL2_COMPRESSION_CCITTFAX4:
 		break;
@@ -860,6 +872,10 @@ check_encode_self_consistency (unsigned char sample_type,
 	    case RL2_COMPRESSION_DEFLATE_NO:
 	    case RL2_COMPRESSION_LZMA:
 	    case RL2_COMPRESSION_LZMA_NO:
+	    case RL2_COMPRESSION_LZ4:
+	    case RL2_COMPRESSION_LZ4_NO:
+	    case RL2_COMPRESSION_ZSTD:
+	    case RL2_COMPRESSION_ZSTD_NO:
 	    case RL2_COMPRESSION_PNG:
 		break;
 	    default:
@@ -885,6 +901,10 @@ check_encode_self_consistency (unsigned char sample_type,
 	    case RL2_COMPRESSION_DEFLATE_NO:
 	    case RL2_COMPRESSION_LZMA:
 	    case RL2_COMPRESSION_LZMA_NO:
+	    case RL2_COMPRESSION_LZ4:
+	    case RL2_COMPRESSION_LZ4_NO:
+	    case RL2_COMPRESSION_ZSTD:
+	    case RL2_COMPRESSION_ZSTD_NO:
 	    case RL2_COMPRESSION_PNG:
 	    case RL2_COMPRESSION_JPEG:
 	    case RL2_COMPRESSION_LOSSY_WEBP:
@@ -917,6 +937,10 @@ check_encode_self_consistency (unsigned char sample_type,
 		  case RL2_COMPRESSION_DEFLATE_NO:
 		  case RL2_COMPRESSION_LZMA:
 		  case RL2_COMPRESSION_LZMA_NO:
+		  case RL2_COMPRESSION_LZ4:
+		  case RL2_COMPRESSION_LZ4_NO:
+		  case RL2_COMPRESSION_ZSTD:
+		  case RL2_COMPRESSION_ZSTD_NO:
 		  case RL2_COMPRESSION_PNG:
 		  case RL2_COMPRESSION_CHARLS:
 		  case RL2_COMPRESSION_LOSSY_JP2:
@@ -935,6 +959,10 @@ check_encode_self_consistency (unsigned char sample_type,
 		  case RL2_COMPRESSION_DEFLATE_NO:
 		  case RL2_COMPRESSION_LZMA:
 		  case RL2_COMPRESSION_LZMA_NO:
+		  case RL2_COMPRESSION_LZ4:
+		  case RL2_COMPRESSION_LZ4_NO:
+		  case RL2_COMPRESSION_ZSTD:
+		  case RL2_COMPRESSION_ZSTD_NO:
 		  case RL2_COMPRESSION_PNG:
 		  case RL2_COMPRESSION_JPEG:
 		  case RL2_COMPRESSION_LOSSY_WEBP:
@@ -970,6 +998,10 @@ check_encode_self_consistency (unsigned char sample_type,
 			case RL2_COMPRESSION_DEFLATE_NO:
 			case RL2_COMPRESSION_LZMA:
 			case RL2_COMPRESSION_LZMA_NO:
+			case RL2_COMPRESSION_LZ4:
+			case RL2_COMPRESSION_LZ4_NO:
+			case RL2_COMPRESSION_ZSTD:
+			case RL2_COMPRESSION_ZSTD_NO:
 			case RL2_COMPRESSION_PNG:
 			case RL2_COMPRESSION_CHARLS:
 			case RL2_COMPRESSION_LOSSY_JP2:
@@ -988,6 +1020,10 @@ check_encode_self_consistency (unsigned char sample_type,
 			case RL2_COMPRESSION_DEFLATE_NO:
 			case RL2_COMPRESSION_LZMA:
 			case RL2_COMPRESSION_LZMA_NO:
+			case RL2_COMPRESSION_LZ4:
+			case RL2_COMPRESSION_LZ4_NO:
+			case RL2_COMPRESSION_ZSTD:
+			case RL2_COMPRESSION_ZSTD_NO:
 			case RL2_COMPRESSION_PNG:
 			case RL2_COMPRESSION_LOSSY_WEBP:
 			case RL2_COMPRESSION_LOSSLESS_WEBP:
@@ -1009,6 +1045,10 @@ check_encode_self_consistency (unsigned char sample_type,
 		  case RL2_COMPRESSION_DEFLATE_NO:
 		  case RL2_COMPRESSION_LZMA:
 		  case RL2_COMPRESSION_LZMA_NO:
+		  case RL2_COMPRESSION_LZ4:
+		  case RL2_COMPRESSION_LZ4_NO:
+		  case RL2_COMPRESSION_ZSTD:
+		  case RL2_COMPRESSION_ZSTD_NO:
 		      break;
 		  default:
 		      return 0;
@@ -1042,6 +1082,10 @@ check_encode_self_consistency (unsigned char sample_type,
 		  case RL2_COMPRESSION_DEFLATE_NO:
 		  case RL2_COMPRESSION_LZMA:
 		  case RL2_COMPRESSION_LZMA_NO:
+		  case RL2_COMPRESSION_LZ4:
+		  case RL2_COMPRESSION_LZ4_NO:
+		  case RL2_COMPRESSION_ZSTD:
+		  case RL2_COMPRESSION_ZSTD_NO:
 		  case RL2_COMPRESSION_PNG:
 		  case RL2_COMPRESSION_CHARLS:
 		  case RL2_COMPRESSION_LOSSY_JP2:
@@ -1060,6 +1104,10 @@ check_encode_self_consistency (unsigned char sample_type,
 		  case RL2_COMPRESSION_DEFLATE_NO:
 		  case RL2_COMPRESSION_LZMA:
 		  case RL2_COMPRESSION_LZMA_NO:
+		  case RL2_COMPRESSION_LZ4:
+		  case RL2_COMPRESSION_LZ4_NO:
+		  case RL2_COMPRESSION_ZSTD:
+		  case RL2_COMPRESSION_ZSTD_NO:
 		      break;
 		  default:
 		      return 0;
@@ -2122,7 +2170,11 @@ rl2_raster_encode (rl2RasterPtr rst, int compression,
 	|| compression == RL2_COMPRESSION_DEFLATE
 	|| compression == RL2_COMPRESSION_DEFLATE_NO
 	|| compression == RL2_COMPRESSION_LZMA
-	|| compression == RL2_COMPRESSION_LZMA_NO)
+	|| compression == RL2_COMPRESSION_LZMA_NO
+	|| compression == RL2_COMPRESSION_LZ4
+	|| compression == RL2_COMPRESSION_LZ4_NO
+	|| compression == RL2_COMPRESSION_ZSTD
+	|| compression == RL2_COMPRESSION_ZSTD_NO)
       {
 	  /* preparing the pixels buffers */
 	  if (raster->sampleType == RL2_SAMPLE_1_BIT)
@@ -2423,6 +2475,210 @@ rl2_raster_encode (rl2RasterPtr rst, int compression,
 		   "librasterlite2 was built by disabling LZMA support\n");
 	  goto error;
 #endif /* end LZMA conditional */
+      }
+    else if (compression == RL2_COMPRESSION_LZ4)
+      {
+#ifndef OMIT_LZ4		/* only if LZ4 is enabled */
+	  /* compressing as LZ4 DeltaFilter */
+	  int compressed_data_size;
+	  int max_dst_size = LZ4_compressBound (size_odd);
+	  unsigned char *lz4_buf = malloc (max_dst_size);
+	  if (lz4_buf == NULL)
+	      goto error;
+	  if (rl2_delta_encode (pixels_odd, size_odd, delta_dist) != RL2_OK)
+	      goto error;
+	  compressed_data_size =
+	      LZ4_compress_default ((const char *) pixels_odd, (char *) lz4_buf,
+				    size_odd, max_dst_size);
+	  if (compressed_data_size > 0)
+	    {
+		/* ok, LZ4 compression was successful */
+		uncompressed = size_odd;
+		compressed = compressed_data_size;
+		compr_data = lz4_buf;
+		to_clean1 = lz4_buf;
+	    }
+	  else if (compressed_data_size == 0)
+	    {
+		/* LZ4 compression actually causes inflation: saving uncompressed data */
+		if (rl2_delta_decode (pixels_odd, size_odd, delta_dist) !=
+		    RL2_OK)
+		    goto error;
+		uncompressed = size_odd;
+		compressed = size_odd;
+		compr_data = pixels_odd;
+		free (lz4_buf);
+		lz4_buf = NULL;
+	    }
+	  else
+	    {
+		/* compression error */
+		free (lz4_buf);
+		goto error;
+	    }
+	  if (mask_pix == NULL)
+	      uncompressed_mask = 0;
+	  else
+	      uncompressed_mask = raster->width * raster->height;
+	  compressed_mask = mask_pix_size;
+	  compr_mask = mask_pix;
+#else /* LZ4 is disabled */
+	  fprintf (stderr,
+		   "librasterlite2 was built by disabling LZ4 support\n");
+	  goto error;
+#endif /* end LZ4 conditional */
+      }
+    else if (compression == RL2_COMPRESSION_LZ4_NO)
+      {
+#ifndef OMIT_LZ4		/* only if LZ4 is enabled */
+	  /* compressing as LZ4 noDelta */
+	  int compressed_data_size;
+	  int max_dst_size = LZ4_compressBound (size_odd);
+	  unsigned char *lz4_buf = malloc (max_dst_size);
+	  if (lz4_buf == NULL)
+	      goto error;
+	  compressed_data_size =
+	      LZ4_compress_default ((const char *) pixels_odd, (char *) lz4_buf,
+				    size_odd, max_dst_size);
+	  if (compressed_data_size > 0)
+	    {
+		/* ok, LZ4 compression was successful */
+		uncompressed = size_odd;
+		compressed = compressed_data_size;
+		compr_data = lz4_buf;
+		to_clean1 = lz4_buf;
+	    }
+	  else if (compressed_data_size == 0)
+	    {
+		/* LZ4 compression actually causes inflation: saving uncompressed data */
+		uncompressed = size_odd;
+		compressed = size_odd;
+		compr_data = pixels_odd;
+		free (lz4_buf);
+		lz4_buf = NULL;
+	    }
+	  else
+	    {
+		/* compression error */
+		free (lz4_buf);
+		goto error;
+	    }
+	  if (mask_pix == NULL)
+	      uncompressed_mask = 0;
+	  else
+	      uncompressed_mask = raster->width * raster->height;
+	  compressed_mask = mask_pix_size;
+	  compr_mask = mask_pix;
+#else /* LZ4 is disabled */
+	  fprintf (stderr,
+		   "librasterlite2 was built by disabling LZ4 support\n");
+	  goto error;
+#endif /* end LZ4 conditional */
+      }
+    else if (compression == RL2_COMPRESSION_ZSTD)
+      {
+#ifndef OMIT_ZSTD		/* only if ZSTD is enabled */
+	  /* compressing as ZSTD DeltaFilter */
+	  size_t compressed_data_size;
+	  size_t cBuffSize = ZSTD_compressBound (size_odd);
+	  unsigned char *zstd_buf = malloc (cBuffSize);
+	  if (zstd_buf == NULL)
+	    {
+		fprintf (stderr, "ZSTD: insufficient memory\n");
+		goto error;
+	    }
+	  if (rl2_delta_encode (pixels_odd, size_odd, delta_dist) != RL2_OK)
+	      goto error;
+	  compressed_data_size =
+	      ZSTD_compress (zstd_buf, cBuffSize, pixels_odd, (size_t) size_odd,
+			     ZSTD_LEVEL);
+	  if (compressed_data_size > 0)
+	    {
+		/* ok, ZSTD compression was successful */
+		uncompressed = size_odd;
+		compressed = compressed_data_size;
+		compr_data = zstd_buf;
+		to_clean1 = zstd_buf;
+	    }
+	  else if (compressed_data_size == 0)
+	    {
+		/* ZSTD compression actually causes inflation: saving uncompressed data */
+		if (rl2_delta_decode (pixels_odd, size_odd, delta_dist) !=
+		    RL2_OK)
+		    goto error;
+		uncompressed = size_odd;
+		compressed = size_odd;
+		compr_data = pixels_odd;
+		free (zstd_buf);
+		zstd_buf = NULL;
+	    }
+	  else
+	    {
+		/* compression error */
+		free (zstd_buf);
+		goto error;
+	    }
+	  if (mask_pix == NULL)
+	      uncompressed_mask = 0;
+	  else
+	      uncompressed_mask = raster->width * raster->height;
+	  compressed_mask = mask_pix_size;
+	  compr_mask = mask_pix;
+#else /* ZSTD is disabled */
+	  fprintf (stderr,
+		   "librasterlite2 was built by disabling ZSTD support\n");
+	  goto error;
+#endif /* end ZSTD conditional */
+      }
+    else if (compression == RL2_COMPRESSION_ZSTD_NO)
+      {
+#ifndef OMIT_ZSTD		/* only if ZSTD is enabled */
+	  /* compressing as ZSTD noDelta */
+	  size_t compressed_data_size;
+	  size_t cBuffSize = ZSTD_compressBound (size_odd);
+	  unsigned char *zstd_buf = malloc (cBuffSize);
+	  if (zstd_buf == NULL)
+	    {
+		fprintf (stderr, "ZSTD: insufficient memory\n");
+		goto error;
+	    }
+	  compressed_data_size =
+	      ZSTD_compress (zstd_buf, cBuffSize, pixels_odd, (size_t) size_odd,
+			     ZSTD_LEVEL);
+	  if (compressed_data_size > 0)
+	    {
+		/* ok, ZSTD compression was successful */
+		uncompressed = size_odd;
+		compressed = compressed_data_size;
+		compr_data = zstd_buf;
+		to_clean1 = zstd_buf;
+	    }
+	  else if (compressed_data_size == 0)
+	    {
+		/* ZSTD compression actually causes inflation: saving uncompressed data */
+		uncompressed = size_odd;
+		compressed = size_odd;
+		compr_data = pixels_odd;
+		free (zstd_buf);
+		zstd_buf = NULL;
+	    }
+	  else
+	    {
+		/* compression error */
+		free (zstd_buf);
+		goto error;
+	    }
+	  if (mask_pix == NULL)
+	      uncompressed_mask = 0;
+	  else
+	      uncompressed_mask = raster->width * raster->height;
+	  compressed_mask = mask_pix_size;
+	  compr_mask = mask_pix;
+#else /* ZSTD is disabled */
+	  fprintf (stderr,
+		   "librasterlite2 was built by disabling ZSTD support\n");
+	  goto error;
+#endif /* end ZSTD conditional */
       }
     else if (compression == RL2_COMPRESSION_JPEG)
       {
@@ -2886,6 +3142,193 @@ rl2_raster_encode (rl2RasterPtr rst, int compression,
 		goto error;
 #endif /* end LZMA conditional */
 	    }
+	  else if (compression == RL2_COMPRESSION_LZ4)
+	    {
+#ifndef OMIT_LZ4		/* only if LZ4 is enabled */
+		/* compressing as LZ4 DeltaFilter */
+		int compressed_data_size;
+		int max_dst_size = LZ4_compressBound (size_even);
+		unsigned char *lz4_buf = malloc (max_dst_size);
+		if (lz4_buf == NULL)
+		    goto error;
+		if (rl2_delta_encode (pixels_even, size_even, delta_dist) !=
+		    RL2_OK)
+		    goto error;
+		compressed_data_size =
+		    LZ4_compress_default ((const char *) pixels_even,
+					  (char *) lz4_buf, size_even,
+					  max_dst_size);
+		if (compressed_data_size > 0)
+		  {
+		      /* ok, LZ4 compression was successful */
+		      uncompressed = size_even;
+		      compressed = compressed_data_size;
+		      compr_data = lz4_buf;
+		      to_clean2 = lz4_buf;
+		  }
+		else if (compressed_data_size == 0)
+		  {
+		      /* LZ4 compression actually causes inflation: saving uncompressed data */
+		      if (rl2_delta_decode
+			  (pixels_even, size_even, delta_dist) != RL2_OK)
+			  goto error;
+		      uncompressed = size_even;
+		      compressed = size_even;
+		      compr_data = pixels_even;
+		      free (lz4_buf);
+		      lz4_buf = NULL;
+		  }
+		else
+		  {
+		      /* compression error */
+		      free (lz4_buf);
+		      goto error;
+		  }
+#else /* LZ4 is disabled */
+		fprintf (stderr,
+			 "librasterlite2 was built by disabling LZ4 support\n");
+		goto error;
+#endif /* end LZ4 conditional */
+	    }
+	  else if (compression == RL2_COMPRESSION_LZ4_NO)
+	    {
+#ifndef OMIT_LZ4		/* only if LZ4 is enabled */
+		/* compressing as LZ4 noDelta */
+		int compressed_data_size;
+		int max_dst_size = LZ4_compressBound (size_even);
+		unsigned char *lz4_buf = malloc (max_dst_size);
+		if (lz4_buf == NULL)
+		    goto error;
+		compressed_data_size =
+		    LZ4_compress_default ((const char *) pixels_even,
+					  (char *) lz4_buf, size_even,
+					  max_dst_size);
+		if (compressed_data_size > 0)
+		  {
+		      /* ok, LZ4 compression was successful */
+		      uncompressed = size_even;
+		      compressed = compressed_data_size;
+		      compr_data = lz4_buf;
+		      to_clean2 = lz4_buf;
+		  }
+		else if (compressed_data_size == 0)
+		  {
+		      /* LZ4 compression actually causes inflation: saving uncompressed data */
+		      uncompressed = size_even;
+		      compressed = size_even;
+		      compr_data = pixels_even;
+		      free (lz4_buf);
+		      lz4_buf = NULL;
+		  }
+		else
+		  {
+		      /* compression error */
+		      free (lz4_buf);
+		      goto error;
+		  }
+#else /* LZ4 is disabled */
+		fprintf (stderr,
+			 "librasterlite2 was built by disabling LZ4 support\n");
+		goto error;
+#endif /* end LZ4 conditional */
+	    }
+	  else if (compression == RL2_COMPRESSION_ZSTD)
+	    {
+#ifndef OMIT_ZSTD		/* only if ZSTD is enabled */
+		/* compressing as ZSTD DeltaFilter */
+		size_t compressed_data_size;
+		size_t cBuffSize = ZSTD_compressBound (size_odd);
+		unsigned char *zstd_buf = malloc (cBuffSize);
+		if (zstd_buf == NULL)
+		  {
+		      fprintf (stderr, "ZSTD: insufficient memory\n");
+		      goto error;
+		  }
+		if (rl2_delta_encode (pixels_even, size_even, delta_dist) !=
+		    RL2_OK)
+		    goto error;
+		compressed_data_size =
+		    ZSTD_compress (zstd_buf, cBuffSize, pixels_even,
+				   (size_t) size_even, ZSTD_LEVEL);
+		if (rl2_delta_encode (pixels_even, size_even, delta_dist) !=
+		    RL2_OK)
+		    goto error;
+		if (compressed_data_size > 0)
+		  {
+		      /* ok, ZSTD compression was successful */
+		      uncompressed = size_even;
+		      compressed = compressed_data_size;
+		      compr_data = zstd_buf;
+		      to_clean2 = zstd_buf;
+		  }
+		else if (compressed_data_size == 0)
+		  {
+		      /* ZSTD compression actually causes inflation: saving uncompressed data */
+		      if (rl2_delta_decode
+			  (pixels_even, size_even, delta_dist) != RL2_OK)
+			  goto error;
+		      uncompressed = size_even;
+		      compressed = size_even;
+		      compr_data = pixels_even;
+		      free (zstd_buf);
+		      zstd_buf = NULL;
+		  }
+		else
+		  {
+		      /* compression error */
+		      free (zstd_buf);
+		      goto error;
+		  }
+#else /* ZSTD is disabled */
+		fprintf (stderr,
+			 "librasterlite2 was built by disabling ZSTD support\n");
+		goto error;
+#endif /* end ZSTD conditional */
+	    }
+	  else if (compression == RL2_COMPRESSION_ZSTD_NO)
+	    {
+#ifndef OMIT_ZSTD		/* only if ZSTD is enabled */
+		/* compressing as ZSTD noDelta */
+		size_t compressed_data_size;
+		size_t cBuffSize = ZSTD_compressBound (size_odd);
+		unsigned char *zstd_buf = malloc (cBuffSize);
+		if (zstd_buf == NULL)
+		  {
+		      fprintf (stderr, "ZSTD: insufficient memory\n");
+		      goto error;
+		  }
+		compressed_data_size =
+		    ZSTD_compress (zstd_buf, cBuffSize, pixels_even,
+				   (size_t) size_even, ZSTD_LEVEL);
+		if (compressed_data_size > 0)
+		  {
+		      /* ok, ZSTD compression was successful */
+		      uncompressed = size_even;
+		      compressed = compressed_data_size;
+		      compr_data = zstd_buf;
+		      to_clean2 = zstd_buf;
+		  }
+		else if (compressed_data_size == 0)
+		  {
+		      /* ZSTD compression actually causes inflation: saving uncompressed data */
+		      uncompressed = size_even;
+		      compressed = size_even;
+		      compr_data = pixels_even;
+		      free (zstd_buf);
+		      zstd_buf = NULL;
+		  }
+		else
+		  {
+		      /* compression error */
+		      free (zstd_buf);
+		      goto error;
+		  }
+#else /* ZSTD is disabled */
+		fprintf (stderr,
+			 "librasterlite2 was built by disabling ZSTD support\n");
+		goto error;
+#endif /* end ZSTD conditional */
+	    }
 	  else if (compression == RL2_COMPRESSION_PNG)
 	    {
 		/* compressing as PNG */
@@ -3073,6 +3516,10 @@ rl2_query_dbms_raster_tile (const unsigned char *blob, int blob_sz,
 	    case RL2_COMPRESSION_DEFLATE_NO:
 	    case RL2_COMPRESSION_LZMA:
 	    case RL2_COMPRESSION_LZMA_NO:
+	    case RL2_COMPRESSION_LZ4:
+	    case RL2_COMPRESSION_LZ4_NO:
+	    case RL2_COMPRESSION_ZSTD:
+	    case RL2_COMPRESSION_ZSTD_NO:
 	    case RL2_COMPRESSION_PNG:
 	    case RL2_COMPRESSION_JPEG:
 	    case RL2_COMPRESSION_LOSSY_WEBP:
@@ -3168,6 +3615,10 @@ rl2_query_dbms_raster_tile (const unsigned char *blob, int blob_sz,
 	    case RL2_COMPRESSION_DEFLATE_NO:
 	    case RL2_COMPRESSION_LZMA:
 	    case RL2_COMPRESSION_LZMA_NO:
+	    case RL2_COMPRESSION_LZ4:
+	    case RL2_COMPRESSION_LZ4_NO:
+	    case RL2_COMPRESSION_ZSTD:
+	    case RL2_COMPRESSION_ZSTD_NO:
 	    case RL2_COMPRESSION_PNG:
 	    case RL2_COMPRESSION_JPEG:
 	    case RL2_COMPRESSION_LOSSY_WEBP:
@@ -3291,6 +3742,10 @@ check_blob_odd (const unsigned char *blob, int blob_sz, unsigned int *xwidth,
       case RL2_COMPRESSION_DEFLATE_NO:
       case RL2_COMPRESSION_LZMA:
       case RL2_COMPRESSION_LZMA_NO:
+      case RL2_COMPRESSION_LZ4:
+      case RL2_COMPRESSION_LZ4_NO:
+      case RL2_COMPRESSION_ZSTD:
+      case RL2_COMPRESSION_ZSTD_NO:
       case RL2_COMPRESSION_PNG:
       case RL2_COMPRESSION_JPEG:
       case RL2_COMPRESSION_LOSSY_WEBP:
@@ -5533,7 +5988,6 @@ rl2_raster_decode (int scale, const unsigned char *blob_odd,
 	  if (odd_data == NULL)
 	      goto error;
 	  lzma_lzma_preset (&opt_lzma2, LZMA_PRESET_DEFAULT);
-	  lzma_lzma_preset (&opt_lzma2, LZMA_PRESET_DEFAULT);
 	  filters[0].id = LZMA_FILTER_LZMA2;
 	  filters[0].options = &opt_lzma2;
 	  filters[1].id = LZMA_VLI_UNKNOWN;
@@ -5571,6 +6025,160 @@ rl2_raster_decode (int scale, const unsigned char *blob_odd,
 		   "librasterlite2 was built by disabling LZMA support\n");
 	  goto error;
 #endif /* end LZMA conditional */
+      }
+    if (compression == RL2_COMPRESSION_LZ4
+	&& uncompressed_odd != compressed_odd)
+      {
+#ifndef OMIT_LZ4		/* only if LZ4 is enabled */
+	  /* decompressing from LZ4 DeltaFilter - ODD Block */
+	  int sz_out;
+	  odd_data = malloc (uncompressed_odd);
+	  if (odd_data == NULL)
+	      goto error;
+	  sz_out =
+	      LZ4_decompress_safe ((char *) pixels_odd, (char *) odd_data,
+				   compressed_odd, uncompressed_odd);
+	  if (sz_out != uncompressed_odd)
+	      goto error;
+	  if (rl2_delta_decode (odd_data, uncompressed_odd, delta_dist) !=
+	      RL2_OK)
+	      goto error;
+	  pixels_odd = odd_data;
+	  if (pixels_even != NULL && uncompressed_even != compressed_even)
+	    {
+		/* decompressing from LZ4 DeltaFilter - EVEN Block */
+		int sz_out;
+		even_data = malloc (uncompressed_even);
+		if (even_data == NULL)
+		    goto error;
+		sz_out =
+		    LZ4_decompress_safe ((char *) pixels_even,
+					 (char *) even_data, compressed_even,
+					 uncompressed_even);
+		if (sz_out != uncompressed_even)
+		    goto error;
+		if (rl2_delta_decode
+		    (even_data, uncompressed_even, delta_dist) != RL2_OK)
+		    goto error;
+		pixels_even = even_data;
+	    }
+#else /* LZ4 is disabled */
+	  fprintf (stderr,
+		   "librasterlite2 was built by disabling LZ4 support\n");
+	  goto error;
+#endif /* end LZ4 conditional */
+      }
+    if (compression == RL2_COMPRESSION_LZ4_NO
+	&& uncompressed_odd != compressed_odd)
+      {
+#ifndef OMIT_LZ4		/* only if LZ4 is enabled */
+	  /* decompressing from LZ4 noDelta - ODD Block */
+	  int sz_out;
+	  odd_data = malloc (uncompressed_odd);
+	  if (odd_data == NULL)
+	      goto error;
+	  sz_out =
+	      LZ4_decompress_safe ((char *) pixels_odd, (char *) odd_data,
+				   compressed_odd, uncompressed_odd);
+	  if (sz_out != uncompressed_odd)
+	      goto error;
+	  pixels_odd = odd_data;
+	  if (pixels_even != NULL && uncompressed_even != compressed_even)
+	    {
+		/* decompressing from LZ4 noDelta - EVEN Block */
+		int sz_out;
+		even_data = malloc (uncompressed_even);
+		if (even_data == NULL)
+		    goto error;
+		sz_out =
+		    LZ4_decompress_safe ((char *) pixels_even,
+					 (char *) even_data, compressed_even,
+					 uncompressed_even);
+		if (sz_out != uncompressed_even)
+		    goto error;
+		pixels_even = even_data;
+	    }
+#else /* LZ4 is disabled */
+	  fprintf (stderr,
+		   "librasterlite2 was built by disabling LZ4 support\n");
+	  goto error;
+#endif /* end LZ4 conditional */
+      }
+    if (compression == RL2_COMPRESSION_ZSTD
+	&& uncompressed_odd != compressed_odd)
+      {
+#ifndef OMIT_ZSTD		/* only if ZSTD is enabled */
+	  /* decompressing from ZSTD DeltaFilter - ODD Block */
+	  size_t dSize;
+	  size_t cSize = compressed_odd;
+	  size_t rSize = uncompressed_odd;
+	  odd_data = malloc (rSize);
+	  if (odd_data == NULL)
+	      goto error;
+	  dSize = ZSTD_decompress (odd_data, rSize, pixels_odd, cSize);
+	  if (dSize != rSize)
+	      goto error;
+	  if (rl2_delta_decode (odd_data, uncompressed_odd, delta_dist) !=
+	      RL2_OK)
+	      goto error;
+	  pixels_odd = odd_data;
+	  if (pixels_even != NULL && uncompressed_even != compressed_even)
+	    {
+		/* decompressing from LZ4 DeltaFilter - EVEN Block */
+		size_t dSize;
+		size_t cSize = compressed_even;
+		size_t rSize = uncompressed_even;
+		even_data = malloc (rSize);
+		if (even_data == NULL)
+		    goto error;
+		dSize = ZSTD_decompress (even_data, rSize, pixels_even, cSize);
+		if (dSize != rSize)
+		    goto error;
+		if (rl2_delta_decode
+		    (even_data, uncompressed_even, delta_dist) != RL2_OK)
+		    goto error;
+		pixels_even = even_data;
+	    }
+#else /* ZSTD is disabled */
+	  fprintf (stderr,
+		   "librasterlite2 was built by disabling ZSTD support\n");
+	  goto error;
+#endif /* end ZSTD conditional */
+      }
+    if (compression == RL2_COMPRESSION_ZSTD_NO
+	&& uncompressed_odd != compressed_odd)
+      {
+#ifndef OMIT_ZSTD		/* only if ZSTD is enabled */
+	  /* decompressing from ZSTD noDelta - ODD Block */
+	  size_t dSize;
+	  size_t cSize = compressed_odd;
+	  size_t rSize = uncompressed_odd;
+	  odd_data = malloc (rSize);
+	  if (odd_data == NULL)
+	      goto error;
+	  dSize = ZSTD_decompress (odd_data, rSize, pixels_odd, cSize);
+	  if (dSize != rSize)
+	      goto error;
+	  pixels_odd = odd_data;
+	  if (pixels_even != NULL && uncompressed_even != compressed_even)
+	    {
+		/* decompressing from LZ4 DeltaFilter - EVEN Block */
+		size_t dSize;
+		size_t cSize = compressed_even;
+		size_t rSize = uncompressed_even;
+		even_data = malloc (rSize);
+		if (even_data == NULL)
+		    goto error;
+		dSize = ZSTD_decompress (even_data, rSize, pixels_even, cSize);
+		if (dSize != rSize)
+		    goto error;
+		pixels_even = even_data;
+	    }
+#else /* ZSTD is disabled */
+	  fprintf (stderr,
+		   "librasterlite2 was built by disabling ZSTD support\n");
+	  goto error;
+#endif /* end ZSTD conditional */
       }
     if (compression == RL2_COMPRESSION_JPEG)
       {
@@ -5863,6 +6471,7 @@ rl2_raster_decode (int scale, const unsigned char *blob_odd,
     raster =
 	rl2_create_raster (width, height, sample_type, pixel_type, num_bands,
 			   pixels, pixels_sz, palette, mask, mask_sz, NULL);
+
     if (raster == NULL)
 	goto error;
     if (odd_data != NULL)
@@ -8620,6 +9229,36 @@ rl2_lzma_version (void)
     static char version[128];
 #ifndef OMIT_LZMA
     sprintf (version, "liblzma %s", lzma_version_string ());
+    return version;
+#else
+    strcpy (version, "unsupported");
+    return version;
+#endif
+}
+
+RL2_DECLARE const char *
+rl2_lz4_version (void)
+{
+/* returning the LZ4 version string */
+    static char version[128];
+#ifndef OMIT_LZ4
+    sprintf (version, "liblz4 %d.%d.%d", LZ4_VERSION_MAJOR, LZ4_VERSION_MINOR,
+	     LZ4_VERSION_RELEASE);
+    return version;
+#else
+    strcpy (version, "unsupported");
+    return version;
+#endif
+}
+
+RL2_DECLARE const char *
+rl2_zstd_version (void)
+{
+/* returning the ZSTD version string */
+    static char version[128];
+#ifndef OMIT_ZSTD
+    sprintf (version, "libzstd %d.%d.%d", ZSTD_VERSION_MAJOR,
+	     ZSTD_VERSION_MINOR, ZSTD_VERSION_RELEASE);
     return version;
 #else
     strcpy (version, "unsupported");

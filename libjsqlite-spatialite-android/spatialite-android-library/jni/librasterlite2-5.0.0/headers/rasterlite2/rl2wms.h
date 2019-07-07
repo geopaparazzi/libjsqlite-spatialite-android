@@ -1514,7 +1514,7 @@ extern "C"
  \return a pointer to an RGBA buffer containing the requested image:
  NULL if any error is encountered.
  
- \sa do_wms_GetMap_post, do_wms_GetMap_TileService_get, 
+ \sa do_wms_GetMap_post, do_wms_GetMap_blob, do_wms_GetMap_TileService_get, 
  do_wms_GetMap_TileService_post, do_wms_GetFeatureInfo_get,
  do_wms_GetFeatureInfo_post
  
@@ -1566,7 +1566,7 @@ extern "C"
  NULL if any error is encountered.\n
  <bCurrently unimplemented: will always return NULL</b>
  
- \sa do_wms_GetMap_get, do_wms_GetMap_TileService_get, 
+ \sa do_wms_GetMap_get, do_wms_GetMap_blob, do_wms_GetMap_TileService_get, 
  do_wms_GetMap_TileService_post, do_wms_GetFeatureInfo_get,
  do_wms_GetFeatureInfo_post
  
@@ -1589,6 +1589,52 @@ extern "C"
 						   int opaque, int from_cache);
 
 /**
+ Performs a WMS GetMap request - BLOB result (Image)
+ 
+ \param url the WebServive base URL.
+ \param version a string identifying the version of the WMS protocol to be used.
+ \param layer name of the requested WMS-Layer.
+ \param swap_xy a boolean value used to select between normal [XY] or flipped
+ [LatLon] axes ordering.
+ \param srs BoundingBox: SRS value (e.g. EPSG:3003)
+ \param minx BoundingBox: X min coordinate.
+ \param miny BoundingBox: Y min coordinate.
+ \param maxx BoundingBox: X max coordinate.
+ \param maxy BoundingBox: Y max coordinate.
+ \param width horizontal dimension (in pixels) of the requested image.
+ \param height vertical dimension (in pixels) of the requested image.
+ \param style a string identifying some SLD Style; could be eventually NULL.
+ \param format a string indentifying the MIME type of the requested image.
+ \param opaque a boolean valued used to select if the requested image
+ should be either opaque or transparent.
+ \param bg_color the HEX-RGB background color (e.g. 0xff0080)
+ \param blob_size the size (in bytes) of the returned BLOB.\n
+ 
+ \return a pointer to a BLOB buffer containing the requested image:
+ NULL if any error is encountered.
+ 
+ \sa do_wms_GetMap_get, do_wms_GetMap_post, do_wms_GetMap_TileService_get, 
+ do_wms_GetMap_TileService_post, do_wms_GetFeatureInfo_get,
+ do_wms_GetFeatureInfo_post
+ 
+ \note the returned BLOB corresponds to dynamically allocated memory,
+ and thus requires to be deallocated before or after.
+ */
+    RL2_DECLARE unsigned char *do_wms_GetMap_blob (const char *url,
+						   const char *version,
+						   const char *layer,
+						   int swap_xy, const char *srs,
+						   double minx, double miny,
+						   double maxx, double maxy,
+						   int width, int height,
+						   const char *style,
+						   const char *format,
+						   int opaque,
+						   const char *bg_color,
+						   int *blob_size);
+
+
+/**
  Performs a WMS GetMap [TileService] request - HTTP GET
  
  \param handle the pointer to a valid WMS-Cache returned by a previous call
@@ -1604,7 +1650,7 @@ extern "C"
  \return a pointer to an RGBA buffer containing the requested image:
  NULL if any error is encountered.
  
- \sa do_wms_GetMap_get, do_wms_GetMap_post, 
+ \sa do_wms_GetMap_get, do_wms_GetMap_post, do_wms_GetMap_blob, 
  do_wms_GetMap_TileService_post, do_wms_GetFeatureInfo_get,
  do_wms_GetFeatureInfo_post
  
@@ -1638,7 +1684,7 @@ extern "C"
  NULL if any error is encountered.\n
  <bCurrently unimplemented: will always return NULL</b>
  
- \sa do_wms_GetMap_get, do_wms_GetMap_post, 
+ \sa do_wms_GetMap_get, do_wms_GetMap_post, do_wms_GetMap_blob, 
  do_wms_GetMap_TileService_get, do_wms_GetFeatureInfo_get,
  do_wms_GetFeatureInfo_post
  
@@ -1679,7 +1725,7 @@ extern "C"
  \return a pointer to a WMS-FeatureCollection object:
  NULL if any error is encountered or if no result is available.
  
- \sa do_wms_GetMap_get, do_wms_GetMap_post, do_wms_GetMap_TileService_get, 
+ \sa do_wms_GetMap_get, do_wms_GetMap_post, do_wms_GetMap_blob, do_wms_GetMap_TileService_get, 
  do_wms_GetMap_TileService_post, do_wms_GetFeatureInfo_post, 
  destroy_wms_feature_collection, wms_feature_collection_parse_geometries,
  get_wms_feature_members_count
@@ -1727,7 +1773,7 @@ extern "C"
  NULL if any error is encountered or if no result is available.\n
  <bCurrently unimplemented: will always return NULL</b>
  
- \sa do_wms_GetMap_get, do_wms_GetMap_post, do_wms_GetMap_TileService_get, 
+ \sa do_wms_GetMap_get, do_wms_GetMap_post, do_wms_GetMap_blob, do_wms_GetMap_TileService_get, 
  do_wms_GetMap_TileService_post, do_wms_GetFeatureInfo_get, 
  destroy_wms_feature_collection, wms_feature_collection_parse_geometries,
  get_wms_feature_members_count

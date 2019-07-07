@@ -1149,6 +1149,13 @@ GAIAAUX_DECLARE char *
 gaiaConvertToDMS (double longitude, double latitude)
 {
 /* formatting a DMS string */
+    return gaiaConvertToDMS (longitude, latitude);
+}
+
+GAIAAUX_DECLARE char *
+gaiaConvertToDMSex (double longitude, double latitude, int decimal_digits)
+{
+/* formatting a DMS string */
     char *dms0;
     char *dms;
     char long_prefix = 'E';
@@ -1156,11 +1163,17 @@ gaiaConvertToDMS (double longitude, double latitude)
     int long_d;
     int long_m;
     int long_s;
+    double long_s_dbl;
     int lat_d;
     int lat_m;
     int lat_s;
+    double lat_s_dbl;
     double val;
     int len;
+    if (decimal_digits < 0)
+	decimal_digits = 0;
+    if (decimal_digits > 8)
+	decimal_digits = 8;
     if (longitude < -180.0 || longitude > 180.0)
 	return NULL;
     if (latitude < -90.0 || latitude > 90.0)
@@ -1179,6 +1192,7 @@ gaiaConvertToDMS (double longitude, double latitude)
     val = 60.0 * (longitude - (double) long_d);
     long_m = (int) floor (val);
     val = 60.0 * (val - (double) long_m);
+    long_s_dbl = val;
     long_s = (int) floor (val);
     if ((val - (double) long_s) > 0.5)
 	long_s++;
@@ -1187,12 +1201,25 @@ gaiaConvertToDMS (double longitude, double latitude)
     lat_m = (int) floor (val);
     val = 60.0 * (val - (double) lat_m);
     lat_s = (int) floor (val);
+    lat_s_dbl = val;
     if ((val - (double) lat_s) > 0.5)
 	lat_s++;
-    dms0 =
-	sqlite3_mprintf ("%02d°%02d′%02d″%c %03d°%02d′%02d″%c", lat_d,
-			 lat_m, lat_s, lat_prefix, long_d, long_m, long_s,
-			 long_prefix);
+    if (decimal_digits == 0)
+	dms0 =
+	    sqlite3_mprintf ("%02d°%02d′%02d″%c %03d°%02d′%02d″%c",
+			     lat_d, lat_m, lat_s, lat_prefix, long_d, long_m,
+			     long_s, long_prefix);
+    else
+      {
+	  char format[256];
+	  sprintf (format,
+		   "%%02d°%%02d′%%0%d.%df″%%c %%03d°%%02d′%%0%d.%df″%%c",
+		   decimal_digits + 3, decimal_digits, decimal_digits + 3, decimal_digits);
+	  dms0 =
+	      sqlite3_mprintf (format, lat_d,
+			       lat_m, lat_s_dbl, lat_prefix, long_d, long_m,
+			       long_s_dbl, long_prefix);
+      }
     len = strlen (dms0);
     dms = malloc (len + 1);
     strcpy (dms, dms0);

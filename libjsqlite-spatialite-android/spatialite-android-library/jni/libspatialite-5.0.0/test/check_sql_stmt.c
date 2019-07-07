@@ -67,7 +67,11 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #endif
 
 #ifndef OMIT_PROJ		/* only if PROJ is supported */
+#ifdef PROJ_NEW			/* supporting new PROJ.6 */
+#include <proj.h>
+#else /* supporting old PROJ.6 */
 #include <proj_api.h>
+#endif
 #endif
 
 #ifdef _WIN32
@@ -265,6 +269,15 @@ do_one_case (struct db_conn *conn, const struct test_data *data,
     if (ret != SQLITE_OK)
       {
 	  fprintf (stderr, "InitSpatialMetadata() error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return -2;
+      }
+    ret =
+	sqlite3_exec (db_handle, "SELECT StoredProc_CreateTables()", NULL, NULL,
+		      &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  fprintf (stderr, "StoredProc_CreateTables() error: %s\n", err_msg);
 	  sqlite3_free (err_msg);
 	  return -2;
       }
@@ -581,6 +594,15 @@ run_all_testcases (struct db_conn *conn, int load_extension, int legacy)
 		  {
 		      return result;
 		  }
+#ifdef PROJ_NEW			/* only id PROJ.6 is supported */
+		result =
+		    run_subdir_test ("sql_stmt_proj600security_tests", conn,
+				     load_extension, 0);
+		if (result != 0)
+		  {
+		      return result;
+		  }
+#endif
 	    }
       }
 
@@ -616,6 +638,22 @@ run_all_testcases (struct db_conn *conn, int load_extension, int legacy)
       }
   skip_routing:
 
+    if (legacy)
+      {
+	  /* skipping PostgresL tests in legacy mode */
+	  fprintf (stderr,
+		   "WARNING: skipping Postgres testcases in legacy mode !!!\n");
+	  goto skip_postgres;
+      }
+
+    result =
+	run_subdir_test ("sql_stmt_postgres_tests", conn, load_extension, 0);
+    if (result != 0)
+      {
+	  return result;
+      }
+  skip_postgres:
+
 #ifndef OMIT_MATHSQL		/* only if MATHSQL is supported */
     result =
 	run_subdir_test ("sql_stmt_mathsql_tests", conn, load_extension, 0);
@@ -628,12 +666,20 @@ run_all_testcases (struct db_conn *conn, int load_extension, int legacy)
 #ifndef OMIT_EPSG		/* only if full EPSG is supported */
 #ifndef OMIT_PROJ		/* only if PROJ is supported */
     result = run_subdir_test ("sql_stmt_proj_tests", conn, load_extension, 0);
+#ifdef PROJ_NEW			/* supporting new PROJ.6 */
+    if (!legacy)
+	result =
+	    run_subdir_test ("sql_stmt_proj600_tests", conn, load_extension, 0);
+    else
+	result = 0;
+#else /* supporting old PROJ.4 */
     if (PJ_VERSION >= 493)
 	result =
 	    run_subdir_test ("sql_stmt_proj493_tests", conn, load_extension, 0);
     else
 	result =
 	    run_subdir_test ("sql_stmt_proj492_tests", conn, load_extension, 0);
+#endif
     if (result != 0)
       {
 	  return result;
@@ -735,6 +781,17 @@ run_all_testcases (struct db_conn *conn, int load_extension, int legacy)
   skip_geos_advanced:
 #endif /* end GEOS_ADVANCED conditional */
 
+#ifdef GEOS_370			/* only if GEOS_370 is supported */
+
+    result =
+	run_subdir_test ("sql_stmt_geos370_tests", conn, load_extension, 0);
+    if (result != 0)
+      {
+	  return result;
+      }
+
+#endif /* end GEOS_370 conditional */
+
 #ifdef ENABLE_RTTOPO		/* only if RTTOPO is supported */
     if (legacy)
       {
@@ -766,7 +823,32 @@ run_all_testcases (struct db_conn *conn, int load_extension, int legacy)
       {
 	  return result;
       }
+    if (legacy)
+      {
+	  /* skipping SqlProc tests in legacy mode */
+	  fprintf (stderr,
+		   "WARNING: skipping SqlProc testcases in legacy mode !!!\n");
+	  goto skip_sql_proc;
+      }
+
+    ret =
+	system
+	("cp sql_stmt_proc_tests/storproc.sqlite sql_stmt_proc_tests/storproc_x.sqlite");
+    if (ret != 0)
+      {
+	  fprintf (stderr,
+		   "cannot copy sql_stmt_proc_tests/storproc database\n");
+	  return -1;
+      }
+
+    result = run_subdir_test ("sql_stmt_proc_tests", conn, load_extension, 0);
+    if (result != 0)
+      {
+	  return result;
+      }
 #endif /* end ICONV */
+
+  skip_sql_proc:
 
 #ifdef ENABLE_LIBXML2		/* only if LIBXML2 is supported */
 #ifndef OMIT_ICONV		/* only if ICONV is supported */
@@ -805,6 +887,11 @@ run_all_testcases (struct db_conn *conn, int load_extension, int legacy)
 		return result;
 	    }
 #ifndef OMIT_EPSG		/* EPSG is supported */
+#ifdef PROJ_NEW			/* supporting new PROJ.6 */
+	  result =
+	      run_subdir_test ("sql_stmt_gpkg_epsg600_tests", conn,
+			       load_extension, 1);
+#else /* supporting old PROJ.4 */
 	  if (PJ_VERSION >= 493)
 	      result =
 		  run_subdir_test ("sql_stmt_gpkg_epsg493_tests", conn,
@@ -813,6 +900,7 @@ run_all_testcases (struct db_conn *conn, int load_extension, int legacy)
 	      result =
 		  run_subdir_test ("sql_stmt_gpkg_epsg492_tests", conn,
 				   load_extension, 1);
+#endif
 	  if (result != 0)
 	    {
 		return result;
@@ -881,6 +969,42 @@ run_all_testcases (struct db_conn *conn, int load_extension, int legacy)
 	    }
       }
 #endif /* end GEOPACKAGE conditional */
+
+/* Rename Table/Column */
+    if (sqlite3_libversion_number () < 3025000)
+      {
+	  result = run_subdir_test ("sql_stmt_renameold_tests", conn, 0, 0);
+	  if (result != 0)
+	    {
+		return result;
+	    }
+      }
+    else
+      {
+	  result = run_subdir_test ("sql_stmt_renamenew_tests", conn, 0, 0);
+	  if (result != 0)
+	    {
+		return result;
+	    }
+      }
+
+/* BufferOptions */
+    if (legacy)
+      {
+	  result = run_subdir_test ("sql_stmt_bufoptsold_tests", conn, 0, 0);
+	  if (result != 0)
+	    {
+		return result;
+	    }
+      }
+    else
+      {
+	  result = run_subdir_test ("sql_stmt_bufoptsnew_tests", conn, 0, 0);
+	  if (result != 0)
+	    {
+		return result;
+	    }
+      }
 
     return result;
 }

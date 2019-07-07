@@ -3320,12 +3320,12 @@ register_spatial_view_coverage (void *p_sqlite, const char *coverage_name,
 }
 
 SPATIALITE_PRIVATE int
-register_virtual_shp_coverage (void *p_sqlite, const char *coverage_name,
-			       const char *virt_name, const char *virt_geometry,
-			       const char *title, const char *abstract,
-			       int is_queryable)
+register_virtual_table_coverage (void *p_sqlite, const char *coverage_name,
+				 const char *virt_name,
+				 const char *virt_geometry, const char *title,
+				 const char *abstract, int is_queryable)
 {
-/* auxiliary function: inserts a VirtualShapefile Coverage definition */
+/* auxiliary function: inserts a VirtualTable Coverage definition */
     sqlite3 *sqlite = (sqlite3 *) p_sqlite;
     int ret;
     const char *sql;
@@ -3377,7 +3377,7 @@ register_virtual_shp_coverage (void *p_sqlite, const char *coverage_name,
     else if (coverage_name != NULL && virt_name != NULL
 	     && virt_geometry != NULL)
       {
-	  /* attempting to insert the VirtualShapefile Coverage */
+	  /* attempting to insert the VirtualTable Coverage */
 	  sql = "INSERT INTO vector_coverages "
 	      "(coverage_name, virt_name, virt_geometry, "
 	      "is_queryable, is_editable) VALUES "
@@ -4209,7 +4209,7 @@ check_vector_coverage_srid1 (sqlite3 * sqlite, const char *coverage_name,
 {
 /* checks if a Vector Coverage do actually exists and check its SRID */
     int ret;
-    const char *sql;
+    char *sql;
     sqlite3_stmt *stmt;
     int count = 0;
     int same_srid = 0;
@@ -4263,6 +4263,7 @@ check_vector_coverage_srid1 (sqlite3 * sqlite, const char *coverage_name,
       };
 
     ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt, NULL);
+    sqlite3_free (sql);
     if (ret != SQLITE_OK)
 	goto stop;
     while (1)
@@ -4890,7 +4891,7 @@ update_vector_coverage_extent (void *p_sqlite, const void *cache,
 	      "Lower(c.f_geometry_column)) "
 	      "WHERE v.f_table_name IS NOT NULL AND v.f_geometry_column IS NOT NULL "
 	      "UNION "
-	      "SELECT v.coverage_name, w.f_table_name, w.f_geometry_column, c.srid "
+	      "SELECT v.coverage_name, v.view_name, w.view_geometry, c.srid "
 	      "FROM vector_coverages AS v "
 	      "JOIN views_geometry_columns AS w ON "
 	      "(Lower(v.view_name) = Lower(w.view_name) AND "
@@ -4910,7 +4911,7 @@ update_vector_coverage_extent (void *p_sqlite, const void *cache,
 	      "WHERE Lower(v.coverage_name) = Lower(?) AND "
 	      "v.f_table_name IS NOT NULL AND v.f_geometry_column IS NOT NULL "
 	      "UNION "
-	      "SELECT v.coverage_name, w.f_table_name, w.f_geometry_column, c.srid "
+	      "SELECT v.coverage_name, v.view_name, v.view_geometry, c.srid "
 	      "FROM vector_coverages AS v "
 	      "JOIN views_geometry_columns AS w ON "
 	      "(Lower(v.view_name) = Lower(w.view_name) AND "
@@ -5066,14 +5067,14 @@ update_vector_coverage_extent (void *p_sqlite, const void *cache,
 
 /* updating VirtualShapes Extents */
     sql = "UPDATE vector_coverages SET "
-	"geo_minx = MbrMinX(ST_Transform(GetShapefileExtent(virt_name), 4326)), "
-	"geo_miny = MbrMinY(ST_Transform(GetShapefileExtent(virt_name), 4326)), "
-	"geo_maxx = MbrMaxX(ST_Transform(GetShapefileExtent(virt_name), 4326)), "
-	"geo_maxy = MbrMaxY(ST_Transform(GetShapefileExtent(virt_name), 4326)), "
-	"extent_minx = MbrMinX(GetShapefileExtent(virt_name)), "
-	"extent_miny = MbrMinY(GetShapefileExtent(virt_name)), "
-	"extent_maxx = MbrMaxX(GetShapefileExtent(virt_name)), "
-	"extent_maxy = MbrMaxY(GetShapefileExtent(virt_name)) "
+	"geo_minx = MbrMinX(ST_Transform(GetVirtualTableExtent(virt_name), 4326)), "
+	"geo_miny = MbrMinY(ST_Transform(GetVirtualTableExtent(virt_name), 4326)), "
+	"geo_maxx = MbrMaxX(ST_Transform(GetVirtualTableExtent(virt_name), 4326)), "
+	"geo_maxy = MbrMaxY(ST_Transform(GetVirtualTableExtent(virt_name), 4326)), "
+	"extent_minx = MbrMinX(GetVirtualTableExtent(virt_name)), "
+	"extent_miny = MbrMinY(GetVirtualTableExtent(virt_name)), "
+	"extent_maxx = MbrMaxX(GetVirtualTableExtent(virt_name)), "
+	"extent_maxy = MbrMaxY(GetVirtualTableExtent(virt_name)) "
 	"WHERE virt_name IS NOT NULL";
     ret = sqlite3_exec (sqlite, sql, NULL, NULL, NULL);
     if (ret != SQLITE_OK)
@@ -5088,7 +5089,7 @@ update_vector_coverage_extent (void *p_sqlite, const void *cache,
     ret = sqlite3_prepare_v2 (sqlite, sql, strlen (sql), &stmt_virt, NULL);
     if (ret != SQLITE_OK)
       {
-	  spatialite_e ("updateVectorCoverageExtent: PREPUPPAMELO !!! \"%s\"\n",
+	  spatialite_e ("updateVectorCoverageExtent: ERROR #1 !!! \"%s\"\n",
 			sqlite3_errmsg (sqlite));
 	  goto error;
       }
@@ -5106,10 +5107,10 @@ update_vector_coverage_extent (void *p_sqlite, const void *cache,
 		    (const char *) sqlite3_column_text (stmt_virt, 1);
 		sql =
 		    sqlite3_mprintf ("UPDATE vector_coverages_srid SET "
-				     "extent_minx = MbrMinX(ST_Transform(GetShapefileExtent(%Q), srid)), "
-				     "extent_miny = MbrMinY(ST_Transform(GetShapefileExtent(%Q), srid)), "
-				     "extent_maxx = MbrMaxX(ST_Transform(GetShapefileExtent(%Q), srid)), "
-				     "extent_maxy = MbrMaxY(ST_Transform(GetShapefileExtent(%Q), srid)) "
+				     "extent_minx = MbrMinX(ST_Transform(GetVirtualTableExtent(%Q), srid)), "
+				     "extent_miny = MbrMinY(ST_Transform(GetVirtualTableExtent(%Q), srid)), "
+				     "extent_maxx = MbrMaxX(ST_Transform(GetVirtualTableExtent(%Q), srid)), "
+				     "extent_maxy = MbrMaxY(ST_Transform(GetVirtualTableExtent(%Q), srid)) "
 				     "WHERE coverage_name = %Q", virt_name,
 				     virt_name, virt_name, virt_name,
 				     coverage_name);
@@ -5117,8 +5118,9 @@ update_vector_coverage_extent (void *p_sqlite, const void *cache,
 		sqlite3_free (sql);
 		if (ret != SQLITE_OK)
 		  {
-		      spatialite_e ("updateVectorCoverageExtent: PUPPAMELO !!! %d \"%s\"\n", ret,
-				    sqlite3_errmsg (sqlite));
+		      spatialite_e
+			  ("updateVectorCoverageExtent:  ERROR #2 !!! %d \"%s\"\n",
+			   ret, sqlite3_errmsg (sqlite));
 		      goto error;
 		  }
 	    }

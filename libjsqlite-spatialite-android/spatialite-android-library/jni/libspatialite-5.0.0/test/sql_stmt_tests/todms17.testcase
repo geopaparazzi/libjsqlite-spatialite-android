@@ -1,0 +1,8 @@
+todms - DOUBLE decimal_digits
+:memory: #use in-memory database
+SELECT LongLatToDMS(11.5, 19, 2.3);
+1 # rows (not including the header row)
+1 # columns
+LongLatToDMS(11.5, 19, 2.3)
+(NULL)
+

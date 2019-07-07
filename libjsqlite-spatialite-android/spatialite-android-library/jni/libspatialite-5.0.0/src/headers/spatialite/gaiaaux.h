@@ -382,10 +382,12 @@ extern "C"
 				      double *latitude);
 
 /**
- Return a DMS string
+ Return a DMS string - extended
 
  \param longitude the angle of longitude expressed in Decimal Degrees.
  \param latitude the angle of latitude expressed in Decimal Degrees.
+ \param decimal_digits how many decimal digits must be preserved for
+ representing Seconds.
 
  \return the corresponding DMS (Degrees/Minutes/Seconds) text string,
  or NULL on failure
@@ -395,6 +397,26 @@ extern "C"
  \note this function will return a dynamically allocated buffer created 
  by malloc(). 
  You are required to explicitly free() any string returned by this function.
+ */
+    GAIAAUX_DECLARE char *gaiaConvertToDMSex (double longitude, double latitude,
+					      int decimal_digits);
+
+/**
+ Return a DMS string
+
+ \param longitude the angle of longitude expressed in Decimal Degrees.
+ \param latitude the angle of latitude expressed in Decimal Degrees.
+
+ \return the corresponding DMS (Degrees/Minutes/Seconds) text string,
+ or NULL on failure
+
+ \sa gaiaConvertToDMSex
+
+ \note this function will return a dynamically allocated buffer created 
+ by malloc(). 
+ You are required to explicitly free() any string returned by this function.
+ 
+ \note this functions simply defaults to gaiaConvertToDMSex(lon, lat, 0)
  */
     GAIAAUX_DECLARE char *gaiaConvertToDMS (double longitude, double latitude);
 

@@ -1,0 +1,270 @@
+{
+	"type" : "FeatureCollection",
+	"features" : [{
+		"type" : "Feature",
+		"properties" : {
+			"name" : "Amsterdam",
+			"namepar" : null,
+			"nameascii" : "Amsterdam",
+			"sov0name" : "Kingdom of the Netherlands",
+			"sov_a3" : "NLD",
+			"latitude" : 52.349969,
+			"longitude" : 4.916640,
+			"pop_min" : 741636,
+			"pop_max" : 1031000
+		},
+		"geometry" : {"type":"Point","coordinates":[4.91469432,52.35191455]}
+	}, {
+		"type" : "Feature",
+		"properties" : {
+			"name" : "Athens",
+			"namepar" : "Athínai",
+			"nameascii" : "Athens",
+			"sov0name" : "Greece",
+			"sov_a3" : "GRC",
+			"latitude" : 37.983326,
+			"longitude" : 23.733321,
+			"pop_min" : 729137,
+			"pop_max" : 3242000
+		},
+		"geometry" : {"type":"Point","coordinates":[23.73137523,37.98527209]}
+	}, {
+		"type" : "Feature",
+		"properties" : {
+			"name" : "Bern",
+			"namepar" : null,
+			"nameascii" : "Bern",
+			"sov0name" : "Switzerland",
+			"sov_a3" : "CHE",
+			"latitude" : 46.916683,
+			"longitude" : 7.466975,
+			"pop_min" : 121631,
+			"pop_max" : 275329
+		},
+		"geometry" : {"type":"Point","coordinates":[7.46697546,46.91668276]}
+	}, {
+		"type" : "Feature",
+		"properties" : {
+			"name" : "Brussels",
+			"namepar" : null,
+			"nameascii" : "Brussels",
+			"sov0name" : "Belgium",
+			"sov_a3" : "BEL",
+			"latitude" : 50.833317,
+			"longitude" : 4.333317,
+			"pop_min" : 1019022,
+			"pop_max" : 1743000
+		},
+		"geometry" : {"type":"Point","coordinates":[4.33137075,50.83526294]}
+	}, {
+		"type" : "Feature",
+		"properties" : {
+			"name" : "Dublin",
+			"namepar" : null,
+			"nameascii" : "Dublin",
+			"sov0name" : "Ireland",
+			"sov_a3" : "IRL",
+			"latitude" : 53.333061,
+			"longitude" : -6.248906,
+			"pop_min" : 968976,
+			"pop_max" : 1059000
+		},
+		"geometry" : {"type":"Point","coordinates":[-6.25085154,53.33500699]}
+	}, {
+		"type" : "Feature",
+		"properties" : {
+			"name" : "Geneva",
+			"namepar" : null,
+			"nameascii" : "Geneva",
+			"sov0name" : "Switzerland",
+			"sov_a3" : "CHE",
+			"latitude" : 46.210008,
+			"longitude" : 6.140028,
+			"pop_min" : 192385,
+			"pop_max" : 1240000
+		},
+		"geometry" : {"type":"Point","coordinates":[6.14002803,46.21000755]}
+	}, {
+		"type" : "Feature",
+		"properties" : {
+			"name" : "Helsinki",
+			"namepar" : null,
+			"nameascii" : "Helsinki",
+			"sov0name" : "Finland",
+			"sov_a3" : "FIN",
+			"latitude" : 60.175563,
+			"longitude" : 24.934126,
+			"pop_min" : 558457,
+			"pop_max" : 1115000
+		},
+		"geometry" : {"type":"Point","coordinates":[24.93218048,60.17750923]}
+	}, {
+		"type" : "Feature",
+		"properties" : {
+			"name" : "København",
+			"namepar" : "Copenhagen",
+			"nameascii" : "Kobenhavn",
+			"sov0name" : "Denmark",
+			"sov_a3" : "DNK",
+			"latitude" : 55.678564,
+			"longitude" : 12.563486,
+			"pop_min" : 1085000,
+			"pop_max" : 1085000
+		},
+		"geometry" : {"type":"Point","coordinates":[12.56153989,55.68051005]}
+	}, {
+		"type" : "Feature",
+		"properties" : {
+			"name" : "Lisbon",
+			"namepar" : "Lisboa",
+			"nameascii" : "Lisbon",
+			"sov0name" : "Portugal",
+			"sov_a3" : "PRT",
+			"latitude" : 38.722723,
+			"longitude" : -9.144866,
+			"pop_min" : 517802,
+			"pop_max" : 2812000
+		},
+		"geometry" : {"type":"Point","coordinates":[-9.14681216,38.72466874]}
+	}, {
+		"type" : "Feature",
+		"properties" : {
+			"name" : "London",
+			"namepar" : null,
+			"nameascii" : "London",
+			"sov0name" : "United Kingdom",
+			"sov_a3" : "GBR",
+			"latitude" : 51.499995,
+			"longitude" : -0.116722,
+			"pop_min" : 7421209,
+			"pop_max" : 8567000
+		},
+		"geometry" : {"type":"Point","coordinates":[-0.1186677,51.50194059]}
+	}, {
+		"type" : "Feature",
+		"properties" : {
+			"name" : "Luxembourg",
+			"namepar" : null,
+			"nameascii" : "Luxembourg",
+			"sov0name" : "Luxembourg",
+			"sov_a3" : "LUX",
+			"latitude" : 49.611660,
+			"longitude" : 6.130003,
+			"pop_min" : 76684,
+			"pop_max" : 107260
+		},
+		"geometry" : {"type":"Point","coordinates":[6.13000281,49.61166038]}
+	}, {
+		"type" : "Feature",
+		"properties" : {
+			"name" : "Madrid",
+			"namepar" : null,
+			"nameascii" : "Madrid",
+			"sov0name" : "Kingdom of Spain",
+			"sov_a3" : "ESP",
+			"latitude" : 40.400026,
+			"longitude" : -3.683352,
+			"pop_min" : 50437,
+			"pop_max" : 5567000
+		},
+		"geometry" : {"type":"Point","coordinates":[-3.68529754,40.40197212]}
+	}, {
+		"type" : "Feature",
+		"properties" : {
+			"name" : "Oslo",
+			"namepar" : null,
+			"nameascii" : "Oslo",
+			"sov0name" : "Kingdom of Norway",
+			"sov_a3" : "NOR",
+			"latitude" : 59.916690,
+			"longitude" : 10.749979,
+			"pop_min" : 580000,
+			"pop_max" : 835000
+		},
+		"geometry" : {"type":"Point","coordinates":[10.74803335,59.91863615]}
+	}, {
+		"type" : "Feature",
+		"properties" : {
+			"name" : "Paris",
+			"namepar" : null,
+			"nameascii" : "Paris",
+			"sov0name" : "French Republic",
+			"sov_a3" : "FRA",
+			"latitude" : 48.866693,
+			"longitude" : 2.333335,
+			"pop_min" : 11177,
+			"pop_max" : 9904000
+		},
+		"geometry" : {"type":"Point","coordinates":[2.33138947,48.86863879]}
+	}, {
+		"type" : "Feature",
+		"properties" : {
+			"name" : "Reykjavík",
+			"namepar" : null,
+			"nameascii" : "Reykjavik",
+			"sov0name" : "Iceland",
+			"sov_a3" : "ISL",
+			"latitude" : 64.150024,
+			"longitude" : -21.950014,
+			"pop_min" : 113906,
+			"pop_max" : 166212
+		},
+		"geometry" : {"type":"Point","coordinates":[-21.95001449,64.15002362]}
+	}, {
+		"type" : "Feature",
+		"properties" : {
+			"name" : "Rome",
+			"namepar" : null,
+			"nameascii" : "Rome",
+			"sov0name" : "Italy",
+			"sov_a3" : "ITA",
+			"latitude" : 41.895956,
+			"longitude" : 12.483258,
+			"pop_min" : 35452,
+			"pop_max" : 3339000
+		},
+		"geometry" : {"type":"Point","coordinates":[12.48131256,41.89790149]}
+	}, {
+		"type" : "Feature",
+		"properties" : {
+			"name" : "Stockholm",
+			"namepar" : null,
+			"nameascii" : "Stockholm",
+			"sov0name" : "Sweden",
+			"sov_a3" : "SWE",
+			"latitude" : 59.350760,
+			"longitude" : 18.097335,
+			"pop_min" : 1253309,
+			"pop_max" : 1264000
+		},
+		"geometry" : {"type":"Point","coordinates":[18.09538887,59.35270581]}
+	}, {
+		"type" : "Feature",
+		"properties" : {
+			"name" : "The Hague",
+			"namepar" : null,
+			"nameascii" : "The Hague",
+			"sov0name" : "Kingdom of the Netherlands",
+			"sov_a3" : "NLD",
+			"latitude" : 52.080037,
+			"longitude" : 4.269961,
+			"pop_min" : 501725,
+			"pop_max" : 1406000
+		},
+		"geometry" : {"type":"Point","coordinates":[4.2699613,52.08003684]}
+	}, {
+		"type" : "Feature",
+		"properties" : {
+			"name" : "Vienna",
+			"namepar" : "Wien",
+			"nameascii" : "Vienna",
+			"sov0name" : "Austria",
+			"sov_a3" : "AUT",
+			"latitude" : 48.200015,
+			"longitude" : 16.366639,
+			"pop_min" : 1731000,
+			"pop_max" : 2400000
+		},
+		"geometry" : {"type":"Point","coordinates":[16.3646931,48.20196114]}
+	}]
+}

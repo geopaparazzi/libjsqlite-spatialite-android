@@ -298,6 +298,7 @@ gaiaSingleSidedBuffer (gaiaGeomCollPtr geom, double radius, int points,
     g1 = gaiaToGeos (geom);
 /* setting up Buffer params */
     params = GEOSBufferParams_create ();
+    GEOSBufferParams_setEndCapStyle (params, GEOSBUF_CAP_ROUND);
     GEOSBufferParams_setJoinStyle (params, GEOSBUF_JOIN_ROUND);
     GEOSBufferParams_setMitreLimit (params, 5.0);
     GEOSBufferParams_setQuadrantSegments (params, points);
@@ -346,6 +347,7 @@ gaiaSingleSidedBuffer_r (const void *p_cache, gaiaGeomCollPtr geom,
     GEOSGeometry *g1;
     GEOSGeometry *g2;
     GEOSBufferParams *params = NULL;
+    int quadsegs = 30;
     gaiaPointPtr pt;
     gaiaLinestringPtr ln;
     gaiaPolygonPtr pg;
@@ -401,9 +403,16 @@ gaiaSingleSidedBuffer_r (const void *p_cache, gaiaGeomCollPtr geom,
     g1 = gaiaToGeos_r (cache, geom);
 /* setting up Buffer params */
     params = GEOSBufferParams_create_r (handle);
-    GEOSBufferParams_setJoinStyle_r (handle, params, GEOSBUF_JOIN_ROUND);
-    GEOSBufferParams_setMitreLimit_r (handle, params, 5.0);
-    GEOSBufferParams_setQuadrantSegments_r (handle, params, points);
+    GEOSBufferParams_setEndCapStyle_r (handle, params,
+				       cache->buffer_end_cap_style);
+    GEOSBufferParams_setJoinStyle_r (handle, params, cache->buffer_join_style);
+    GEOSBufferParams_setMitreLimit_r (handle, params,
+				      cache->buffer_mitre_limit);
+    if (points > 0)
+	quadsegs = points;
+    else if (cache->buffer_quadrant_segments > 0)
+	quadsegs = cache->buffer_quadrant_segments;
+    GEOSBufferParams_setQuadrantSegments_r (handle, params, quadsegs);
     GEOSBufferParams_setSingleSided_r (handle, params, 1);
 
 /* creating the SingleSided Buffer */
@@ -497,6 +506,210 @@ gaiaHausdorffDistance_r (const void *p_cache, gaiaGeomCollPtr geom1,
 	*xdist = dist;
     return ret;
 }
+
+#ifdef GEOS_370			/* only if GEOS_370 support is available */
+
+GAIAGEO_DECLARE int
+gaiaHausdorffDistanceDensify (gaiaGeomCollPtr geom1, gaiaGeomCollPtr geom2,
+			      double densify_fract, double *xdist)
+{
+/* 
+/ computes the (discrete) Hausdorff distance intercurring 
+/ between GEOM-1 and GEOM-2 
+*/
+    int ret = 0;
+#ifndef GEOS_USE_ONLY_R_API	/* obsolete versions non fully thread-safe */
+    double dist;
+    GEOSGeometry *g1;
+    GEOSGeometry *g2;
+    gaiaResetGeosMsg ();
+    if (!geom1 || !geom2)
+	return 0;
+    g1 = gaiaToGeos (geom1);
+    g2 = gaiaToGeos (geom2);
+    ret = GEOSHausdorffDistanceDensify (g1, g2, densify_fract, &dist);
+    GEOSGeom_destroy (g1);
+    GEOSGeom_destroy (g2);
+    if (ret)
+	*xdist = dist;
+#else
+    if (geom1 == NULL || geom2 == NULL || xdist == NULL)
+	geom1 = NULL;		/* silencing stupid compiler warnings */
+#endif
+    return ret;
+}
+
+GAIAGEO_DECLARE int
+gaiaHausdorffDistanceDensify_r (const void *p_cache, gaiaGeomCollPtr geom1,
+				gaiaGeomCollPtr geom2, double densify_fract,
+				double *xdist)
+{
+/* 
+/ computes the (discrete) Hausdorff distance intercurring 
+/ between GEOM-1 and GEOM-2 
+*/
+    double dist;
+    int ret;
+    GEOSGeometry *g1;
+    GEOSGeometry *g2;
+    struct splite_internal_cache *cache =
+	(struct splite_internal_cache *) p_cache;
+    GEOSContextHandle_t handle = NULL;
+    if (cache == NULL)
+	return 0;
+    if (cache->magic1 != SPATIALITE_CACHE_MAGIC1
+	|| cache->magic2 != SPATIALITE_CACHE_MAGIC2)
+	return 0;
+    handle = cache->GEOS_handle;
+    if (handle == NULL)
+	return 0;
+    gaiaResetGeosMsg_r (cache);
+    if (!geom1 || !geom2)
+	return 0;
+    g1 = gaiaToGeos_r (cache, geom1);
+    g2 = gaiaToGeos_r (cache, geom2);
+    ret = GEOSHausdorffDistanceDensify_r (handle, g1, g2, densify_fract, &dist);
+    GEOSGeom_destroy_r (handle, g1);
+    GEOSGeom_destroy_r (handle, g2);
+    if (ret)
+	*xdist = dist;
+    return ret;
+}
+
+GAIAGEO_DECLARE int
+gaiaFrechetDistance (gaiaGeomCollPtr geom1, gaiaGeomCollPtr geom2,
+		     double *xdist)
+{
+/* 
+/ computes the (discrete) Frechet distance intercurring 
+/ between GEOM-1 and GEOM-2 
+*/
+    int ret = 0;
+#ifndef GEOS_USE_ONLY_R_API	/* obsolete versions non fully thread-safe */
+    double dist;
+    GEOSGeometry *g1;
+    GEOSGeometry *g2;
+    gaiaResetGeosMsg ();
+    if (!geom1 || !geom2)
+	return 0;
+    g1 = gaiaToGeos (geom1);
+    g2 = gaiaToGeos (geom2);
+    ret = GEOSFrechetDistance (g1, g2, &dist);
+    GEOSGeom_destroy (g1);
+    GEOSGeom_destroy (g2);
+    if (ret)
+	*xdist = dist;
+#else
+    if (geom1 == NULL || geom2 == NULL || xdist == NULL)
+	geom1 = NULL;		/* silencing stupid compiler warnings */
+#endif
+    return ret;
+}
+
+GAIAGEO_DECLARE int
+gaiaFrechetDistance_r (const void *p_cache, gaiaGeomCollPtr geom1,
+		       gaiaGeomCollPtr geom2, double *xdist)
+{
+/* 
+/ computes the (discrete) Frechet distance intercurring 
+/ between GEOM-1 and GEOM-2 
+*/
+    double dist;
+    int ret;
+    GEOSGeometry *g1;
+    GEOSGeometry *g2;
+    struct splite_internal_cache *cache =
+	(struct splite_internal_cache *) p_cache;
+    GEOSContextHandle_t handle = NULL;
+    if (cache == NULL)
+	return 0;
+    if (cache->magic1 != SPATIALITE_CACHE_MAGIC1
+	|| cache->magic2 != SPATIALITE_CACHE_MAGIC2)
+	return 0;
+    handle = cache->GEOS_handle;
+    if (handle == NULL)
+	return 0;
+    gaiaResetGeosMsg_r (cache);
+    if (!geom1 || !geom2)
+	return 0;
+    g1 = gaiaToGeos_r (cache, geom1);
+    g2 = gaiaToGeos_r (cache, geom2);
+    ret = GEOSFrechetDistance_r (handle, g1, g2, &dist);
+    GEOSGeom_destroy_r (handle, g1);
+    GEOSGeom_destroy_r (handle, g2);
+    if (ret)
+	*xdist = dist;
+    return ret;
+}
+
+GAIAGEO_DECLARE int
+gaiaFrechetDistanceDensify (gaiaGeomCollPtr geom1, gaiaGeomCollPtr geom2,
+			    double densify_fract, double *xdist)
+{
+/* 
+/ computes the (discrete) Frechet distance intercurring 
+/ between GEOM-1 and GEOM-2 
+*/
+    int ret = 0;
+#ifndef GEOS_USE_ONLY_R_API	/* obsolete versions non fully thread-safe */
+    double dist;
+    GEOSGeometry *g1;
+    GEOSGeometry *g2;
+    gaiaResetGeosMsg ();
+    if (!geom1 || !geom2)
+	return 0;
+    g1 = gaiaToGeos (geom1);
+    g2 = gaiaToGeos (geom2);
+    ret = GEOSFrechetDistanceDensify (g1, g2, densify_fract, &dist);
+    GEOSGeom_destroy (g1);
+    GEOSGeom_destroy (g2);
+    if (ret)
+	*xdist = dist;
+#else
+    if (geom1 == NULL || geom2 == NULL || xdist == NULL)
+	geom1 = NULL;		/* silencing stupid compiler warnings */
+#endif
+    return ret;
+}
+
+GAIAGEO_DECLARE int
+gaiaFrechetDistanceDensify_r (const void *p_cache, gaiaGeomCollPtr geom1,
+			      gaiaGeomCollPtr geom2, double densify_fract,
+			      double *xdist)
+{
+/* 
+/ computes the (discrete) Frechet distance intercurring 
+/ between GEOM-1 and GEOM-2 
+*/
+    double dist;
+    int ret;
+    GEOSGeometry *g1;
+    GEOSGeometry *g2;
+    struct splite_internal_cache *cache =
+	(struct splite_internal_cache *) p_cache;
+    GEOSContextHandle_t handle = NULL;
+    if (cache == NULL)
+	return 0;
+    if (cache->magic1 != SPATIALITE_CACHE_MAGIC1
+	|| cache->magic2 != SPATIALITE_CACHE_MAGIC2)
+	return 0;
+    handle = cache->GEOS_handle;
+    if (handle == NULL)
+	return 0;
+    gaiaResetGeosMsg_r (cache);
+    if (!geom1 || !geom2)
+	return 0;
+    g1 = gaiaToGeos_r (cache, geom1);
+    g2 = gaiaToGeos_r (cache, geom2);
+    ret = GEOSFrechetDistanceDensify_r (handle, g1, g2, densify_fract, &dist);
+    GEOSGeom_destroy_r (handle, g1);
+    GEOSGeom_destroy_r (handle, g2);
+    if (ret)
+	*xdist = dist;
+    return ret;
+}
+
+#endif /* end GEOS_370 conditional */
 
 static gaiaGeomCollPtr
 geom_as_lines (gaiaGeomCollPtr geom)

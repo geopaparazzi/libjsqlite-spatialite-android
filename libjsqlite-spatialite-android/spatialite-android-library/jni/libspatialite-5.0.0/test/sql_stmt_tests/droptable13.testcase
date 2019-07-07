@@ -1,0 +1,7 @@
+DropTable - valid - non permissive
+:memory: #use in-memory database
+SELECT DropTable(NULL, 'crazytable', 0);
+1 # rows (not including the header row)
+1 # columns
+DropTable(NULL, 'crazytable', 0);
+DropTable exception - not existing table [main.crazytable].

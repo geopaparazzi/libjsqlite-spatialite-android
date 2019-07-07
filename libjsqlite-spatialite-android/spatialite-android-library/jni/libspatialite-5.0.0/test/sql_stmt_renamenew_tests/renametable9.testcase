@@ -1,0 +1,7 @@
+RenameTable - TEXT, TEXT
+:memory: #use in-memory database
+SELECT RenameTable('main', 'old_table', 'new_table');
+1 # rows (not including the header row)
+1 # columns
+RenameTable('main', 'old_table', 'new_table');
+RenameTable exception - not existing table [main.old_table].

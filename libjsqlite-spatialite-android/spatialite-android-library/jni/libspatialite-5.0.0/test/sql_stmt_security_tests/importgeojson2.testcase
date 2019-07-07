@@ -1,0 +1,7 @@
+importGeoJSON - NULL table
+:memory: #use in-memory database
+SELECT ImportGeoJSON('file.geojson', NULL);
+1 # rows (not including the header row)
+1 # columns
+ImportGeoJSON('file.geojson', NULL)
+(NULL)

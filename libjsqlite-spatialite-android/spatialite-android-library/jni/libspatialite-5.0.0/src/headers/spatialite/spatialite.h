@@ -60,3 +60,4 @@ SPATIALITE_PRIVATE int virtual_knn_extension_init (void *db);
 SPATIALITE_PRIVATE int virtual_xpath_extension_init (void *db,
 						     const void *p_cache);
 SPATIALITE_PRIVATE int virtualgpkg_extension_init (void *db);
+SPATIALITE_PRIVATE int virtualgeojson_extension_init (void *db);

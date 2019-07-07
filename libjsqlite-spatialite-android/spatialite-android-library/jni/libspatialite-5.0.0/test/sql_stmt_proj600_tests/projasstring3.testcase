@@ -1,0 +1,7 @@
+PROJ_AsProjString() - BLOB auth_name
+:memory: #use in-memory database
+SELECT PROJ_AsProjString(zeroblob(10), 4326);
+1 # rows (not including the header row)
+1 # columns
+PROJ_AsProjString(zeroblob(10), 4326)
+(NULL)

@@ -1,0 +1,7 @@
+transform - PROJ.6 extra-args
+:memory: #use in-memory database
+SELECT Transform(MakePoint(11, 43, 4326), 3003, NULL, 'proj4text', NULL);
+1 # rows (not including the header row)
+1 # columns
+Transform(MakePoint(11, 43, 4326), 3003, NULL, 'proj4text', NULL)
+ST_Transform exception - extra arguments require using PROJ.6 or later.

@@ -1,0 +1,7 @@
+GetVirtualTableExtent() - NULL VirtualTable name
+:memory: #use in-memory database
+SELECT GetVirtualTableExtent(NULL)
+1 # rows (not including the header row)
+1 # columns
+GetVirtualTableExtent(NULL)
+(NULL)

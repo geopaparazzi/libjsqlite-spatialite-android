@@ -9,7 +9,7 @@
 			i {color:navy;}
 		</style>
 	</head><body bgcolor="#fffff0">
-		<h2>SpatiaLite 5.0.0-devel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SQL functions reference list</h2>
+		<h2>SpatiaLite 5.0.0-beta1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SQL functions reference list</h2>
 		<a href="https://www.gaia-gis.it/fossil/libspatialite">back</a>
 		<ul>
 			<li><a href="#version">SQL Version Info [and build options testing] functions</a></li>
@@ -17,7 +17,7 @@
 			<li><a href="#global">Global settings per connection</a></li>
 			<li><a href="#sequence">SQL functions manipulating Sequences</a></li>
 			<li><a href="#math">SQL math functions</a></li>
-			<li><a href="#error">SQL functions reporting GEOS / RTTOPO errors and warnings</a></li>
+			<li><a href="#error">SQL functions reporting PROJ / GEOS / RTTOPO errors and warnings</a></li>
 			<li><a href="#length_cvt">SQL length/distance unit-conversion functions</a></li>
 			<li><a href="#dms_cvt">SQL conversion functions from DD/DMS notations (longitude/latitude)</a></li>
 			<li><a href="#blob">SQL utility functions for BLOB objects</a></li>
@@ -58,6 +58,7 @@
 			<li><a href="#p18">SQL functions for R*Tree-based queries (Geometry Callbacks)</a></li>
 			<li><a href="#xmlBlob">SQL functions supporting XmlBLOB</a></li>
 			<li><a href="#srid">SQL functions supporting SRID inspection</a></li>
+			<li><a href="#proj6">SQL functions supporting new PROJ.6 API</a></li>
 			<li><a href="#topology">SQL functions supporting Topology-Geometry</a></li>
 			<li><a href="#network">SQL functions supporting Topology-Network</a></li>
 			<li><a href="#wms">SQL functions supporting WMS datasources</a></li>
@@ -81,10 +82,13 @@
 				<td>freexl_version( void ) : <i>String</i></td>
 				<td colspan="3">returns the current <b>FreeXL</b> version as a text string<br>
 					or NULL if FreeXL is currently unsupported</td></tr>
-			<tr><td><b>proj4_version</b></td>
-				<td>proj4_version( void ) : <i>String</i></td>
+			<tr><td><b>proj_version</b></td>
+				<td>proj_version( void ) : <i>String</i><hr>
+				    proj4_version( void ) : <i>Sting</i></td>
 				<td colspan="3">returns the current <b>PROJ</b> version as a text string<br>
-					or NULL if PROJ is currently unsupported</td></tr>
+					or NULL if PROJ is currently unsupported.<hr>
+					Due to historical reasons there are two alias names for the same functionality.<br>
+					<u>Note</u>: <b>proj4_version()</b> is now <b>deprecated</b> and will be possibly removed in future versions.</td></tr>
 			<tr><td><b>geos_version</b></td>
 				<td>geos_version( void ) : <i>String</i></td>
 				<td colspan="3">returns the current <b>GEOS</b> version as a text string<br>
@@ -109,6 +113,9 @@
 			<tr><td><b>HasProj</b></td>
 				<td>HasProj( void ) : <i>Boolean</i></td>
 				<td colspan="3">TRUE if the underlying library was built enabling <b>PROJ</b></td></tr>
+			<tr><td><b>HasProj6</b></td>
+				<td>HasProj6( void ) : <i>Boolean</i></td>
+				<td colspan="3">TRUE if the underlying library was built enabling <b>PROJ version 6</b> or any later</td></tr>
 			<tr><td><b>HasGeos</b></td>
 				<td>HasGeos( void ) : <i>Boolean</i></td>
 				<td colspan="3">TRUE if the underlying library was built enabling <b>GEOS</b></td></tr>
@@ -156,7 +163,36 @@
 				<h3><a name="generic">Generic SQL functions</a></h3></td></tr>
 			<tr><th bgcolor="#d0d0d0">Function</th>
 				<th bgcolor="#d0d0d0">Syntax</th>
-				<th colspan="3" bgcolor="#d0d0d0">Summary</th></tr>
+				<th colspan="3" bgcolor="#d0d0d0">Summary</th></tr>	
+			<tr><td><b>IsInteger</b></td>
+				<td>IsInteger( value <i>Text</i> ) : <i>Integer</i></td>
+				<td colspan="3">Checks a TEXT string testing if it corresponds to an Integer Number.<br>
+				The function returns <b>1</b> if <b>TRUE</b> and <b>0</b> if <b>FALSE</b>; <b>-1</b> is returned when the argument is not a Text string.<hr>
+				Examples of valid Integer strings:
+				<ul>
+					<li><b>'1234'</b></li>
+					<li><b>'+5678'</b></li>
+					<li><b>'-4321'</b></li>
+					<li><b>'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+12345678'</b></li>
+				</ul></td></tr>
+			<tr><td><b>IsDecimalNumber</b></td>
+				<td>IsDecimalNumber( value <i>Text</i> ) : <i>Integer</i></td>
+				<td colspan="3">Checks a TEXT string testing if it corresponds to a Decimal Number.<br>
+				The function returns <b>1</b> if <b>TRUE</b> and <b>0</b> if <b>FALSE</b>; <b>-1</b> is returned when the argument is not a Text string.<hr>
+				Examples of valid Decimal Number strings:
+				<ul>
+					<li><b>'1234.56'</b></li>
+					<li><b>'+5678.09'</b></li>
+					<li><b>'-4321.67'</b></li>
+					<li><b>'-4321.67e12'</b></li>
+					<li><b>'6789.123E+6'</b></li>
+					<li><b>'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+1234.56e-6'</b></li>
+				</ul></td></tr>
+			<tr><td><b>IsNumber</b></td>
+				<td>IsNumber( value <i>Text</i> ) : <i>Integer</i></td>
+				<td colspan="3">Checks a TEXT string testing if it corresponds to a Number.<br>
+				The function returns <b>1</b> if <b>TRUE</b> and <b>0</b> if <b>FALSE</b>; <b>-1</b> is returned when the argument is not a Text string.<hr>
+				convenience predicate: same as <b>IsInteger(value) OR IsDecimalNumber(value)</b>.</td></tr>
 			<tr><td><b>CastToInteger</b></td>
 				<td>CastToInteger( value <i>Generic</i> ) : <i>Integer</i></td>
 				<td colspan="3">returns the intput value possibly casted to the Integer data-type; NULL if no conversion is possible.</td></tr>
@@ -231,7 +267,21 @@
 				<td>eval( X <i>TEXT</i> [ , Y <i>TEXT</i> ) : <i>Text</i></td>
 				<td colspan="3">Evaluate the SQL text in <b>X</b>.  Return the results, using string <b>Y</b> as the separator.<br>
 				If <b>Y</b> is omitted, use a single space character.<hr>
-                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to effectively enable this function.</td></tr>
+                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to enable this function.</td></tr>
+			<tr><td><b>PostgreSQL_GetLastError</b></td>
+				<td>PostgreSQL_GetLastError() : <i>Text</i></td>
+				<td colspan="3">returns the most recent error message raised by PostgreSQL.<br>
+				<b>NULL</b> if there is no pending error message available.</td></tr>
+			<tr><td><b>PostgreSQL_ResetLastError</b></td>
+				<td>PostgreSQL_ResetLastError() : <i>Integer</i></td>
+				<td colspan="3">Resets the most recent error message raised by PostgreSQL.<br>
+				Returns <b>1</b> on success and <b>0</b> on failure.<hr>
+				Only intended for internal usage by the <b>VirtualPostgres</b> extension module.</td></tr>
+			<tr><td><b>PostgreSQL_SetLastError</b></td>
+				<td>PostgreSQL_SetLastError( <i>TEXT</i> ) : <i>Integer</i></td>
+				<td colspan="3">Permanently sets the most recent error message raised by PostgreSQL.<br>
+				Returns <b>1</b> on success and <b>0</b> on failure; <b>-1</b> if the argument is not a Text string.<hr>
+				Only intended for internal usage by the <b>VirtualPostgres</b> extension module.</td></tr>
             <tr><td colspan="5" align="center" bgcolor="#f0e0c0">
 				<h3><a name="global">Global settings per connection</a></h3></td></tr>
 			<tr><th bgcolor="#d0d0d0">Function</th>
@@ -279,6 +329,42 @@
 			<tr><td><b>IsTinyPointEnabled</b></td>
 				<td>IsTinyPointEnabled( <i>void</i> ) : <i>boolean</i></td>
 				<td colspan="3">Returns <b>TRUE</b> if the <b>TinyPoint</b> BLOB encoding is currently enabled, otherwise <b>FALSE</b></td></tr>
+			<tr><td><b>BufferOptions_Reset</b></td>
+				<td>BufferOptions_Reset( <i>void</i> ) : <i>boolean</i></td>
+				<td colspan="3">Will reset all BufferOptions to their initial default settings.<br>
+					Returns <b>TRUE</b> on success, <b>FALSE</b> on failure.</td></tr>
+			<tr><td><b>BufferOptions_SetEndCapStyle</b></td>
+				<td>BufferOptions_SetEndCapStyle( style <i>Text</i> ) : <i>boolean</i></td>
+				<td colspan="3">Will set the current EndCap Style. Accepted styles (<i>case insensitive</i>) are: <b>ROUND</b>, <b>FLAT</b>, <b>SQUARE</b><br>
+					Returns <b>TRUE</b> on success, <b>FALSE</b> on failure.</td></tr>
+			<tr><td><b>BufferOptions_GetEndCapStyle</b></td>
+				<td>BufferOptions_GetEndCapStyle( <i>void</i> ) : <i>string</i></td>
+				<td colspan="3">Will return the name of the currently set EndCap Style.<br>
+					<b>NULL</b> on failure.</td></tr>
+			<tr><td><b>BufferOptions_SetJoinStyle</b></td>
+				<td>BufferOptions_SetJoinStyle( style <i>Text</i> ) : <i>boolean</i></td>
+				<td colspan="3">Will set the current Join Style. Accepted styles (<i>case insensitive</i>) are: <b>ROUND</b>, <b>MITRE</b> or <b>MITER</b>, <b>BEVEL</b><br>
+					Returns <b>TRUE</b> on success, <b>FALSE</b> on failure.</td></tr>
+			<tr><td><b>BufferOptions_GetJoinStyle</b></td>
+				<td>BufferOptions_GetJoinStyle( <i>void</i> ) : <i>string</i></td>
+				<td colspan="3">Will return the name of the currently set Join Style.<br>
+					<b>NULL</b> on failure.</td></tr>
+			<tr><td><b>BufferOptions_SetMitreLimit</b></td>
+				<td>BufferOptions_SetMitreLimit( limit <i>Double</i> ) : <i>boolean</i></td>
+				<td colspan="3">Will set the current Mitre Limit value.<br>
+					Returns <b>TRUE</b> on success, <b>FALSE</b> on failure.</td></tr>
+			<tr><td><b>BufferOptions_GetMitreLimit</b></td>
+				<td>BufferOptions_GetMitreLimit( <i>void</i> ) : <i>double</i></td>
+				<td colspan="3">Will return the value of the currently set Mitre Limit.<br>
+					<b>NULL</b> on failure.</td></tr>
+			<tr><td><b>BufferOptions_SetQuadrantSegments</b></td>
+				<td>BufferOptions_SetQuadrantSegments( points <i>Integer</i> ) : <i>boolean</i></td>
+				<td colspan="3">Will set the current Quadrant Segments value.<br>
+					Returns <b>TRUE</b> on success, <b>FALSE</b> on failure.</td></tr>
+			<tr><td><b>BufferOptions_GetQuadrantSegments</b></td>
+				<td>BufferOptions_GetQuadrantSegments( <i>void</i> ) : <i>integer</i></td>
+				<td colspan="3">Will return the value of the currently set Quadrant Segments.<br>
+					<b>NULL</b> on failure.</td></tr>
 			<tr><td colspan="5" align="center" bgcolor="#f0e0c0">
 				<h3><a name="sequence">SQL functions manipulating Sequences</a></h3></td></tr>
 			<tr><th bgcolor="#d0d0d0">Function</th>
@@ -399,10 +485,16 @@
 				<td colspan="3">returns the sample variance of the input values (<i>square of the sample standard deviation</i>)<br>
 				<b><u>aggregate function</u></b></td></tr>
 			<tr><td colspan="5" align="center" bgcolor="#f0e0c0">
-				<h3><a name="error">SQL functions reporting GEOS / RTTOPO errors and warnings</a></h3></td></tr>
+				<h3><a name="error">SQL functions reporting PROJ / GEOS / RTTOPO errors and warnings</a></h3></td></tr>
 			<tr><th bgcolor="#d0d0d0">Function</th>
 				<th bgcolor="#d0d0d0">Syntax</th>
 				<th colspan="3" bgcolor="#d0d0d0">Summary</th></tr>
+			<tr><td><b>PROJ_GetLastErrorMsg</b></td>
+				<td>PROJ_GetLastErrorMsg( <i>void</i> ) : <i>String</i></td>
+				<td align="center" bgcolor="##d0d0f0">PROJ</td>
+				<td colspan="2">Will return the most recent error message returned by PROJ (if any).<hr>
+				<b>NULL</b> will be returned if there is no pending PROJ error.<br>
+				<u>Note</u>: this SQL function will be available only when SpatiaLite is built on <b>PROJ.6</b> (or any later version).</td></tr>
 			<tr><td><b>GEOS_GetLastWarningMsg</b></td>
 				<td>GEOS_GetLastWarningMsg( <i>void</i> ) : <i>String</i></td>
 				<td align="center" bgcolor="#f0d0d0">GEOS</td>
@@ -527,13 +619,18 @@
 				<th bgcolor="#d0d0d0">Syntax</th>
 				<th colspan="3" bgcolor="#d0d0d0">Summary</th></tr>
 			<tr><td><b>DD to DMS</b></td>
-				<td>LongLatToDMS( longitude <i>Double precision</i> , latitude <i>Double precision</i> ) : <i>String</i></td>
-				<td colspan="3">will return a DMS string (Degrees, Minutes and Seconds) using the given DD (Decimal Degrees) input coordinates<hr>
+				<td>LongLatToDMS( longitude <i>Double precision</i> , latitude <i>Double precision</i> ) : <i>String</i><hr>
+					LongLatToDMS( longitude <i>Double precision</i> , latitude <i>Double precision</i> , decimal_digits <i>Integer</i> ) : <i>String</i></td>
+				<td colspan="3">will return a DMS string (Degrees, Minutes and Seconds) using the given DD (Decimal Degrees) input coordinates
+					<ul>
+						<li>the optional argument <b>decimal_digits</b>, when explicitly specified, will determine how many decimal digits must be used for representig Seconds.<br>
+						Zero (or a negative value) intends that Seconds will be represented by an integer value (default setting).</li>
+					</ul><hr>
                                 <b>NULL</b> will be returned on invalid input.</tr>
 			<tr><td><b>DMS to DD</b></td>
 				<td>LongitudeFromDMS( dms_expression <i>String</i> ) : <i>Double precision</i><hr>
                                     LatitudeFromDMS( dms_expression <i>String</i> ) : <i>Double precision</i></td>
-				<td colspan="3">will return the DD coordinates from the given DMS expression<hr>
+				<td colspan="3">will return the DD coordinates from within a DMS expression, which must contain both the Latitude and Longitude (in that order)<hr>
                                 <b>NULL</b> will be returned on invalid input.</tr>
 			<tr><td colspan="5" align="center" bgcolor="#f0e0c0">
 				<h3><a name="blob">SQL utility functions for BLOB objects</a></h3></td></tr>
@@ -603,6 +700,11 @@
 				<td colspan="3">The return type is Integer, with a return value of 1 for TRUE, 0 for FALSE, and &#8211;1 for UNKNOWN
 					when called with a NULL or non-BLOB argument.<hr>
 					TRUE if the BLOB argument is a valid BLOB-Geometry.</td></tr>
+			<tr><td><b>IsCompressedGeometryBlob</b></td>
+				<td>IsCompressedGeometryBlob( content <i>BLOB</i> ) : <i>Integer</i></td>
+				<td colspan="3">The return type is Integer, with a return value of 1 for TRUE, 0 for FALSE, and &#8211;1 for UNKNOWN
+					when called with a NULL or non-BLOB argument.<hr>
+					TRUE if the BLOB argument is a valid BLOB-Geometry.</td></tr>
 			<tr><td><b>IsTinyPointBlob</b></td>
 				<td>IsTinyPointBlob( content <i>BLOB</i> ) : <i>Integer</i></td>
 				<td colspan="3">The return type is Integer, with a return value of 1 for TRUE, 0 for FALSE, and &#8211;1 for UNKNOWN
@@ -623,14 +725,14 @@
 					BLOB value.<br>
 					Otherwise NULL will be returned.<br>
 					<u>Please note:</u> SQLite doesn't support BLOB values bigger than SQLITE_MAX_LENGTH (usually, 1 GB).<hr>
-                    <u>Please note well</u>: this SQL function open the doors to many potential security issues, and thus is always <i>disabled by default</i>.<br>
+                    <u>Please note well</u>: this SQL function opens the door to many potential security issues, and thus is always <i>disabled by default</i>.<br>
                     Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is required in order to use this function.</td></tr>
 			<tr><td><b>BlobToFile</b></td>
 				<td>BlobToFile( binary-data <i>BLOB</i> , filepath <i>String</i> ) : <i>Integer</i></td>
 				<td colspan="3">If <i>binary-data</i> is of the BLOB-type, and the filepath is valid (i.e. accessible in write/create mode), 
 					then the corresponding file will be created/overwritten with the binary-data.<br>
 					The return type is Integer, with a return value of 1 for success, 0 for failure.<hr>
-                    <u>Please note well</u>: this SQL function open the doors to many potential security issues, and thus is always <i>disabled by default</i>.<br>
+                    <u>Please note well</u>: this SQL function opens the door to many potential security issues, and thus is always <i>disabled by default</i>.<br>
                     Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is required in order to use this function.</td></tr>
 			<tr><td><b>CountUnsafeTriggers</b></td>
 				<td>CountUnsafeTriggers( ) : <i>Integer</i></td>
@@ -778,7 +880,7 @@
 				<td>return a grid of square cells (having the edge length of <i>size</i>) precisely covering the input Geometry.<br>
                                 The specific Type of returned Geometry is controlled by the <b>mode</b> attribute value:
                                 <ul>
-									<li>any <i>positive</i> value will cause a <b>MultiLinesting</b> to be returned.</li>
+									<li>any <i>positive</i> value will cause a <b>MultiLinestring</b> to be returned.</li>
 									<li><i>zero</i> (default value) will cause a <b>MultiPolygon</b> to be returned.</li>
 									<li>any <i>negative</i> value will cause a <b>MultiPoint</b> to be returned.</li>
                                 </ul>
@@ -792,7 +894,7 @@
 				<td>return a grid of triangular cells (having the edge length of <i>size</i>) precisely covering the input Geometry.<br>
                                 The specific Type of returned Geometry is controlled by the <b>mode</b> attribute value:
                                 <ul>
-									<li>any <i>positive</i> value will cause a <b>MultiLinesting</b> to be returned.</li>
+									<li>any <i>positive</i> value will cause a <b>MultiLinestring</b> to be returned.</li>
 									<li><i>zero</i> (default value) will cause a <b>MultiPolygon</b> to be returned.</li>
 									<li>any <i>negative</i> value will cause a <b>MultiPoint</b> to be returned.</li>
                                 </ul>
@@ -806,7 +908,7 @@
 				<td>return a grid of hexagonal cells (having the edge length of <i>size</i>) precisely covering the input Geometry.<br>
                                 The specific Type of returned Geometry is controlled by the <b>mode</b> attribute value:
                                 <ul>
-									<li>any <i>positive</i> value will cause a <b>MultiLinesting</b> to be returned.</li>
+									<li>any <i>positive</i> value will cause a <b>MultiLinestring</b> to be returned.</li>
 									<li><i>zero</i> (default value) will cause a <b>MultiPolygon</b> to be returned.</li>
 									<li>any <i>negative</i> value will cause a <b>MultiPoint</b> to be returned.</li>
                                 </ul>
@@ -1137,6 +1239,7 @@ a Geometry will be returned representing the MBR for the corresponding GARS area
 				<td></td>
 				<td align="center" bgcolor="#d0f0d0">base</td>
 				<td>returns the GeoJSON [<i>Geographic JavaScript Object Notation</i>] representation<hr>
+				if not explicitly specified <i>precision</i> is <b>15</b> decimal digits (default value).<br><br>
 				<i>options</i> can assume the following values:
 				<ul>
 					<li><b>0</b> no options [<i>default</i>]</li>
@@ -1254,8 +1357,8 @@ a Geometry will be returned representing the MBR for the corresponding GARS area
 				<td>ST_NDims( geom <i>Geometry</i> ) : <i>Integer</i></td>
 				<td></td>
 				<td align="center" bgcolor="#d0f0d0">base</td>
-				<td>returns the number of dimensions used by the geometric object as:<br>
-					<b>2</b>, <b>3</b> or <b>4</b></td></tr>
+				<td>returns the dimension number used by the geometric object as:<br>
+					<b>2</b>, <b>3</b> or <b>4</b> respectively for <b>XY</b>, <b>XYZ</b> and <b>XYZM</b> (<b>3</b> for <b>XYM</b>)</td></tr>
 			<tr><td><b>Is3D</b></td>
 				<td>ST_Is3D( geom <i>Geometry</i> ) : <i>Integer</i></td>
 				<td></td>
@@ -1764,7 +1867,7 @@ algorithm with given <i>tolerance</i> and respecting topology</td></tr>
                                 <b>NULL</b> will be returned if any error is encountered.</td></tr>
 			<tr><td><b>SetEndPoint</b></td>
 				<td>SetEndPoint( line <i>LineString</i> , point <i>Point</i> ) : <i>Linestring</i><hr>
-					ST_SetEndtPoint( line <i>LineString</i> , point <i>Point</i> ) : <i>Linestring</i></td>
+					ST_SetEndPoint( line <i>LineString</i> , point <i>Point</i> ) : <i>Linestring</i></td>
 				<td></td>
 				<td align="center" bgcolor="#d0f0d0">base</td>
 				<td>returns a new Linestring by replacing its EndPoint.<br>
@@ -1886,35 +1989,35 @@ This function only supports Long/Lat coordinates, and will return NULL for any p
 				<td></td>
 				<td align="center" bgcolor="#d0f0d0">base</td>
 				<td>The return type is Integer, with a return value of 1 for TRUE, 0 for FALSE, 
-					and &#8211;1 for UNKNOWN when called with NULL arguments.<hr>
+					and &#8211;1 for UNKNOWN when called with NULL or invalid arguments.<hr>
 					TRUE if g1 and g2 have equal MBRs</td></tr>
 			<tr><td><b>MbrDisjoint</b></td>
 				<td>MbrDisjoint( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> ) : <i>Integer</i></td>
 				<td></td>
 				<td align="center" bgcolor="#d0f0d0">base</td>
 				<td>The return type is Integer, with a return value of 1 for TRUE, 0 for FALSE, 
-					and &#8211;1 for UNKNOWN when called with NULL arguments.<hr>
+					and &#8211;1 for UNKNOWN when called with NULL or invalid arguments.<hr>
 					TRUE if the intersection of g1 and g2 MBRs is the empty set</td></tr>
 			<tr><td><b>MbrTouches</b></td>
 				<td>MbrTouches( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> ) : <i>Integer</i></td>
 				<td></td>
 				<td align="center" bgcolor="#d0f0d0">base</td>
 				<td>The return type is Integer, with a return value of 1 for TRUE, 0 for FALSE, 
-					and &#8211;1 for UNKNOWN when called with NULL arguments.<hr>
+					and &#8211;1 for UNKNOWN when called with NULL or invalid arguments.<hr>
 					TRUE if the only Points in common between g1 and g2 MBRs lie in the union of the boundaries of g1 and g2</td></tr>
 			<tr><td><b>MbrWithin</b></td>
 				<td>MbrWithin( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> ) : <i>Integer</i></td>
 				<td></td>
 				<td align="center" bgcolor="#d0f0d0">base</td>
 				<td>The return type is Integer, with a return value of 1 for TRUE, 0 for FALSE, 
-					and &#8211;1 for UNKNOWN when called with NULL arguments.<hr>
+					and &#8211;1 for UNKNOWN when called with NULL or invalid arguments.<hr>
 					TRUE if g1 MBR is completely contained in g2 MBR</td></tr>
 			<tr><td><b>MbrOverlaps</b></td>
 				<td>MbrOverlaps( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> ) : <i>Integer</i></td>
 				<td></td>
 				<td align="center" bgcolor="#d0f0d0">base</td>
 				<td>The return type is Integer, with a return value of 1 for TRUE, 0 for FALSE, 
-					and &#8211;1 for UNKNOWN when called with NULL arguments.<hr>
+					and &#8211;1 for UNKNOWN when called with NULL or invalid arguments.<hr>
 					TRUE if the intersection of g1 and g2 MBRs results in a value of the same
 					dimension as g1 and g2 that is different from both g1 and g2</td></tr>
 			<tr><td><b>MbrIntersects</b></td>
@@ -1922,7 +2025,7 @@ This function only supports Long/Lat coordinates, and will return NULL for any p
 				<td></td>
 				<td align="center" bgcolor="#d0f0d0">base</td>
 				<td>The return type is Integer, with a return value of 1 for TRUE, 0 for FALSE, 
-					and &#8211;1 for UNKNOWN when called with NULL arguments;<br>
+					and &#8211;1 for UNKNOWN when called with NULL or invalid arguments;<hr>
 					convenience predicate: TRUE if the intersection of g1 and g2 MBRs is not empty</td></tr>
 			<tr><td><b>EnvelopesIntersects</b></td>
 				<td>ST_EnvIntersects( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> ) : <i>Integer</i><hr>
@@ -1933,7 +2036,7 @@ This function only supports Long/Lat coordinates, and will return NULL for any p
 				<td align="center" bgcolor="#d0f0d0">base</td>
 				<td>The first form simply is an <u>alias name</u> for <b>MbrIntersects</b>; the other form allows to define the second MBR by two extreme points [<b>x1, y1</b>] and [<b>x2, y2</b>].<br>
                                         The return type is Integer, with a return value of 1 for TRUE, 0 for FALSE, 
-					and &#8211;1 for UNKNOWN when called with invalid arguments;<br>
+					and &#8211;1 for UNKNOWN when called with NULL or invalid arguments;<hr>
 					convenience predicate: TRUE if the intersection of both MBRs is not empty</td></tr>
 			<tr><td><b>MbrContains</b></td>
 				<td>MbrContains( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> ) : <i>Integer</i></td>
@@ -2203,7 +2306,7 @@ This function only supports Long/Lat coordinates, and will return NULL for any p
 					ST_Buffer( geom <i>Geometry</i> , dist <i>Double precision</i> [ , quadrantsegments <i>Integer</i> ] ) : <i>Geometry</i></td>
 				<td align="center" bgcolor="#d0f0d0">X</td>
 				<td align="center" bgcolor="#f0d0d0">GEOS</td>
-				<td>return a geometric object defined by buffering a distance d around geom, 
+				<td>return a geometric object defined by buffering a distance around the geom, 
 					where dist is in the distance units for the Spatial Reference of geom.<hr>
 					the optional <b>quadrantsegments</b> argument specifies the number of segments used to approximate a quarter circle (default is 30).</td></tr>
 			<tr><td><b>ConvexHull</b></td>
@@ -2216,11 +2319,34 @@ This function only supports Long/Lat coordinates, and will return NULL for any p
 				<h3><a name="p14b">SQL functions that implement spatial operators<br>[GEOS specific features]</a></h3></td></tr>
 			<tr><td><b>HausdorffDistance</b></td>
 				<td>HausdorffDistance( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> ) : <i>Double precision</i><hr>
-					ST_HausdorffDistance( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> ) : <i>Double precision</i></td>
+					HausdorffDistance( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> , densify_fract <i>Double precision</i> ) : <i>Double precision</i><hr>
+					ST_HausdorffDistance( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> ) : <i>Double precision</i><hr>
+					ST_HausdorffDistance( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> , densify_fract <i>Double precision</i> ) : <i>Double precision</i></td>
 				<td></td>
 				<td align="center" bgcolor="#f0d0d0">GEOS</td>
 				<td>return the Hausdorff distance between geom1 and geom2<br>
-				<a href="http://en.wikipedia.org/wiki/Hausdorff_distance">learn more</a></td></tr>
+				<a href="http://en.wikipedia.org/wiki/Frechet_distance">learn more</a><hr>
+				the optional argument <b>densify_fract</b> is the fraction (in the range <b>0.0 / 1.0</b>) by which to densify
+				each segment. Each segment will be split into a number of equal-lenght subsegments, whose fraction of the total
+				length is closest to the given fraction.<br>
+				The smaller <b>densify_fract</b> we specify, the more acurate Fréchet distance we get. 
+				But, the computation time and the memory usage increase with the square of the number of subsegments.<hr>
+				The second form of this SQL function (supporting <b>densify_fract</b>) is only available when using <b>GEOS 3.7.0</b> (or any subsequent version).</td></tr>
+			<tr><td><b>FrechetDistance</b></td>
+				<td>FrechetDistance( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> ) : <i>Double precision</i><hr>
+					FrechetDistance( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> , densify_fract <i>Double precision</i> ) : <i>Double precision</i><hr>
+					ST_FrechetDistance( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> ) : <i>Double precision</i><hr>
+					ST_FrechetDistance( geom1 <i>Geometry</i> , geom2 <i>Geometry</i> , densify_fract <i>Double precision</i> ) : <i>Double precision</i></td>
+				<td></td>
+				<td align="center" bgcolor="#f0d0d0">GEOS</td>
+				<td>return the Fréchet distance between geom1 and geom2<br>
+				<a href="https://en.wikipedia.org/wiki/Fr%C3%A9chet_distance">learn more</a><hr>
+				the optional argument <b>densify_fract</b> is the fraction (in the range <b>0.0 / 1.0</b>) by which to densify
+				each segment. Each segment will be split into a number of equal-lenght subsegments, whose fraction of the total
+				length is closest to the given fraction.<br>
+				The smaller <b>densify_fract</b> we specify, the more acurate Fréchet distance we get. 
+				But, the computation time and the memory usage increase with the square of the number of subsegments.<hr>
+				This SQL function is only available when using <b>GEOS 3.7.0</b> (or any subsequent version).</td></tr>
 			<tr><td><b>OffestCurve</b></td>
 				<td>OffsetCurve( geom <i>Curve</i> , radius <i>Double precision</i> ) : <i>Curve</i><hr>
 					ST_OffsetCurve( geom <i>Curve</i> , radius <i>Double precision</i> ) : <i>Curve</i></td>
@@ -2678,6 +2804,14 @@ This function only supports Long/Lat coordinates, and will return NULL for any p
 				<td>Returns a MultiPoint Geometry representing any self-intersection found within the input geometry
 					[expected to be of the Linestring or MultiLinestring type].<br>
                                 <b>NULL</b> will be returned for invalid arguments, or when no self-intersections were found.</td></tr>
+			<tr><td><b>ST_Subdivide</b></td>
+				<td>ST_Subdivide( geom <i>Geometry</i> ) : <i>Geometry</i><hr>
+					ST_Subdivide( geom <i>Geometry</i> , max_vertices <i>Integer</i> ) : <i>Geometry</i></td>
+				<td></td>
+				<td align="center" bgcolor="#f0d0f0">RTTOPO</td>
+				<td>Divides <b>geom</b> into many parts until each part can be represented using no more than <b>max_vertices</b>.<br>
+					If the optional argument <b>max_vertices</b> is not explicitly specified a limit of <b>128</b> vertices is implicitly assumed.<br>
+                                <b>NULL</b> will be returned on invalid arguments.</td></tr>
 			<tr><td colspan="5" align="center" bgcolor="#f0f0c0">
 				<h3><a name="p15">SQL functions for coordinate transformations</a></h3></td></tr>
 			<tr><th bgcolor="#d0d0d0">Function</th>
@@ -2687,10 +2821,40 @@ This function only supports Long/Lat coordinates, and will return NULL for any p
 				<th bgcolor="#d0d0d0">Summary</th></tr>
 			<tr><td><b>Transform</b></td>
 				<td>Transform( geom <i>Geometry</i> , newSRID <i>Integer</i> ) : <i>Geometry</i><hr>
-					ST_Transform( geom <i>Geometry</i> , newSRID <i>Integer</i> ) : <i>Geometry</i></td>
+					ST_Transform( geom <i>Geometry</i> , newSRID <i>Integer</i> ) : <i>Geometry</i><hr>
+					Transform( geom <i>Geometry</i> , newSRID <i>Integer</i> , area_of_use <i>Geometry</i> ) : <i>Geometry</i><hr>
+					ST_Transform( geom <i>Geometry</i> , newSRID <i>Integer</i> , area_of_use <i>Geometry</i> ) : <i>Geometry</i><hr>
+					Transform( geom <i>Geometry</i> , newSRID <i>Integer</i> , area_of_use <i>Geometry</i> , proj_string_from <i>Text</i> ) : <i>Geometry</i><hr>
+					ST_Transform( geom <i>Geometry</i> , newSRID <i>Integer</i> , area_of_use <i>Geometry</i> , proj_string_from <i>Text</i> ) : <i>Geometry</i><hr>
+					Transform( geom <i>Geometry</i> , newSRID <i>Integer</i> , area_of_use <i>Geometry</i> , proj_string_from <i>Text</i> , proj_string_to <i>Text</i> ) : <i>Geometry</i><hr>
+					ST_Transform( geom <i>Geometry</i> , newSRID <i>Integer</i> , area_of_use <i>Geometry</i> , proj_string_from <i>Text</i> , proj_string_to <i>Text</i> ) : <i>Geometry</i></td>
 				<td></td>
 				<td align="center" bgcolor="#d0d0f0">PROJ</td>
-				<td>return a geometric object obtained by reprojecting coordinates into the Reference System identified by newSRID</td></tr>
+				<td>return a geometric object obtained by reprojecting coordinates into the Reference System identified by newSRID<hr>
+				    All the following optional arguments are available only when SpatiaLite is built on the top of <b>PROJ.6</b> (or any later version):
+				    <ul>
+						<li><b>area_of_use</b>: the BBOX of this Geometry (always required to be in <i>SRID=4326</i>) will be possibly used by PROJ.6 in order to optimize the transformation as much as possible.<br>
+						    may be eventually <b>NULL</b> (<i>default setting</i>).</li>
+						<li><b>proj_string_from</b>: an user defined text string accepted by PROJ.6 identifying the <b><i>origin CRS</i></b> of the transformation.</li>
+						<li><b>proj_string_to</b>: an user defined text string accepted by PROJ.6 identifying the <b><i>destination CRS</i></b> of the transformation.
+						<li><b><u><i>Interpretation</i></u></b>:
+						<ul>
+							<li>if both <b><i>proj_string_from</i></b> and <b><i>proj_string_to</i></b> are <b>NULL</b> (<i>default setting</i>) then PROJ.6 will be left free to choose the best possible
+							    transformation between the origin and the destination CRSes.</li>
+							<li>if both <b><i>proj_string_from</i></b> and <b><i>proj_string_to</i></b> are instead explicitly set then PROJ.6 will be constrained to identify the origin and destination
+								CRSes accordingly to the received string values. Valid CRS strings accepted by PROJ.6 can be:
+								<ul>
+									<li>a <b>proj-string</b> as e.g. <b><i>+proj=longlat +datum=WGS84 +no_defs</i></b></li>
+									<li>a <b>WKT</b> definition of the intended CRS.</li>
+									<li>a <b>CRS name</b> as e.g. <b><i>WGS 84</i></b> or <b><i>Monte Mario / Italy zone 1</i></b></li>
+									<li>a canonical <b>CRS reference</b> as e.g. <b><i>EPSG:4326</i></b> or <b><i>EPSG:3003</i></b></li>
+									<li>or in the <b>alternative notation</b> as e.g. <b><i>urn:ogc:def:crs:EPSG::3003</i></b></li>
+								</ul></li>
+							<li><b><i><u>Special case</u></i></b>: if only <b><i>proj_string_from</i></b> is explicitly set whilst <b><i>proj_string_to</i></b> is <b>NULL</b>,
+							    then <b><i>proj_string_from</i></b> will be expected to contain an user defined <b><i>transformation pipeline</i></b></li>
+							<li>Any other different combination of <b><i>proj_string_from</i></b> and <b><i>proj_string_to</i></b> will be consided invalid and will raise an exception.</li>
+						</ul></li>
+				    </ul></td></tr>
 			<tr><td><b>TransformXY</b></td>
 				<td>TransformXY( geom <i>Geometry</i> , newSRID <i>Integer</i> ) : <i>Geometry</i><hr>
 					ST_TransformXY( geom <i>Geometry</i> , newSRID <i>Integer</i> ) : <i>Geometry</i></td>
@@ -2699,8 +2863,18 @@ This function only supports Long/Lat coordinates, and will return NULL for any p
 				<td>this is a <i>special flavor</i> of <b>ST_Transform()</b>; just <b>X</b> and <b>Y</b> coordinates will be transformed,
 				<b>Z</b> and <b>M</b> values (if eventually present) will be left untouched.<br>
 				<table bgcolor="#ffb080"><tr><td>
-				Mainly intended as a workaround for (possibly) imprecise <i><u>+towsg84 PROJ</u></i> definitions; should never be used as a<i>ST_Transform()</i>
+				Mainly intended as a workaround for (possibly) imprecise <i><u>+towsg84 PROJ</u></i> definitions; should never be used as a <i>ST_Transform()</i>
 				replacement without a very careful evaluation.</td></tr></table>
+				</td></tr>
+			<tr><td><b>TransformXYZ</b></td>
+				<td>TransformXYZ( geom <i>Geometry</i> , newSRID <i>Integer</i> ) : <i>Geometry</i><hr>
+					ST_TransformXYZ( geom <i>Geometry</i> , newSRID <i>Integer</i> ) : <i>Geometry</i></td>
+				<td></td>
+				<td align="center" bgcolor="#d0d0f0">PROJ</td>
+				<td>this is a <i>special flavor</i> of <b>ST_Transform()</b>; just <b>X</b>, <b>Y</b> and <b>Z</b> coordinates will be transformed,
+				<b>M</b> values (if eventually present) will be left untouched.<br>
+				<table bgcolor="#ffb080"><tr><td>
+				Mainly intended as a workaround possibily useful when handling 4D geometries having M-values not corresponding to Time.</td></tr></table>
 				</td></tr>
 			<tr><td><b>SridFromAuthCRS</b></td>
 				<td>SridFromAuthCRS( auth_name <i>String</i> , auth_SRID <i>Integer</i> ) : <i>Integer</i></td>
@@ -3005,7 +3179,7 @@ Negative angle = counterclockwise rotation.</td></tr>
 the return type is Integer, with a return value of 1 for TRUE or 0 for FALSE
 <ul>
 	<li>if the <i>optional</i> argument <b>transaction</b> is set to <b>TRUE</b> the whole operation will be handled as a single <i>Transaction</i> (faster): the default setting is <b>transaction=FALSE</b> (slower, but safer).</li>
-	<li>if the <i>optional</i> argument <b>mode</b> is not specified then any possible ESPG SRID definition will be inserted into the <b>spatial_ref_sys</b> table.</li>
+	<li>if the <i>optional</i> argument <b>mode</b> is not specified then all possible ESPG SRID definitions will be inserted into the <b>spatial_ref_sys</b> table.</li>
 	<li>if the <b>mode</b> arg <b>'WGS84'</b> (alias <b>'WGS84_ONLY'</b>) is specified, then only WGS84-related EPSG SRIDs will be inserted</li>
 	<li>if the <b>mode</b> arg <b>'NONE'</b> (alias <b>'EMPTY'</b>) is specified, no EPSG SRID will be inserted at all</li>
 </ul></td></tr>
@@ -3057,7 +3231,7 @@ required <u>trigger</u> in order to enforce constraints<hr>
 				<li><b>'XYZM'</b> or <b>4</b>: 3D points, identified by <b>X</b>, <b>Y</b> and <b>Z</b> coordinates. 
 				Each point stores an <b>M</b>-value (<i>measure</i>) as well</li>
 				</ul>
-                                Please note: the <b>dimension</b> argument is optional; anyway, if specified, iy's expected to be consistent with the declared <b>geom_type</b><hr>
+                                Please note: the <b>dimension</b> argument is optional; when specified, if specified, iy's expected to be consistent with the declared <b>geom_type</b><hr>
 the return type is Integer, with a return value of 1 for TRUE or 0 for FALSE<hr>
 the optional 6th arg [<b>not_null</b>] is a non-standard extension required by the peculiar SQLite arch:<ul>
 				<li>if set to <b>0</b> [<i>false</i>], then the Geometry column will accept NULL values as well.
@@ -3083,14 +3257,18 @@ the return type is Integer, with a return value of 1 for TRUE or 0 for FALSE</td
 				<td>RegisterVirtualGeometry( table <i>String</i> ) : <i>Integer</i></td>
 				<td></td>
 				<td align="center" bgcolor="#d0f0d0">base</td>
-				<td>Registers a <u>VirtualShape</u> table into Spatial MetaData tables; the VirtualShape table should be previously created by invoking <b>CREATE VIRTUAL TABLE ... USING VirtualShape(...)</b><hr>
-the return type is Integer, with a return value of 1 for TRUE or 0 for FALSE</td></tr>
+				<td>Registers a <u>VirtualShape</u> or <u>VirtualGeoJSON</u> table into the Spatial MetaData tables; 
+				the VirtualShape table should be previously created by invoking <b>CREATE VIRTUAL TABLE ... USING VirtualShape(...)</b>
+				<hr>
+				the return type is Integer, with a return value of 1 for TRUE or 0 for FALSE</td></tr>
 			<tr><td><b>DropVirtualGeometry</b></td>
 				<td>DropVirtualGeometry( table <i>String</i> ) : <i>Integer</i></td>
 				<td></td>
 				<td align="center" bgcolor="#d0f0d0">base</td>
-				<td>Removes a <u>VirtualShape</u> table from Spatial MetaData tables, dropping the VirtualShape table as well.<hr>
-the return type is Integer, with a return value of 1 for TRUE or 0 for FALSE</td></tr>
+				<td>Removes a <u>VirtualShape</u> or <u>VirtualGeoJSON</u>table from the Spatial MetaData tables, 
+				dropping the VirtualTable table as well.
+				<hr>
+				the return type is Integer, with a return value of 1 for TRUE or 0 for FALSE</td></tr>
 			<tr><td><b>CreateSpatialIndex</b></td>
 				<td>CreateSpatialIndex( table <i>String</i> , column <i>String</i> ) : <i>Integer</i></td>
 				<td></td>
@@ -3158,6 +3336,20 @@ NULL will be returned if the requested RTree doesn't exist<hr>
 the return type is Integer, with a return value of 1 for TRUE or 0 for FALSE<br>
 NULL will be returned if the requested RTree doesn't exist<hr>
 -1 will be returned if any physical column named "rowid" (caseless) shadowing the real ROWID is detected.</td></tr>
+		<tr><td><b>GetSpatialIndexExtent</b></td>
+				<td>GetSpatialIndexExtent( db_prefix <i>String</i> , table <i>String</i> , column <i>String</i> ) : <i>Geometry</i></td>
+				<td></td>
+				<td align="center" bgcolor="#d0f0d0">base</td>
+				<td>Retrieves the Full Extent from an RTree <b>Spatial Index</b> supporting a <b>SpatialTable</b>/<b>SpatialView</b> or a <b>GeoPackage-Geometry</b>.
+				<ul>
+					<li>The <b>db_prefix</b> argument specifies which one of the ATTACHED databases is expected to contain the RTree; if <b>NULL</b> then the <b>MAIN</b> database will be assumed by default.</li>
+					<li>The <b>table</b> and <b>column</b> arguments specifying which Table and Geometry is intended.</li>
+				</ul>
+				<hr>
+				returns a Rectangle (Polygon Geometry). The Polygon is defined by the corner points of the RTree's Full Extent [(MINX, MINY),(MAXX, MINY), (MAXX, MAXY), (MINX, MAXY), (MINX, MINY)].<br>
+				<b>NULL</b> will be returned on invalid arguments, or on a not existing Table/Geometry, or if no coresponding Spatial Index exists.<hr>
+				<u>Plase note</u>: retrieving the Full Extenxt from an RTree is a very quick operation even when performed on a Table/Geometry containing many million rows.<br>
+				<u>Also</u>: The returned Geometry will be a Spatialite-Binary, even when a GeoPackage-Table/Geometry has been requested.</td></tr>
 		<tr><td><b>InvalidateLayerStatistics</b></td>
 				<td>InvalidateLayerStatistics( [ void ) : <i>Integer</i><hr>
 					InvalidateLayerStatistics( table <i>String</i> [ , column <i>String</i> ] ) : <i>Integer</i></td>
@@ -3173,7 +3365,7 @@ the return type is Integer, with a return value of 1 for TRUE or 0 for FALSE<hr>
 				<u>Please note</u>: will effectively work only on behalf DB-files supporting the more recent metatables layout introduced 
 				starting since version <b>4.x</b>; in any other case will always return an error and no action will happen.</td></tr>
 		<tr><td><b>UpdateLayerStatistics</b></td>
-				<td>UpdateLayerStatistics( [ void ) : <i>Integer</i><hr>
+				<td>UpdateLayerStatistics( void ) : <i>Integer</i><hr>
 					UpdateLayerStatistics( table <i>String</i> [ , column <i>String</i> ] ) : <i>Integer</i></td>
 				<td></td>
 				<td align="center" bgcolor="#d0f0d0">base</td>
@@ -3182,6 +3374,7 @@ the return type is Integer, with a return value of 1 for TRUE or 0 for FALSE<hr>
 						for any possible Geometry Column defined in the current DB</li>
 					<li>otherwise statistics will be updated only for Geometry Columns
 						corresponding to the given table</li>
+					<li>When called from inside a GeoPackage Database, the <b>gpkg_contents</b> entry will be updated with the extent information.</li>
 					</ul><hr>
 the return type is Integer, with a return value of 1 for TRUE or 0 for FALSE</td></tr>
 		<tr><td><b>GetLayerExtent</b></td>
@@ -3191,7 +3384,7 @@ the return type is Integer, with a return value of 1 for TRUE or 0 for FALSE</td
 				<td>Return the Envelope corresponding to the Total Extent (<i>bounding box</i>] of some Layer;
                                     if the Table/Layer only contains a single Geometry column passing the column name isn't strictly required.<br>
                                     The returned extent will be retrieved from the Statistics tables:<ul>
-					<li>if the third argument <b>mode</b> is set to TRUEa <b>PESSIMISTIC</b>
+					<li>if the third argument <b>mode</b> is set to TRUE a <b>PESSIMISTIC</b>
                                             strategy will be applied, i.e. an attempt will be made in order to update the Statistics tables before returning the Envelope.</li>
 					<li>otherwise the returned Envelope will simply reflect the current values stored into the Statics tables as they are (<b>OPTIMISTIC</b> strategy, adopted by default).</li>
 					</ul><hr>
@@ -3202,11 +3395,23 @@ the return type is Integer, with a return value of 1 for TRUE or 0 for FALSE</td
 				<td align="center" bgcolor="#d0f0d0">base</td>
 				<td>Creates the <b>raster_coverages</b> table required by <b>RasterLite-2</b><hr>
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure)</td></tr>
+		<tr><td><b>ReCreateRasterCoveragesTriggers</b></td>
+				<td>ReCreateRasterCoveragesTriggers( <i>void</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#d0f0d0">base</td>
+				<td>(Re)Creates all Triggers supporting the <b>raster_coverages</b> table required by <b>RasterLite-2</b><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure)</td></tr>
 		<tr><td><b>CreateVectorCoveragesTables</b></td>
 				<td>CreateVectorCoveragesTables( <i>void</i> ) : <i>Integer</i></td>
 				<td></td>
 				<td align="center" bgcolor="#d0f0d0">base</td>
 				<td>Creates the <b>vector_coverages</b> and <b>vector_coverages_srid</b> tables required by <b>RasterLite-2</b><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure)</td></tr>
+		<tr><td><b>ReCreateVectorCoveragesTriggers</b></td>
+				<td>ReCreateVectorCoveragesTriggers( <i>void</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#d0f0d0">base</td>
+				<td>(Re)Creates all Triggers supporting the <b>vector_coverages</b> table required by <b>RasterLite-2</b><hr>
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure)</td></tr>
 			<tr><td><b>RebuildGeometryTriggers</b></td>
 				<td>RebuildGeometryTriggers( table_name <i>String</i> , geometry_column_name <i>String</i> ) : <i>integer</i></td>
@@ -3278,6 +3483,24 @@ the return type is Integer, with a return value of 1 for TRUE (success) or 0 for
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
 				returned on invalid arguments.<hr>
 <i>Please note</i>: will implicitly invoke <b>CreateRasterCoveragesTable()</b> and <b>CreateVectorCoveragesTables()</b> so to create the corresponding tables if not already defined.</td></tr>
+
+
+		<tr><td><b>ReCreateStylingTriggers</b></td>
+				<td>ReCreateStylingTriggers() : <i>Integer</i><hr>
+					ReCreateStylingTriggers( relaxed <i>Integer</i> ) : <i>Integer</i><hr>
+					ReCreateStylingTriggers( relaxed <i>Integer</i> , transaction <i>Integer</i> ) : <i>Integer</i></td>
+				<td></td>
+				<td align="center" bgcolor="#99d099">libxml2</td>
+				<td>(Re)Creates once again all Triggers supporting <b>SLD/SE Styled Layers</b> tables.
+				<ul>
+					<li>if the <i>optional</i> argument <b>relaxed</b> is explicitly set as <b>TRUE</b> then
+					a <i>relaxed</i> version of the validating Triggers will be installed (not checking for strict <i><u>XSD schema validation</u></i>).</li>
+					<li>if the <i>optional</i> argument <b>transaction</b> is explicitly set as <b>TRUE</b> then 
+					the whole operation will be atomically confined within a monolithic SQL transaction</li>
+				</ul><hr>
+the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
+				returned on invalid arguments.<hr>
+<i>Please note</i>: will implicitly invoke <b>ReCreateRasterCoveragesTriggers()</b> and <b>ReCreateVectorCoveragesTriggers()</b> so to update all Triggers on these tables too.</td></tr>
 		<tr><td><b>SE_RegisterVectorCoverage</b></td>
 				<td>SE_RegisterVectorCoverage( coverage_name <i>String</i> , f_table_name <i>String</i> , f_geometry_column <i>String</i> ) : <i>Integer</i><hr>
 					SE_RegisterVectorCoverage( coverage_name <i>String</i> , f_table_name <i>String</i> , f_geometry_column <i>String</i> , title <i>String</i> , abstract <i>String </i> ) : <i>Integer</i><hr>
@@ -3311,21 +3534,23 @@ the return type is Integer, with a return value of 1 for TRUE (success) or 0 for
 				</ul><hr>
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
 				returned on invalid arguments.</td></tr>
-		<tr><td><b>SE_RegisterVirtualShapeCoverage</b></td>
-				<td>SE_RegisterVirtualShapeCoverage( coverage_name <i>String</i> , virt_name <i>String</i> , virt_geometry <i>String</i> ) : <i>Integer</i><hr>
-					SE_RegisterVirtualShapeCoverage( coverage_name <i>String</i> , virt_name <i>String</i> , virt_geometry <i>String</i> , title <i>String</i> , abstract <i>String </i> ) : <i>Integer</i><hr>
-					SE_RegisterVirtualShapeCoverage( coverage_name <i>String</i> , virt_name <i>String</i> , virt_geometry <i>String</i> , title <i>String</i> , abstract <i>String </i> ,
+		<tr><td><b>SE_RegisterVirtualTableCoverage</b></td>
+				<td>SE_RegisterVirtualTableCoverage( coverage_name <i>String</i> , virt_name <i>String</i> , virt_geometry <i>String</i> ) : <i>Integer</i><hr>
+					SE_RegisterVirtualTableCoverage( coverage_name <i>String</i> , virt_name <i>String</i> , virt_geometry <i>String</i> , title <i>String</i> , abstract <i>String </i> ) : <i>Integer</i><hr>
+					SE_RegisterVirtualTableeCoverage( coverage_name <i>String</i> , virt_name <i>String</i> , virt_geometry <i>String</i> , title <i>String</i> , abstract <i>String </i> ,
 					is_queryable <i>Boolen</i> ) : <i>Integer</i></td>
 				<td></td>
 				<td align="center" bgcolor="#99d099">libxml2</td>
-				<td>Creates a <b>Vector Coverage</b> based on an already existing VirtualShape Table.
+				<td>Creates a <b>Vector Coverage</b> based on an already existing Virtual Table of the VirtualShape or VirtualGeoJSON type.
 				<ul>
 					<li><b>coverage_name</b> is the symbolic name uniquely identifying each Vector Coverage (<i>Primary Key</i>).</li>
 					<li><b>virt_name</b> and <b>virt_geometry</b> are expected to match the corresponding entries in the <i>virts_geometry_columns</i> table.</li>
 					<li>the optional arguments <b>title</b> and <b>abstract</b> could be eventually be specified for better human readability.</li>
-					<li>if the optional argument <b>is_queryable</b> is left unspecified tjem the Vector Coverage will not be queryable.</li>
-					<li><b>Note</b>: VirtualShape Coverages are always not editable.</li>
+					<li>if the optional argument <b>is_queryable</b> is left unspecified then the Vector Coverage will not be queryable.</li>
+					<li><b>Note</b>: VirtualTable Coverages are never editable.</li>
 				</ul><hr>
+					Both <b>SE_RegisterVirtualShapeCoverage()</b> and <b>SE_RegisterVirtualGeoJsonCoverage()</b> are accepted <i>alias names</i> for this SQL function.
+				<hr>
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
 				returned on invalid arguments.</td></tr>
 		<tr><td><b>SE_RegisterTopoGeoCoverage</b></td>
@@ -3484,7 +3709,7 @@ the return type is Integer, with a return value of 1 for TRUE (success) or 0 for
 				<td>Inserts a new <b>Vector Style</b> definition.
 				<ul>
 					<li><b>style</b> is expected to be an XmlBLOB containing a valid SLD/SE Style of the Vector type.<br>
-					If <b>CreatedStylingTables()</b> was invoked without specifying the <i>relaxed</i> option this XmlBLOB is expected to have successfully passed a formal XML Schema Validation.<br>
+					If <b>CreateStylingTables()</b> was invoked without specifying the <i>relaxed</i> option this XmlBLOB is expected to have successfully passed a formal XML Schema Validation.<br>
 					The registered Style will be identified either by its unique <b>Style ID</b> or by its <b>Style Name</b> automatically retrieved from SLD/SE XML.</li>
 				</ul><hr>
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
@@ -3512,7 +3737,7 @@ the return type is Integer, with a return value of 1 for TRUE (success) or 0 for
 				<td>Updates an already existing <b>Vector Style</b> definition.
 				<ul>
 					<li><b>style</b> is expected to be an XmlBLOB containing a valid SLD/SE Style of the Vector type.<br>
-					If <b>CreatedStylingTables()</b> was invoked without specifying the <i>relaxed</i> option this XmlBLOB is expected to have successfully passed a formal XML Schema Validation.<br>
+					If <b>CreateStylingTables()</b> was invoked without specifying the <i>relaxed</i> option this XmlBLOB is expected to have successfully passed a formal XML Schema Validation.<br>
 					The updated Style will continue to be identified by its current unique <b>Style ID</b> but the <b>Style Name</b> will be automatically updated accordingly to SLD/SE XML.</li>
 				</ul><hr>
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
@@ -3550,7 +3775,7 @@ the return type is Integer, with a return value of 1 for TRUE (success) or 0 for
 				<td>Inserts a new <b>Raster Style</b> definition.
 				<ul>
 					<li><b>style</b> is expected to be an XmlBLOB containing a valid SLD/SE Style of the Raster type.<br>
-					If <b>CreatedStylingTables()</b> was invoked without specifying the <i>relaxed</i> option this XmlBLOB is expected to have successfully passed a formal XML Schema Validation.<br>
+					If <b>CreateStylingTables()</b> was invoked without specifying the <i>relaxed</i> option this XmlBLOB is expected to have successfully passed a formal XML Schema Validation.<br>
 					The registered Style will be identified either by its unique <b>Style ID</b> or by its <b>Style Name</b> automatically retrieved from SLD/SE XML.</li>
 				</ul><hr>
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
@@ -3578,7 +3803,7 @@ the return type is Integer, with a return value of 1 for TRUE (success) or 0 for
 				<td>Updates an already existing <b>Raster Style</b> definition.
 				<ul>
 					<li><b>style</b> is expected to be an XmlBLOB containing a valid SLD/SE Style of the Raster type.<br>
-					If <b>CreatedStylingTables()</b> was invoked without specifying the <i>relaxed</i> option this XmlBLOB is expected to have successfully passed a formal XML Schema Validation.<br>
+					If <b>CreateStylingTables()</b> was invoked without specifying the <i>relaxed</i> option this XmlBLOB is expected to have successfully passed a formal XML Schema Validation.<br>
 					The updated Style will continue to be identified by its current unique <b>Style ID</b> but the <b>Style Name</b> will be automatically updated accordingly to SLD/SE XML.</li>
 				</ul><hr>
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
@@ -3783,7 +4008,7 @@ the return type is Integer, with a return value of 1 for TRUE (success) or 0 for
 				<td>Inserts a new <b>Group Style</b> definition.
 				<ul>
 					<li><b>style</b> is expected to be an XmlBLOB containing a valid SLD complex Style.<br>
-					If <b>CreatedStylingTables()</b> was invoked without specifying the <i>relaxed</i> option this XmlBLOB is expected to have successfully passed a formal XML Schema Validation.<br>
+					If <b>CreateStylingTables()</b> was invoked without specifying the <i>relaxed</i> option this XmlBLOB is expected to have successfully passed a formal XML Schema Validation.<br>
 					The registered Style will be identified either by its unique <b>Style ID</b> or by its unique <b>Style Name</b> automatically retrieved from SLD/SE XML.</li>
 				</ul><hr>
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
@@ -3811,7 +4036,7 @@ the return type is Integer, with a return value of 1 for TRUE (success) or 0 for
 				<td>Updates an already existing <b>Group Style</b> definition.
 				<ul>
 					<li><b>style</b> is expected to be an XmlBLOB containing a valid SLD complex Style.<br>
-					If <b>CreatedStylingTables()</b> was invoked without specifying the <i>relaxed</i> option this XmlBLOB is expected to have successfully passed a formal XML Schema Validation.<br>
+					If <b>CreateStylingTables()</b> was invoked without specifying the <i>relaxed</i> option this XmlBLOB is expected to have successfully passed a formal XML Schema Validation.<br>
 					The updated Style will continue to be identified by its current unique <b>Style ID</b> but the <b>Style Name</b> will be automatically updated accordingly to SLD/SE XML.</li>
 				</ul><hr>
 the return type is Integer, with a return value of 1 for TRUE (success) or 0 for FALSE (failure): -1 will be
@@ -4077,7 +4302,7 @@ returns nothing on success, raises exception on error</td></tr>
 				These are the mime type for the image format (without the "image/" prefix).<hr>
 				This function raises exception on error (e.g. wrong argument type).</td></tr>
 			<tr><td><b>gpkgAddGeometryColumn</b></td>
-				<td>gpkgAddGeomtryColumn( table_name <i>String</i>, geometry_column_name <i>String</i> , geometry_type <i>String</i> , 
+				<td>gpkgAddGeometryColumn( table_name <i>String</i>, geometry_column_name <i>String</i> , geometry_type <i>String</i> , 
 					with_z <i>Integer</i> , with_m <i>Integer</i> , srs_id <i>Integer</i> ) : <i>void</i></td>
 				<td></td>
 				<td align="center" bgcolor="#d0f0ff">GeoPackage</td>
@@ -4491,8 +4716,8 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 					This function is even able to acces a remote XML Document identified by an <b>URL</b>.<br>
 					Otherwise NULL will be returned.<br>
 					<u>Please note:</u> SQLite doesn't support BLOB values bigger than SQLITE_MAX_LENGTH (usually, 1 GB).<hr>
-                    <u>Please note well</u>: this SQL function open the doors to many potential security issues, and thus is always <i>disabled by default</i>.<br>
-                    Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to effectively enable this function.<br>
+                    <u>Please note well</u>: this SQL function opens the door to many potential security issues, and thus is always <i>disabled by default</i>.<br>
+                    Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to enable this function.<br>
 					Please see: <b>CountUnsafeTriggers()</b></td></tr>
 			<tr><td><b>XB_StoreXML</b></td>
 				<td>XB_StoreXML( XmlObject <i>XmlBLOB</i> , filepath <i>String</i> ) : <i>Integer</i><hr>
@@ -4506,8 +4731,8 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
                                 will be nicely formatted and properly indented by the required factor; <i>ZERO</i> will cause the whole 
                                 XmlDocument to be returned as a single line. (default setting is <i>negative</i> indenting, i.e. not reformatting at all).<hr>
 					The return type is Integer, with a return value of 1 for success, 0 for failure and -1 for invalid arguments.<hr>
-                    <u>Please note well</u>: this SQL function open the doors to many potential security issues, and thus is always <i>disabled by default</i>.<br>
-                    Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to effectively enable this function.<br>
+                    <u>Please note well</u>: this SQL function opens the door to many potential security issues, and thus is always <i>disabled by default</i>.<br>
+                    Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to enable this function.<br>
 					Please see: <b>CountUnsafeTriggers()</b></td></tr>
 			<tr><td colspan="5" align="center" bgcolor="#f0e0c0">
 				<h3><a name="srid">SQL functions supporting SRID inspection</a></h3></td></tr>
@@ -4567,6 +4792,62 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				<td colspan="3">Will inspect the SRID definitions then returning the appropriate <b>Orientation</b> for its <b>second</b> axis.<br>
 					<b>NULL</b> will be returned on invalid argument or if the SRID is undefined.</td></tr>
 			<tr><td colspan="5" align="center" bgcolor="#f0e0c0">
+				<h3><a name="proj6">SQL functions supporting new PROJ.6 API</a></h3></td></tr>
+			<tr><th bgcolor="#d0d0d0">Function</th>
+				<th bgcolor="#d0d0d0">Syntax</th>
+				<th bgcolor="#d0d0d0" colspan="3">Summary</th></tr>
+			<tr><td><b>PROJ_GetDatabasePath</b></td>
+				<td>PROJ_GetDatabasePath( <i>void</i> ) : <i>String</i></td>
+				<td colspan="3">Will return the currently set pathname leading to the private PROJ's SQLite database.<hr>
+				<b>NULL</b> will be returned if there is no private PROJ's SQLite database currently connected.<br>
+				<u>Note</u>: this SQL function will be available only when SpatiaLite is built on <b>PROJ.6</b> (or any later version).</td></tr>
+			<tr><td><b>PROJ_SetDatabasePath</b></td>
+				<td>PROJ_SetDatabasePath( new_path <i>String</i> ) : <i>String</i></td>
+				<td colspan="3">Will change the currently set pathname leading to the private PROJ's SQLite database.<hr>
+				<b>NULL</b> will be returned if the passed path is invalid, otherwise the path of the currently set private PROJ's SQLite database will be returned.<br>
+				<u>Note</u>: this SQL function will be available only when SpatiaLite is built on <b>PROJ.6</b> (or any later version).</td></tr>
+			<tr><td><b>PROJ_AsProjString</b></td>
+				<td>PROJ_AsProjString( auth_name <i>String</i> , auth_srid <i>Integer</i> ) : <i>String</i></td>
+				<td colspan="3">Will return the proj-string expression corresponding to a given Reference System; the definitions will be taken directly from the private PROJ's own database.
+				<ul>
+					<li><b>auth_name</b> and <b>auth_srid</b> identify the requested Reference System.<br>
+						<b>auth_name</b> can be <b>NULL</b>, and in this case <b>EPSG</b> will be assumed.</li>
+				</ul><hr>
+				<b>NULL</b> will be returned on failure.<br>
+				<u>Note</u>: this SQL function will be available only when SpatiaLite is built on <b>PROJ.6</b> (or any later version).</td></tr>
+			<tr><td><b>PROJ_AsWKT</b></td>
+				<td>PROJ_AsWKT( auth_name <i>String</i> , auth_srid <i>Integer</i> ) : <i>String</i><hr>
+				    PROJ_AsWKT( auth_name <i>String</i> , auth_srid <i>Integer</i> , style <i>String</i> ) : <i>String</i><hr>
+				    PROJ_AsWKT( auth_name <i>String</i> , auth_srid <i>Integer</i> , style <i>String</i> , indented <i>Boolean</i> ) : <i>String</i><hr>
+				    PROJ_AsWKT( auth_name <i>String</i> , auth_srid <i>Integer</i> , style <i>String</i> , indented <i>Boolean</i> , indentation <i>Integer</i> ) : <i>String</i></td>
+				<td colspan="3">Will return the WKT expression corresponding to a given Reference System; the definitions will be taken directly from the private PROJ's own database.
+				<ul>
+					<li><b>auth_name</b> and <b>auth_srid</b> identify the requested Reference System.<br>
+						<b>auth_name</b> can be <b>NULL</b>, and in this case <b>EPSG</b> will be assumed.</li>
+					<li>the optional argument <b>style</b> determines which WKT format should be adopted, and must be one between <i><b>GDAL</b></i>, <i><b>ESRI</b></i>,
+						<i><b>ISO-2015</b></i> or <i><b>ISO-2018</b></i> (this latter being the default setting).</li>
+					<li>the optional argument <b>indented</b> if set to <b>TRUE</b> will nicely format a multiline WKT expression, 
+						otherwise a single monolithic line lacking any white-space or new-line will be printed (the default is <b>TRUE</b>).</li>
+					<li>the optional argument <b>indentation</b> determines how many white-spaces are to be used for indenting (only meaningful if <i>indented=TRUE</i>; the default values is <b>4</b>).</li>
+				</ul><hr>
+				<b>NULL</b> will be returned on failure.<br>
+				<u>Note</u>: this SQL function will be available only when SpatiaLite is built on <b>PROJ.6</b> (or any later version).</td></tr>
+			<tr><td><b>PROJ_GuessSridFromWKT</b></td>
+				<td>PROJ_GuessSridFromWKT( wkt <i>String</i> ) : <i>Integer</i></td>
+				<td colspan="3">Will return the SRID value [if any] corresponding to a given WKT expression defining a CRS.<hr>
+				<b>-1</b> will be returned if no CRS supported by PROJ.6 matches the WKT expression.<br>
+				<b>NULL</b> will be returned on invalid argument.<br>
+				<u>Note</u>: this SQL function will be available only when SpatiaLite is built on <b>PROJ.6</b> (or any later version).</td></tr>
+			<tr><td><b>PROJ_GuessSridFromSHP</b></td>
+				<td>PROJ_GuessSridFromSHP( filename <i>String</i> ) : <i>Integer</i></td>
+				<td colspan="3">Will return the SRID value [if any] corresponding to the CRS defined by the <b>.PRJ</b> member of the Shapefile.<br>
+				<u><i>Note</i></u>: exactley as required by <b><i>ImportSHP()</i></b> <b>filename</b> must define an absolute or relative path leading to the Shapefile
+				(omitting any <i>.shp</i>, <i>.shx</i>, <i>.dbf</i> or <i>.prj</i> suffix).<hr>
+				<b>-1</b> will be returned if no CRS supported by PROJ.6 matches the .PRJ member of the Shapefile.<br>
+				<b>NULL</b> will be returned on invalid path or if no .PRJ member supports the Shapefile.<br>
+				<u>Note</u>: this SQL function will be available only when SpatiaLite is built on <b>PROJ.6</b> (or any later version).<br>
+                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to enable this function.</td></tr>
+			<tr><td colspan="5" align="center" bgcolor="#f0e0c0">
 				<h3><a name="topology">SQL functions supporting Topology-Geometry</a></h3></td></tr>
 			<tr><th bgcolor="#d0d0d0">Function</th>
 				<th bgcolor="#d0d0d0">Syntax</th>
@@ -4583,6 +4864,12 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				<td align="center" bgcolor="#d0f0d0"></td>
 				<td align="center" bgcolor="#f0d0f0">RTTOPO</td>
 				<td colspan="3">Will create both <b>topologies</b> and <b>networks</b> meta-tables.<hr>
+					Will return <i>1</i> on success) or <i>0</i> on failure (including already existing tables).</td></tr>
+			<tr><td><b>ReCreateTopoTriggers</b></td>
+				<td>ReCreateTopoTriggers( ) : <i>Integer</i></td>
+				<td align="center" bgcolor="#d0f0d0"></td>
+				<td align="center" bgcolor="#f0d0f0">RTTOPO</td>
+				<td colspan="3">Will (re)create all Triggers supporting both <b>topologies</b> and <b>networks</b> meta-tables.<hr>
 					Will return <i>1</i> on success) or <i>0</i> on failure (including already existing tables).</td></tr>
 			<tr><td><b>InitTopoGeo</b></td>
 				<td>ST_InitTopoGeo( toponame <i>Text</i> ) : <i>Integer</i></td>
@@ -4834,17 +5121,20 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				    line_max_length <i>Double precision</i> , tolerance <i>Double precision</i> ) : <i>Integer</i></td>
 				<td align="center" bgcolor="#d0f0d0"></td>
 				<td align="center" bgcolor="#f0d0f0">RTTOPO</td>
-				<td colspan="3">Will attempt to import all Geometries from an input GeoTable identified by <i>db-prefix</i>, <i>table-name</i> and <i>column-name</i> into an already existing Topology-Geometry.
+				<td colspan="3">Will attempt to import all Geometries from an input GeoTable identified by <i>db-prefix</i>, <i>table-name</i> and <i>column-name</i> 
+								into an existing Topology-Geometry created with <b>CreateTopology()</b>.
 					<ul>
-						<li><i>db-prefix</i> can be <b>NULL</b>, and in this case the input GeoTable is expected to be located within the <b>"MAIN"</b> database.</li>
-						<li><i>column-name</i> too can be <b>NULL</b>, and in this case the name of the column containing Geometries will be automatically retrieved;
-						if <b>"db"."table"</b> does not contains any Geometry column, or if it contains two or more Geometries an exception will be raised.</li>
-						<li>the input GeoTable must be properly registered and must match both <b>SRID</b> and <b>dimensions</b> declared by the target Topology.</li>
+						<li><i>db-prefix</i> can be <b>NULL</b>. In such a case the input GeoTable is expected to be located within the <b>"MAIN"</b> database, otherwise in the given <b>db-prefix</b> database.</li>
+						<li><i>column-name</i> too can be <b>NULL</b>. In such a case the name of the column containing Geometries will be automatically retrieved;
+						if <b>"db"."table"</b> does not contains any Geometry column, or contains more than one, an exception will be raised.<br>
+						Otherwise the given column name in <b>"db-prefix"."column-name"</b> will be used if it exists.</li>
+						<li>the input GeoTable must be properly registered and must match both the <b>SRID</b> and <b>dimensions</b> declared in the target Topology.</li>
 						<li>this function accepts input Geometries of any class: <b>Point</b>, <b>MultiPoint</b>, <b>Linestring</b>, <b>MultiLinestring</b>,
 						<b>Polygon</b>, <b>MultiPolygon</b>, <b>GeometryCollection</b> and <b>Geometry</b>.</li>
-						<li>The optional arguments <i>line_max_points</i> and <i>line_max_length</i> will be interpreted in the same way adopted by <b>TopoGeo_SubdivideLines()</b> 
-						(default for both: <b>NULL</b>, this meaning <u>ignore</u>).</li>
-				        <li>The optional argument <i>tolerance</i> if omitted will assume the corresponding value declared when creating the target Topology.</li>
+						<li>The optional arguments <i>line_max_points</i> and <i>line_max_length</i> will be interpreted in the same way as used in <b>TopoGeo_SubdivideLines()</b> 
+						(default for both: <b>NULL</b> [<u>ignore</u>]).</li>
+				        <li>The optional argument <i>tolerance</i>, when omitted, will assume the corresponding value used with <b>Create>Topology()</b>.</li>
+				        <li>This function will end after the <b>first</b> encountered Topology exception.</li>
 					</ul><hr>
 					Will return <b>1</b> on success; an exception will be raised on failure.</td></tr>
 			<tr><td><b>TopoGeo_FromGeoTableNoFace</b></td>
@@ -4857,9 +5147,9 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				<td align="center" bgcolor="#d0f0d0"></td>
 				<td align="center" bgcolor="#f0d0f0">RTTOPO</td>
 				<td colspan="3">Very similar to <b>TopoGeo_FromGeoTable</b> except for a very critical difference.
-				This function is strongly optimized for maximum speed, and will just update Nodes and Edges purposely ignoring Faces.<br>
-				Consequently it will always leave the target Topology in an <i>inconsistent state</i>; only after executing <b>TopoGeo_Polygonize()</b> all Faces will be
-				properly restored and the target Topology will finally resume a consistent state.<hr>
+				This function is strongly optimized for maximum speed, and will only update/create Nodes and Edges, without update/creation of Faces.<br>
+				Consequently it will always leave the target Topology in an <i>inconsistent state</i>. All Faces will be properly updated/created using <b>TopoGeo_Polygonize()</b>,
+				afterwich the target Topology will return to a consistent state.<hr>
 					Will return <b>1</b> on success; an exception will be raised on failure.</td></tr>
 			<tr><td><b>TopoGeo_FromGeoTableExt</b></td>
 				<td>TopoGeo_FromGeoTableExt( toponame <i>Text</i> , db-prefix <i>Text</i> , table-name <i>Text</i> , column-name <i>Text</i> , dustbin-table <i>Text</i> , 
@@ -4872,28 +5162,36 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				    dustbin-view <i>Text</i> , line_max_points <i>Integer</i> , line_max_length <i>Double precision</i> , tolerance <i>Double precision</i> ) : <i>Integer</i></td>
 				<td align="center" bgcolor="#d0f0d0"></td>
 				<td align="center" bgcolor="#f0d0f0">RTTOPO</td>
-				<td colspan="3">Will attempt to import all Geometries from an input GeoTable identified by <i>db-prefix</i>, <i>table-name</i> and <i>column-name</i> into an already existing Topology-Geometry.
-				    When some Topology expection is encounterd this function will never stop: the Primary Key corresponding to the failing feature will be saved into the <i>dustbin-table</i>,
-				    and the loading process will restart from the next feature until all input features will be consumed. 
+				<td colspan="3">Will attempt to import all Geometries from an input GeoTable identified by <i>db-prefix</i>, <i>table-name</i> and <i>column-name</i> 
+					into an already existing Topology-Geometry, in the same way as <b>TopoGeo_FromGeoTable()</b>.
+				    The main difference is how Topology exceptions are handled. For each encountered exception the corresponding <b>Primary Key</b>b> will be stored into the <i>dustbin-table</i>. 
 					<ul>
-						<li><i>db-prefix</i> can be <b>NULL</b>, and in this case the input GeoTable is expected to be located within the <b>"MAIN"</b> database.</li>
-						<li><i>column-name</i> too can be <b>NULL</b>, and in this case the name of the column containing Geometries will be automatically retrieved;
-						if <b>"db"."table"</b> does not contains any Geometry column, or if it contains two or more Geometries an exception will be raised.</li>
-						<li>the input GeoTable must be properly registered and must match both <b>SRID</b> and <b>dimensions</b> declared by the target Topology.</li>
-						<li>the input GeoTable is absolutely required to declare a <b>Primary Key</b>.</li>
-						<li>this function accepts input Geometries of any class: <b>Point</b>, <b>MultiPoint</b>, <b>Linestring</b>, <b>MultiLinestring</b>,
-						<b>Polygon</b>, <b>MultiPolygon</b>, <b>GeometryCollection</b> and <b>Geometry</b>.</li>
 						<li><i>dustbin-table</i> is the name of the table intended to store PK values corresponding to features failing to be imported; this table should not already exist
 						and will be automatically created by the function itself.</li>
 						<li><i>dustbin-view</i> is the name of the Spatial View supporting the above table; this view should not already exist
 						and will be automatically created by the function itself.<br>
 						<u>Note</u>: both the <i>dustbin-table</i> and the <i>dustbin-view</i> will be always created on the same DB containing the input GeoTable.</li>
-						<li>The optional arguments <i>line_max_points</i> and <i>line_max_length</i> will be interpreted in the same way adopted by <b>TopoGeo_SubdivideLines()</b> 
-						(default for both: <b>NULL</b>, this meaning <u>ignore</u>).</li>
-				        <li>The optional argument <i>tolerance</i> if omitted will assume the corresponding value declared when creating the target Topology.</li>
+				        <li><i>db-prefix</i> can be <b>NULL</b>. In such a case the input GeoTable is expected to be located within the <b>"MAIN"</b> database, otherwise in the given <b>db-prefix</b> database.</li>
+						<li><i>column-name</i> too can be <b>NULL</b>. In such a case the name of the column containing Geometries will be automatically retrieved;
+						if <b>"db"."table"</b> does not contains any Geometry column, or contains more than one, an exception will be raised.<br>
+						Otherwise the given column name in <b>"db-prefix"."column-name"</b> will be used if it exists.</li>
+						<li>the input GeoTable must be properly registered and must match both the <b>SRID</b> and <b>dimensions</b> declared in the target Topology.</li>
+						<li>A <b>Primary Key</b> for the input <i>GeoTable</i> is mandatory.</li>
+						<li><i>dustbin-table</i> is the name of the table intended to store the PK values corresponding to each feature that failed to be imported; this table must not exist,
+						since it will be created by this function.</li>
+						<li><i>dustbin-view</i> is the name of the Spatial View supporting the above table; this view should not already exist
+						and will be automatically created by the function itself.<br>
+						<u>Note</u>: both the <i>dustbin-table</i> and the <i>dustbin-view</i> will be created on the same DB containing the input GeoTable.
+						Use <b>DropGetoTable()</b> for both <i>dustbin-table</i> and <i>dustbin-view</i> before recalling, or even better use different names for each call.</li>
+						<li>this function accepts input Geometries of any class: <b>Point</b>, <b>MultiPoint</b>, <b>Linestring</b>, <b>MultiLinestring</b>,
+						<b>Polygon</b>, <b>MultiPolygon</b>, <b>GeometryCollection</b> and <b>Geometry</b>.</li>
+						<li>The optional arguments <i>line_max_points</i> and <i>line_max_length</i> will be interpreted in the same way as used in <b>TopoGeo_SubdivideLines()</b> 
+						(default for both: <b>NULL</b> [<u>ignore</u>]).</li>
+				        <li>The optional argument <i>tolerance</i>, when omitted, will assume the corresponding value used with <b>Create>Topology()</b>.</li>
+				        <li>This function will end after the <b>first</b> encountered Topology exception.</li>
 					</ul><hr>
 					Will return <b>0</b> on full success or a <b>positive</b> integer corresponding to the total count of failing features referenced by the <i>dustbin</i> table.<br>
-					An exception will be raised only on wrong arguments.</td></tr>
+					An exception will be raised for any invalid argument.</td></tr>
 			<tr><td><b>TopoGeo_FromGeoTableNoFaceExt</b></td>
 				<td>TopoGeo_FromGeoTableNoFaceExt( toponame <i>Text</i> , db-prefix <i>Text</i> , table-name <i>Text</i> , column-name <i>Text</i> , dustbin-table <i>Text</i> , 
 				    dustbin-view <i>Text</i> ) : <i>Integer</i><hr>
@@ -4906,21 +5204,21 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				<td align="center" bgcolor="#d0f0d0"></td>
 				<td align="center" bgcolor="#f0d0f0">RTTOPO</td>
 				<td colspan="3">Very similar to <b>TopoGeo_FromGeoTableExt</b> except for a very critical difference.
-				This function is strongly optimized for maximum speed, and will just update Nodes and Edges purposely ignoring Faces.<br>
-				Consequently it will always leave the target Topology in an <i>inconsistent state</i>; only after executing <b>TopoGeo_Polygonize()</b> all Faces will be
-				properly restored and the target Topology will finally resume a consistent state.<hr>
+				This function is strongly optimized for maximum speed, and will only update/create Nodes and Edges, without update/creation of Faces.<br>
+				Consequently it will always leave the target Topology in an <i>inconsistent state</i>. All Faces will be properly updated/created using <b>TopoGeo_Polygonize()</b>,
+				afterwich the target Topology will return to a consistent state.<hr>
 					Will return <b>0</b> on full success or a <b>positive</b> integer corresponding to the total count of failing features referenced by the <i>dustbin</i> table.<br>
-					An exception will be raised only on wrong arguments.</td></tr>
+					An exception will be raised for any invalid argument.</td></tr>
 			<tr><td><b>TopoGeo_Polygonize</b></td>
 				<td>TopoGeo_Polygonize( toponame <i>Text</i> )<hr>
 				    TopoGeo_Polygonize( toponame <i>Text</i> , force_rebuild <i>Boolean</i> )</td>
 				<td align="center" bgcolor="#d0f0d0"></td>
 				<td align="center" bgcolor="#f0d0f0">RTTOPO</td>
-				<td colspan="3">Will remove all existing Faces from a Topology then rebuilding all them by scratch.
+				<td colspan="3">Will remove all existing Faces from a Topology and then rebuild them from scratch.
 				<ul>
 					<li>If the Topology already is in a fully consistent state (i.e. all Edges are found to be assigned to their corresponding Faces) the function will immediately return 
-					whithout taking any action.</li>
-					<li>If the Topology is in an inconsistent state (i.e. some Edges are found lacking their corresponding Faces (preasumably due to previous calls to <b>TopoGeo_AddLinesStringNoFace</b>,
+					whithout any further action.</li>
+					<li>If the Topology is in an inconsistent state (i.e. some Edges are found missing their corresponding Faces (preasumably due to previous calls of <b>TopoGeo_AddLinesStringNoFace</b>,
 					<b>TopoGeo_FromGeoTableNoFace</b> and/or <b>TopoGeo_FromGeoTableNoFaceExt</b>) the function will effectively rebuild all Faces from scratch.</li>
 					<li>If the optional argument <i>force_rebuild</i> is set to <b>TRUE</b> (not <b>0</b>) all Faces will be unconditionally rebuilt.</li>
 				</ul>
@@ -4989,10 +5287,16 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				    Edges and Nodes will be handled by implicitly calling <b>ST_ModEdgeSplit()</b><hr>
 					Will return <b>1</b> on full success; an exception will be raised on failure.</td></tr>
 			<tr><td><b>TopoGeo_Clone</b></td>
-				<td>TopoGeo_Clone( toponame <i>Text</i> , new-toponame <i>Text</i> ) : <i>Integer</i></td>
+				<td>TopoGeo_Clone( db-prefix <i>Text</i> , toponame <i>Text</i> , new-toponame <i>Text</i> ) : <i>Integer</i></td>
 				<td align="center" bgcolor="#d0f0d0"></td>
 				<td align="center" bgcolor="#f0d0f0">RTTOPO</td>
-				<td colspan="3">Will clone an existing Topology into another; the destionation Topology shall not exist and will be automatically created.<hr>
+				<td colspan="3">Will clone an existing Topology into another; the destionation Topology shall not exist and will be automatically created.
+					<ul>
+						<li><i>db-prefix</i> may be <b>NULL</b>, and in this case the input Topology will be searched within the "<b>MAIN</b>" database.
+						The input Topology can be freely located within anyone of the currently <i>attached</i> databases.</li>
+						<li>the output Topology will be always created within the "<b>MAIN</b>" database.</li>
+					</ul>
+					<hr>
 					Will return <b>1</b> on success; an exception will be raised on failure.</td></tr>
 			<tr><td><b>TopoGeo_GetEdgeSeed</b></td>
 				<td>TopoGeo_GetEdgeSeed( toponame <i>Text</i> , edge-id <i>Integer</i> ) : <i>Geometry</i></td>
@@ -5054,7 +5358,8 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 						<li>this function accepts input Geometries only of the <b>Polygon</b> or <b>MultiPolygon</b> types.</li>
 						<li>the output Table will be always located on the <b>"MAIN"</b> DB and must not exists; it will be automatically created.</li>
 					</ul><hr>
-					Will return <b>1</b> on success; an exception will be raised on failure.</td></tr>
+					Will return <b>1</b> on success; an exception will be raised on failure.<hr>
+					<b>Warning</b>: if the Geometry column identified by <i>ref-column-name</i> is not supported by a <b>Spatial Index</b> this function will run in a painfully slow mode.</td></tr>
 			<tr><td><b>TopoGeo_LineEdgesList</b></td>
 				<td>TopoGeo_LineEdgesList( toponame <i>Text</i> , db-prefix <i>Text</i> , ref-table-name <i>Text</i> , ref-column-name <i>Text</i>, out-table <i>Text</i> ) : <i>Integer</i></td>
 				<td align="center" bgcolor="#d0f0d0"></td>
@@ -5069,7 +5374,8 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 						<li>this function accepts input Geometries only of the <b>Linestring</b> or <b>MultiLinestring</b> types.</li>
 						<li>the output Table will be always located on the <b>"MAIN"</b> DB and must not exists; it will be automatically created.</li>
 					</ul><hr>
-					Will return <b>1</b> on success; an exception will be raised on failure.</td></tr>
+					Will return <b>1</b> on success; an exception will be raised on failure.<hr>
+					<b>Warning</b>: if the Geometry column identified by <i>ref-column-name</i> is not supported by a <b>Spatial Index</b> this function will run in a painfully slow mode.</td></tr>
 			<tr><td><b>TopoGeo_ToGeoTable</b></td>
 				<td>TopoGeo_ToGeoTable( toponame <i>Text</i> , db-prefix <i>Text</i> , ref-table-name <i>Text</i> , ref-column-name <i>Text</i>, out-table <i>Text</i> ) : <i>Integer</i><hr>
 				    TopoGeo_ToGeoTable( toponame <i>Text</i> , db-prefix <i>Text</i> , ref-table-name <i>Text</i> , ref-column-name <i>Text</i>, out-table <i>Text</i> , with-spatial-index <i>Boolenan</i> ) : <i>Integer</i></td>
@@ -5396,7 +5702,8 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 						<li>this function accepts input Geometries only of the <b>Linestring</b> or <b>MultiLinestring</b> types.</li>
 						<li>the output Table will be always located on the <b>"MAIN"</b> DB and must not exists; it will be automatically created.</li>
 					</ul><hr>
-					Will return <b>1</b> on success; an exception will be raised on failure.</td></tr>
+					Will return <b>1</b> on success; an exception will be raised on failure.<hr>
+					<b>Warning</b>: if the Geometry column identified by <i>ref-column-name</i> is not supported by a <b>Spatial Index</b> this function will run in a painfully slow mode.</td></tr>
 			<tr><td><b>TopoNet_ToGeoTable</b></td>
 				<td>TopoNet_ToGeoTable( toponame <i>Text</i> , db-prefix <i>Text</i> , ref-table-name <i>Text</i> , ref-column-name <i>Text</i>, out-table <i>Text</i> ) : <i>Integer</i><hr>
 				    TopoNet_ToGeoTable( toponame <i>Text</i> , db-prefix <i>Text</i> , ref-table-name <i>Text</i> , ref-column-name <i>Text</i>, out-table <i>Text</i> , with-spatial-index <i>Boolean</i> ) : <i>Integer</i></td>
@@ -5641,13 +5948,13 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				transaction <i>Integer</i> , option_1 <i>Text</i> [ , ... , option_10 <i>Text</i> ] ) : <i>Integer</i></td>
 				<td colspan="3">Will clone (i.e. create+copy) an origin table into a destination table: 
 				the origin could be eventually located into some <i>attached</i> DB, but the destination is always
-				assumed to be located into the primary DB.<ul>
+				assumed to be located in the primary DB.<ul>
 				<li>Mandatory arguments:
 				<ul>
-					<li><b>db-prefix</b> corresponding to the origin; the primary DB always corresponds to the <i>main</i> prefix.<br>
-					    Can be legitimately set to <b>NULL</b>, and in this case <b>MAIN</b> will be implicitly assumed.</b></b></li>
+					<li><b>db-prefix</b> corresponding to the origin; the primary DB always using the <i>main</i> prefix.<br>
+					    Can be legitimately set to <b>NULL</b>, and in this case <b>MAIN</b> will be implicitly assumed.</li>
 					<li><b>input_table</b> name of the origin table</li>
-					<li><b>output_table</b> name of the destination table</li>
+					<li><b>output_table</b> name of the destination table inside the primary DB.</li>
 					<li><b>transaction</b> a <i>boolean</i> values stating if the whole operation has to be atomically confined
 					within a monolithic SQL transaction</li>
 				</ul></li>
@@ -5669,7 +5976,7 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				CreateClonedTable(  db-prefix <i>Text</i> , input_table <i>Text</i> , output_table <i>Text</i> , 
 				transaction <i>Integer</i> , option_1 <i>Text</i> [ , ... , option_10 <i>Text</i> ] ) : <i>Integer</i></td>
 				<td colspan="3">A strict derivative of <b>CloneTable()</b> accepting the same arguments with identical meaning.<br>
-				The only difference is in that this second variant will just create the output Table completely avoiding to copy any row betweem the two tables. 
+				The only difference is in that this second variant will only create the output Table definition, without any data being copied. 
 				<hr>
 				Will return <b>0</b> (i.e. <b>FALSE</b>) on failure, any other value (i.e. <b>TRUE</b>) on success. <b>NULL</b> will be returned on invalid arguments.</td></tr>
 			<tr><td><b>CheckDuplicateRows</b></td>
@@ -5711,22 +6018,79 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 					<u>Note</u>: the <b>geom-column</b> will never be ignored, even if explicitly requested to be.</li>
 					<li><b>::cast2multi::</b><br>
 					Will automatically apply a <b>CastToMulti ( geom_column )</b> directive.</li>
-					<li>All references to mismatching options or not existinting columns will be silently discarded.</li>
+					<li>All references to mismatching options or not existing columns will be silently discarded.</li>
 				</ul>
 				<hr>
 				Will return the total number of rows inserted into the output table.<br> <b>NULL</b> will be returned on invalid arguments.</td></tr>
-			<tr><td><b>DropGeoTable</b></td>
-				<td>DropGeoTable( table <i>Text</i> ) : <i>Integer</i><hr>
+			<tr><td bgcolor="#ffd080"><b>DropGeoTable</b><br><br><br><b><i>Deprecated !!!</i></b><br>Please, use <b><i>DropTable()</i></b> instead.</td>
+				<td bgcolor="#ffd080">DropGeoTable( table <i>Text</i> ) : <i>Integer</i><hr>
 				DropGeoTable( table <i>Text</i> , transaction <i>Boolean</i> ) : <i>Integer</i><hr>
 				DropGeoTable( db-prefix <i>Text</i> , table <i>Text</i> ) : <i>Integer</i><hr>
 				DropGeoTable( db-prefix <i>Text</i> , table <i>Text</i> , transaction <i>Boolean</i> ) : <i>Integer</i></td>
-				<td colspan="3">Will completely remove a Geometry Table (or Spatial View) this including any eventual SpatialIndex,
+				<td colspan="3" bgcolor="#ffd080">Will completely remove a Geometry Table (or Spatial View) this including any eventual SpatialIndex,
 				metadata and statistics definitions an alike.<br>
 				The <i>optional</i> argument <b>transaction</b> determines if an internal SQL Transaction should be automatically
 				started or not (the default setting if not explicitly overridden is <b>TRUE</b>).
 				<hr>
 				Will return <b>0</b> (i.e. <b>FALSE</b>) on failure, any other value (i.e. <b>TRUE</b>) on success..<br> 
 				<b>NULL</b> will be returned on invalid arguments.</td></tr>
+			<tr><td><b>DropTable</b></td>
+				<td>DropTable( db-prefix <i>Text</i> , table <i>Text</i> ) : <i>Integer</i><hr>
+				DropTable( db-prefix <i>Text</i> , table <i>Text</i> , permissive <i>Boolean</i> ) : <i>Integer</i></td>
+				<td colspan="3">Will safely remove a Geometry Table (or Spatial View), including any SpatialIndex,
+				triggers, metadata, statistics tables.<br>
+				Will also work on ordinary (non-Spatial) Tables and Views, RasterLite2 raster_coverage, GeoPackage (Vector/Raster) and OGR/FDO Geometries.<br>
+				<ul>
+					<li><i>db-prefix</i> can be <b>NULL</b>, where the Table or View to be dropped is expected to be located within the <b>"MAIN"</b> database.</li>
+					<li>The <i>optional</i> argument <b>permissive</b> determines if  a <b>retcode</b> will be returned in the case of failure.<br>
+						The default setting, when not explicitly overridden, is <b>FALSE</b>, where an exception will then be raised.</li>
+				</ul>
+				<hr>
+				Will return <b>1</b> (i.e. <b>TRUE</b>) on success, <b>0</b> (i.e. <b>FALSE</b>) on failure based on the <b>permissive</b> setting.<br> 
+				An <b><i>exception</i></b> will be always raised on invalid arguments and on failure, except when <b>permissive</b> has been  explicitly set.<br>
+				In this case any generic failure (as e.g. attempting to drop a non existing table) will simply return an error code without raising any exception;
+				said in other words, enabling <b><i>permissive</i></b> is more or less equivalent to declare an <b><i>IF EXISTS</i></b> SQL clause and allows
+				for a relaxed (non blocking) failure handling.</td></tr>
+			<tr><td><b>RenameTable</b></td>
+				<td>RenameTable( db-prefix <i>Text</i> , old_name <i>Text</i> , new_name <i>Text</i> ) : <i>Integer</i><hr>
+				    RenameTable( db-prefix <i>Text</i> , old_name <i>Text</i> , new_name <i>Text</i> , permissive <i>Boolean</i> ) : <i>Integer</i></td>
+				<td colspan="3">Will safely rename a Geometry Table, including any SpatialIndex,
+				triggers, metadata, statistics tables.<br>
+				Will also work on ordinary (non-Spatial) Tables, RasterLite2 raster_coverage, GeoPackage (Vector/Raster) and OGR/FDO Geometries.<br>
+				<ul>
+					<li><i>db-prefix</i> can be <b>NULL</b>, where the Table to be renamed is expected to be located within the <b>"MAIN"</b> database.</li>
+					<li>The <i>optional</i> argument <b>permissive</b> determines if  a <b>retcode</b> will be returned in the case of failure.<br>
+						The default setting, when not explicitly overridden, is <b>FALSE</b>, where an exception will then be raised.</li>
+					<li>Will not work on <b><i>Virtual Tables</i></b> or <b><i>Views</i></b>; <b><i>Spatial Tables</i></b> can be renamed only if they are located in the <b>MAIN</b> database.</li>
+					<li>Any Views using a renamed Table will be adapted with the renamed Table-Name</li>
+				</ul>
+				<hr>
+				Will return <b>1</b> (i.e. <b>TRUE</b>) on success.<br> 
+				An <b><i>exception</i></b> will be raised on invalid arguments or on failure, except when <b>permissive</b> has been  explicitly set.<br>
+				In this case any generic failure (as e.g. attempting to rename a non existing table) will simply return an error code without raising any exception;
+				said in other words, enabling <b><i>permissive</i></b> is more or less equivalent to declare an <b><i>IF EXISTS</i></b> SQL clause and allows
+				for a relaxed (non blocking) failure handling.<hr>
+				<table bgcolor="#ffd080"><tr><td>When used with a <b><i>SQLite</i></b> version < than <b><i>3.25</i></b> this function will raise an exception.</td></tr></table></td></tr>
+			<tr><td><b>RenameColumn</b></td>
+				<td>RenameColumn( db-prefix <i>Text</i> , table <i>Text</i> , old_colname <i>Text</i> , new_colname <i>Text</i> ) : <i>Integer</i><hr>
+				    RenameColumn( db-prefix <i>Text</i> , table <i>Text</i> , old_colname <i>Text</i> , new_colname <i>Text</i> , permissive <i>Boolean</i> ) : <i>Integer</i></td>
+				<td colspan="3">Will safely rename a Column belonging to a Geometry Table, including any SpatialIndex,
+				triggers, metadata, statistics tables.<br>
+				Will also work on Columns of ordinary (non-Spatial) Tables, GeoPackage and OGR/FDO Geometries.<br>
+				<ul>
+					<li><i>db-prefix</i> can be <b>NULL</b>, where the Table containing the Column to be renamed is expected to be located within the <b>"MAIN"</b> database.</li>
+					<li>The <i>optional</i> argument <b>permissive</b> determines if  a <b>retcode</b> will be returned in the case of failure.<br>
+						The default setting, when not explicitly overridden, is <b>FALSE</b>, where an exception will then be raised.</li>
+					<li>Will not work on <b><i>Virtual Tables</i></b> or <b><i>Views</i></b>; <b><i>Spatial Tables</i></b> can rename their Column only if they are located in the <b>MAIN</b> database.</li>
+					<li>Any Views using a renamed Column will be adapted with the renamed Column-Name</li>
+				</ul>
+				<hr>
+				Will return <b>1</b> (i.e. <b>TRUE</b>) on success.<br> 
+				An <b><i>exception</i></b> will be raised on invalid arguments or on failure, except when <b>permissive</b> has been  explicitly set.<br>
+				In this case any generic failure (as e.g. attempting to rename a non existing column) will simply return an error code without raising any exception;
+				said in other words, enabling <b><i>permissive</i></b> is more or less equivalent to declare an <b><i>IF EXISTS</i></b> SQL clause and allows
+				for a relaxed (non blocking) failure handling.<hr>
+				<table bgcolor="#ffd080"><tr><td>When used with a <b><i>SQLite</i></b> version < than <b><i>3.25</i></b> this function will raise an exception.</td></tr></table></td></tr>
 			<tr><td><b>ImportSHP</b></td>
 				<td>ImportSHP( filename <i>Text</i> , table <i>Text</i> , charset <i>Text</i> ) : <i>Integer</i><hr>
 				ImportSHP( filename <i>Text</i> , table <i>Text</i> , charset <i>Text</i> [ , srid <i>Integer</i>  [ ,
@@ -5761,15 +6125,15 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 						<li><i>UPPER</i> or <i>UPPERCASE</i>: all column names will be converted to uppercase.</li>
 						<li><i>SAME</i> or <i>SAMECASE</i>: all column names will be left as they are.</li>
 					</ul></li>
-					<li><b>update_statistics</b> boolean flag: immediately updating Layer Statustics or not; <i>1</i> by default.</li>
+					<li><b>update_statistics</b> boolean flag: immediately updating Layer Statistics or not; <i>1</i> by default.</li>
 					<li><b>verbose</b> boolean flag: verbose console output: <i>1</i> by default, you can explicitly pass <i>0</i>
 					if you better whish a silent output.
 				</ul></li>
 				</ul>
 				<hr>
 				Will return the total number of imported rows.<br> <b>NULL</b> will be returned on invalid arguments.<hr>
-                <u>Please note well</u>: this SQL function open the doors to many potential security issues, and thus is always <i>disabled by default</i>.<br>
-                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to effectively enable this function.</td></tr>
+                <u>Please note well</u>: this SQL function opens the door to many potential security issues, and thus is always <i>disabled by default</i>.<br>
+                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to enable this function.</td></tr>
 			<tr><td><b>ExportSHP</b></td>
 				<td>ExportSHP( table <i>Text</i> , geom_column <i>Text</i> , filename <i>Text</i> , charset <i>Text</i> ) : <i>Integer</i><hr>
 				ExportSHP( table <i>Text</i> , geom_column <i>Text</i> , filename <i>Text</i> , charset <i>Text</i> , [ geom_type <i>Text</i>
@@ -5790,8 +6154,8 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				</ul>
 				<hr>
 				Will return the total number of exported rows.<br> <b>NULL</b> will be returned on invalid arguments.<hr>
-                <u>Please note well</u>: this SQL function open the doors to many potential security issues, and thus is always <i>disabled by default</i>.<br>
-                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to effectively enable this function.</td></tr>
+                <u>Please note well</u>: this SQL function opens the door to many potential security issues, and thus is always <i>disabled by default</i>.<br>
+                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to enable this function.</td></tr>
 			<tr><td><b>ImportDBF</b></td>
 				<td>ImportDBF( filename <i>Text</i> , table <i>Text</i> , charset <i>Text</i> ) : <i>Integer</i><hr>
 				ImportDBF( filename <i>Text</i> , table <i>Text</i> , charset <i>Text</i> [ , pk_column <i>Text</i>  
@@ -5819,8 +6183,8 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				</ul>
 				<hr>
 				Will return the total number of imported rows.<br> <b>NULL</b> will be returned on invalid arguments.<hr>
-                <u>Please note well</u>: this SQL function open the doors to many potential security issues, and thus is always <i>disabled by default</i>.<br>
-                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to effectively enable this function.</td></tr>
+                <u>Please note well</u>: this SQL function opens the door to many potential security issues, and thus is always <i>disabled by default</i>.<br>
+                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to enable this function.</td></tr>
 			<tr><td><b>ExportDBF</b></td>
 				<td>ExportDBF( table <i>Text</i> , filename <i>Text</i> , charset <i>Text</i> [ , colname_case <i>Text</i> ] ) : <i>Integer</i></td>
 				<td colspan="3">Will export an internal Table as an external DBF file:
@@ -5836,8 +6200,8 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				</ul>
 				<hr>
 				Will return the total number of exported rows.<br> <b>NULL</b> will be returned on invalid arguments.<hr>
-                <u>Please note well</u>: this SQL function open the doors to many potential security issues, and thus is always <i>disabled by default</i>.<br>
-                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to effectively enable this function.</td></tr>
+                <u>Please note well</u>: this SQL function opens the door to many potential security issues, and thus is always <i>disabled by default</i>.<br>
+                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to enable this function.</td></tr>
 			<tr><td><b>ExportKML</b></td>
 				<td>ExportKML( table <i>Text</i> , geo_column <i>Text</i> , filename <i>Text</i> ) : <i>Integer</i><hr>
 				ExportKML( table <i>Text</i> , geo_column <i>Text</i> , filename <i>Text</i> [ , precision <i>Integer</i>
@@ -5859,9 +6223,9 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				</ul>
 				<hr>
 				Will return the total number of exported rows.<br> <b>NULL</b> will be returned on invalid arguments.<hr>
-                <u>Please note well</u>: this SQL function open the doors to many potential security issues, and thus is always <i>disabled by default</i>.<br>
-                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to effectively enable this function.</td></tr>
-			<tr><td><b>ExportGeoJSON</b></td>
+                <u>Please note well</u>: this SQL function opens the door to many potential security issues, and thus is always <i>disabled by default</i>.<br>
+                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to enable this function.</td></tr>
+			<tr><td><b>ExportGeoJSON</b><br><br><br><b><i>Obsolete and deprecated !!!</i></b><br>Please, use <b><i>ExportGeoJSON2()</i></b> instead.</td>
 				<td>ExportGeoJSON( table <i>Text</i> , geo_column <i>Text</i> , filename <i>Text</i> ) : <i>Integer</i><hr>
 				ExportGeoJSON( table <i>Text</i> , geo_column <i>Text</i> , filename <i>Text</i> [ , format <i>Text</i>
 				[ , precision <i>Integer</i> ] ] ) : <i>Integer</i></td>
@@ -5883,8 +6247,63 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				</ul>
 				<hr>
 				Will return the total number of exported rows.<br> <b>NULL</b> will be returned on invalid arguments.<hr>
-                <u>Please note well</u>: this SQL function open the doors to many potential security issues, and thus is always <i>disabled by default</i>.<br>
-                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to effectively enable this function.</td></tr>
+                <u>Please note well</u>: this SQL function opens the door to many potential security issues, and thus is always <i>disabled by default</i>.<br>
+                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to enable this function.</td></tr>
+			<tr><td><b>ExportGeoJSON2</b></td>
+				<td>ExportGeoJSON2( table <i>Text</i> , geo_column <i>Text</i> , filename <i>Text</i> ) : <i>Integer</i><hr>
+				ExportGeoJSON2( table <i>Text</i> , geo_column <i>Text</i> , filename <i>Text</i> 
+				[ , precision <i>Integer</i> [ , lon_lat <i>Boolen</i> [ , M_coords <i>Boolean</i> [ , indented <i>Boolean</i> [ , colname_case <i>Text</i> ] ] ] ] ] ) : <i>Integer</i></td>
+				<td colspan="3">Will export an internal Table as an external GeoJSON file that is conformant to the <b>RFC 4796</b> specifications:
+				<ul>
+					<li>Mandatory aguments:
+					<ul>
+						<li><b>table</b> name of the table to be exported.</li>
+						<li><b>geom_column</b> name of the Geometry column.</li>
+						<li><b>filename</b> absolute or relative path leading to the GeoJSON file.</li>
+					</ul></li>
+					<li>Optional aguments:
+					<ul>
+						<li><b>precision</b> number of decimal digits to be exported; <i>8</i> by default.</li>
+						<li><b>lon_lat</b> if <i>TRUE</i> all coordinates are assumed to be expressed as WGS84 longitudes
+							and latitudes (as required by RFC 7946), and <b>ST_Transform</b> will be automatically called if and when required.<br>
+								If <i>FALSE</i> all coordinates are assumed to be expressed in any other (undefined) CRS.</li>
+						<li><b>M_coords</b> if <i>TRUE</i> eventual M-values will be exported as extra coordinates.<br>
+						       If <i>FALSE</i> strict RFC 4796 conformance will be applied (no M-Values will be exported)</li>
+						<li><b>indented</b> if <i>TRUE</i> the GeoJSON file will be properly indented for enhanced human readibility<br>
+						    If <i>FALSE</i> the whole GeoJSON file will be in a single monolithic line without blank spaces.</li>
+						<li><b>colcase_name</b> one between <i>LOWER | LOWERCASE</i>, <i>UPPER | UPPERCASE</i> or <i>SAME | SAMECASE</i>
+						(same meaning as in <b>ExportSHP</b>).</li>
+					</ul></li>
+				</ul>
+				<hr>
+				Will return the total number of exported rows.<br> <b>NULL</b> will be returned on invalid arguments.<hr>
+                <u>Please note well</u>: this SQL function opens the door to many potential security issues, and thus is always <i>disabled by default</i>.<br>
+                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to enable this function.</td></tr>
+			<tr><td><b>ImportGeoJSON</b></td>
+				<td>ImportGeoJSON( filename <i>Text</i> , table <i>Text</i> ) : <i>Integer</i><hr>
+				ImportGeoJSON( filename <i>Text</i> , table <i>Text</i> [ , geo_column <i>Text</i> [ , spatial_index <i>Boolean</i> [ , srid <i>Interger</i> [ , colname_case <i>Text</i> ]]]] ) : <i>Integer</i></td>
+				<td colspan="3">Will create a Spatial Table by importing an external GeoJSON file conformant to the <b>RFC 4796</b> specifications:
+				<ul>
+					<li>Mandatory aguments:
+					<ul>
+						<li><b>table</b> name of the table to be created.</li>
+						<li><b>filename</b> absolute or relative path leading to the GeoJSON file.</li>
+					</ul></li>
+					<li>Optional aguments:
+					<ul>
+						<li><b>geo_column</b> name of the Geometry column of the Spatial Table (if not specified it will be <i>'geometry'</i>).</li>
+						<li><b>spatial_index</b> if <i>TRUE</i> a <i>SpatialIndex</i> supporting the Geometry Column will be immediately created.<br>
+								No <i>SpatialIndex</i> will be created.</li>
+						<li><b>srid</b> when positive, the SRID value to be assigned to all Geometries.<br>
+						    If 0 or negative <i>SRID=4326</i> (lon-lat WGS84) will be always assumed accordingly to RFC 7946.</li>
+						<li><b>colcase_name</b> one between <i>LOWER | LOWERCASE</i>, <i>UPPER | UPPERCASE</i> or <i>SAME | SAMECASE</i>
+						(same meaning as in <b>ImportSHP</b>).</li>
+					</ul></li>
+				</ul>
+				<hr>
+				Will return the total number of imported rows.<br> <b>NULL</b> will be returned on invalid arguments.<hr>
+                <u>Please note well</u>: this SQL function opens the door to many potential security issues, and thus is always <i>disabled by default</i>.<br>
+                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to enable this function.</td></tr>
 			<tr><td><b>ImportXLS</b></td>
 				<td>ImportXLS( filename <i>Text</i> , table <i>Text</i> ) : <i>Integer</i><hr>
 				ImportXLS( filename <i>Text</i> , table <i>Text</i> [ , worksheet_index <i>Integer</i>  
@@ -5904,8 +6323,8 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				</ul>
 				<hr>
 				Will return the total number of imported rows.<br> <b>NULL</b> will be returned on invalid arguments.<hr>
-                <u>Please note well</u>: this SQL function open the doors to many potential security issues, and thus is always <i>disabled by default</i>.<br>
-                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to effectively enable this function.</td></tr>
+                <u>Please note well</u>: this SQL function opens the door to many potential security issues, and thus is always <i>disabled by default</i>.<br>
+                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to enable this function.</td></tr>
 			<tr><td><b>ImportWFS</b></td>
 				<td>ImportWFS( filename_or_url <i>Text</i> , layer_name <i>Text</i> , table <i>Text</i> ) : <i>Integer</i><hr>
 				ImportWFS( filename_or_url <i>Text</i> , layer_name <i>Text</i> , table <i>Text</i> [ , pk_column <i>Text</i>  
@@ -5931,8 +6350,8 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				</ul>
 				<hr>
 				Will return the total number of imported rows.<br> <b>NULL</b> will be returned on invalid arguments.<hr>
-                <u>Please note well</u>: this SQL function open the doors to many potential security issues, and thus is always <i>disabled by default</i>.<br>
-                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to effectively enable this function.</td></tr>
+                <u>Please note well</u>: this SQL function opens the door to many potential security issues, and thus is always <i>disabled by default</i>.<br>
+                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to enable this function.</td></tr>
 			<tr><td><b>ImportDXF</b></td>
 				<td>ImportDXF( filename <i>String</i> ) : <i>Integer</i><hr>
 					ImportDXF( filename <i>String</i> [ , srid <i>Integer</i>, append <i>Integer</i>, dimensions <i>Text</i>,
@@ -5948,8 +6367,8 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 					<li><b>layer_name</b>: name of a single DXF layer to be imported: <i>NULL</i> will import all layers found.</li>
 					</ul>
 					Will return <b>0</b> (i.e. <b>FALSE</b>) on failure, any other value (i.e. <b>TRUE</b>) on success.<br> <b>NULL</b> will be returned on invalid arguments.<hr>
-                    <u>Please note well</u>: this SQL function open the doors to many potential security issues, and thus is always <i>disabled by default</i>.<br>
-                    Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to effectively enable this function.</td></tr>
+                    <u>Please note well</u>: this SQL function opens the door to many potential security issues, and thus is always <i>disabled by default</i>.<br>
+                    Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to enable this function.</td></tr>
 			<tr><td><b>ImportDXFfromDir</b></td>
 				<td>ImportDXFfromDir( dir_path <i>String</i> ) : <i>Integer</i><hr>
 					ImportDXFfromDir( dir_path <i>String</i> [ , srid <i>Integer</i>, append <i>Integer</i>, dimensions <i>Text</i>,
@@ -5965,8 +6384,8 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 					<li><b>layer_name</b>: name of a single DXF layer to be imported: <i>NULL</i> will import all layers found.</li>
 					</ul>
 					Will return <b>0</b> (i.e. <b>FALSE</b>) on failure, any other value (i.e. <b>TRUE</b>) on success.<br> <b>NULL</b> will be returned on invalid arguments.<hr>
-                    <u>Please note well</u>: this SQL function open the doors to many potential security issues, and thus is always <i>disabled by default</i>.<br>
-                    Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to effectively enable this function.</td></tr>		
+                    <u>Please note well</u>: this SQL function opens the door to many potential security issues, and thus is always <i>disabled by default</i>.<br>
+                    Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to enable this function.</td></tr>		
 			<tr><td><b>ExportDXF</b></td>
 				<td>ExportDXF( out_dir <i>String</i> , filename <i>String</i> , sql_query <i>String</i> , layer_col_name <i>String</i> , 
                 geom_col_name <i>String</i> , label_col_name <i>String</i> , text_height_col_name <i>String</i> , 
@@ -5981,9 +6400,9 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 					<li>the optional argument <b>precision</b> specificies how many <u>decimal digits</u> are required for coordinate values: if not specified the default is <b>3</b>.</li>
 					</ul>
 					Will return <b>0</b> (i.e. <b>FALSE</b>) on failure, any other value (i.e. <b>TRUE</b>) on success.<hr>
-                    <u>Please note well</u>: this SQL function open the doors to many potential security issues, and thus is always <i>disabled by default</i>.<br>
-                    Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to effectively enable this function.</td></tr>		
-			<tr><td><b>ST_Cutter()</b></td>
+                    <u>Please note well</u>: this SQL function opens the door to many potential security issues, and thus is always <i>disabled by default</i>.<br>
+                    Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to enable this function.</td></tr>		
+			<tr><td><b>ST_Cutter</b></td>
 				<td>ST_Cutter( input-db-prefix <i>String</i> , input-table <i>String</i> , input-geometry <i>String</i> , blade-db-prefix <i>String</i> ,
 				    blade-table <i>String</i> , blade-geom <i>String</i> , output-table <i>String</i>
 				    [ , transaction <i>Boolean</i> [ , ram-temp-storage <i>Boolean</i> ] ] ) : <i>Integer</i></td>
@@ -6014,16 +6433,19 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 					</ul>
 					Will return <b>-1</b> on invalid arguments, <b>0</b> on failure, <b>1</b> on full success and <b>2</b> on partial success (i.e.when the output table contains
 					one or more <i>invalid geometries</i>).</td></tr>			
-			<tr><td><b>GetCutterMessage()</b></td>
+			<tr><td><b>GetCutterMessage</b></td>
 				<td>GetCutterMessage( <i>void</i> ) : <i>String</i></td>
 				<td colspan="3">Will return the most <i>recent diagnostic message</i> emitted by <b>ST_Cutter()</b>.<br>
 				<b>NULL</b> will be returned if no such message currently exists.</td></tr>			
-			<tr><td><b>GetShapefileExtent()</b></td>
-				<td>GetShapefileExtent( virtual_table_name <i>String</i> ) : <i>Geometry</i></td>
-				<td colspan="3"><b>virtual_table_name</b> is expected to identify some Table of the <b>VirtualSHP</b> type.<br>
-					An Envelope Geometry will be returned corresponding to the <b>Shapefile's Full Extent</b>;
-				<b>NULL</b> will be returned if any error occurs (invalid argument type or not existing VirtualTable).</td></tr>	
-			<tr><td><b>CreateRouting()</b></td>
+			<tr><td><b>GetVirtualTableExtent</b></td>
+				<td>GetVirtualTableExtent( virtual_table_name <i>String</i> ) : <i>Geometry</i></td>
+				<td colspan="3"><b>virtual_table_name</b> is expected to identify some Table of the <b>VirtualShape</b> or <b>VirtualGeoJSON</b> type.<br>
+					An Envelope Geometry will be returned corresponding to the <b>Full Extent</b>;
+				<b>NULL</b> will be returned if any error occurs (invalid argument type or non existing VirtualTable).
+				<hr>
+					Both <b>GetVirtualShapeExtent()</b> and <b>GetVirtualGeoJsonExtent()</b> are accepted <i>alias names</i> for this SQL function.
+				</td></tr>	
+			<tr><td><b>CreateRouting</b></td>
 				<td>CreateRouting( routing_data_table <i>String</i> , virtual_routing_table <i>String</i> , input_table <i>String</i> , from_column <i>String</i> , to_column <i>String</i> ,
 				geom_column <i>String</i> , cost_column <i>String</i> ) : <i>Boolean</i><hr>
 				CreateRouting( routing_data_table <i>String</i> , virtual_routing_table <i>String</i> , input_table <i>String</i> , from_column <i>String</i> , to_column <i>String</i> ,
@@ -6054,7 +6476,7 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 					<li><b>overwrite</b>: if set to <b>TRUE</b> already existing Routing Binary Data and/or VirtualRouting Tables will be silently overwritten (default: <b>0</b>).</li>
 				</ul><hr>
 				<b>1</b> (aka <b>TRUE</b>) will be returned on success, an <b>exception</b> will be raised on failure.</td></tr>
-			<tr><td><b>CreateRoutingNodes()</b></td>
+			<tr><td><b>CreateRoutingNodes</b></td>
 				<td>CreateRoutingNodes( db_prefix <i>String</i> , spatial_table <i>String</i> , geom_column <i>String</i> ,  node_from <i>String</i> , node_to <i>String</i> ) : <i>Boolean</i></td>
 				<td colspan="3">Will attempt to add both <b>node_from</b> and <b>nodes_to</b> columns to the Spatial Table identified by <b>db_prefix</b>, <b>spatial_table</b> and <b>geom_column</b>.
 				These two columns will be populated by inserting appropriate <b>Node-IDs</b> (of the <i>INTEGER</i> type) fully respecting the topological consistency of the network.<br>
@@ -6065,15 +6487,35 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 					<li>both <b>node_from</b> and <b>node_to</b> columns should not exist.</li>
 				</ul><hr>
 				<b>1</b> (aka <b>TRUE</b>) will be returned on success, an <b>exception</b> will be raised on failure.</td></tr>				
-			<tr><td><b>CreateRouting_GetLastError()</b></td>
+			<tr><td><b>CreateRouting_GetLastError</b></td>
 				<td>CreateRouting_GetLastError( <i>void</i> ) : <i>String</i></td>
 				<td colspan="3">Will return the most <i>recent error message</i> emitted by <b>CreateRouting()</b> or <b>CreateRoutingNodes()</b>.<br>
 				<b>NULL</b> will be returned if no such error message currently exists.</td></tr>	
-			<tr><td><b>IsLowASCII()</b></td>
+			<tr><td><b>IsLowASCII</b></td>
 				<td>IsLowASCII( text_string <i>String</i> ) : <i>Integer</i></td>
 				<td colspan="3">Inspects an <b>UTF-8</b> encoded <b>text_string</b> testing if it only contains <b>ASCII 7-bit</b> characters.<br>
                     The return type is Integer, with a return value of 1 for TRUE, 0 for FALSE, 
                     and -1 for UNKNOWN when called with invalid arguments.</td></tr>
+			<tr><td><b>GetDbObjectScope</b></td>
+				<td>GetDbObjectScope( db_prefix <i>String</i> , db_object_name <i>String</i> ) : <i>String</i></td>
+				<td colspan="3">Will return a text string explaining the intended scope of any DB object (<i><b>Table</b></i>, <i><b>View</b></i>, <i><b>Index</b></i> or <i><b>Trigger</b></i>), 
+					distinguishing between <b>system</b> (<i>internal/private objects required by SQLite or SpatiaLite</i>) and <b>userland</b> objects.<br>
+                    <b>NULL</b> will be returned on invalid arguments or a non existing DB object.<hr>
+                    The <b>db_prefix</b> argument may be eventually <b>NULL</b>, and in this case the <b>MAIN</b> DB will be assumed.</td></tr>
+			<tr><td><b>Pause</b></td>
+				<td>Pause( <i>void</i> ) : <i>NULL</i></td>
+				<td colspan="3">Will suspend the execution of the current process. (mainly intended for debugging purposes).<hr>
+					<b><i><u>Note</u></i></b>: <b>Pause()</b> will effectively work only if <b>EnablePause()</b> has been explicitly called before.</td></tr>
+			<tr><td><b>IsPauseEnabled</b></td>
+				<td>IsPauseEnabled( <i>void</i> ) : <i>Boolean</i></td>
+				<td colspan="3">Will test if <b>Pause()</b> is currently enabled (<b>TRUE</b>) or not (<b>FALSE</b>).</td></tr>
+			<tr><td><b>EnablePause</b></td>
+				<td>EnablePause( <i>void</i> ) : <i>NULL</i></td>
+				<td colspan="3">Will enable all subsequent calls to <b>Pause()</b> to be effective.<hr>
+					<b><u>Note</u></b>: by default <b>Pause()</b> is always kept disabled for each connection, so you necessarily have to call <b>EnablePause()</b> in order to effectively enable it.</td></tr>
+			<tr><td><b>DisablePause</b></td>
+				<td>DisablePause( <i>void</i> ) : <i>NULL</i></td>
+				<td colspan="3">Will make all subsequent calls to <b>Pause()</b> to be effectless <b>no-ops</b>.</td></tr>
 			<tr><td colspan="5" align="center" bgcolor="#f0e0c0">
 				<h3><a name="sqlproc">SQL Procedures, Stored Procedures and Stored Variables related SQL functions</a></h3></td></tr>
 			<tr><th bgcolor="#d0d0d0">Function</th>
@@ -6086,13 +6528,13 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 			<tr><td><b>SqlProc_SetLogfile</b></td>
 				<td>SqlProc_SetLogfile( filepath <i>String</i> ) : <i>Integer</i><hr>
 				    SqlProc_SetLogfile( filepath <i>String</i> , append <i>Boolean</i> ) : <i>Integer</i></td>
-				<td colspan="3">Will activate a SQL Logfile supporting all following calls to <b>SqlProc_Execute()</b> and <b>StoredProc_Execute()</b>.
+				<td colspan="3">Will activate a SQL Logfile supporting all following calls to <b>SqlProc_Execute()</b>, <b>SqlProc_ExecuteLoop()</b>, <b>StoredProc_Execute()</b> and <b>StoredProc_ExecuteLoop()</b>.
 				<ul>
 					<li>The <b>filepath</b> argument is expected to be a valid relative or absolute pathname; it could be set to <b>NULL</b> so to disable SQL Logging.</li>
 					<li>The optional argument <b>append</b> if set to <b>TRUE</b> requires to open the Logfile for appending; if set to <b>FALSE</b> (default setting) the Logfile will be truncated.</li>
 				</ul><hr>
 				<b>1</b> will be returned on success; an exception will be raised on invalid argument or if the SQL Logfile can't be succesfully opened.<hr>
-                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to effectively enable this function.</td></tr>
+                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to enable this function.</td></tr>
 			<tr><td><b>SqlProc_GetLogfile</b></td>
 				<td>SqlProc_GetLogfile( <i>void</i> ) : <i>String</i></td>
 				<td colspan="3">Will return the pathname of the currently set SQL Logfile.<hr>
@@ -6109,7 +6551,7 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				<td colspan="3">Will return a BLOB object of the Sql Procedure type encapsulating the <b>SQL Body</b> loaded from the given <b>filepath</b>.<br>
 				If the optional second argument is explicitly specified the SQL Body will be automatically converted from the given <b>charset encoding</b> into <b>UTF-8</b>.<hr>
 				<b>1</b> will be returned on success; an exception will be raised on failure or invalid arguments.<hr>
-                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to effectively enable this function.</td></tr>	
+                Explicitly setting the environment variable <b>SPATIALITE_SECURITY=relaxed</b> is absolutely required in order to enable this function.</td></tr>	
 			<tr><td><b>SqlProc_IsValid</b></td>
 				<td>SqlProc_IsValid( object <i>BLOB</i> ) : <i>Boolean</i></td>
 				<td colspan="3">Returns <b>TRUE</b> if the passed BLOB is valid <b>SQL Procedure</b> object, otherwise <b>FALSE</b>.<hr>
@@ -6144,26 +6586,52 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 					SqlProc_CookedSQL( object <i>BLOB</i> , vararg <i>String</i> ) : <i>String</i><hr>
 					SqlProc_CookedSQL( object <i>BLOB</i> , vararg1 <i>String</i> [ , ... ] , varargN <i>String</i> ) : <i>String</i></td>
 				<td colspan="3">Returns the <b>cooked SQL Body</b> declared by the given <b>SQL Procedure</b> object after applying all <b>Variable Values</b>.<br>
-				<i>Note:</i> this function accepts from <b>0</b> to <b>16</b> well-formed <b>Variable with Value</b> arguments; declaring twice or more the same Variable is considered to be a fatal error.<hr>
+				<i>Note:</i> this function accepts from <b>0</b> to <b>64</b> well-formed <b>Variable with Value</b> arguments; declaring twice or more the same Variable is considered to be a fatal error.<hr>
 				An exception will be raised on failure or invalid arguments.</td></tr>
 			<tr><td><b>SqlProc_Execute</b></td>
-				<td>SqlProc_Execute( object <i>BLOB</i> ) : <i>Integer</i><hr>
-					SqlProc_Execute( object <i>BLOB</i> , vararg <i>String</i> ) : <i>Integer</i><hr>
-					SqlProc_Execute( object <i>BLOB</i> , vararg1 <i>String</i> [ , ... ] , varargN <i>String</i> ) : <i>Integer</i></td>
+				<td>SqlProc_Execute( object <i>BLOB</i> ) : <i>variable Type</i><hr>
+					SqlProc_Execute( object <i>BLOB</i> , vararg <i>String</i> ) : <i>variable Type</i><hr>
+					SqlProc_Execute( object <i>BLOB</i> , vararg1 <i>String</i> [ , ... ] , varargN <i>String</i> ) : <i>variable Type</i></td>
 				<td colspan="3">Executes the <b>cooked SQL Body</b> declared by the given <b>SQL Procedure</b> object after applying all <b>Variable Values</b>.<br>
-				<i>Note:</i> this function accepts from <b>0</b> to <b>16</b> well-formed <b>Variable with Value</b> arguments; declaring twice or more the same Variable is considered to be a fatal error.<hr>
-				Will return <b>1</b> on success, an exception will be raised on failure or invalid arguments.</td></tr>
-			<tr><td><b>SqlProc_Exit</b></td>
-				<td>SqlProc_Exit( <i>void</i> ) : <i>Integer</i><hr>
-					StoredProc_Exit( <i>void</i> ) : <i>Integer</i></td>
+				<i>Note:</i> this function accepts from <b>0</b> to <b>64</b> well-formed <b>Variable with Value</b> arguments; declaring twice or more the same Variable is considered to be a fatal error.<hr>
+				On success will return the <i>Return Value</i> defined (explicitly or implicitly) by <b>SqlProc_Return()</b>.<br>
+				An exception will be raised on failure or invalid arguments.</td></tr>
+			<tr><td><b>SqlProc_Return</b></td>
+				<td>SqlProc_Return( NULL ) : <i>Integer</i><br>
+					StoredProc_Return( NULL ) : <i>Integer</i><hr>
+					SqlProc_Return( value <i>Integer</i> ) : <i>Integer</i><br>
+					StoredProc_Return( value <i>Integer</i> : <i>Integer</i><hr>
+					SqlProc_Return( value <i>Double</i> ) : <i>Integer</i><br>
+					StoredProc_Return( value <i>Double</i> : <i>Integer</i><hr>
+					SqlProc_Return( value <i>Text</i> ) : <i>Integer</i><br>
+					StoredProc_Return( value <i>Text</i> : <i>Integer</i><hr>
+					SqlProc_Return( value <i>BLOB</i> ) : <i>Integer</i><br>
+					StoredProc_Return( value <i>BLOB</i> : <i>Integer</i></td>
 				<td colspan="3">
-					Will notify a pending <b>EXIT</b> request to <b>SqlProc_Execute()</b> or <b>StoredProc_Execute()</b>;
-					the internal execution loop will immediately stop and exit after completing the current SQL statement from the SQL Body.<br><br>
+					Will notify a pending <b>EXIT</b> request to <b>SqlProc_Execute()</b>, <b>SqlProc_ExecuteLoop()</b>, <b>StoredProc_Execute()</b> or <b>StoredProc_ExecuteLoop()</b>;
+					the internal execution loop will immediately stop and exit after completing the current SQL statement from the SQL Body.<br>
+					The current call to <b>SqlProc_Execute()</b>, <b>SqlProc_ExecuteLoop()</b>, <b>StoredProc_Execute()</b> or <b>StoredProc_ExecuteLoop()</b> will then return to its caller the <i>Return Value</i> 
+					specified by <b>SqlProc_Return()</b> or <b>StoredProc_Return()</b>.<br>
+					Any SQL Body terminating without explicitly calling <b>SqlProc_Return()</b> or <b>StoredProc_Return()</b> will always behave as
+					if <b>SqlProc_Return(NULL)</b> was implicitly called.<br><br>
 				<i>Notes:</i><ol>
-					<li>These functions are completely effectless outside the specific execution context of <b>SqlProc_Execute()</b> or <b>StoredProc_Execute()</b>.</li>
-					<li><b>SqlProc_Exit()</b> and <b>StoredProc_Exit()</b> are just <i>alias names</i>.
+					<li>These functions are completely effectless outside the specific execution context of <b>SqlProc_Execute()</b>, <b>SqlProc_ExecuteLoop()</b>, <b>StoredProc_Execute()</b>
+					or <b>StoredProc_ExecuteLoop()</b>.</li>
+					<li><b>SqlProc_Return()</b> and <b>StoredProc_Return()</b> are just <i>alias names</i>.
 				</ol>
 				Will return <b>1</b> on success, an exception will be raised on failure.</td></tr>
+			<tr><td><b>SqlProc_ExecuteLoop</b></td>
+				<td>SqlProc_ExecuteLoop( object <i>BLOB</i> ) : <i>Integer</i><hr>
+					SqlProc_ExecuteLoop( object <i>BLOB</i> , vararg <i>String</i> ) : <i>Integer</i><hr>
+					SqlProc_ExecuteLoop( object <i>BLOB</i> , vararg1 <i>String</i> [ , ... ] , varargN <i>String</i> ) : <i>Integer</i></td>
+				<td colspan="3">This SQL function is almost exactly the same of <b>SqlProc_Execute()</b>, with just an outstanding differece:
+				<ul>
+					<li>the <b>cooked SQL Body</b> will be iteratively executed, as if it was declared within a <b>while (true) { ... }</b> never ending loop.</li>
+					<li>the execution loop will break only when <b>SqlProc_Return()</b> will set a <b>negative or zero</b> return value of the Integer type.</li>
+					<li><b><u>Warning</u></b>: a badly implemented call to <b>SqlProc_ExecuteLoop()</b> may easily cause a nastry <a href="https://en.wikipedia.org/wiki/Infinite_loop">endless loop</a></li>
+				</ul><hr>
+				Returns <b>TRUE</b> on success.<br>
+				An exception will be raised on failure or invalid arguments.</td></tr>
 			<tr><td><b>StoredProc_CreateTables</b></td>
 				<td>StoredProc_CreateTables( <i>void</i> ) : <i>Boolean</i></td>
 				<td colspan="3">Returns <b>TRUE</b> if the <b>Stored Procedures and Variables tables</b> have been succesfully created or if they already exist, otherwise <b>FALSE</b>.</td></tr>
@@ -6193,12 +6661,25 @@ the return type is Integer, with a return value of 1 for TRUE, 0 for FALSE</td><
 				<td colspan="3">Will change the <b>SQL Body</b> on the given <b>Stored Procedure</b>.<hr>
 				Returns <b>TRUE</b> on success, otherwise <b>FALSE</b>. An exception will be raised on invalid arguments.</td></tr>	
 			<tr><td><b>StoredProc_Execute</b></td>
-				<td>StoredProc_Execute( name <i>String</i> ) : <i>Integer</i><hr>
-					StoredProc_Execute( name <i>String</i> , vararg <i>String</i> ) : <i>Integer</i><hr>
-					StoredProc_Execute( name <i>String</i> , vararg1 <i>String</i> [ , ... ] , varargN <i>String</i> ) : <i>Integer</i></td>
+				<td>StoredProc_Execute( name <i>String</i> ) : <i>variable Type</i><hr>
+					StoredProc_Execute( name <i>String</i> , vararg <i>String</i> ) : <i>variable Type</i><hr>
+					StoredProc_Execute( name <i>String</i> , vararg1 <i>String</i> [ , ... ] , varargN <i>String</i> ) : <i>variable Type</i></td>
 				<td colspan="3">Executes the given <b>Stored Procedure</b> after applying all <b>Variable Values</b>.<br>
-				<i>Note:</i> this function accepts from <b>0</b> to <b>16</b> well-formed <b>Variable with Value</b> arguments; declaring twice or more the same Variable is considered to be a fatal error.<hr>
-				Will return <b>1</b> on success, an exception will be raised on failure or invalid arguments.</td></tr>
+				<i>Note:</i> this function accepts from <b>0</b> to <b>64</b> well-formed <b>Variable with Value</b> arguments; declaring twice or more the same Variable is considered to be a fatal error.<hr>
+				On success will return the <i>Return Value</i> defined (explicitly or implicitly) by <b>StoredProc_Return()</b>.<br>
+				An exception will be raised on failure or invalid arguments.</td></tr>
+			<tr><td><b>StoredProc_ExecuteLoop</b></td>
+				<td>StoredProc_ExecuteLoop( name <i>String</i> ) : <i>Integer</i><hr>
+					StoredProc_ExecuteLoop( name <i>String</i> , vararg <i>String</i> ) : <i>Integer</i><hr>
+					StoredProc_ExecuteLoop( name <i>String</i> , vararg1 <i>String</i> [ , ... ] , varargN <i>String</i> ) : <i>Integer</i></td>
+				<td colspan="3">This SQL function is almost exactly the same of <b>StoredProc_Execute()</b>, with just an outstanding differece:
+				<ul>
+					<li>the <b>cooked SQL Body</b> will be iteratively executed, as if it was declared within a <b>while (true) { ... }</b> never ending loop.</li>
+					<li>the execution loop will break only when <b>StoredProc_Return()</b> will set a <b>negative or zero</b> return value of the Integer type.</li>
+					<li><b><u>Warning</u></b>: a badly implemented call to <b>StoredProc_ExecuteLoop()</b> may easily cause a nastry <a href="https://en.wikipedia.org/wiki/Infinite_loop">endless loop</a></li>
+				</ul><hr>
+				Returns <b>TRUE</b> on success.<br>
+				An exception will be raised on failure or invalid arguments.</td></tr>
 			<tr><td><b>StoredVar_Register</b></td>
 				<td>StoredVar_Register( name <i>String</i> , title <i>String</i> , value <i>NULL</i> ) : <i>Boolean</i><hr>
 				    StoredVar_Register( name <i>String</i> , title <i>String</i> , value <i>Integer</i> ) : <i>Boolean</i><hr>

@@ -1,0 +1,7 @@
+transform - Linestring Z
+gpkg_test.gpkg
+SELECT AsText(Transform(GeomFromText('LINESTRINGZ(11 43 100, 12 43 101, 12 42 102)', 4326), 32632, NULL))
+1 # rows (not including the header row)
+1 # columns
+AsText(Transform(GeomFromText('LINESTRINGZ(11 43 100, 12 43 101, 12 42 102)', 4326), 32632, NULL))
+ST_Transform exception - unable to find the origin SRID.

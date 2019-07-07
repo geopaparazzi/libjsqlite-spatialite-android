@@ -447,7 +447,7 @@ do_level9_tests (sqlite3 * handle, int *retcode)
       }
     if (strcmp
 	(err_msg,
-	 "SQL/MM Spatial exception - invalid Point (mismatching SRID od dimensions).")
+	 "SQL/MM Spatial exception - invalid Point (mismatching SRID or dimensions).")
 	!= 0)
       {
 	  fprintf (stderr,
@@ -473,7 +473,7 @@ do_level9_tests (sqlite3 * handle, int *retcode)
       }
     if (strcmp
 	(err_msg,
-	 "SQL/MM Spatial exception - invalid Point (mismatching SRID od dimensions).")
+	 "SQL/MM Spatial exception - invalid Point (mismatching SRID or dimensions).")
 	!= 0)
       {
 	  fprintf (stderr,
@@ -563,7 +563,7 @@ do_level9_tests (sqlite3 * handle, int *retcode)
       }
     if (strcmp
 	(err_msg,
-	 "SQL/MM Spatial exception - invalid Line (mismatching SRID od dimensions).")
+	 "SQL/MM Spatial exception - invalid Line (mismatching SRID or dimensions).")
 	!= 0)
       {
 	  fprintf (stderr,
@@ -590,7 +590,7 @@ do_level9_tests (sqlite3 * handle, int *retcode)
       }
     if (strcmp
 	(err_msg,
-	 "SQL/MM Spatial exception - invalid Line (mismatching SRID od dimensions).")
+	 "SQL/MM Spatial exception - invalid Line (mismatching SRID or dimensions).")
 	!= 0)
       {
 	  fprintf (stderr,

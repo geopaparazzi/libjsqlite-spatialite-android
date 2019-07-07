@@ -442,6 +442,28 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
+	    case RL2_COMPRESSION_LZ4_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_8_lz4_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_8_lz4_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_ZSTD_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_8_zstd_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_8_zstd_1024";
+		      break;
+		  };
+		break;
 	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
@@ -477,6 +499,28 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  case TILE_1024:
 		      coverage = "grid_u8_deflate_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_LZ4_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_u8_lz4a_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_u8_lz4_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_ZSTD_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_u8_zstd_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_u8_zstd_1024";
 		      break;
 		  };
 		break;
@@ -518,6 +562,28 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
+	    case RL2_COMPRESSION_LZ4_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_16_lz4_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_16_lz4_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_ZSTD_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_16_zstd_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_16_zstd_1024";
+		      break;
+		  };
+		break;
 	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
@@ -553,6 +619,28 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  case TILE_1024:
 		      coverage = "grid_u16_deflate_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_LZ4_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_u16_lz4_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_u16_lz4_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_ZSTD_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_u16_zstd_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_u16_zstd_1024";
 		      break;
 		  };
 		break;
@@ -594,6 +682,28 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
+	    case RL2_COMPRESSION_LZ4_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_32_lz4_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_32_lz4_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_ZSTD_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_32_zstd_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_32_zstd_1024";
+		      break;
+		  };
+		break;
 	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
@@ -629,6 +739,28 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  case TILE_1024:
 		      coverage = "grid_u32_deflate_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_LZ4_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_u32_lz4_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_u32_lz4_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_ZSTD_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_u32_zstd_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_u32_zstd_1024";
 		      break;
 		  };
 		break;
@@ -670,6 +802,28 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
+	    case RL2_COMPRESSION_LZ4_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_flt_lz4_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_flt_lz4_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_ZSTD_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_flt_zstd_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_flt_zstd_1024";
+		      break;
+		  };
+		break;
 	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
@@ -705,6 +859,28 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  case TILE_1024:
 		      coverage = "grid_dbl_deflate_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_LZ4_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_dbl_lz4_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_dbl_lz4_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_ZSTD_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_dbl_zstd_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_dbl_zstd_1024";
 		      break;
 		  };
 		break;
@@ -761,6 +937,14 @@ test_coverage (sqlite3 * sqlite, unsigned char sample,
 	  break;
       case RL2_COMPRESSION_DEFLATE_NO:
 	  compression_name = "DEFLATE_NO";
+	  qlty = 100;
+	  break;
+      case RL2_COMPRESSION_LZ4_NO:
+	  compression_name = "LZ4_NO";
+	  qlty = 100;
+	  break;
+      case RL2_COMPRESSION_ZSTD_NO:
+	  compression_name = "ZSTD_NO";
 	  qlty = 100;
 	  break;
       case RL2_COMPRESSION_LZMA_NO:
@@ -962,6 +1146,28 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
+	    case RL2_COMPRESSION_LZ4_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_8_lz4_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_8_lz4_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_ZSTD_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_8_zstd_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_8_zstd_1024";
+		      break;
+		  };
+		break;
 	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
@@ -997,6 +1203,28 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  case TILE_1024:
 		      coverage = "grid_u8_deflate_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_LZ4_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_u8_lz4_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_u8_lz4_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_ZSTD_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_u8_zstd_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_u8_zstd_1024";
 		      break;
 		  };
 		break;
@@ -1038,6 +1266,28 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
+	    case RL2_COMPRESSION_LZ4_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_16_lz4_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_16_lz4_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_ZSTD_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_16_zstd_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_16_zstd_1024";
+		      break;
+		  };
+		break;
 	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
@@ -1073,6 +1323,28 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  case TILE_1024:
 		      coverage = "grid_u16_deflate_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_LZ4_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_u16_lz4_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_u16_lz4_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_ZSTD_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_u16_zstd_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_u16_zstd_1024";
 		      break;
 		  };
 		break;
@@ -1114,6 +1386,28 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
+	    case RL2_COMPRESSION_LZ4_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_32_lz4_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_32_lz4_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_ZSTD_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_32_zstd_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_32_zstd_1024";
+		      break;
+		  };
+		break;
 	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
@@ -1149,6 +1443,28 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  case TILE_1024:
 		      coverage = "grid_u32_deflate_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_LZ4_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_u32_lz4_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_u32_lz4_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_ZSTD_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_u32_zstd_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_u32_zstd_1024";
 		      break;
 		  };
 		break;
@@ -1190,6 +1506,28 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  };
 		break;
+	    case RL2_COMPRESSION_LZ4_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_flt_lz4_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_flt_lz4_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_ZSTD_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_flt_zstd_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_flt_zstd_1024";
+		      break;
+		  };
+		break;
 	    case RL2_COMPRESSION_LZMA_NO:
 		switch (tile_sz)
 		  {
@@ -1225,6 +1563,28 @@ drop_coverage (sqlite3 * sqlite, unsigned char sample,
 		      break;
 		  case TILE_1024:
 		      coverage = "grid_dbl_deflate_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_LZ4_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_dbl_lz4_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_dbl_lz4_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_ZSTD_NO:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "grid_dbl_zstd_256";
+		      break;
+		  case TILE_1024:
+		      coverage = "grid_dbl_zstd_1024";
 		      break;
 		  };
 		break;
@@ -1352,6 +1712,21 @@ main (int argc, char *argv[])
 	 &ret))
 	return ret;
 
+#ifndef OMIT_LZ4		/* only if LZ4 is enabled */
+    ret = -270;
+    if (!test_coverage
+	(db_handle, RL2_SAMPLE_UINT16, RL2_COMPRESSION_LZ4_NO, TILE_1024, &ret))
+	return ret;
+#endif
+
+#ifndef OMIT_ZSTD		/* only if ZSTD is enabled */
+    ret = -270;
+    if (!test_coverage
+	(db_handle, RL2_SAMPLE_UINT16, RL2_COMPRESSION_ZSTD_NO, TILE_1024,
+	 &ret))
+	return ret;
+#endif
+
 #ifndef OMIT_LZMA		/* only if LZMA is enabled */
     ret = -270;
     if (!test_coverage
@@ -1383,6 +1758,20 @@ main (int argc, char *argv[])
 	(db_handle, RL2_SAMPLE_FLOAT, RL2_COMPRESSION_DEFLATE_NO, TILE_256,
 	 &ret))
 	return ret;
+
+#ifndef OMIT_LZ4		/* only if LZ4 is enabled */
+    ret = -420;
+    if (!test_coverage
+	(db_handle, RL2_SAMPLE_FLOAT, RL2_COMPRESSION_LZ4_NO, TILE_1024, &ret))
+	return ret;
+#endif
+
+#ifndef OMIT_ZSTD		/* only if ZSTD is enabled */
+    ret = -420;
+    if (!test_coverage
+	(db_handle, RL2_SAMPLE_FLOAT, RL2_COMPRESSION_ZSTD_NO, TILE_1024, &ret))
+	return ret;
+#endif
 
 #ifndef OMIT_LZMA		/* only if LZMA is enabled */
     ret = -420;
@@ -1435,6 +1824,21 @@ main (int argc, char *argv[])
 	 &ret))
 	return ret;
 
+#ifndef OMIT_LZ4		/* only if LZ4 is enabled */
+    ret = -280;
+    if (!drop_coverage
+	(db_handle, RL2_SAMPLE_UINT16, RL2_COMPRESSION_LZ4_NO, TILE_1024, &ret))
+	return ret;
+#endif
+
+#ifndef OMIT_ZSTD		/* only if ZSTD is enabled */
+    ret = -280;
+    if (!drop_coverage
+	(db_handle, RL2_SAMPLE_UINT16, RL2_COMPRESSION_ZSTD_NO, TILE_1024,
+	 &ret))
+	return ret;
+#endif
+
 #ifndef OMIT_LZMA		/* only if LZMA is enabled */
     ret = -280;
     if (!drop_coverage
@@ -1466,6 +1870,20 @@ main (int argc, char *argv[])
 	(db_handle, RL2_SAMPLE_FLOAT, RL2_COMPRESSION_DEFLATE_NO, TILE_256,
 	 &ret))
 	return ret;
+
+#ifndef OMIT_LZ4		/* only if LZ4 is enabled */
+    ret = -430;
+    if (!drop_coverage
+	(db_handle, RL2_SAMPLE_FLOAT, RL2_COMPRESSION_LZ4_NO, TILE_1024, &ret))
+	return ret;
+#endif
+
+#ifndef OMIT_ZSTD		/* only if ZSTD is enabled */
+    ret = -430;
+    if (!drop_coverage
+	(db_handle, RL2_SAMPLE_FLOAT, RL2_COMPRESSION_ZSTD_NO, TILE_1024, &ret))
+	return ret;
+#endif
 
 #ifndef OMIT_LZMA		/* only if LZMA is enabled */
     ret = -430;

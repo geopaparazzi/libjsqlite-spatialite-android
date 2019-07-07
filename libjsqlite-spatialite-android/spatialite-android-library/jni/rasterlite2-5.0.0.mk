@@ -1,8 +1,8 @@
 include $(CLEAR_VARS)
-# librasterlite2-5.0.0
+# 20190707.libspatialite-5.0.0
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
 # -------------------
-# As of 2018-05-08
+# As of 2019-07-07
 # -------------------
 # changes:
 # - geos-3.6.1

@@ -103,9 +103,35 @@ extern "C"
 #define rl2GetPoint(xy,v,x,y)	\
 				{*x = xy[(v) * 2]; \
 				 *y = xy[(v) * 2 + 1];}
+#define rl2GetPointZ(xyz,v,x,y,z)	\
+				{*x = xyz[(v) * 3]; \
+				 *y = xyz[(v) * 3 + 1]; \
+				 *z = xyz[(v) * 3 + 2];}
+#define rl2GetPointM(xym,v,x,y,m)	\
+				{*x = xym[(v) * 3]; \
+				 *y = xym[(v) * 3 + 1]; \
+				 *m = xym[(v) * 3 + 2];}
+#define rl2GetPointZM(xyzm,v,x,y,z,m)	\
+				{*x = xyzm[(v) * 4]; \
+				 *y = xyzm[(v) * 4 + 1]; \
+				 *z = xyzm[(v) * 4 + 2]; \
+				 *m = xyzm[(v) * 4 + 3];}
 #define rl2SetPoint(xy,v,x,y)	\
 				{xy[(v) * 2] = x; \
 				 xy[(v) * 2 + 1] = y;}
+#define rl2SetPointZ(xyz,v,x,y,z)	\
+				{xyz[(v) * 3] = x; \
+				 xyz[(v) * 3 + 1] = y; \
+				 xyz[(v) * 3 + 2] = z;}
+#define rl2SetPointM(xym,v,x,y,m)	\
+				{xym[(v) * 3] = x; \
+				 xym[(v) * 3 + 1] = y; \
+				 xym[(v) * 3 + 2] = m;}
+#define rl2SetPointZM(xyzm,v,x,y,z,m)	\
+				{xyzm[(v) * 4] = x; \
+				 xyzm[(v) * 4 + 1] = y; \
+				 xyzm[(v) * 4 + 2] = z; \
+				 xyzm[(v) * 4 + 3] = m;}
 
 /* internal binary format markers */
 #define RL2_ODD_BLOCK_START			0xfa
@@ -360,6 +386,7 @@ extern "C"
 	struct rl2_private_tt_font *last_font;
 	struct rl2_cached_raster *raster_cache;
 	int raster_cache_items;
+	char *draping_message;
     };
 
     typedef struct rl2_priv_tile
@@ -1175,6 +1202,7 @@ extern "C"
 	int transparent;
 	double opacity;
 	int quality;
+	rl2PixelPtr no_data;
 	unsigned char format_id;
 	unsigned char bg_red;
 	unsigned char bg_green;
@@ -1186,8 +1214,10 @@ extern "C"
 	int level_id;
 	int scale;
 	unsigned char *outbuf;
+	unsigned char *mask;
 	rl2PalettePtr palette;
 	unsigned char out_pixel;
+	int is_blob_image;
 	unsigned char *image;
 	int image_size;
 	void *graphics_ctx;
@@ -1219,6 +1249,9 @@ extern "C"
     {
 	double x;
 	double y;
+	double z;
+	double m;
+	int dims;
 	struct rl2_point *next;
     } rl2Point;
     typedef rl2Point *rl2PointPtr;
@@ -1231,6 +1264,7 @@ extern "C"
 	double miny;
 	double maxx;
 	double maxy;
+	int dims;
 	struct rl2_linestring *next;
     } rl2Linestring;
     typedef rl2Linestring *rl2LinestringPtr;
@@ -1243,6 +1277,7 @@ extern "C"
 	double miny;
 	double maxx;
 	double maxy;
+	int dims;
 	struct rl2_ring *next;
     } rl2Ring;
     typedef rl2Ring *rl2RingPtr;
@@ -1252,6 +1287,7 @@ extern "C"
 	rl2RingPtr exterior;
 	int num_interiors;
 	rl2RingPtr interiors;
+	int dims;
 	struct rl2_polygon *next;
     } rl2Polygon;
     typedef rl2Polygon *rl2PolygonPtr;
@@ -1269,8 +1305,114 @@ extern "C"
 	double miny;
 	double maxx;
 	double maxy;
+	int dims;
+	int type;
     } rl2Geometry;
     typedef rl2Geometry *rl2GeometryPtr;
+
+    typedef struct rl2_dyn_line
+    {
+	rl2PointPtr first;
+	rl2PointPtr last;
+    } rl2DynLine;
+    typedef rl2DynLine *rl2DynLinePtr;
+
+    typedef struct rl2_douglas_peucker_pt
+    {
+	int no_data;
+	int confirmed;
+	double x;
+	double y;
+	double z;
+	double m;
+	double progr_dist;
+    } rl2DouglasPeuckerPoint;
+    typedef rl2DouglasPeuckerPoint *rl2DouglasPeuckerPointPtr;
+
+    typedef struct rl2_douglas_peucker_pt_ref
+    {
+	rl2DouglasPeuckerPointPtr point;
+	int index;
+	double progr_dist;
+    } rl2DouglasPeuckerPointRef;
+    typedef rl2DouglasPeuckerPointRef *rl2DouglasPeuckerPointRefPtr;
+
+    typedef struct rl2_douglas_peucker_seq
+    {
+	int count;
+	rl2DouglasPeuckerPointPtr points;
+	int valid_count;
+	rl2DouglasPeuckerPointRefPtr valid_points;
+    } rl2DouglasPeuckerSeq;
+    typedef rl2DouglasPeuckerSeq *rl2DouglasPeuckerSeqPtr;
+
+    typedef struct rl2_coord_seq
+    {
+	int points;
+	unsigned char *base_addr;
+	int endian;
+	int endian_arch;
+	int has_z;
+	int has_m;
+	double minx;
+	double miny;
+	double maxx;
+	double maxy;
+	struct rl2_coord_seq *next;
+    } rl2CoordSeq;
+    typedef rl2CoordSeq *rl2CoordSeqPtr;
+
+    typedef struct rl2_updatable_geometry
+    {
+	unsigned char *blob;
+	int size;
+	int endian;
+	int endian_arch;
+	int has_z;
+	int has_m;
+	double minx;
+	double miny;
+	double maxx;
+	double maxy;
+	rl2CoordSeqPtr first;
+	rl2CoordSeqPtr last;
+    } rl2UpdatableGeometry;
+    typedef rl2UpdatableGeometry *rl2UpdatableGeometryPtr;
+
+    typedef struct rl2_aux_drape_geometries
+    {
+	sqlite3 *sqlite;
+	const char *spatial_table;
+	const char *geometry_column;
+	sqlite3_stmt *stmt_geom;
+	sqlite3_stmt *stmt_upd;
+	sqlite3_stmt *stmt_id;
+	sqlite3_int64 tile_id;
+	int update_count;
+	double tile_minx;
+	double tile_maxx;
+	double tile_miny;
+	double tile_maxy;
+	int raster_has_no_data;
+	double raster_no_data;
+	sqlite3_int64 geom_rowid;
+	const unsigned char *geom_blob;
+	int geom_sz;
+	rl2UpdatableGeometryPtr geometry;
+	const unsigned char *odd_blob;
+	int odd_sz;
+	const unsigned char *even_blob;
+	int even_sz;
+	rl2PrivRasterPtr raster;
+	double horz_res;
+	double vert_res;
+	int update_m;
+	double geom_no_data;
+	int has_z;
+	int has_m;
+	char *message;
+    } rl2AuxDrapeGeometries;
+    typedef rl2AuxDrapeGeometries *rl2AuxDrapeGeometriesPtr;
 
     typedef struct rl2_aux_importer_tile
     {
@@ -1322,6 +1464,7 @@ extern "C"
 	int blob_odd_sz;
 	int blob_even_sz;
 	unsigned char *outbuf;
+	unsigned char *mask;
 	unsigned int width;
 	unsigned int height;
 	unsigned char sample_type;
@@ -1570,6 +1713,70 @@ extern "C"
 						 rl2PalettePtr palette,
 						 rl2PixelPtr no_data);
 
+    RL2_PRIVATE int rl2_load_dbms_tiles_transparent (sqlite3 * handle,
+						     int max_threads,
+						     sqlite3_stmt * stmt_tiles,
+						     sqlite3_stmt * stmt_data,
+						     unsigned char *outbuf,
+						     unsigned char *mask,
+						     unsigned int width,
+						     unsigned int height,
+						     unsigned char sample_type,
+						     unsigned char num_bands,
+						     unsigned char auto_ndvi,
+						     unsigned char
+						     red_band_index,
+						     unsigned char
+						     nir_band_index,
+						     double x_res, double y_res,
+						     double minx, double miny,
+						     double maxx, double maxy,
+						     int level, int scale,
+						     rl2PalettePtr palette,
+						     rl2PixelPtr no_data,
+						     rl2RasterSymbolizerPtr
+						     style,
+						     rl2RasterStatisticsPtr
+						     stats);
+
+    RL2_PRIVATE int rl2_load_dbms_tiles_section_transparent (sqlite3 * handle,
+							     int max_threads,
+							     sqlite3_int64
+							     section_id,
+							     sqlite3_stmt *
+							     stmt_tiles,
+							     sqlite3_stmt *
+							     stmt_data,
+							     unsigned char
+							     *outbuf,
+							     unsigned char
+							     *mask,
+							     unsigned int width,
+							     unsigned int
+							     height,
+							     unsigned char
+							     sample_type,
+							     unsigned char
+							     num_bands,
+							     unsigned char
+							     auto_ndvi,
+							     unsigned char
+							     red_band_index,
+							     unsigned char
+							     nir_band_index,
+							     double x_res,
+							     double y_res,
+							     double minx,
+							     double miny,
+							     double maxx,
+							     double maxy,
+							     int level,
+							     int scale,
+							     rl2PalettePtr
+							     palette,
+							     rl2PixelPtr
+							     no_data);
+
     RL2_PRIVATE void
 	compute_aggregate_sq_diff (rl2RasterStatisticsPtr aggreg_stats);
 
@@ -1778,19 +1985,24 @@ extern "C"
 						   unsigned int height,
 						   unsigned char *pixels,
 						   unsigned char *mask,
-						   rl2PrivPixelPtr no_data,
 						   unsigned char *rgba);
-
-    RL2_PRIVATE int get_rgba_from_monochrome_opaque (unsigned int width,
-						     unsigned int height,
-						     unsigned char *pixels,
-						     unsigned char *rgba);
 
     RL2_PRIVATE int get_rgba_from_monochrome_transparent (unsigned int width,
 							  unsigned int height,
 							  unsigned char
 							  *pixels,
 							  unsigned char *rgba);
+
+    RL2_PRIVATE int get_rgba_from_monochrome_transparent_mask (unsigned int
+							       width,
+							       unsigned int
+							       height,
+							       unsigned char
+							       *pixels,
+							       unsigned char
+							       *mask,
+							       unsigned char
+							       *rgba);
 
     RL2_PRIVATE int get_rgba_from_palette_mask (unsigned int base_width,
 						unsigned int base_height,
@@ -1800,11 +2012,12 @@ extern "C"
 						rl2PrivPixelPtr no_data,
 						unsigned char *rgba);
 
-    RL2_PRIVATE int get_rgba_from_palette_opaque (unsigned int base_width,
-						  unsigned int base_height,
-						  unsigned char *pixels,
-						  rl2PalettePtr palette,
-						  unsigned char *rgba);
+    RL2_PRIVATE int get_rgba_from_palette (unsigned int base_width,
+					   unsigned int base_height,
+					   unsigned char *pixels,
+					   unsigned char *mask,
+					   rl2PalettePtr palette,
+					   unsigned char *rgba);
 
     RL2_PRIVATE int get_rgba_from_palette_transparent (unsigned int width,
 						       unsigned int height,
@@ -1815,6 +2028,16 @@ extern "C"
 						       unsigned char bg_green,
 						       unsigned char bg_blue);
 
+    RL2_PRIVATE int get_rgba_from_palette_transparent_mask (unsigned int width,
+							    unsigned int height,
+							    unsigned char
+							    *pixels,
+							    unsigned char *mask,
+							    rl2PalettePtr
+							    palette,
+							    unsigned char
+							    *rgba);
+
     RL2_PRIVATE int get_rgba_from_grayscale_mask (unsigned int width,
 						  unsigned int height,
 						  unsigned char *pixels,
@@ -1822,10 +2045,11 @@ extern "C"
 						  rl2PrivPixelPtr no_data,
 						  unsigned char *rgba);
 
-    RL2_PRIVATE int get_rgba_from_grayscale_opaque (unsigned int width,
-						    unsigned int height,
-						    unsigned char *pixels,
-						    unsigned char *rgba);
+    RL2_PRIVATE int get_rgba_from_grayscale (unsigned int width,
+					     unsigned int height,
+					     unsigned char *pixels,
+					     unsigned char *mask,
+					     unsigned char *rgba);
 
     RL2_PRIVATE int get_rgba_from_grayscale_transparent (unsigned int width,
 							 unsigned int height,
@@ -1834,17 +2058,29 @@ extern "C"
 							 unsigned char *rgba,
 							 unsigned char bg_gray);
 
+    RL2_PRIVATE int get_rgba_from_grayscale_transparent_mask (unsigned int
+							      width,
+							      unsigned int
+							      height,
+							      unsigned char
+							      *pixels,
+							      unsigned char
+							      *mask,
+							      unsigned char
+							      *rgba);
+
+    RL2_PRIVATE int get_rgba_from_rgb (unsigned int width,
+				       unsigned int height,
+				       unsigned char *pixels,
+				       unsigned char *mask,
+				       unsigned char *rgba);
+
     RL2_PRIVATE int get_rgba_from_rgb_mask (unsigned int width,
 					    unsigned int height,
 					    unsigned char *pixels,
 					    unsigned char *mask,
 					    rl2PrivPixelPtr no_data,
 					    unsigned char *rgba);
-
-    RL2_PRIVATE int get_rgba_from_rgb_opaque (unsigned int width,
-					      unsigned int height,
-					      unsigned char *pixels,
-					      unsigned char *rgba);
 
     RL2_PRIVATE int get_rgba_from_rgb_transparent (unsigned int width,
 						   unsigned int height,
@@ -1853,6 +2089,12 @@ extern "C"
 						   unsigned char bg_red,
 						   unsigned char bg_green,
 						   unsigned char bg_blue);
+
+    RL2_PRIVATE int get_rgba_from_rgb_transparent_mask (unsigned int width,
+							unsigned int height,
+							unsigned char *pixels,
+							unsigned char *mask,
+							unsigned char *rgba);
 
     RL2_PRIVATE int get_rgba_from_datagrid_mask (unsigned int width,
 						 unsigned int height,
@@ -1936,6 +2178,12 @@ extern "C"
 				     unsigned char bg_red,
 				     unsigned char bg_green,
 				     unsigned char bg_blue);
+
+    RL2_PRIVATE int build_rgb_alpha_transparent (unsigned int width,
+						 unsigned int height,
+						 unsigned char *rgba,
+						 unsigned char **rgb,
+						 unsigned char **alpha);
 
     RL2_PRIVATE int get_rgba_from_multiband8 (unsigned int width,
 					      unsigned int height,
@@ -2098,6 +2346,28 @@ extern "C"
 					 rl2RasterSymbolizerPtr style,
 					 rl2RasterStatisticsPtr stats);
 
+    RL2_PRIVATE int rl2_copy_raw_pixels_transparent (rl2RasterPtr raster,
+						     unsigned char *outbuf,
+						     unsigned char *mask,
+						     unsigned int width,
+						     unsigned int height,
+						     unsigned char sample_type,
+						     unsigned char num_bands,
+						     unsigned char auto_ndvi,
+						     unsigned char
+						     red_band_index,
+						     unsigned char
+						     nir_band_index,
+						     double x_res, double y_res,
+						     double minx, double maxy,
+						     double tile_minx,
+						     double tile_maxy,
+						     rl2PixelPtr no_data,
+						     rl2RasterSymbolizerPtr
+						     style,
+						     rl2RasterStatisticsPtr
+						     stats);
+
     RL2_PRIVATE int rl2_copy_raw_mask (rl2RasterPtr raster,
 				       unsigned char *maskbuf,
 				       unsigned int width,
@@ -2212,6 +2482,41 @@ extern "C"
 						    style,
 						    rl2RasterStatisticsPtr
 						    stats);
+
+    RL2_PRIVATE int rl2_get_raw_raster_data_common_transparent (sqlite3 *
+								handle,
+								int max_threads,
+								rl2CoveragePtr
+								cvg,
+								int by_section,
+								sqlite3_int64
+								section_id,
+								unsigned int
+								width,
+								unsigned int
+								height,
+								double minx,
+								double miny,
+								double maxx,
+								double maxy,
+								double x_res,
+								double y_res,
+								unsigned char
+								**buffer,
+								int *buf_size,
+								unsigned char
+								**mask,
+								int *mask_size,
+								rl2PalettePtr *
+								palette,
+								unsigned char
+								out_pixel,
+								rl2PixelPtr
+								no_data,
+								rl2RasterSymbolizerPtr
+								style,
+								rl2RasterStatisticsPtr
+								stats);
 
     RL2_PRIVATE int rl2_get_raw_raster_mask_common (sqlite3 * handle,
 						    int max_threads,
@@ -2338,7 +2643,7 @@ extern "C"
 					    const char *facename,
 					    unsigned char **font, int *font_sz);
 
-    RL2_PRIVATE rl2LinestringPtr rl2CreateLinestring (int vert);
+    RL2_PRIVATE rl2LinestringPtr rl2CreateLinestring (int vert, int dims);
 
     RL2_PRIVATE rl2LinestringPtr rl2_linestring_to_image (rl2LinestringPtr line,
 							  int height,
@@ -2451,9 +2756,70 @@ extern "C"
 	parse_sld_se_stroke_dasharray (const char *value, int *count,
 				       double **list);
 
-    RL2_PRIVATE void rl2_prime_white_opaque_background (void *ctx);
-
     RL2_PRIVATE char *rl2_init_tmp_atm_table (void *data);
+
+    RL2_PRIVATE const char *rl2_get_draping_message (const void *priv_data);
+
+    RL2_PRIVATE void rl2_set_draping_message (const void *priv_data,
+					      const char *msg);
+
+    RL2_PRIVATE void rl2_reset_draping_message (const void *priv_data);
+
+    RL2_PRIVATE rl2GeometryPtr rl2CreateGeometry (int dims, int type);
+
+    RL2_PRIVATE void rl2AddPointXYToGeometry (rl2GeometryPtr p, double x,
+					      double y);
+
+    RL2_PRIVATE void rl2AddPointXYZToGeometry (rl2GeometryPtr p, double x,
+					       double y, double z);
+
+    RL2_PRIVATE void rl2AddPointXYMToGeometry (rl2GeometryPtr p, double x,
+					       double y, double m);
+
+    RL2_PRIVATE void rl2AddPointXYZMToGeometry (rl2GeometryPtr p, double x,
+						double y, double z, double m);
+
+    RL2_PRIVATE rl2LinestringPtr rl2AddLinestringToGeometry (rl2GeometryPtr p,
+							     int vert);
+
+    RL2_PRIVATE rl2PolygonPtr rl2AddPolygonToGeometry (rl2GeometryPtr p,
+						       int vert, int interiors);
+
+    RL2_PRIVATE rl2RingPtr rl2AddInteriorRing (rl2PolygonPtr p, int pos,
+					       int vert);
+
+    RL2_PRIVATE rl2DynLinePtr rl2CreateDynLine ();
+
+    RL2_PRIVATE void rl2DestroyDynLine (rl2DynLinePtr dyn);
+
+    RL2_PRIVATE void rl2AddDynPoint (rl2DynLinePtr dyn, double x, double y);
+
+    RL2_PRIVATE void rl2AddDynPointZ (rl2DynLinePtr dyn, double x, double y,
+				      double z);
+
+    RL2_PRIVATE void rl2AddDynPointM (rl2DynLinePtr dyn, double x, double y,
+				      double m);
+
+    RL2_PRIVATE void rl2AddDynPointZM (rl2DynLinePtr dyn, double x, double y,
+				       double z, double m);
+
+    RL2_PRIVATE int rl2CountDynLinePoints (rl2DynLinePtr dyn);
+
+    RL2_PRIVATE rl2UpdatableGeometryPtr rl2_create_updatable_geometry (const
+								       unsigned
+								       char
+								       *blob,
+								       int
+								       size);
+
+    RL2_PRIVATE void rl2_destroy_updatable_geometry (rl2UpdatableGeometryPtr
+						     geom);
+
+    RL2_PRIVATE double rl2_get_coord_seq_value (rl2CoordSeqPtr pCS, int iv,
+						char dim);
+
+    RL2_PRIVATE void rl2_set_coord_seq_value (double value, rl2CoordSeqPtr pCS,
+					      int iv, char dim);
 
 #ifdef __cplusplus
 }

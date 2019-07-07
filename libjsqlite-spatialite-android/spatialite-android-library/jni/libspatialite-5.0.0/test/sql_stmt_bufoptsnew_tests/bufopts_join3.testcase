@@ -1,0 +1,11 @@
+BufferOptions JoinStyle - wrong style
+:memory: #use in-memory database
+SELECT BufferOptions_Reset(), BufferOptions_SetJoinStyle('OOPS'), BufferOptions_GetJoinStyle();
+1 # rows (not including the header row)
+3 # columns
+BufferOptions_Reset()
+BufferOptions_SetJoinStyle('OOPS')
+BufferOptions_GetJoinStyle()
+1
+0
+ROUND

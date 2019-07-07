@@ -1,0 +1,7 @@
+ReCreateTopoTriggers
+:memory: #use in-memory database
+SELECT ReCreateTopoTriggers();
+1 # rows (not including the header row)
+1 # columns
+ReCreateTopoTriggers()
+1

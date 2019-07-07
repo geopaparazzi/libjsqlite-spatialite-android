@@ -1,0 +1,7 @@
+BufferOptions MitreLimit BLOB
+:memory: #use in-memory database
+SELECT BufferOptions_SetMitreLimit(zeroblob(4));
+1 # rows (not including the header row)
+1 # columns
+BufferOptions_SetMitreLimit(zeroblob(4))
+0

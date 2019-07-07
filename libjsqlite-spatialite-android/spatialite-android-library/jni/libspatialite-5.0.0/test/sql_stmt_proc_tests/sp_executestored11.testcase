@@ -1,0 +1,7 @@
+StoredProc_Execute - invalid TEXT vararg
+sql_stmt_proc_tests/storproc_x.sqlite
+SELECT StoredProc_Execute('test_proc', 'abcdefgh');
+1 # rows (not including the header row)
+1 # columns
+StoredProc_Execute('test_proc', 'abcdefgh')
+SqlProc exception - the List of Variables with Values contains illegal items.

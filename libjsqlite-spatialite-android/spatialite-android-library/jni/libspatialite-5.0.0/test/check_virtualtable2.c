@@ -76,11 +76,11 @@ do_test (sqlite3 * db_handle)
       }
 
     ret =
-	sqlite3_exec (db_handle, "SELECT GetShapefileExtent('shapetest');",
+	sqlite3_exec (db_handle, "SELECT GetVirtualTableExtent('shapetest');",
 		      NULL, NULL, &err_msg);
     if (ret != SQLITE_OK)
       {
-	  fprintf (stderr, "GetShapefileExtent() error: %s\n", err_msg);
+	  fprintf (stderr, "GetVirtualTableExtent() error: %s\n", err_msg);
 	  sqlite3_free (err_msg);
 	  return -222;
       }

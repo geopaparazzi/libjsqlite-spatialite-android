@@ -1,0 +1,7 @@
+RenameColumn - BLOB table
+:memory: #use in-memory database
+SELECT RenameColumn(NULL, zeroblob(4), 'old_column', 'new_column');
+1 # rows (not including the header row)
+1 # columns
+RenameColumn(NULL, zeroblob(4), 'old_column', 'new_column');
+RenameColumn exception - libsqlite 3.25 or later is strictly required.

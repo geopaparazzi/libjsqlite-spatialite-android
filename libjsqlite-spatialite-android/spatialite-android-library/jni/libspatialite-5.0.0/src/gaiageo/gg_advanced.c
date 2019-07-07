@@ -3622,7 +3622,7 @@ do_update_coords (int index, gaiaDynamicLinePtr dyn, double z, double m)
 	  count++;
 	  pt = pt->Next;
       }
-      return 0;
+    return 0;
 }
 
 static void
@@ -3646,7 +3646,7 @@ do_interpolate_coords (int index, gaiaDynamicLinePtr dyn, char *interpolate)
     z = pz + ((nz - pz) * perc);
     m = pm + ((nm - pm) * perc);
     if (do_update_coords (index, dyn, z, m))
-    *(interpolate+index) = 'I';
+	*(interpolate + index) = 'I';
 }
 
 static gaiaGeomCollPtr

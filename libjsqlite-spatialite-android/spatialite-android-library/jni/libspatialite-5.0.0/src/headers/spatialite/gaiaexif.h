@@ -83,20 +83,22 @@ extern "C"
 #define GAIA_ZIP_BLOB		6
 /** this BLOB does actually contain a PDF document */
 #define GAIA_PDF_BLOB		7
-/** this BLOB does actually contain a SpatiaLite Geometry */
+/** this BLOB does actually contain a SpatiaLite Geometry (not compressed) */
 #define GAIA_GEOMETRY_BLOB	8
+/** this BLOB does actually contain a SpatiaLite Geometry (compressed) */
+#define GAIA_COMPRESSED_GEOMETRY_BLOB	9
 /** this BLOB does actually contain a TIFF image */
-#define GAIA_TIFF_BLOB		9
+#define GAIA_TIFF_BLOB		10
 /** this BLOB does actually contain a WebP image */
-#define GAIA_WEBP_BLOB		10
+#define GAIA_WEBP_BLOB		11
 /** this BLOB does actually contain a JP2 (Jpeg2000) image */
-#define GAIA_JP2_BLOB		11
+#define GAIA_JP2_BLOB		12
 /** this BLOB does actually contain a SpatiaLite XmlBLOB */
-#define GAIA_XML_BLOB		12
+#define GAIA_XML_BLOB		13
 /** this BLOB does actually contain a GPKG Geometry */
-#define GAIA_GPB_BLOB		13
+#define GAIA_GPB_BLOB		14
 /** this BLOB does actually contain a SpatiaLite TinyPoint */
-#define GAIA_TINYPOINT_BLOB	14
+#define GAIA_TINYPOINT_BLOB	15
 
 /* constants used for EXIF value types */
 /** unrecognized EXIF value */

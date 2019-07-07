@@ -1,0 +1,7 @@
+PROJ_AsWKT() - BLOB auth_srid
+:memory: #use in-memory database
+SELECT PROJ_AsWKT('EPSG', zeroblob(10));
+1 # rows (not including the header row)
+1 # columns
+PROJ_AsWKT('EPSG', zeroblob(10))
+(NULL)

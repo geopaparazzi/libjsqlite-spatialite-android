@@ -1,0 +1,7 @@
+PROJ_AsWKT() - NULL auth_name, NULL auth_srid
+:memory: #use in-memory database
+SELECT PROJ_AsWKT(NULL, NULL);
+1 # rows (not including the header row)
+1 # columns
+PROJ_AsWKT(NULL, NULL)
+(NULL)

@@ -1,0 +1,7 @@
+PROJ_AsWKT() - NULL style
+:memory: #use in-memory database
+SELECT PROJ_AsWKT('EPSG', 4326, NULL);
+1 # rows (not including the header row)
+1 # columns
+PROJ_AsWKT('EPSG', 4326, NULL)
+(NULL)

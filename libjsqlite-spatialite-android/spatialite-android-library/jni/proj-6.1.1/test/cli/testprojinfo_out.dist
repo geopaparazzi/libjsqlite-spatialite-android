@@ -1,0 +1,785 @@
+Testing projinfo EPSG:4326
+PROJ.4 string:
++proj=longlat +datum=WGS84 +no_defs +type=crs
+
+WKT2_2018 string:
+GEOGCRS["WGS 84",
+    DATUM["World Geodetic System 1984",
+        ELLIPSOID["WGS 84",6378137,298.257223563,
+            LENGTHUNIT["metre",1]]],
+    PRIMEM["Greenwich",0,
+        ANGLEUNIT["degree",0.0174532925199433]],
+    CS[ellipsoidal,2],
+        AXIS["geodetic latitude (Lat)",north,
+            ORDER[1],
+            ANGLEUNIT["degree",0.0174532925199433]],
+        AXIS["geodetic longitude (Lon)",east,
+            ORDER[2],
+            ANGLEUNIT["degree",0.0174532925199433]],
+    USAGE[
+        SCOPE["unknown"],
+        AREA["World"],
+        BBOX[-90,-180,90,180]],
+    ID["EPSG",4326]]
+
+Testing projinfo -o WKT1_GDAL EPSG:4326
+WKT1_GDAL:
+GEOGCS["WGS 84",
+    DATUM["WGS_1984",
+        SPHEROID["WGS 84",6378137,298.257223563,
+            AUTHORITY["EPSG","7030"]],
+        AUTHORITY["EPSG","6326"]],
+    PRIMEM["Greenwich",0,
+        AUTHORITY["EPSG","8901"]],
+    UNIT["degree",0.0174532925199433,
+        AUTHORITY["EPSG","9122"]],
+    AUTHORITY["EPSG","4326"]]
+
+
+Testing projinfo -o WKT2_2015 EPSG:4326
+WKT2_2015 string:
+GEODCRS["WGS 84",
+    DATUM["World Geodetic System 1984",
+        ELLIPSOID["WGS 84",6378137,298.257223563,
+            LENGTHUNIT["metre",1]]],
+    PRIMEM["Greenwich",0,
+        ANGLEUNIT["degree",0.0174532925199433]],
+    CS[ellipsoidal,2],
+        AXIS["geodetic latitude (Lat)",north,
+            ORDER[1],
+            ANGLEUNIT["degree",0.0174532925199433]],
+        AXIS["geodetic longitude (Lon)",east,
+            ORDER[2],
+            ANGLEUNIT["degree",0.0174532925199433]],
+    AREA["World"],
+    BBOX[-90,-180,90,180],
+    ID["EPSG",4326]]
+
+Testing projinfo -o WKT2_2018 EPSG:4326
+WKT2_2018 string:
+GEOGCRS["WGS 84",
+    DATUM["World Geodetic System 1984",
+        ELLIPSOID["WGS 84",6378137,298.257223563,
+            LENGTHUNIT["metre",1]]],
+    PRIMEM["Greenwich",0,
+        ANGLEUNIT["degree",0.0174532925199433]],
+    CS[ellipsoidal,2],
+        AXIS["geodetic latitude (Lat)",north,
+            ORDER[1],
+            ANGLEUNIT["degree",0.0174532925199433]],
+        AXIS["geodetic longitude (Lon)",east,
+            ORDER[2],
+            ANGLEUNIT["degree",0.0174532925199433]],
+    USAGE[
+        SCOPE["unknown"],
+        AREA["World"],
+        BBOX[-90,-180,90,180]],
+    ID["EPSG",4326]]
+
+Testing projinfo -o ALL EPSG:4326
+PROJ.4 string:
++proj=longlat +datum=WGS84 +no_defs +type=crs
+
+WKT2_2015 string:
+GEODCRS["WGS 84",
+    DATUM["World Geodetic System 1984",
+        ELLIPSOID["WGS 84",6378137,298.257223563,
+            LENGTHUNIT["metre",1]]],
+    PRIMEM["Greenwich",0,
+        ANGLEUNIT["degree",0.0174532925199433]],
+    CS[ellipsoidal,2],
+        AXIS["geodetic latitude (Lat)",north,
+            ORDER[1],
+            ANGLEUNIT["degree",0.0174532925199433]],
+        AXIS["geodetic longitude (Lon)",east,
+            ORDER[2],
+            ANGLEUNIT["degree",0.0174532925199433]],
+    AREA["World"],
+    BBOX[-90,-180,90,180],
+    ID["EPSG",4326]]
+
+WKT2_2018 string:
+GEOGCRS["WGS 84",
+    DATUM["World Geodetic System 1984",
+        ELLIPSOID["WGS 84",6378137,298.257223563,
+            LENGTHUNIT["metre",1]]],
+    PRIMEM["Greenwich",0,
+        ANGLEUNIT["degree",0.0174532925199433]],
+    CS[ellipsoidal,2],
+        AXIS["geodetic latitude (Lat)",north,
+            ORDER[1],
+            ANGLEUNIT["degree",0.0174532925199433]],
+        AXIS["geodetic longitude (Lon)",east,
+            ORDER[2],
+            ANGLEUNIT["degree",0.0174532925199433]],
+    USAGE[
+        SCOPE["unknown"],
+        AREA["World"],
+        BBOX[-90,-180,90,180]],
+    ID["EPSG",4326]]
+
+WKT1_GDAL:
+GEOGCS["WGS 84",
+    DATUM["WGS_1984",
+        SPHEROID["WGS 84",6378137,298.257223563,
+            AUTHORITY["EPSG","7030"]],
+        AUTHORITY["EPSG","6326"]],
+    PRIMEM["Greenwich",0,
+        AUTHORITY["EPSG","8901"]],
+    UNIT["degree",0.0174532925199433,
+        AUTHORITY["EPSG","9122"]],
+    AUTHORITY["EPSG","4326"]]
+
+
+WKT1_ESRI:
+GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]]
+
+
+Testing projinfo -s EPSG:4326 -t EPSG:32631
+Candidate operations found: 1
+-------------------------------------
+Operation n°1:
+
+EPSG:16031, UTM zone 31N, 0 m, World - N hemisphere - 0°E to 6°E
+
+PROJ string:
++proj=pipeline +step +proj=axisswap +order=2,1 +step +proj=unitconvert +xy_in=deg +xy_out=rad +step +proj=utm +zone=31 +ellps=WGS84
+
+WKT2_2018 string:
+CONVERSION["UTM zone 31N",
+    METHOD["Transverse Mercator",
+        ID["EPSG",9807]],
+    PARAMETER["Latitude of natural origin",0,
+        ANGLEUNIT["degree",0.0174532925199433],
+        ID["EPSG",8801]],
+    PARAMETER["Longitude of natural origin",3,
+        ANGLEUNIT["degree",0.0174532925199433],
+        ID["EPSG",8802]],
+    PARAMETER["Scale factor at natural origin",0.9996,
+        SCALEUNIT["unity",1],
+        ID["EPSG",8805]],
+    PARAMETER["False easting",500000,
+        LENGTHUNIT["metre",1],
+        ID["EPSG",8806]],
+    PARAMETER["False northing",0,
+        LENGTHUNIT["metre",1],
+        ID["EPSG",8807]],
+    ID["EPSG",16031]]
+
+Testing projinfo -s NAD27 -t NAD83
+Candidate operations found: 1
+Note: using '--spatial-test intersects' would bring more results (7)
+-------------------------------------
+Operation n°1:
+
+unknown id, Ballpark geographic offset from NAD27 to NAD83, unknown accuracy, World, has ballpark transformation
+
+PROJ string:
++proj=noop
+
+WKT2_2018 string:
+COORDINATEOPERATION["Ballpark geographic offset from NAD27 to NAD83",
+    SOURCECRS[
+        GEOGCRS["NAD27",
+            DATUM["North American Datum 1927",
+                ELLIPSOID["Clarke 1866",6378206.4,294.978698213898,
+                    LENGTHUNIT["metre",1]]],
+            PRIMEM["Greenwich",0,
+                ANGLEUNIT["degree",0.0174532925199433]],
+            CS[ellipsoidal,2],
+                AXIS["geodetic latitude (Lat)",north,
+                    ORDER[1],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+                AXIS["geodetic longitude (Lon)",east,
+                    ORDER[2],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+            ID["EPSG",4267]]],
+    TARGETCRS[
+        GEOGCRS["NAD83",
+            DATUM["North American Datum 1983",
+                ELLIPSOID["GRS 1980",6378137,298.257222101,
+                    LENGTHUNIT["metre",1]]],
+            PRIMEM["Greenwich",0,
+                ANGLEUNIT["degree",0.0174532925199433]],
+            CS[ellipsoidal,2],
+                AXIS["geodetic latitude (Lat)",north,
+                    ORDER[1],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+                AXIS["geodetic longitude (Lon)",east,
+                    ORDER[2],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+            ID["EPSG",4269]]],
+    METHOD["Geographic2D offsets",
+        ID["EPSG",9619]],
+    PARAMETER["Latitude offset",0,
+        ANGLEUNIT["degree",0.0174532925199433],
+        ID["EPSG",8601]],
+    PARAMETER["Longitude offset",0,
+        ANGLEUNIT["degree",0.0174532925199433],
+        ID["EPSG",8602]],
+    USAGE[
+        SCOPE["unknown"],
+        AREA["World"],
+        BBOX[-90,-180,90,180]]]
+
+Testing projinfo -s NAD27 -t NAD83 --grid-check none --spatial-test intersects --summary
+Candidate operations found: 7
+DERIVED_FROM(EPSG):1312, NAD27 to NAD83 (3), 1.0 m, Canada
+DERIVED_FROM(EPSG):1313, NAD27 to NAD83 (4), 1.5 m, Canada - NAD27
+DERIVED_FROM(EPSG):1241, NAD27 to NAD83 (1), 0.15 m, USA - CONUS including EEZ
+DERIVED_FROM(EPSG):1243, NAD27 to NAD83 (2), 0.5 m, USA - Alaska including EEZ
+EPSG:1462, NAD27 to NAD83 (5), 1.0 m, Canada - Quebec
+EPSG:1573, NAD27 to NAD83 (6), 1.5 m, Canada - Quebec
+unknown id, Ballpark geographic offset from NAD27 to NAD83, unknown accuracy, World, has ballpark transformation
+
+Testing projinfo -s NAD27 -t NAD83 --grid-check none --spatial-test intersects
+Candidate operations found: 7
+-------------------------------------
+Operation n°1:
+
+DERIVED_FROM(EPSG):1312, NAD27 to NAD83 (3), 1.0 m, Canada
+
+PROJ string:
++proj=pipeline +step +proj=axisswap +order=2,1 +step +proj=unitconvert +xy_in=deg +xy_out=rad +step +proj=hgridshift +grids=ntv1_can.dat +step +proj=unitconvert +xy_in=rad +xy_out=deg +step +proj=axisswap +order=2,1
+
+WKT2_2018 string:
+COORDINATEOPERATION["NAD27 to NAD83 (3)",
+    SOURCECRS[
+        GEOGCRS["NAD27",
+            DATUM["North American Datum 1927",
+                ELLIPSOID["Clarke 1866",6378206.4,294.978698213898,
+                    LENGTHUNIT["metre",1]]],
+            PRIMEM["Greenwich",0,
+                ANGLEUNIT["degree",0.0174532925199433]],
+            CS[ellipsoidal,2],
+                AXIS["geodetic latitude (Lat)",north,
+                    ORDER[1],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+                AXIS["geodetic longitude (Lon)",east,
+                    ORDER[2],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+            ID["EPSG",4267]]],
+    TARGETCRS[
+        GEOGCRS["NAD83",
+            DATUM["North American Datum 1983",
+                ELLIPSOID["GRS 1980",6378137,298.257222101,
+                    LENGTHUNIT["metre",1]]],
+            PRIMEM["Greenwich",0,
+                ANGLEUNIT["degree",0.0174532925199433]],
+            CS[ellipsoidal,2],
+                AXIS["geodetic latitude (Lat)",north,
+                    ORDER[1],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+                AXIS["geodetic longitude (Lon)",east,
+                    ORDER[2],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+            ID["EPSG",4269]]],
+    METHOD["NTv1",
+        ID["EPSG",9614]],
+    PARAMETERFILE["Latitude and longitude difference file","ntv1_can.dat"],
+    OPERATIONACCURACY[1.0],
+    USAGE[
+        SCOPE["unknown"],
+        AREA["Canada"],
+        BBOX[40.04,-141.01,86.46,-47.74]],
+    ID["DERIVED_FROM(EPSG)",1312]]
+
+-------------------------------------
+Operation n°2:
+
+DERIVED_FROM(EPSG):1313, NAD27 to NAD83 (4), 1.5 m, Canada - NAD27
+
+PROJ string:
++proj=pipeline +step +proj=axisswap +order=2,1 +step +proj=unitconvert +xy_in=deg +xy_out=rad +step +proj=hgridshift +grids=ntv2_0.gsb +step +proj=unitconvert +xy_in=rad +xy_out=deg +step +proj=axisswap +order=2,1
+
+WKT2_2018 string:
+COORDINATEOPERATION["NAD27 to NAD83 (4)",
+    SOURCECRS[
+        GEOGCRS["NAD27",
+            DATUM["North American Datum 1927",
+                ELLIPSOID["Clarke 1866",6378206.4,294.978698213898,
+                    LENGTHUNIT["metre",1]]],
+            PRIMEM["Greenwich",0,
+                ANGLEUNIT["degree",0.0174532925199433]],
+            CS[ellipsoidal,2],
+                AXIS["geodetic latitude (Lat)",north,
+                    ORDER[1],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+                AXIS["geodetic longitude (Lon)",east,
+                    ORDER[2],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+            ID["EPSG",4267]]],
+    TARGETCRS[
+        GEOGCRS["NAD83",
+            DATUM["North American Datum 1983",
+                ELLIPSOID["GRS 1980",6378137,298.257222101,
+                    LENGTHUNIT["metre",1]]],
+            PRIMEM["Greenwich",0,
+                ANGLEUNIT["degree",0.0174532925199433]],
+            CS[ellipsoidal,2],
+                AXIS["geodetic latitude (Lat)",north,
+                    ORDER[1],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+                AXIS["geodetic longitude (Lon)",east,
+                    ORDER[2],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+            ID["EPSG",4269]]],
+    METHOD["NTv2",
+        ID["EPSG",9615]],
+    PARAMETERFILE["Latitude and longitude difference file","ntv2_0.gsb"],
+    OPERATIONACCURACY[1.5],
+    USAGE[
+        SCOPE["unknown"],
+        AREA["Canada - NAD27"],
+        BBOX[40.04,-141.01,83.17,-47.74]],
+    ID["DERIVED_FROM(EPSG)",1313]]
+
+-------------------------------------
+Operation n°3:
+
+DERIVED_FROM(EPSG):1241, NAD27 to NAD83 (1), 0.15 m, USA - CONUS including EEZ
+
+PROJ string:
++proj=pipeline +step +proj=axisswap +order=2,1 +step +proj=unitconvert +xy_in=deg +xy_out=rad +step +proj=hgridshift +grids=conus +step +proj=unitconvert +xy_in=rad +xy_out=deg +step +proj=axisswap +order=2,1
+
+WKT2_2018 string:
+COORDINATEOPERATION["NAD27 to NAD83 (1)",
+    SOURCECRS[
+        GEOGCRS["NAD27",
+            DATUM["North American Datum 1927",
+                ELLIPSOID["Clarke 1866",6378206.4,294.978698213898,
+                    LENGTHUNIT["metre",1]]],
+            PRIMEM["Greenwich",0,
+                ANGLEUNIT["degree",0.0174532925199433]],
+            CS[ellipsoidal,2],
+                AXIS["geodetic latitude (Lat)",north,
+                    ORDER[1],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+                AXIS["geodetic longitude (Lon)",east,
+                    ORDER[2],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+            ID["EPSG",4267]]],
+    TARGETCRS[
+        GEOGCRS["NAD83",
+            DATUM["North American Datum 1983",
+                ELLIPSOID["GRS 1980",6378137,298.257222101,
+                    LENGTHUNIT["metre",1]]],
+            PRIMEM["Greenwich",0,
+                ANGLEUNIT["degree",0.0174532925199433]],
+            CS[ellipsoidal,2],
+                AXIS["geodetic latitude (Lat)",north,
+                    ORDER[1],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+                AXIS["geodetic longitude (Lon)",east,
+                    ORDER[2],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+            ID["EPSG",4269]]],
+    METHOD["CTABLE2"],
+    PARAMETERFILE["Latitude and longitude difference file","conus"],
+    OPERATIONACCURACY[0.15],
+    USAGE[
+        SCOPE["unknown"],
+        AREA["USA - CONUS including EEZ"],
+        BBOX[23.81,-129.17,49.38,-65.69]],
+    ID["DERIVED_FROM(EPSG)",1241]]
+
+-------------------------------------
+Operation n°4:
+
+DERIVED_FROM(EPSG):1243, NAD27 to NAD83 (2), 0.5 m, USA - Alaska including EEZ
+
+PROJ string:
++proj=pipeline +step +proj=axisswap +order=2,1 +step +proj=unitconvert +xy_in=deg +xy_out=rad +step +proj=hgridshift +grids=alaska +step +proj=unitconvert +xy_in=rad +xy_out=deg +step +proj=axisswap +order=2,1
+
+WKT2_2018 string:
+COORDINATEOPERATION["NAD27 to NAD83 (2)",
+    SOURCECRS[
+        GEOGCRS["NAD27",
+            DATUM["North American Datum 1927",
+                ELLIPSOID["Clarke 1866",6378206.4,294.978698213898,
+                    LENGTHUNIT["metre",1]]],
+            PRIMEM["Greenwich",0,
+                ANGLEUNIT["degree",0.0174532925199433]],
+            CS[ellipsoidal,2],
+                AXIS["geodetic latitude (Lat)",north,
+                    ORDER[1],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+                AXIS["geodetic longitude (Lon)",east,
+                    ORDER[2],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+            ID["EPSG",4267]]],
+    TARGETCRS[
+        GEOGCRS["NAD83",
+            DATUM["North American Datum 1983",
+                ELLIPSOID["GRS 1980",6378137,298.257222101,
+                    LENGTHUNIT["metre",1]]],
+            PRIMEM["Greenwich",0,
+                ANGLEUNIT["degree",0.0174532925199433]],
+            CS[ellipsoidal,2],
+                AXIS["geodetic latitude (Lat)",north,
+                    ORDER[1],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+                AXIS["geodetic longitude (Lon)",east,
+                    ORDER[2],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+            ID["EPSG",4269]]],
+    METHOD["CTABLE2"],
+    PARAMETERFILE["Latitude and longitude difference file","alaska"],
+    OPERATIONACCURACY[0.5],
+    USAGE[
+        SCOPE["unknown"],
+        AREA["USA - Alaska including EEZ"],
+        BBOX[47.88,167.65,74.71,-129.99]],
+    ID["DERIVED_FROM(EPSG)",1243]]
+
+-------------------------------------
+Operation n°5:
+
+EPSG:1462, NAD27 to NAD83 (5), 1.0 m, Canada - Quebec
+
+PROJ string:
++proj=pipeline +step +proj=axisswap +order=2,1 +step +proj=unitconvert +xy_in=deg +xy_out=rad +step +proj=hgridshift +grids=GS2783v1.QUE +step +proj=unitconvert +xy_in=rad +xy_out=deg +step +proj=axisswap +order=2,1
+
+WKT2_2018 string:
+COORDINATEOPERATION["NAD27 to NAD83 (5)",
+    VERSION["SGQ-Can QC NT1"],
+    SOURCECRS[
+        GEOGCRS["NAD27",
+            DATUM["North American Datum 1927",
+                ELLIPSOID["Clarke 1866",6378206.4,294.978698213898,
+                    LENGTHUNIT["metre",1]]],
+            PRIMEM["Greenwich",0,
+                ANGLEUNIT["degree",0.0174532925199433]],
+            CS[ellipsoidal,2],
+                AXIS["geodetic latitude (Lat)",north,
+                    ORDER[1],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+                AXIS["geodetic longitude (Lon)",east,
+                    ORDER[2],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+            ID["EPSG",4267]]],
+    TARGETCRS[
+        GEOGCRS["NAD83",
+            DATUM["North American Datum 1983",
+                ELLIPSOID["GRS 1980",6378137,298.257222101,
+                    LENGTHUNIT["metre",1]]],
+            PRIMEM["Greenwich",0,
+                ANGLEUNIT["degree",0.0174532925199433]],
+            CS[ellipsoidal,2],
+                AXIS["geodetic latitude (Lat)",north,
+                    ORDER[1],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+                AXIS["geodetic longitude (Lon)",east,
+                    ORDER[2],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+            ID["EPSG",4269]]],
+    METHOD["NTv1",
+        ID["EPSG",9614]],
+    PARAMETERFILE["Latitude and longitude difference file","GS2783v1.QUE"],
+    OPERATIONACCURACY[1.0],
+    USAGE[
+        SCOPE["unknown"],
+        AREA["Canada - Quebec"],
+        BBOX[44.99,-79.85,62.62,-57.1]],
+    ID["EPSG",1462]]
+
+-------------------------------------
+Operation n°6:
+
+EPSG:1573, NAD27 to NAD83 (6), 1.5 m, Canada - Quebec
+
+PROJ string:
++proj=pipeline +step +proj=axisswap +order=2,1 +step +proj=unitconvert +xy_in=deg +xy_out=rad +step +proj=hgridshift +grids=QUE27-83.gsb +step +proj=unitconvert +xy_in=rad +xy_out=deg +step +proj=axisswap +order=2,1
+
+WKT2_2018 string:
+COORDINATEOPERATION["NAD27 to NAD83 (6)",
+    VERSION["SGQ-Can QC NT2"],
+    SOURCECRS[
+        GEOGCRS["NAD27",
+            DATUM["North American Datum 1927",
+                ELLIPSOID["Clarke 1866",6378206.4,294.978698213898,
+                    LENGTHUNIT["metre",1]]],
+            PRIMEM["Greenwich",0,
+                ANGLEUNIT["degree",0.0174532925199433]],
+            CS[ellipsoidal,2],
+                AXIS["geodetic latitude (Lat)",north,
+                    ORDER[1],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+                AXIS["geodetic longitude (Lon)",east,
+                    ORDER[2],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+            ID["EPSG",4267]]],
+    TARGETCRS[
+        GEOGCRS["NAD83",
+            DATUM["North American Datum 1983",
+                ELLIPSOID["GRS 1980",6378137,298.257222101,
+                    LENGTHUNIT["metre",1]]],
+            PRIMEM["Greenwich",0,
+                ANGLEUNIT["degree",0.0174532925199433]],
+            CS[ellipsoidal,2],
+                AXIS["geodetic latitude (Lat)",north,
+                    ORDER[1],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+                AXIS["geodetic longitude (Lon)",east,
+                    ORDER[2],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+            ID["EPSG",4269]]],
+    METHOD["NTv2",
+        ID["EPSG",9615]],
+    PARAMETERFILE["Latitude and longitude difference file","QUE27-83.gsb"],
+    OPERATIONACCURACY[1.5],
+    USAGE[
+        SCOPE["unknown"],
+        AREA["Canada - Quebec"],
+        BBOX[44.99,-79.85,62.62,-57.1]],
+    ID["EPSG",1573]]
+
+-------------------------------------
+Operation n°7:
+
+unknown id, Ballpark geographic offset from NAD27 to NAD83, unknown accuracy, World, has ballpark transformation
+
+PROJ string:
++proj=noop
+
+WKT2_2018 string:
+COORDINATEOPERATION["Ballpark geographic offset from NAD27 to NAD83",
+    SOURCECRS[
+        GEOGCRS["NAD27",
+            DATUM["North American Datum 1927",
+                ELLIPSOID["Clarke 1866",6378206.4,294.978698213898,
+                    LENGTHUNIT["metre",1]]],
+            PRIMEM["Greenwich",0,
+                ANGLEUNIT["degree",0.0174532925199433]],
+            CS[ellipsoidal,2],
+                AXIS["geodetic latitude (Lat)",north,
+                    ORDER[1],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+                AXIS["geodetic longitude (Lon)",east,
+                    ORDER[2],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+            ID["EPSG",4267]]],
+    TARGETCRS[
+        GEOGCRS["NAD83",
+            DATUM["North American Datum 1983",
+                ELLIPSOID["GRS 1980",6378137,298.257222101,
+                    LENGTHUNIT["metre",1]]],
+            PRIMEM["Greenwich",0,
+                ANGLEUNIT["degree",0.0174532925199433]],
+            CS[ellipsoidal,2],
+                AXIS["geodetic latitude (Lat)",north,
+                    ORDER[1],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+                AXIS["geodetic longitude (Lon)",east,
+                    ORDER[2],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+            ID["EPSG",4269]]],
+    METHOD["Geographic2D offsets",
+        ID["EPSG",9619]],
+    PARAMETER["Latitude offset",0,
+        ANGLEUNIT["degree",0.0174532925199433],
+        ID["EPSG",8601]],
+    PARAMETER["Longitude offset",0,
+        ANGLEUNIT["degree",0.0174532925199433],
+        ID["EPSG",8602]],
+    USAGE[
+        SCOPE["unknown"],
+        AREA["World"],
+        BBOX[-90,-180,90,180]]]
+
+Testing projinfo -s EPSG:4230 -t EPSG:4258 --bbox 8,54.51,15.24,57.8 --summary
+Candidate operations found: 1
+EPSG:1626, ED50 to ETRS89 (4), 1.0 m, Denmark - onshore
+
+Testing projinfo -s EPSG:4230 -t EPSG:4258 --area EPSG:3237 --summary
+Candidate operations found: 1
+EPSG:1626, ED50 to ETRS89 (4), 1.0 m, Denmark - onshore
+
+Testing projinfo -s EPSG:4230 -t EPSG:4258 --area 'Denmark - onshore' --summary
+Candidate operations found: 1
+EPSG:1626, ED50 to ETRS89 (4), 1.0 m, Denmark - onshore
+
+Testing projinfo -s EPSG:4230 -t EPSG:4258 --area 'Denmark -' --summary
+Several candidates area of use matching provided name :
+  EPSG:2531 : Denmark - onshore Jutland and Funen
+  EPSG:2532 : Denmark - onshore Zealand and Lolland
+  EPSG:2533 : Denmark - onshore Bornholm
+  EPSG:3237 : Denmark - onshore
+  EPSG:3471 : Denmark - onshore west of 12°E
+  EPSG:3472 : Denmark - onshore east of 12°E
+  EPSG:3631 : Denmark - onshore Jutland west of 10°E
+  EPSG:3632 : Denmark - onshore Jutland east of 9°E and Funen
+
+Testing projinfo -s EPSG:4230 -t EPSG:4258 --area no_match --summary
+No area of use matching provided name
+
+Testing projinfo -s EPSG:4230 -t EPSG:4258 --area WRONG:CODE --summary
+Area of use retrieval failed: area not found
+
+Testing deprecated CRS: projinfo EPSG:26591
+Warning: object is deprecated
+Alternative non-deprecated CRS:
+  EPSG:3003
+
+PROJ.4 string:
++proj=tmerc +lat_0=0 +lon_0=9 +k=0.9996 +x_0=1500000 +y_0=0 +ellps=intl +pm=rome +units=m +no_defs +type=crs
+
+WKT2_2018 string:
+PROJCRS["Monte Mario (Rome) / Italy zone 1",
+    BASEGEOGCRS["Monte Mario (Rome)",
+        DATUM["Monte Mario (Rome)",
+            ELLIPSOID["International 1924",6378388,297,
+                LENGTHUNIT["metre",1]]],
+        PRIMEM["Rome",12.4523333333333,
+            ANGLEUNIT["degree",0.0174532925199433]],
+        ID["EPSG",4806]],
+    CONVERSION["Italy zone 1",
+        METHOD["Transverse Mercator",
+            ID["EPSG",9807]],
+        PARAMETER["Latitude of natural origin",0,
+            ANGLEUNIT["degree",0.0174532925199433],
+            ID["EPSG",8801]],
+        PARAMETER["Longitude of natural origin",9,
+            ANGLEUNIT["degree",0.0174532925199433],
+            ID["EPSG",8802]],
+        PARAMETER["Scale factor at natural origin",0.9996,
+            SCALEUNIT["unity",1],
+            ID["EPSG",8805]],
+        PARAMETER["False easting",1500000,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8806]],
+        PARAMETER["False northing",0,
+            LENGTHUNIT["metre",1],
+            ID["EPSG",8807]]],
+    CS[Cartesian,2],
+        AXIS["easting (X)",east,
+            ORDER[1],
+            LENGTHUNIT["metre",1]],
+        AXIS["northing (Y)",north,
+            ORDER[2],
+            LENGTHUNIT["metre",1]],
+    USAGE[
+        SCOPE["unknown"],
+        AREA["Italy - west of 12°E"],
+        BBOX[36.53,5.94,47.04,12]],
+    ID["EPSG",26591]]
+
+Testing non compliant WKT1
+Warning: GEOGCS should have a PRIMEM node
+Warning: Parsing error : syntax error, unexpected UNIT, expecting PRIMEM. Error occurred around:
+HEROID["WGS 84",6378137,298.257223563]],UNIT["degree",0.0174532925199433]]
+                                        ^
+PROJ.4 string:
++proj=longlat +datum=WGS84 +no_defs +type=crs
+
+WKT2_2018 string:
+GEOGCRS["WGS 84",
+    DATUM["World Geodetic System 1984",
+        ELLIPSOID["WGS 84",6378137,298.257223563,
+            LENGTHUNIT["metre",1,
+                ID["EPSG",9001]]]],
+    PRIMEM["Greenwich",0,
+        ANGLEUNIT["degree",0.0174532925199433],
+        ID["EPSG",8901]],
+    CS[ellipsoidal,2],
+        AXIS["longitude",east,
+            ORDER[1],
+            ANGLEUNIT["degree",0.0174532925199433]],
+        AXIS["latitude",north,
+            ORDER[2],
+            ANGLEUNIT["degree",0.0174532925199433]]]
+
+Testing CRS with towgs84: projinfo -o PROJ EPSG:25832
+PROJ.4 string:
++proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs
+
+Testing RH2000 height to SWEREF99: projinfo -s EPSG:5613 -t EPSG:4977
+Candidate operations found: 1
+-------------------------------------
+Operation n°1:
+
+PROJ:EPSG_5613_TO_EPSG_4977, RH2000 height to SWEREF99, unknown accuracy, Sweden - onshore
+
+PROJ string:
++proj=vgridshift +grids=SWEN17_RH2000.gtx +multiplier=1
+
+WKT2_2018 string:
+COORDINATEOPERATION["RH2000 height to SWEREF99",
+    SOURCECRS[
+        VERTCRS["RH2000 height",
+            VDATUM["Rikets hojdsystem 2000"],
+            CS[vertical,1],
+                AXIS["gravity-related height (H)",up,
+                    LENGTHUNIT["metre",1]],
+            ID["EPSG",5613]]],
+    TARGETCRS[
+        GEOGCRS["SWEREF99",
+            DATUM["SWEREF99",
+                ELLIPSOID["GRS 1980",6378137,298.257222101,
+                    LENGTHUNIT["metre",1]]],
+            PRIMEM["Greenwich",0,
+                ANGLEUNIT["degree",0.0174532925199433]],
+            CS[ellipsoidal,3],
+                AXIS["geodetic latitude (Lat)",north,
+                    ORDER[1],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+                AXIS["geodetic longitude (Lon)",east,
+                    ORDER[2],
+                    ANGLEUNIT["degree",0.0174532925199433]],
+                AXIS["ellipsoidal height (h)",up,
+                    ORDER[3],
+                    LENGTHUNIT["metre",1]],
+            ID["EPSG",4977]]],
+    METHOD["GravityRelatedHeight to Geographic3D",
+        ID["PROJ","HEIGHT_TO_GEOGRAPHIC3D"]],
+    PARAMETERFILE["Geoid (height correction) model file","SWEN17_RH2000.gtx"],
+    USAGE[
+        SCOPE["unknown"],
+        AREA["Sweden - onshore"],
+        BBOX[55.28,10.93,69.07,24.17]],
+    ID["PROJ","EPSG_5613_TO_EPSG_4977"]]
+
+Testing NAD83(2011) + NAVD88 height -> NAD83(2011) : projinfo -s EPSG:6349 -t EPSG:6319 --spatial-test intersects -o PROJ
+Candidate operations found: 2
+-------------------------------------
+Operation n°1:
+
+unknown id, Inverse of NAD83(2011) to NAVD88 height (1), 0.1 m, USA - CONUS - onshore
+
+PROJ string:
++proj=pipeline +step +proj=axisswap +order=2,1 +step +proj=unitconvert +xy_in=deg +xy_out=rad +step +proj=vgridshift +grids=g2012bu0.gtx +multiplier=1 +step +proj=unitconvert +xy_in=rad +xy_out=deg +step +proj=axisswap +order=2,1
+
+-------------------------------------
+Operation n°2:
+
+unknown id, Inverse of NAD83(2011) to NAVD88 height (2), 0.2 m, USA - Alaska
+
+PROJ string:
++proj=pipeline +step +proj=axisswap +order=2,1 +step +proj=unitconvert +xy_in=deg +xy_out=rad +step +proj=vgridshift +grids=g2012ba0.gtx +multiplier=1 +step +proj=unitconvert +xy_in=rad +xy_out=deg +step +proj=axisswap +order=2,1
+
+Testing NGF IGN69 height to RGF93: projinfo -s EPSG:5720 -t EPSG:4965 -o PROJ
+Candidate operations found: 3
+-------------------------------------
+Operation n°1:
+
+INVERSE(DERIVED_FROM(EPSG)):8885, Inverse of RGF93 to NGF IGN69 height (3), 0.01 m, France - mainland onshore
+
+PROJ string:
++proj=vgridshift +grids=RAF18.gtx +multiplier=1
+
+-------------------------------------
+Operation n°2:
+
+INVERSE(DERIVED_FROM(EPSG)):8371, Inverse of RGF93 to NGF IGN69 height (2), 0.02 m, France - mainland onshore
+
+PROJ string:
++proj=vgridshift +grids=RAF09.gtx +multiplier=1
+
+-------------------------------------
+Operation n°3:
+
+INVERSE(EPSG):10000, Inverse of RGF93 to NGF IGN69 height (1), 0.5 m, France - mainland onshore
+
+PROJ string:
++proj=pipeline +step +inv +proj=vgridshift +grids=ggf97a.txt +multiplier=1
+

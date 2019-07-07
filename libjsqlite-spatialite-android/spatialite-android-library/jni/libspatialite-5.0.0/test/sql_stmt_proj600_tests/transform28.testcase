@@ -1,0 +1,7 @@
+transform - PROJ.6 extra-args - Area BBOX - Geometry 3003 Sardinia
+:memory: #use in-memory database
+SELECT AsText(Transform(MakePoint(9.17, 39.48, 4326), 3003, BuildMBR(9.1, 39.4, 9.2, 39.5, 4326)));
+1 # rows (not including the header row)
+1 # columns
+AsText(Transform(MakePoint(9.17, 39.48, 4326), 3003, BuildMBR(9.1, 39.4, 9.2, 39.5, 4326)))
+POINT(1514651.720361 4370064.535582)

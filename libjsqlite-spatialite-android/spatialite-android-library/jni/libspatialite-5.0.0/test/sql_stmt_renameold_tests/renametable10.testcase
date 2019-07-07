@@ -1,0 +1,7 @@
+RenameTable - INT DB-prefix
+:memory: #use in-memory database
+SELECT RenameTable(2, 'old_table', 'new_table');
+1 # rows (not including the header row)
+1 # columns
+RenameTable(2, 'old_table', 'new_table');
+RenameTable exception - libsqlite 3.25 or later is strictly required.

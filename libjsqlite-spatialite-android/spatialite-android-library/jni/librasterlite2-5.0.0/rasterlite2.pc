@@ -7,6 +7,6 @@ includedir=${prefix}/include
 
 Name: rasterlite2
 Description: a library supporting Rasters on DBMS
-Version: 1.1.0-devel
+Version: 1.1.0-beta1
 Libs: -L${libdir} -lrasterlite2 -lm
 Cflags: -I${includedir} 

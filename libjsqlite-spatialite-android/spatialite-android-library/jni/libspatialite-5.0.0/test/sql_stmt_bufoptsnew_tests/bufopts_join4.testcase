@@ -1,0 +1,9 @@
+BufferOptions JoinStyle - MITER
+:memory: #use in-memory database
+SELECT BufferOptions_SetJoinStyle('MiTEr'), BufferOptions_GetJoinStyle();
+1 # rows (not including the header row)
+2 # columns
+BufferOptions_SetJoinStyle('MiTEr')
+BufferOptions_GetJoinStyle()
+1
+MITRE

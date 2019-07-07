@@ -240,6 +240,7 @@ vknn_empty_context (VKnnContextPtr ctx)
     ctx->rtree_miny = -DBL_MAX;
     ctx->rtree_maxx = DBL_MAX;
     ctx->rtree_maxy = DBL_MAX;
+    ctx->level = 0;
     ctx->current_level = 0;
     ctx->max_items = 0;
     ctx->knn_array = NULL;
@@ -1539,6 +1540,8 @@ vknn_filter (sqlite3_vtab_cursor * pCursor, int idxNum, const char *idxStr,
 			       quoted_db, idx_nameQ);
 	  free (quoted_db);
       }
+    sqlite3_free (idx_name);
+    free (idx_nameQ);
     ret =
 	sqlite3_prepare_v2 (knn->db, sql_statement, strlen (sql_statement),
 			    &stmt_rtree_count, NULL);

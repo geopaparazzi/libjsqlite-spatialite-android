@@ -1,0 +1,7 @@
+ReCreateStylingTriggers - DOUBLE transaction
+NEW:memory: #use in-memory database
+SELECT ReCreateStylingTriggers(1, 1.1);
+1 # rows (not including the header row)
+1 # columns
+ReCreateStylingTriggers(1, 1.1)
+-1

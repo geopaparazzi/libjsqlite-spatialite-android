@@ -1,0 +1,7 @@
+FrechetDistance - NULL Geom1
+:memory: #use in-memory database
+SELECT FrechetDistance(NULL, GeomFromText("MULTIPOINT(0 0, 10 0)"), 0.1)
+1 # rows (not including the header row)
+1 # columns
+FrechetDistance(NULL, GeomFromText("MULTIPOINT(0 0, 10 0)"), 0.1)
+(NULL)

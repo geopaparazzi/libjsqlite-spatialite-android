@@ -1,6 +1,12 @@
 /* config.h.  Generated from config.h.in by configure.  */
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* testing for CharLS 2.0 */
+#define CHARLS_2 1
+
+/* Define to 1 if you have the <CharLS/charls.h> header file. */
+#define HAVE_CHARLS_CHARLS_H 1
+
 /* Define to 1 if you have the <CharLS/interface.h> header file. */
 #define HAVE_CHARLS_INTERFACE_H 1
 
@@ -43,12 +49,6 @@
 /* Define to 1 if you have the `jpeg' library (-ljpeg). */
 #define HAVE_LIBJPEG 1
 
-/* Define to 1 if you have the `openjp2' library (-lopenjp2). */
-#define HAVE_LIBOPENJP2 1
-
-/* Define to 1 if you have the `proj' library (-lproj). */
-#define HAVE_LIBPROJ 1
-
 /* Define to 1 if you have the `sqlite3' library (-lsqlite3). */
 #define HAVE_LIBSQLITE3 1
 
@@ -68,17 +68,14 @@
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
 
-/* Define to 1 if you have the <openjpeg-2.0/openjpeg.h> header file. */
-#define HAVE_OPENJPEG_2_0_OPENJPEG_H 1
-
-/* Define to 1 if you have the <openjpeg-2.1/openjpeg.h> header file. */
-/* #undef HAVE_OPENJPEG_2_1_OPENJPEG_H */
-
-/* Define to 1 if you have the <openjpeg-2.2/openjpeg.h> header file. */
-/* #undef HAVE_OPENJPEG_2_2_OPENJPEG_H */
-
 /* Define to 1 if you have the <png.h> header file. */
 #define HAVE_PNG_H 1
+
+/* Define to 1 if you have the <proj_api.h> header file. */
+/* #undef HAVE_PROJ_API_H */
+
+/* Define to 1 if you have the <proj.h> header file. */
+#define HAVE_PROJ_H 1
 
 /* Define to 1 if you have the <sqlite3ext.h> header file. */
 #define HAVE_SQLITE3EXT_H 1
@@ -149,6 +146,9 @@
 /* Should be defined in order to disable CharLS support. */
 /* #undef OMIT_CHARLS */
 
+/* Should be defined in order to disable LZ4 support. */
+/* #undef OMIT_LZ4 */
+
 /* Should be defined in order to disable LZMA support. */
 /* #undef OMIT_LZMA */
 
@@ -158,11 +158,8 @@
 /* Should be defined in order to disable WebP support. */
 /* #undef OMIT_WEBP */
 
-/* testing for OpenJpeg 2.1 */
-/* #undef OPENJPEG_2_1 */
-
-/* testing for OpenJpeg 2.2 */
-/* #undef OPENJPEG_2_2 */
+/* Should be defined in order to disable ZSTD support. */
+/* #undef OMIT_ZSTD */
 
 /* Name of package */
 #define PACKAGE "librasterlite2"
@@ -174,7 +171,7 @@
 #define PACKAGE_NAME "librasterlite2"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "librasterlite2 1.1.0-devel"
+#define PACKAGE_STRING "librasterlite2 1.1.0-beta1"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "librasterlite2"
@@ -183,13 +180,16 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.1.0-devel"
+#define PACKAGE_VERSION "1.1.0-beta1"
+
+/* Should be defined in order to enable PROJ.6 support. */
+#define PROJ_NEW 1
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 
 /* Should contain a text-string describing the intended target CPU */
-/* #define TARGET_CPU "x86_64-linux-gnu" */
+#define TARGET_CPU "x86_64-linux-gnu"
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #define TIME_WITH_SYS_TIME 1
@@ -198,7 +198,7 @@
 /* #undef TM_IN_SYS_TIME */
 
 /* Version number of package */
-#define VERSION "1.1.0-devel"
+#define VERSION "1.1.0-beta1"
 
 /* Must be =64 in order to enable huge-file support. */
 #define _FILE_OFFSET_BITS 64

@@ -121,18 +121,14 @@ do_export_tile_image (sqlite3 * sqlite, const char *coverage, int tile_id)
     char *sql;
     char *path;
     int ret;
-    int transparent = 1;
-
-    if (tile_id <= 1)
-	transparent = 0;
 
     if (tile_id < 0)
 	tile_id = get_max_tile_id (sqlite, coverage);
     path = sqlite3_mprintf ("./%s_tile_%d.png", coverage, tile_id);
     sql =
 	sqlite3_mprintf
-	("SELECT BlobToFile(RL2_GetTileImage(NULL, %Q, %d, '#e0ffe0', %d), %Q)",
-	 coverage, tile_id, transparent, path);
+	("SELECT BlobToFile(RL2_GetTileImage(NULL, %Q, %d), %Q)",
+	 coverage, tile_id, path);
     ret = execute_check (sqlite, sql);
     sqlite3_free (sql);
     unlink (path);
@@ -531,6 +527,34 @@ test_coverage (sqlite3 * sqlite, unsigned char pixel,
 		      break;
 		  };
 		break;
+	    case RL2_COMPRESSION_LZ4:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "mono_lz4_256";
+		      break;
+		  case TILE_512:
+		      coverage = "mono_lz4_256_512";
+		      break;
+		  case TILE_1024:
+		      coverage = "mono_lz4_256_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_ZSTD:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "mono_zstd_256";
+		      break;
+		  case TILE_512:
+		      coverage = "mono_zstd_256_512";
+		      break;
+		  case TILE_1024:
+		      coverage = "mono_zstd_256_1024";
+		      break;
+		  };
+		break;
 	    case RL2_COMPRESSION_LZMA:
 		switch (tile_sz)
 		  {
@@ -592,6 +616,34 @@ test_coverage (sqlite3 * sqlite, unsigned char pixel,
 		      break;
 		  };
 		break;
+	    case RL2_COMPRESSION_LZ4:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "plt1_lz4_256";
+		      break;
+		  case TILE_512:
+		      coverage = "plt1_lz4_512";
+		      break;
+		  case TILE_1024:
+		      coverage = "plt1_lz4_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_ZSTD:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "plt1_zstd_256";
+		      break;
+		  case TILE_512:
+		      coverage = "plt1_zstd_512";
+		      break;
+		  case TILE_1024:
+		      coverage = "plt1_zstd_1024";
+		      break;
+		  };
+		break;
 	    case RL2_COMPRESSION_LZMA:
 		switch (tile_sz)
 		  {
@@ -634,6 +686,22 @@ test_coverage (sqlite3 * sqlite, unsigned char pixel,
 	  break;
       case RL2_COMPRESSION_DEFLATE_NO:
 	  compression_name = "DEFLATE_NO";
+	  qlty = 100;
+	  break;
+      case RL2_COMPRESSION_LZ4:
+	  compression_name = "LZ4";
+	  qlty = 100;
+	  break;
+      case RL2_COMPRESSION_LZ4_NO:
+	  compression_name = "LZ4_NO";
+	  qlty = 100;
+	  break;
+      case RL2_COMPRESSION_ZSTD:
+	  compression_name = "ZSTD";
+	  qlty = 100;
+	  break;
+      case RL2_COMPRESSION_ZSTD_NO:
+	  compression_name = "ZSTD_NO";
 	  qlty = 100;
 	  break;
       case RL2_COMPRESSION_LZMA:
@@ -999,6 +1067,34 @@ drop_coverage (sqlite3 * sqlite, unsigned char pixel,
 		      break;
 		  };
 		break;
+	    case RL2_COMPRESSION_LZ4:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "mono_lz4_256";
+		      break;
+		  case TILE_512:
+		      coverage = "mono_lz4_256_512";
+		      break;
+		  case TILE_1024:
+		      coverage = "mono_lz4_256_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_ZSTD:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "mono_zstd_256";
+		      break;
+		  case TILE_512:
+		      coverage = "mono_zstd_256_512";
+		      break;
+		  case TILE_1024:
+		      coverage = "mono_zstd_256_1024";
+		      break;
+		  };
+		break;
 	    case RL2_COMPRESSION_LZMA:
 		switch (tile_sz)
 		  {
@@ -1057,6 +1153,34 @@ drop_coverage (sqlite3 * sqlite, unsigned char pixel,
 		      break;
 		  case TILE_1024:
 		      coverage = "plt1_deflate_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_LZ4:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "plt1_lz4_256";
+		      break;
+		  case TILE_512:
+		      coverage = "plt1_lz4_512";
+		      break;
+		  case TILE_1024:
+		      coverage = "plt1_lz4_1024";
+		      break;
+		  };
+		break;
+	    case RL2_COMPRESSION_ZSTD:
+		switch (tile_sz)
+		  {
+		  case TILE_256:
+		      coverage = "plt1_zstd_256";
+		      break;
+		  case TILE_512:
+		      coverage = "plt1_zstd_512";
+		      break;
+		  case TILE_1024:
+		      coverage = "plt1_zstd_1024";
 		      break;
 		  };
 		break;
@@ -1202,6 +1326,37 @@ main (int argc, char *argv[])
 	 &ret))
 	return ret;
 
+#ifndef OMIT_LZ4		/* only if LZ4 is enabled */
+    ret = -410;
+    if (!test_coverage
+	(db_handle, RL2_PIXEL_MONOCHROME, RL2_COMPRESSION_LZ4, TILE_256, &ret))
+	return ret;
+    ret = -420;
+    if (!test_coverage
+	(db_handle, RL2_PIXEL_MONOCHROME, RL2_COMPRESSION_LZ4, TILE_512, &ret))
+	return ret;
+    ret = -420;
+    if (!test_coverage
+	(db_handle, RL2_PIXEL_MONOCHROME, RL2_COMPRESSION_LZ4, TILE_1024, &ret))
+	return ret;
+#endif /* end LZ4 conditional */
+
+#ifndef OMIT_ZSTD		/* only if ZSTD is enabled */
+    ret = -410;
+    if (!test_coverage
+	(db_handle, RL2_PIXEL_MONOCHROME, RL2_COMPRESSION_ZSTD, TILE_256, &ret))
+	return ret;
+    ret = -420;
+    if (!test_coverage
+	(db_handle, RL2_PIXEL_MONOCHROME, RL2_COMPRESSION_ZSTD, TILE_512, &ret))
+	return ret;
+    ret = -420;
+    if (!test_coverage
+	(db_handle, RL2_PIXEL_MONOCHROME, RL2_COMPRESSION_ZSTD, TILE_1024,
+	 &ret))
+	return ret;
+#endif /* end ZSTD conditional */
+
 #ifndef OMIT_LZMA		/* only if LZMA is enabled */
     ret = -410;
     if (!test_coverage
@@ -1256,6 +1411,36 @@ main (int argc, char *argv[])
 	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_DEFLATE, TILE_1024,
 	 &ret))
 	return ret;
+
+#ifndef OMIT_LZ4		/* only if LZ4 is enabled */
+    ret = -620;
+    if (!test_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_LZ4, TILE_256, &ret))
+	return ret;
+    ret = -640;
+    if (!test_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_LZ4, TILE_512, &ret))
+	return ret;
+    ret = -660;
+    if (!test_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_LZ4, TILE_1024, &ret))
+	return ret;
+#endif /* end LZ4 conditional */
+
+#ifndef OMIT_ZSTD		/* only if ZSTD is enabled */
+    ret = -620;
+    if (!test_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_ZSTD, TILE_256, &ret))
+	return ret;
+    ret = -640;
+    if (!test_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_ZSTD, TILE_512, &ret))
+	return ret;
+    ret = -660;
+    if (!test_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_ZSTD, TILE_1024, &ret))
+	return ret;
+#endif /* end ZSTD conditional */
 
 #ifndef OMIT_LZMA		/* only if LZMA is enabled */
     ret = -620;
@@ -1329,6 +1514,37 @@ main (int argc, char *argv[])
 	 &ret))
 	return ret;
 
+#ifndef OMIT_LZ4		/* only if LZ4 is enabled */
+    ret = -430;
+    if (!drop_coverage
+	(db_handle, RL2_PIXEL_MONOCHROME, RL2_COMPRESSION_LZ4, TILE_256, &ret))
+	return ret;
+    ret = -440;
+    if (!drop_coverage
+	(db_handle, RL2_PIXEL_MONOCHROME, RL2_COMPRESSION_LZ4, TILE_512, &ret))
+	return ret;
+    ret = -450;
+    if (!drop_coverage
+	(db_handle, RL2_PIXEL_MONOCHROME, RL2_COMPRESSION_LZ4, TILE_1024, &ret))
+	return ret;
+#endif /* end LZ4 conditional */
+
+#ifndef OMIT_ZSTD		/* only if ZSTD is enabled */
+    ret = -430;
+    if (!drop_coverage
+	(db_handle, RL2_PIXEL_MONOCHROME, RL2_COMPRESSION_ZSTD, TILE_256, &ret))
+	return ret;
+    ret = -440;
+    if (!drop_coverage
+	(db_handle, RL2_PIXEL_MONOCHROME, RL2_COMPRESSION_ZSTD, TILE_512, &ret))
+	return ret;
+    ret = -450;
+    if (!drop_coverage
+	(db_handle, RL2_PIXEL_MONOCHROME, RL2_COMPRESSION_ZSTD, TILE_1024,
+	 &ret))
+	return ret;
+#endif /* end ZSTD conditional */
+
 #ifndef OMIT_LZMA		/* only if LZMA is enabled */
     ret = -430;
     if (!drop_coverage
@@ -1383,6 +1599,36 @@ main (int argc, char *argv[])
 	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_DEFLATE, TILE_1024,
 	 &ret))
 	return ret;
+
+#ifndef OMIT_LZ4		/* only if LZ4 is enabled */
+    ret = -630;
+    if (!drop_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_LZ4, TILE_256, &ret))
+	return ret;
+    ret = -640;
+    if (!drop_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_LZ4, TILE_512, &ret))
+	return ret;
+    ret = -650;
+    if (!drop_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_LZ4, TILE_1024, &ret))
+	return ret;
+#endif /* end LZ4 conditional */
+
+#ifndef OMIT_ZSTD		/* only if ZSTD is enabled */
+    ret = -630;
+    if (!drop_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_ZSTD, TILE_256, &ret))
+	return ret;
+    ret = -640;
+    if (!drop_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_ZSTD, TILE_512, &ret))
+	return ret;
+    ret = -650;
+    if (!drop_coverage
+	(db_handle, RL2_PIXEL_PALETTE, RL2_COMPRESSION_ZSTD, TILE_1024, &ret))
+	return ret;
+#endif /* end ZSTD conditional */
 
 #ifndef OMIT_LZMA		/* only if LZMA is enabled */
     ret = -630;

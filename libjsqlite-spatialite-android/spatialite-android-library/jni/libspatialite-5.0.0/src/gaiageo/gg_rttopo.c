@@ -2621,6 +2621,62 @@ gaiaNodeLines (const void *p_cache, gaiaGeomCollPtr geom)
     return result;
 }
 
+GAIAGEO_DECLARE gaiaGeomCollPtr
+gaiaSubdivide (const void *p_cache, gaiaGeomCollPtr geom, int max_vertices)
+{
+/* wrapping RTGEOM rtgeom_node */
+    const RTCTX *ctx = NULL;
+    struct splite_internal_cache *cache =
+	(struct splite_internal_cache *) p_cache;
+    RTGEOM *g1;
+    RTCOLLECTION *g2;
+    gaiaGeomCollPtr result = NULL;
+    int i;
+
+    if (!geom)
+	return NULL;
+    if (cache == NULL)
+	return NULL;
+    if (cache->magic1 != SPATIALITE_CACHE_MAGIC1
+	|| cache->magic2 != SPATIALITE_CACHE_MAGIC2)
+	return NULL;
+    ctx = cache->RTTOPO_handle;
+    if (ctx == NULL)
+	return NULL;
+
+    g1 = toRTGeom (ctx, geom);
+    g2 = rtgeom_subdivide (ctx, g1, max_vertices);
+    if (!g2)
+      {
+	  rtgeom_free (ctx, g1);
+	  goto done;
+      }
+
+/* building the subdivided geometry to be returned */
+    if (geom->DimensionModel == GAIA_XY_Z)
+	result = gaiaAllocGeomCollXYZ ();
+    else if (geom->DimensionModel == GAIA_XY_M)
+	result = gaiaAllocGeomCollXYM ();
+    else if (geom->DimensionModel == GAIA_XY_Z_M)
+	result = gaiaAllocGeomCollXYZM ();
+    else
+	result = gaiaAllocGeomColl ();
+    for (i = 0; i < g2->ngeoms; i++)
+      {
+	  RTGEOM *g3 = *(g2->geoms + i);
+	  fromRTGeomIncremental (ctx, result, g3);
+      }
+    spatialite_init_geos ();
+    rtgeom_free (ctx, g1);
+    rtcollection_free (ctx, g2);
+    if (result == NULL)
+	goto done;
+    result->Srid = geom->Srid;
+
+  done:
+    return result;
+}
+
 GAIAGEO_DECLARE int
 gaiaToTWKB (const void *p_cache, gaiaGeomCollPtr geom,
 	    unsigned char precision_xy, unsigned char precision_z,

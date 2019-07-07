@@ -4091,6 +4091,18 @@ unsupported_codec (const char *compression)
     if (strcasecmp (compression, "LZMA_NO") == 0
 	&& rl2_is_supported_codec (RL2_COMPRESSION_LZMA_NO) != 1)
 	return 1;
+    if (strcasecmp (compression, "LZ4") == 0
+	&& rl2_is_supported_codec (RL2_COMPRESSION_LZ4) != 1)
+	return 1;
+    if (strcasecmp (compression, "LZ4_NO") == 0
+	&& rl2_is_supported_codec (RL2_COMPRESSION_LZ4_NO) != 1)
+	return 1;
+    if (strcasecmp (compression, "ZSTD") == 0
+	&& rl2_is_supported_codec (RL2_COMPRESSION_ZSTD) != 1)
+	return 1;
+    if (strcasecmp (compression, "ZSTD_NO") == 0
+	&& rl2_is_supported_codec (RL2_COMPRESSION_ZSTD_NO) != 1)
+	return 1;
     if (strcasecmp (compression, "CHARLS") == 0
 	&& rl2_is_supported_codec (RL2_COMPRESSION_CHARLS) != 1)
 	return 1;
@@ -4874,6 +4886,8 @@ do_version ()
     fprintf (stderr, "libcurl ........: %s\n", rl2_curl_version ());
     fprintf (stderr, "DEFLATE ........: %s\n", rl2_zlib_version ());
     fprintf (stderr, "LZMA ...........: %s\n", rl2_lzma_version ());
+    fprintf (stderr, "LZ4 ............: %s\n", rl2_lz4_version ());
+    fprintf (stderr, "ZSTD ...........: %s\n", rl2_zstd_version ());
     fprintf (stderr, "PNG ............: %s\n", rl2_png_version ());
     fprintf (stderr, "JPEG ...........: %s\n", rl2_jpeg_version ());
     fprintf (stderr, "TIFF ...........: %s\n", rl2_tiff_version ());

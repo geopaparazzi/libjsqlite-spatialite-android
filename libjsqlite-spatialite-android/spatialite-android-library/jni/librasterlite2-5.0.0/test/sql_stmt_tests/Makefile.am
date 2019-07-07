@@ -227,6 +227,25 @@ EXTRA_DIST = getmaxthreads1.testcase \
 	dropcoverage1.testcase \
 	dropcoverage2.testcase \
 	dropcoverage3.testcase \
+	drapegeom1.testcase \
+	drapegeom2.testcase \
+	drapegeom3.testcase \
+	drapegeom4.testcase \
+	drapegeom5.testcase \
+	drapegeom6.testcase \
+	drapegeom7.testcase \
+	drapegeom8.testcase \
+	drapegeom9.testcase \
+	drapegeom10.testcase \
+	drapegeom11.testcase \
+	drapegeom12.testcase \
+	drapegeom13.testcase \
+	drapegeom14.testcase \
+	drapegeom15.testcase \
+	drapegeom16.testcase \
+	drapegeom17.testcase \
+	drapegeom18.testcase \
+	drapegeom19.testcase \
 	getfontfacename1.testcase \
 	getfontfacename2.testcase \
 	getfontfacename3.testcase \
@@ -283,12 +302,22 @@ EXTRA_DIST = getmaxthreads1.testcase \
 	getvectorimage21.testcase \
 	getvectorimage22.testcase \
 	getvectorimage23.testcase \
+	getwmsimage1.testcase \
+	getwmsimage2.testcase \
+	getwmsimage3.testcase \
+	getwmsimage4.testcase \
+	getwmsimage5.testcase \
+	getwmsimage6.testcase \
+	getwmsimage7.testcase \
+	getwmsimage8.testcase \
+	getwmsimage9.testcase \
+	getwmsimage10.testcase \
+	getwmsimage11.testcase \
+	getwmsimage12.testcase \
 	gettileimage1.testcase \
 	gettileimage2.testcase \
 	gettileimage3.testcase \
 	gettileimage4.testcase \
-	gettileimage5.testcase \
-	gettileimage6.testcase \
 	getbandhistogram1.testcase \
 	getbandhistogram2.testcase \
 	getbandhistogram3.testcase \

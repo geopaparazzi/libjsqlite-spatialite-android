@@ -1,0 +1,7 @@
+PROJ_GuessSridFromSHP() - TEXT path (invalid)
+:memory: #use in-memory database
+SELECT PROJ_GuessSridFromSHP('./shp/merano-3d/points.prj');
+1 # rows (not including the header row)
+1 # columns
+PROJ_GuessSridFromSHP('./shp/merano-3d/points.prj')
+(NULL)

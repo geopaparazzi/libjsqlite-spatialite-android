@@ -1,0 +1,8 @@
+FrechetDistance - non blob first arg
+:memory: #use in-memory database
+SELECT FrechetDistance(3, GeomFromText("LINESTRING(0 2, 10 2)"))
+1 # rows (not including the header row)
+1 # columns
+FrechetDistance(3, GeomFromText("LINESTRING(0 2, 10 2)"))
+(NULL)
+

@@ -1,0 +1,9 @@
+BufferOptions EndCapStyle - FLAT
+:memory: #use in-memory database
+SELECT BufferOptions_SetEndCapStyle('fLAt'), BufferOptions_GetEndCapStyle();
+1 # rows (not including the header row)
+2 # columns
+BufferOptions_SetEndCapStyle('fLAt')
+BufferOptions_GetEndCapStyle()
+1
+FLAT

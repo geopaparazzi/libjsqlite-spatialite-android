@@ -1,0 +1,7 @@
+PROJ_AsProjString() - valid
+:memory: #use in-memory database
+SELECT PROJ_AsProjString('EPSG', 32632);
+1 # rows (not including the header row)
+1 # columns
+PROJ_AsProjString('EPSG', 32632)
++proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +type=crs

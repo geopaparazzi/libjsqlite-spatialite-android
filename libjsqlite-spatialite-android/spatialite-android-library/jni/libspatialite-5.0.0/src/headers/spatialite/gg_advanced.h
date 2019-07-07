@@ -83,8 +83,154 @@ extern "C"
 #endif
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-#ifndef OMIT_PROJ		/* including PROJ.4 */
+#ifndef OMIT_PROJ		/* including PROJ */
 #endif
+
+/**
+ Resets the PROJ error messages to an empty state
+
+ \param p_cache a memory pointer returned by spatialite_alloc_connection()
+
+ \sa gaiaSetProjErrorMsg_r, gaiaGetProjErrorMsg_r
+
+ \note reentrant and thread-safe.
+
+ \remark \b PROJ.6 support required.
+ */
+    GAIAGEO_DECLARE void gaiaResetProjErrorMsg_r (const void *p_cache);
+
+/**
+ Set the current PROJ error message
+
+ \param p_cache a memory pointer returned by spatialite_alloc_connection()
+ \param msg the error message to be set.
+
+ \sa gaiaResetProjErrorMsg_r, gaiaGetProjErrorMsg_r
+
+ \note reentrant and thread-safe.
+
+ \remark \b PROJ.6 support required.
+ */
+    GAIAGEO_DECLARE void gaiaSetProjErrorMsg_r (const void *p_cache,
+						const char *msg);
+
+/**
+ Return the latest PROJ error message (if any)
+
+ \param p_cache a memory pointer returned by spatialite_alloc_connection()
+
+ \return the latest PROJ error message: an empty string if no error was
+ previoysly found.
+
+ \sa gaiaSetProjErrorMsg_r, gaiaResetProjErrorMsg_r
+ 
+ \note reentrant and thread-safe.
+
+ \remark \b PROJ.6 support required.
+ */
+    GAIAGEO_DECLARE const char *gaiaGetProjErrorMsg_r (const void *p_cache);
+
+/**
+ Sets the PATH leading to the private PROJ.6 database
+
+ \param p_cache a memory pointer returned by spatialite_alloc_connection()
+ \param path the pathname to be set
+ 
+ \return the currently set PATH leading to the private PROJ.6 database;
+ NULL if no PROJ database is defined.
+
+ \sa gaiaGetProjDatabasePath
+ 
+ \note reentrant and thread-safe.
+
+ \remark \b PROJ.6 support required.
+ */
+    GAIAGEO_DECLARE const char *gaiaSetProjDatabasePath (const void *p_cache,
+							 const char *path);
+
+/**
+ Return the currently set PATH leading to the private PROJ.6 database
+
+ \param p_cache a memory pointer returned by spatialite_alloc_connection()
+ 
+ \return the currently set PATH leading to the private PROJ.6 database;
+ NULL if no PROJ database is defined.
+
+ \sa gaiaSetProjDatabasePath
+ 
+ \note reentrant and thread-safe.
+
+ \remark \b PROJ.6 support required.
+ */
+    GAIAGEO_DECLARE const char *gaiaGetProjDatabasePath (const void *p_cache);
+
+/**
+ Return the proj-string corresponding to a given CRS defined within 
+ the private PROJ.6 database
+
+ \param p_cache a memory pointer returned by spatialite_alloc_connection()
+ \param auth_name if NULL will be interpreted as "EPSG"
+ \param auth_srid the intended CRS is identified by auth_name and auth_srid
+ 
+ \return the proj-string expression corresponding to the given CRS
+ NULL on failite.
+
+ \note you are responsible to destroy (before or after) any proj-string
+ returned by gaiaGetProjString()
+ \nreentrant and thread-safe.
+
+ \remark \b PROJ.6 support required.
+ */
+    GAIAGEO_DECLARE char *gaiaGetProjString (const void *p_cache,
+					     const char *auth_name,
+					     int auth_srid);
+
+/**
+ Return the WKT expression corresponding to a given CRS defined within 
+ the private PROJ.6 database
+
+ \param p_cache a memory pointer returned by spatialite_alloc_connection()
+ \param auth_name if NULL will be interpreted as "EPSG"
+ \param auth_srid the intended CRS is identified by auth_name and auth_srid
+ \param style one between GAIA_PROJ_WKT_GDAL, GAIA_PROJ_WKT_ESRI,
+ GAIA_PROJ_WKT_ISO_2015 or GAIA_PROJ_WKT_ISO_2018 (this latter being the
+ default assumption).
+ \param indented if TRUE the WKT expression will be properly indented,
+ otherwise a solid string lacking any white space or new-line will be
+ printed.
+ \param indentation how many chars to be used for indenting (only
+ considered if indented is TRUE).
+ 
+ \return the WKT expression corresponding to the given CRS
+ NULL on failite.
+
+ \note you are responsible to destroy (before or after) any WKT string
+ returned by gaiaGetProjWKT()
+ \nreentrant and thread-safe.
+
+ \remark \b PROJ.6 support required.
+ */
+    GAIAGEO_DECLARE char *gaiaGetProjWKT (const void *p_cache,
+					  const char *auth_name,
+					  int auth_srid, int style,
+					  int indented, int indentation);
+
+/**
+ Return the SRID corresponding to a given WKT expression (if any)
+
+ \param db_handle pointer to the current DB connection.
+ \param p_cache a memory pointer returned by spatialite_alloc_connection()
+ \param wkt the WKT expression to be evaluated.
+ \param srid on successful completion will point to the SRID value
+ matching the WKT expression.
+ 
+ \return 0 on failure: any other value on success
+
+ \remark \b PROJ.6 support required.
+ */
+    GAIAGEO_DECLARE int gaiaGuessSridFromWKT (sqlite3 * db_handle,
+					      const void *p_cache,
+					      const char *wkt, int *srid);
 
 /**
  Converts and angle from Radians into Degrees
@@ -94,7 +240,7 @@ extern "C"
 
  \sa gaiaDegsToRads
 
- \remark \b PROJ.4 support required
+ \remark \b PROJ support required
  */
     GAIAGEO_DECLARE double gaiaRadsToDegs (double rads);
 
@@ -106,7 +252,7 @@ extern "C"
 
  \sa gaiaRadsToDegs
 
- \remark \b PROJ.4 support required
+ \remark \b PROJ support required
  */
     GAIAGEO_DECLARE double gaiaDegsToRads (double degs);
 
@@ -115,23 +261,25 @@ extern "C"
  [aka Reprojection]
 
  \param org pointer to input Geometry object.
- \param proj_from geodetic parameters string [EPSG format] qualifying the
+ \param proj_from geodetic parameters string [PROJ.4 format] qualifying the
  input Reference System
- \param proj_to geodetic parameters string [EPSG format] qualifying the
+ \param proj_to geodetic parameters string [PROJ.4 format] qualifying the
  output Reference System
 
  \return the pointer to newly created Geometry object: NULL on failure.
 
- \sa gaiaTransform_r, gaiaTransformXY, gaiaFreeGeomColl
+ \sa gaiaTransform_r, gaiaTransformXY, gaiaTransformXYZ, gaiaTransformEx, 
+ gaiaFreeGeomColl
 
- \note you are responsible to destroy (before or after) any allocated Geometry,  this including any Geometry returned by gaiaGeometryTransform()\n
+ \note you are responsible to destroy (before or after) any allocated Geometry,  
+ this including any Geometry returned by gaiaGeometryTransform()\n
  not reentrant and thread unsafe.
 
- \remark \b PROJ.4 support required
+ \remark \b PROJ support required
  */
     GAIAGEO_DECLARE gaiaGeomCollPtr gaiaTransform (gaiaGeomCollPtr org,
-						   char *proj_from,
-						   char *proj_to);
+						   const char *proj_from,
+						   const char *proj_to);
 
 /**
  Tansforms a Geometry object into a different Reference System
@@ -139,24 +287,93 @@ extern "C"
 
  \param p_cache a memory pointer returned by spatialite_alloc_connection()
  \param org pointer to input Geometry object.
- \param proj_from geodetic parameters string [EPSG format] qualifying the
+ \param proj_from geodetic parameters string [PROJ.4 format] qualifying the
  input Reference System
- \param proj_to geodetic parameters string [EPSG format] qualifying the
+ \param proj_to geodetic parameters string [PROJ.4 format] qualifying the
  output Reference System
 
  \return the pointer to newly created Geometry object: NULL on failure.
 
- \sa gaiaTransform, gaiaTransformXY_r, gaiaFreeGeomColl
+ \sa gaiaTransform, gaiaTransformXY_r, gaiaTransformXYZ_r, 
+ gaiaTransformEx_r, gaiaFreeGeomColl
 
- \note you are responsible to destroy (before or after) any allocated Geometry,  this including any Geometry returned by gaiaGeometryTransform()\n
+ \note you are responsible to destroy (before or after) any allocated Geometry,  
+ this including any Geometry returned by gaiaGeometryTransform()\n
  reentrant and thread-safe.
 
- \remark \b PROJ.4 support required
+ \remark \b PROJ support required
  */
     GAIAGEO_DECLARE gaiaGeomCollPtr gaiaTransform_r (const void *p_cache,
 						     gaiaGeomCollPtr org,
-						     char *proj_from,
-						     char *proj_to);
+						     const char *proj_from,
+						     const char *proj_to);
+
+/**
+ Tansforms a Geometry object into a different Reference System
+ [aka Reprojection]
+
+ \param org pointer to input Geometry object.
+ \param proj_string_1 any valid string accepted by PROJ.6 for identifying
+ the origin CRS of a trasformation, or a string defining a trasformation
+ pipelin.\n
+ can never be NULL.
+ \param proj_string_2 any valid string accepted by PROJ.6 for identifying
+ the destination CRS of a trasformation.\n
+ expected to be NULL if proj_string_1 defines a pipeline.
+ \param proj_bbox pointer to aa BoundingBox object defining the
+ specific "area of use" of the transformation.\n
+ may be NULL.
+
+ \return the pointer to newly created Geometry object: NULL on failure.
+
+ \sa gaiaTransform, gaiaFreeGeomColl
+
+ \note you are responsible to destroy (before or after) any allocated Geometry,  
+ this including any Geometry returned by gaiaGeometryTransformEx()\n
+ not reentrant and thread unsafe.
+
+ \remark \b PROJ.6 support required
+ */
+    GAIAGEO_DECLARE gaiaGeomCollPtr gaiaTransformEx (gaiaGeomCollPtr org,
+						     const char *proj_string_1,
+						     const char *proj_string_2,
+						     gaiaProjAreaPtr proj_bbox);
+
+/**
+ Tansforms a Geometry object into a different Reference System
+ [aka Reprojection]
+
+ \param p_cache a memory pointer returned by spatialite_alloc_connection()
+ \param org pointer to input Geometry object.
+ \param proj_string_1 any valid string accepted by PROJ.6 for identifying
+ the origin CRS of a trasformation, or a string defining a trasformation
+ pipelin.\n
+ can never be NULL.
+ \param proj_string_2 any valid string accepted by PROJ.6 for identifying
+ the destination CRS of a trasformation.\n
+ expected to be NULL if proj_string_1 defines a pipeline.
+ \param proj_bbox pointer to aa BoundingBox object defining the
+ specific "area of use" of the transformation.\n
+ may be NULL.
+ 
+ \return the pointer to newly created Geometry object: NULL on failure.
+
+ \sa gaiaTransform_r, gaiaFreeGeomColl
+
+ \note you are responsible to destroy (before or after) any allocated Geometry,  
+ this including any Geometry returned by gaiaGeometryTransformEx()\n
+ reentrant and thread-safe.
+
+ \remark \b PROJ.6 support required
+ */
+    GAIAGEO_DECLARE gaiaGeomCollPtr gaiaTransformEx_r (const void *p_cache,
+						       gaiaGeomCollPtr org,
+						       const char
+						       *proj_string_1,
+						       const char
+						       *proj_string_2,
+						       gaiaProjAreaPtr
+						       proj_bbox);
 
 /**
  Tansforms a Geometry object into a different Reference System
@@ -164,7 +381,7 @@ extern "C"
  This is a special "flavor" of gaiaTransform() just considering X and Y coordinates;
  Z and M values will be left untouched.
  Mainly intended as a workaround possibily useful when facing partially 
- broken PROJ.4 definitions.
+ broken PROJ definitions.
 
  \param org pointer to input Geometry object.
  \param proj_from geodetic parameters string [EPSG format] qualifying the
@@ -174,16 +391,16 @@ extern "C"
 
  \return the pointer to newly created Geometry object: NULL on failure.
 
- \sa gaiaTransformXY_r, gaiaTransform, gaiaFreeGeomColl
+ \sa gaiaTransformXY_r, gaiaTransformXYZ_r, gaiaTransform, gaiaFreeGeomColl
 
  \note you are responsible to destroy (before or after) any allocated Geometry,  this including any Geometry returned by gaiaGeometryTransform()\n
  not reentrant and thread unsafe.
 
- \remark \b PROJ.4 support required
+ \remark \b PROJ support required
  */
     GAIAGEO_DECLARE gaiaGeomCollPtr gaiaTransformXY (gaiaGeomCollPtr org,
-						     char *proj_from,
-						     char *proj_to);
+						     const char *proj_from,
+						     const char *proj_to);
 
 /**
  Tansforms a Geometry object into a different Reference System
@@ -191,7 +408,7 @@ extern "C"
  This is a special "flavor" of gaiaTransform_r() just considering X and Y coordinates;
  Z and M values will be left untouched.
  Mainly intended as a workaround possibily useful when facing partially 
- broken PROJ.4 definitions.
+ broken PROJ definitions.
 
  \param p_cache a memory pointer returned by spatialite_alloc_connection()
  \param org pointer to input Geometry object.
@@ -202,20 +419,78 @@ extern "C"
 
  \return the pointer to newly created Geometry object: NULL on failure.
 
- \sa gaiaTransformXY, gaiaTransform_r, gaiaFreeGeomColl
+ \sa gaiaTransformXY, gaiaTransformXYZ, gaiaTransform_r, gaiaFreeGeomColl
 
  \note you are responsible to destroy (before or after) any allocated Geometry,  this including any Geometry returned by gaiaGeometryTransform()\n
  reentrant and thread-safe.
 
- \remark \b PROJ.4 support required
+ \remark \b PROJ support required
  */
     GAIAGEO_DECLARE gaiaGeomCollPtr gaiaTransformXY_r (const void *p_cache,
 						       gaiaGeomCollPtr org,
-						       char *proj_from,
-						       char *proj_to);
+						       const char *proj_from,
+						       const char *proj_to);
+
+/**
+ Tansforms a Geometry object into a different Reference System
+ [aka Reprojection]
+ This is a special "flavor" of gaiaTransform() just considering X, Y 
+ and Z coordinates; M values will be left untouched.
+ Mainly intended as a workaround possibily useful
+ when handling 4D geometries having M-values not
+ corresponding to Time.
+
+ \param org pointer to input Geometry object.
+ \param proj_from geodetic parameters string [EPSG format] qualifying the
+ input Reference System
+ \param proj_to geodetic parameters string [EPSG format] qualifying the
+ output Reference System
+
+ \return the pointer to newly created Geometry object: NULL on failure.
+
+ \sa gaiaTransformXY_r, gaiaTransformXYZ_r, gaiaTransform, gaiaFreeGeomColl
+
+ \note you are responsible to destroy (before or after) any allocated Geometry,  this including any Geometry returned by gaiaGeometryTransform()\n
+ not reentrant and thread unsafe.
+
+ \remark \b PROJ support required
+ */
+    GAIAGEO_DECLARE gaiaGeomCollPtr gaiaTransformXYZ (gaiaGeomCollPtr org,
+						      const char *proj_from,
+						      const char *proj_to);
+
+/**
+ Tansforms a Geometry object into a different Reference System
+ [aka Reprojection]
+ This is a special "flavor" of gaiaTransform() just considering X, Y 
+ and Z coordinates; M values will be left untouched.
+ Mainly intended as a workaround possibily useful
+ when handling 4D geometries having M-values not
+ corresponding to Time.
+
+ \param p_cache a memory pointer returned by spatialite_alloc_connection()
+ \param org pointer to input Geometry object.
+ \param proj_from geodetic parameters string [EPSG format] qualifying the
+ input Reference System
+ \param proj_to geodetic parameters string [EPSG format] qualifying the
+ output Reference System
+
+ \return the pointer to newly created Geometry object: NULL on failure.
+
+ \sa gaiaTransformXY, gaiaTransformXYZ, gaiaTransform_r, gaiaFreeGeomColl
+
+ \note you are responsible to destroy (before or after) any allocated Geometry,  this including any Geometry returned by gaiaGeometryTransform()\n
+ reentrant and thread-safe.
+
+ \remark \b PROJ support required
+ */
+    GAIAGEO_DECLARE gaiaGeomCollPtr gaiaTransformXYZ_r (const void *p_cache,
+							gaiaGeomCollPtr org,
+							const char *proj_from,
+							const char *proj_to);
 
 
-#endif				/* end including PROJ.4 */
+#endif				/* end including PROJ */
 
 #ifndef OMIT_GEOS		/* including GEOS */
 
@@ -2433,6 +2708,152 @@ extern "C"
 						 double *dist);
 
 /**
+ Calculates the Hausdorff distance intercurring between two Geometry objects
+
+ \param geom1 pointer to first Geometry object
+ \param geom2 pointer to second Geometry object
+ \param densify_fract fraction (in the range 0.0 / 1.0) by which to densify
+ each segment. Each segment will be split into a number of equal-lenght
+ subsegments, whose fraction of the total length is closest to the given
+ fraction
+ \param dist on completion this variable will contain the calculated Hausdorff
+ distance 
+
+ \return 0 on failure: any other value on success.
+
+ \sa gaiaHausdorffDistance_r
+
+ \note not reentrant and thread unsafe.
+
+ \remark \b GEOS-ADVANCED support required.
+ */
+    GAIAGEO_DECLARE int gaiaHausdorffDistanceDensify (gaiaGeomCollPtr geom1,
+						      gaiaGeomCollPtr geom2,
+						      double densify_fract,
+						      double *dist);
+
+/**
+ Calculates the Hausdorff distance intercurring between two Geometry objects
+
+ \param p_cache a memory pointer returned by spatialite_alloc_connection()
+ \param geom1 pointer to first Geometry object
+ \param geom2 pointer to second Geometry object
+ \param densify_fract fraction (in the range 0.0 / 1.0) by which to densify
+ each segment. Each segment will be split into a number of equal-lenght
+ subsegments, whose fraction of the total length is closest to the given
+ fraction
+ \param dist on completion this variable will contain the calculated Hausdorff
+ distance 
+
+ \return 0 on failure: any other value on success.
+
+ \sa gaiaHausdorffDistance
+
+ \note reentrant and thread-safe.
+
+ \remark \b GEOS-ADVANCED support required.
+ */
+    GAIAGEO_DECLARE int gaiaHausdorffDistanceDensify_r (const void *p_cache,
+							gaiaGeomCollPtr geom1,
+							gaiaGeomCollPtr geom2,
+							double densify_fract,
+							double *dist);
+
+/**
+ Calculates the Frechet distance intercurring between two Geometry objects
+
+ \param geom1 pointer to first Geometry object
+ \param geom2 pointer to second Geometry object
+ \param dist on completion this variable will contain the calculated Frechet
+ distance 
+
+ \return 0 on failure: any other value on success.
+
+ \sa gaiaFrechetDistance_r
+
+ \note not reentrant and thread unsafe.
+
+ \remark \b GEOS-ADVANCED support required.
+ */
+    GAIAGEO_DECLARE int gaiaFrechetDistance (gaiaGeomCollPtr geom1,
+					     gaiaGeomCollPtr geom2,
+					     double *dist);
+
+/**
+ Calculates the Frechet distance intercurring between two Geometry objects
+
+ \param p_cache a memory pointer returned by spatialite_alloc_connection()
+ \param geom1 pointer to first Geometry object
+ \param geom2 pointer to second Geometry object
+ \param dist on completion this variable will contain the calculated Frechet
+ distance 
+
+ \return 0 on failure: any other value on success.
+
+ \sa gaiaFrechetDistance
+
+ \note reentrant and thread-safe.
+
+ \remark \b GEOS-ADVANCED support required.
+ */
+    GAIAGEO_DECLARE int gaiaFrechetDistance_r (const void *p_cache,
+					       gaiaGeomCollPtr geom1,
+					       gaiaGeomCollPtr geom2,
+					       double *dist);
+
+/**
+ Calculates the Frechet distance intercurring between two Geometry objects
+
+ \param geom1 pointer to first Geometry object
+ \param geom2 pointer to second Geometry object
+ \param densify_fract fraction (in the range 0.0 / 1.0) by which to densify
+ each segment. Each segment will be split into a number of equal-lenght
+ subsegments, whose fraction of the total length is closest to the given
+ fraction
+ \param dist on completion this variable will contain the calculated Frechet
+ distance 
+
+ \return 0 on failure: any other value on success.
+
+ \sa gaiaFrechetDistance_r
+
+ \note not reentrant and thread unsafe.
+
+ \remark \b GEOS-ADVANCED support required.
+ */
+    GAIAGEO_DECLARE int gaiaFrechetDistanceDensify (gaiaGeomCollPtr geom1,
+						    gaiaGeomCollPtr geom2,
+						    double densify_fract,
+						    double *dist);
+
+/**
+ Calculates the Frechet distance intercurring between two Geometry objects
+
+ \param p_cache a memory pointer returned by spatialite_alloc_connection()
+ \param geom1 pointer to first Geometry object
+ \param geom2 pointer to second Geometry object
+ \param densify_fract fraction (in the range 0.0 / 1.0) by which to densify
+ each segment. Each segment will be split into a number of equal-lenght
+ subsegments, whose fraction of the total length is closest to the given
+ fraction
+ \param dist on completion this variable will contain the calculated Frechet
+ distance 
+
+ \return 0 on failure: any other value on success.
+
+ \sa gaiaFrechetDistance
+
+ \note reentrant and thread-safe.
+
+ \remark \b GEOS-ADVANCED support required.
+ */
+    GAIAGEO_DECLARE int gaiaFrechetDistanceDensify_r (const void *p_cache,
+						      gaiaGeomCollPtr geom1,
+						      gaiaGeomCollPtr geom2,
+						      double densify_fract,
+						      double *dist);
+
+/**
  Spatial operator: Offset Curve
 
  \param geom the input Geometry object
@@ -3906,12 +4327,33 @@ extern "C"
  \sa gaiaFreeGeomColl
 
  \note you are responsible to destroy (before or after) any allocated Geometry,
- this including any Geometry returned by gaiaNode()
+ this including any Geometry returned by gaiaNodeLines()
 
  \remark \b RTTOPO support required.
  */
     GAIAGEO_DECLARE gaiaGeomCollPtr gaiaNodeLines (const void *p_cache,
 						   gaiaGeomCollPtr input);
+
+/**
+ Utility function: subdividing Geometry
+
+ \param p_cache a memory pointer returned by spatialite_alloc_connection()
+ \param input the input Geometry object.
+ \param max_vertices the maximun number of vertices for each part in the
+ output geometry that will be returned.
+
+ \return the pointer to newly created Geometry object: NULL on failure.
+
+ \sa gaiaFreeGeomColl
+
+ \note you are responsible to destroy (before or after) any allocated Geometry,
+ this including any Geometry returned by gaiaSubdivide()
+
+ \remark \b RTTOPO support required.
+ */
+    GAIAGEO_DECLARE gaiaGeomCollPtr gaiaSubdivide (const void *p_cache,
+						   gaiaGeomCollPtr input,
+						   int max_vertices);
 
 /**
  Converts a native binary Geometry into a compressed TWKB Geometry
@@ -4019,6 +4461,7 @@ extern "C"
 /**
  Utility function: DrapeLine
 
+ \param db_handle pointer to the current DB connection.
  \param geom1 the first Geometry object (expected to be a 2D Linestring).
  \param geom2 the second Geometry object (expected to be a 3D Linestring).
  \param tolerance tolerance radius.
@@ -4044,6 +4487,7 @@ extern "C"
 /**
  Utility function: DrapeLineExceptions
 
+ \param db_handle pointer to the current DB connection.
  \param geom1 the first Geometry object (expected to be a 2D Linestring).
  \param geom2 the second Geometry object (expected to be a 3D Linestring).
  \param tolerance tolerance radius.

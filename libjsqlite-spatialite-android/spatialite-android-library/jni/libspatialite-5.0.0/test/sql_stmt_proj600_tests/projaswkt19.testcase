@@ -1,0 +1,7 @@
+PROJ_AsWKT() - DOUBLE indentation
+:memory: #use in-memory database
+SELECT PROJ_AsWKT('EPSG', 4326, 'ESRI', 0, 2.5);
+1 # rows (not including the header row)
+1 # columns
+PROJ_AsWKT('EPSG', 4326, 'ESRI', 0, 2.5)
+(NULL)

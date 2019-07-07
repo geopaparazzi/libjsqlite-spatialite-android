@@ -1,0 +1,8 @@
+ReCreateStylingTriggers - TEXT
+:memory: #use in-memory database
+SELECT ReCreateStylingTriggers('alpha');
+1 # rows (not including the header row)
+1 # columns
+ReCreateStylingTriggers('alpha')
+-1
+

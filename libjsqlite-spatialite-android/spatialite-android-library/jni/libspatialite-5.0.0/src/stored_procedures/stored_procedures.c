@@ -60,6 +60,7 @@ the terms of any one of the MPL, the GPL or the LGPL.
 #include <spatialite/gg_formats.h>
 #include <spatialite/stored_procedures.h>
 #include <spatialite_private.h>
+#include <spatialite.h>
 #include <spatialite/debug.h>
 
 #ifdef _WIN32
@@ -1894,11 +1895,11 @@ print_elapsed_time (FILE * log, double seconds)
     int_time /= 60;
     int hh = int_time;
     if (hh == 0 && mins == 0)
-	fprintf (log, "Execution time: %d.%03d\n", secs, millis);
+	fprintf (log, "-- Execution time: %d.%03d\n", secs, millis);
     else if (hh == 0)
-	fprintf (log, "Execution time: %d:%02d.%03d\n", mins, secs, millis);
+	fprintf (log, "-- Execution time: %d:%02d.%03d\n", mins, secs, millis);
     else
-	fprintf (log, "Execution time: %d:%02d:%02d.%03d\n", hh, mins, secs,
+	fprintf (log, "-- Execution time: %d:%02d:%02d.%03d\n", hh, mins, secs,
 		 millis);
 }
 
@@ -1964,8 +1965,175 @@ do_clean_failing_sql (const char *pSql)
     return fail;
 }
 
+static sqlite3 *
+do_clone_mem_db (sqlite3 * origin, void *cache, int mode)
+{
+/* opening a new connection by clonig a MEMORY MAIN DB */
+    int ret;
+    sqlite3_backup *backup;
+    sqlite3 *handle;
+
+    ret = sqlite3_open_v2 (":memory:", &handle, mode, NULL);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SqlProcExec: sqlite3_open_v2 error: %s\n",
+			sqlite3_errmsg (handle));
+	  sqlite3_close (handle);
+	  return NULL;
+      }
+    backup = sqlite3_backup_init (handle, "main", origin, "main");
+    if (!backup)
+	goto stop;
+    while (1)
+      {
+	  ret = sqlite3_backup_step (backup, 1024);
+	  if (ret == SQLITE_DONE)
+	      break;
+      }
+    ret = sqlite3_backup_finish (backup);
+    if (ret != SQLITE_OK)
+	goto stop;
+    spatialite_internal_init (handle, cache);
+    return handle;
+
+  stop:
+    sqlite3_close (handle);
+    return NULL;
+}
+
+static int
+do_clone_memory_db (sqlite3 * main_handle, sqlite3 * handle,
+		    const char *db_name)
+{
+/* cloning back an eventual MEMORY DB */
+    int ret;
+    sqlite3_backup *backup;
+    const char *db_path = sqlite3_db_filename (main_handle, db_name);
+    if (db_path != NULL)
+      {
+	  if (strlen (db_path) > 0)
+	      return 1;		/* not a MEMORY DB - quitting */
+      }
+    backup = sqlite3_backup_init (main_handle, db_name, handle, db_name);
+    if (!backup)
+	return 0;
+    while (1)
+      {
+	  ret = sqlite3_backup_step (backup, 1024);
+	  if (ret == SQLITE_DONE)
+	      break;
+      }
+    ret = sqlite3_backup_finish (backup);
+    if (ret != SQLITE_OK)
+	return 0;
+    return 1;
+}
+
+static sqlite3 *
+do_open_new_connection (sqlite3 * origin, void *cache)
+{
+/* opening a new connection to the MAIN DB */
+    int ret;
+    sqlite3 *handle;
+    int mem_db = 0;
+    const char *db_path = sqlite3_db_filename (origin, "main");
+    int rd_only = sqlite3_db_readonly (origin, "main");
+    int mode = SQLITE_OPEN_READWRITE;
+    if (rd_only)
+	mode = SQLITE_OPEN_READONLY;
+    if (db_path == NULL)
+	mem_db = 1;
+    else if (*db_path == '\0')
+	mem_db = 1;
+    if (mem_db)
+	return do_clone_mem_db (origin, cache, mode);
+
+/* creating a new connection */
+    ret = sqlite3_open_v2 (db_path, &handle, mode, NULL);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SqlProcExec: sqlite3_open_v2 error: %s\n",
+			sqlite3_errmsg (handle));
+	  sqlite3_close (handle);
+	  return NULL;
+      }
+    spatialite_internal_init (handle, cache);
+    return handle;
+}
+
+static int
+do_attach_all (sqlite3 * origin, sqlite3 * handle)
+{
+/* attaching all required database-files to the new connection */
+    int ret;
+    int i;
+    char **results;
+    int rows;
+    int columns;
+
+/* listing all database-files attached to the initial connection */
+    ret =
+	sqlite3_get_table (origin, "PRAGMA database_list", &results, &rows,
+			   &columns, NULL);
+    if (ret != SQLITE_OK)
+	return 0;
+    if (rows < 1)
+	;
+    else
+      {
+	  for (i = 1; i <= rows; i++)
+	    {
+		int mem_db = 0;
+		char *sql;
+		char *xdb_name;
+		const char *db_name = results[(i * columns) + 1];
+		const char *db_path = results[(i * columns) + 2];
+		if (strcasecmp (db_name, "main") == 0)
+		    continue;	/* ignoring MAIN */
+		if (db_path == NULL)
+		    mem_db = 1;
+		else if (*db_path == '\0')
+		    mem_db = 1;
+		if (mem_db && strcasecmp (db_name, "temp") == 0)
+		    goto skip_temp;		/* "temp" is already attached by default */
+		xdb_name = gaiaDoubleQuotedSql (db_name);
+		if (mem_db)
+		    sql =
+			sqlite3_mprintf ("ATTACH DATABASE %Q AS \"%s\"",
+					 ":memory:", xdb_name);
+		else
+		    sql =
+			sqlite3_mprintf ("ATTACH DATABASE %Q AS \"%s\"",
+					 db_path, xdb_name);
+		free (xdb_name);
+		ret = sqlite3_exec (handle, sql, NULL, NULL, NULL);
+		sqlite3_free (sql);
+		if (ret != SQLITE_OK)
+		  {
+		      spatialite_e ("SqlProcExec: ATTACH DATABASE error: %s\n",
+				    sqlite3_errmsg (handle));
+		      sqlite3_free_table (results);
+		      return 0;
+		  }
+	      skip_temp:
+		if (mem_db)
+		  {
+		      if (!do_clone_memory_db (handle, origin, db_name))
+			{
+			    spatialite_e
+				("SqlProcExec: ATTACH DATABASE error: %s\n",
+				 sqlite3_errmsg (handle));
+			    return 0;
+			}
+		  }
+	    }
+      }
+    sqlite3_free_table (results);
+    return 1;
+}
+
 SQLPROC_DECLARE int
-gaia_sql_proc_execute (sqlite3 * handle, const void *ctx, const char *sql)
+gaia_sql_proc_execute (sqlite3 * main_handle, const void *ctx, const char *sql)
 {
 /* executing an already cooked SQL Body */
     const char *pSql = sql;
@@ -1973,11 +2141,30 @@ gaia_sql_proc_execute (sqlite3 * handle, const void *ctx, const char *sql)
     int retval = 0;
     int n_stmts = 0;
     FILE *log = NULL;
-    struct splite_internal_cache *cache = (struct splite_internal_cache *) ctx;
+    int ret;
+    struct gaia_variant_value *ret_value;
+    struct splite_internal_cache *main_cache =
+	(struct splite_internal_cache *) ctx;
+
+/* opening a new connection */
+    struct splite_internal_cache *cache = spatialite_alloc_connection ();
+    sqlite3 *handle = do_open_new_connection (main_handle, cache);
+    if (handle == NULL)
+	return 0;
+/* attaching all the required database-files */
+    if (!do_attach_all (main_handle, handle))
+	return 0;
 
     if (cache != NULL)
       {
+	  gaia_sql_proc_logfile (cache, main_cache->SqlProcLogfile,
+				 main_cache->SqlProcLogfileAppend);
+	  cache->gpkg_mode = main_cache->gpkg_mode;
+	  cache->gpkg_amphibious_mode = main_cache->gpkg_amphibious_mode;
+	  cache->decimal_precision = main_cache->decimal_precision;
+	  cache->is_pause_enabled = main_cache->is_pause_enabled;
 	  cache->SqlProcContinue = 1;
+	  gaia_set_variant_null (cache->SqlProcRetValue);
 	  log = cache->SqlProcLog;
       }
 
@@ -1986,11 +2173,11 @@ gaia_sql_proc_execute (sqlite3 * handle, const void *ctx, const char *sql)
 	  /* printing a session header */
 	  char *now = get_timestamp (handle);
 	  fprintf (log,
-		   "=========================================================================================\n");
-	  fprintf (log, "==     SQL session start   =   %s\n", now);
+		   "--=========================================================================================\n");
+	  fprintf (log, "--==     SQL session start   =   %s\n", now);
 	  sqlite3_free (now);
 	  fprintf (log,
-		   "=========================================================================================\n");
+		   "--=========================================================================================\n");
       }
 
     while (1)
@@ -2011,7 +2198,7 @@ gaia_sql_proc_execute (sqlite3 * handle, const void *ctx, const char *sql)
 		      /* found a pending EXIT request */
 		      if (log != NULL)
 			  fprintf (log,
-				   "\n***** quitting ... found a pending EXIT request *************\n\n");
+				   "\n-- ***** quitting ... found a pending EXIT request *************\n\n");
 		      break;
 		  }
 	    }
@@ -2027,9 +2214,9 @@ gaia_sql_proc_execute (sqlite3 * handle, const void *ctx, const char *sql)
 		if (log != NULL)
 		  {
 		      char *failSql = do_clean_failing_sql (pSql);
-		      fprintf (log, "=== SQL error: %s\n",
+		      fprintf (log, "--=== SQL error: %s\n",
 			       sqlite3_errmsg (handle));
-		      fprintf (log, "failing SQL statement was:\n%s\n\n",
+		      fprintf (log, "-- failing SQL statement was:\n%s\n\n",
 			       failSql);
 		      free (failSql);
 		  }
@@ -2086,9 +2273,9 @@ gaia_sql_proc_execute (sqlite3 * handle, const void *ctx, const char *sql)
 					sqlite3_free (prev);
 				    }
 			      }
-			    fprintf (log, "%s\n", bar);
-			    fprintf (log, "%s\n", names);
-			    fprintf (log, "%s\n", bar);
+			    fprintf (log, "-- %s\n", bar);
+			    fprintf (log, "-- %s\n", names);
+			    fprintf (log, "-- %s\n", bar);
 			    sqlite3_free (names);
 			    sqlite3_free (bar);
 			}
@@ -2111,6 +2298,8 @@ gaia_sql_proc_execute (sqlite3 * handle, const void *ctx, const char *sql)
 			    /* printing column values */
 			    if (i > 0)
 				fprintf (log, "|");
+			    else
+				fprintf (log, "-- ");
 			    switch (sqlite3_column_type (stmt, i))
 			      {
 			      case SQLITE_INTEGER:
@@ -2151,7 +2340,7 @@ gaia_sql_proc_execute (sqlite3 * handle, const void *ctx, const char *sql)
 		      gaia_sql_proc_set_error (cache, errmsg);
 		      if (log != NULL)
 			{
-			    fprintf (log, "=== SQL error: %s\n",
+			    fprintf (log, "--=== SQL error: %s\n",
 				     sqlite3_errmsg (handle));
 			}
 		      sqlite3_free (errmsg);
@@ -2166,10 +2355,10 @@ gaia_sql_proc_execute (sqlite3 * handle, const void *ctx, const char *sql)
 	  if (log != NULL)
 	    {
 		if (rs)
-		    fprintf (log, "=== %d %s === ", n_rows,
+		    fprintf (log, "--=== %d %s === ", n_rows,
 			     (n_rows == 1) ? "row" : "rows");
 		else
-		    fprintf (log, "=== ");
+		    fprintf (log, "--=== ");
 		print_elapsed_time (log, seconds);
 		fprintf (log, "\n");
 		fflush (log);
@@ -2183,15 +2372,51 @@ gaia_sql_proc_execute (sqlite3 * handle, const void *ctx, const char *sql)
 	  /* printing a session footer */
 	  char *now = get_timestamp (handle);
 	  fprintf (log,
-		   "=========================================================================================\n");
+		   "--=========================================================================================\n");
 	  fprintf (log,
-		   "==     SQL session end   =   %s   =   %d statement%s executed\n",
+		   "--==     SQL session end   =   %s   =   %d statement%s executed\n",
 		   now, n_stmts, (n_stmts == 1) ? " was" : "s were");
 	  sqlite3_free (now);
 	  fprintf (log,
-		   "=========================================================================================\n\n\n");
+		   "--=========================================================================================\n\n\n");
 	  fflush (log);
       }
+/* updating the actual MEMORY DB (if any) */
+    do_clone_memory_db (main_handle, handle, "main");
+
+/* terminating the new connection */
+    ret = sqlite3_close (handle);
+    if (ret != SQLITE_OK)
+	spatialite_e ("SqlProcExec: sqlite3_close() error: %s\n",
+		      sqlite3_errmsg (handle));
+
+/* copying an eventual RETVALUE */
+    ret_value = cache->SqlProcRetValue;
+    switch (ret_value->dataType)
+      {
+      case SQLITE_INTEGER:
+	  gaia_set_variant_int64 (main_cache->SqlProcRetValue,
+				  ret_value->intValue);
+	  break;
+      case SQLITE_FLOAT:
+	  gaia_set_variant_double (main_cache->SqlProcRetValue,
+				   ret_value->dblValue);
+	  break;
+      case SQLITE_TEXT:
+	  gaia_set_variant_text (main_cache->SqlProcRetValue,
+				 ret_value->textValue, ret_value->size);
+	  break;
+      case SQLITE_BLOB:
+	  gaia_set_variant_blob (main_cache->SqlProcRetValue,
+				 ret_value->blobValue, ret_value->size);
+	  break;
+      case SQLITE_NULL:
+      default:
+	  gaia_set_variant_null (main_cache->SqlProcRetValue);
+	  break;
+
+      };
+    spatialite_internal_cleanup (cache);
     return retval;
 }
 
@@ -2239,5 +2464,6 @@ gaia_sql_proc_logfile (const void *ctx, const char *filepath, int append)
     cache->SqlProcLogfile = malloc (len + 1);
     strcpy (cache->SqlProcLogfile, filepath);
     cache->SqlProcLog = log;
+    cache->SqlProcLogfileAppend = append;
     return 1;
 }

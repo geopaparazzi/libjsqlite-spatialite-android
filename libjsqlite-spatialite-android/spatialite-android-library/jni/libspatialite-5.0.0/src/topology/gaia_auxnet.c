@@ -93,6 +93,121 @@ free_internal_cache_networks (void *firstNetwork)
       }
 }
 
+SPATIALITE_PRIVATE void
+drop_networks_triggers (void *sqlite_handle)
+{
+/* dropping all "networks" triggers */
+    char *sql;
+    int ret;
+    char *err_msg = NULL;
+    char **results;
+    int rows;
+    int columns;
+    int i;
+    sqlite3 *sqlite = (sqlite3 *) sqlite_handle;
+
+/* checking for existing tables */
+    sql =
+	"SELECT name FROM sqlite_master WHERE type = 'trigger' AND tbl_name = 'networks'";
+    ret = sqlite3_get_table (sqlite, sql, &results, &rows, &columns, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return;
+      }
+    for (i = 1; i <= rows; i++)
+      {
+	  const char *name = results[(i * columns) + 0];
+	  sql = sqlite3_mprintf ("DROP TRIGGER %s", name);
+	  ret = sqlite3_exec (sqlite, sql, NULL, NULL, &err_msg);
+	  if (ret != SQLITE_OK)
+	    {
+		spatialite_e ("SQL error: %s\n", err_msg);
+		sqlite3_free (err_msg);
+		return;
+	    }
+	  sqlite3_free (sql);
+      }
+    sqlite3_free_table (results);
+}
+
+SPATIALITE_PRIVATE int
+do_create_networks_triggers (void *sqlite_handle)
+{
+/* attempting to create the Networks triggers */
+    const char *sql;
+    char *err_msg = NULL;
+    int ret;
+    char **results;
+    int rows;
+    int columns;
+    int i;
+    sqlite3 *handle = (sqlite3 *) sqlite_handle;
+    int ok_networks = 0;
+
+/* checking for existing networks */
+    sql =
+	"SELECT tbl_name FROM sqlite_master WHERE type = 'table' AND tbl_name = 'networks'";
+    ret = sqlite3_get_table (handle, sql, &results, &rows, &columns, &err_msg);
+    if (ret != SQLITE_OK)
+      {
+	  spatialite_e ("SQL error: %s\n", err_msg);
+	  sqlite3_free (err_msg);
+	  return 0;
+      }
+    for (i = 1; i <= rows; i++)
+      {
+	  const char *name = results[(i * columns) + 0];
+	  if (strcasecmp (name, "networks") == 0)
+	      ok_networks = 1;
+      }
+    sqlite3_free_table (results);
+
+    if (ok_networks)
+      {
+	  /* creating Networks triggers */
+	  sql = "CREATE TRIGGER IF NOT EXISTS network_name_insert\n"
+	      "BEFORE INSERT ON 'networks'\nFOR EACH ROW BEGIN\n"
+	      "SELECT RAISE(ABORT,'insert on networks violates constraint: "
+	      "network_name value must not contain a single quote')\n"
+	      "WHERE NEW.network_name LIKE ('%''%');\n"
+	      "SELECT RAISE(ABORT,'insert on networks violates constraint: "
+	      "network_name value must not contain a double quote')\n"
+	      "WHERE NEW.network_name LIKE ('%\"%');\n"
+	      "SELECT RAISE(ABORT,'insert on networks violates constraint: "
+	      "network_name value must be lower case')\n"
+	      "WHERE NEW.network_name <> lower(NEW.network_name);\nEND";
+	  ret = sqlite3_exec (handle, sql, NULL, NULL, &err_msg);
+	  if (ret != SQLITE_OK)
+	    {
+		spatialite_e ("SQL error: %s\n", err_msg);
+		sqlite3_free (err_msg);
+		return 0;
+	    }
+	  sql = "CREATE TRIGGER IF NOT EXISTS network_name_update\n"
+	      "BEFORE UPDATE OF 'network_name' ON 'networks'\nFOR EACH ROW BEGIN\n"
+	      "SELECT RAISE(ABORT,'update on networks violates constraint: "
+	      "network_name value must not contain a single quote')\n"
+	      "WHERE NEW.network_name LIKE ('%''%');\n"
+	      "SELECT RAISE(ABORT,'update on networks violates constraint: "
+	      "network_name value must not contain a double quote')\n"
+	      "WHERE NEW.network_name LIKE ('%\"%');\n"
+	      "SELECT RAISE(ABORT,'update on networks violates constraint: "
+	      "network_name value must be lower case')\n"
+	      "WHERE NEW.network_name <> lower(NEW.network_name);\nEND";
+	  ret = sqlite3_exec (handle, sql, NULL, NULL, &err_msg);
+	  if (ret != SQLITE_OK)
+	    {
+		spatialite_e ("SQL error: %s\n", err_msg);
+		sqlite3_free (err_msg);
+		return 0;
+	    }
+      }
+
+    return 1;
+}
+
 SPATIALITE_PRIVATE int
 do_create_networks (void *sqlite_handle)
 {
@@ -120,44 +235,8 @@ do_create_networks (void *sqlite_handle)
 	  return 0;
       }
 
-/* creating Networks triggers */
-    sql = "CREATE TRIGGER IF NOT EXISTS network_name_insert\n"
-	"BEFORE INSERT ON 'networks'\nFOR EACH ROW BEGIN\n"
-	"SELECT RAISE(ABORT,'insert on networks violates constraint: "
-	"network_name value must not contain a single quote')\n"
-	"WHERE NEW.network_name LIKE ('%''%');\n"
-	"SELECT RAISE(ABORT,'insert on networks violates constraint: "
-	"network_name value must not contain a double quote')\n"
-	"WHERE NEW.network_name LIKE ('%\"%');\n"
-	"SELECT RAISE(ABORT,'insert on networks violates constraint: "
-	"network_name value must be lower case')\n"
-	"WHERE NEW.network_name <> lower(NEW.network_name);\nEND";
-    ret = sqlite3_exec (handle, sql, NULL, NULL, &err_msg);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("SQL error: %s\n", err_msg);
-	  sqlite3_free (err_msg);
-	  return 0;
-      }
-    sql = "CREATE TRIGGER IF NOT EXISTS network_name_update\n"
-	"BEFORE UPDATE OF 'network_name' ON 'networks'\nFOR EACH ROW BEGIN\n"
-	"SELECT RAISE(ABORT,'update on networks violates constraint: "
-	"network_name value must not contain a single quote')\n"
-	"WHERE NEW.network_name LIKE ('%''%');\n"
-	"SELECT RAISE(ABORT,'update on networks violates constraint: "
-	"network_name value must not contain a double quote')\n"
-	"WHERE NEW.network_name LIKE ('%\"%');\n"
-	"SELECT RAISE(ABORT,'update on networks violates constraint: "
-	"network_name value must be lower case')\n"
-	"WHERE NEW.network_name <> lower(NEW.network_name);\nEND";
-    ret = sqlite3_exec (handle, sql, NULL, NULL, &err_msg);
-    if (ret != SQLITE_OK)
-      {
-	  spatialite_e ("SQL error: %s\n", err_msg);
-	  sqlite3_free (err_msg);
-	  return 0;
-      }
-
+    if (!do_create_networks_triggers (handle))
+	return 0;
     return 1;
 }
 

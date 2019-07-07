@@ -1560,9 +1560,35 @@ extern "C"
 					unsigned int inwidth,
 					unsigned int inheight,
 					unsigned char pixtype,
-					const unsigned char *outbuf,
+					unsigned char *outbuf,
 					unsigned int outwidth,
 					unsigned int outheight);
+
+/**
+ Rescales a raw pixbuf (RGB or GRAYSCALE) - Transparent mode
+
+ \param inbuf pointer to the input pixbuf.
+ \param maskbuf pointer to the input mask.
+ \param inwidth the width (measured in pixels) of the input pixbuf.
+ \param inheight the height (measured in pixels) of the input pixbuf.
+ \param pixtype either RL2_PIXEL_RGB or RL2_PIXEL_GRAYSCALE.
+ \param outbuf pointer to the output pixbuf.
+ \param outmask pointer to the output mask.
+ \param outwidth the width (measured in pixels) of the output pixbuf.
+ \param outheight the height (measured in pixels) of the output pixbuf.
+
+ \return 0 (false) on error, any other value on success.
+ */
+    RL2_DECLARE int rl2_rescale_pixbuf_transparent (const unsigned char *inbuf,
+						    const unsigned char
+						    *maskbuf,
+						    unsigned int inwidth,
+						    unsigned int inheight,
+						    unsigned char pixtype,
+						    unsigned char *outbuf,
+						    unsigned char *outmask,
+						    unsigned int outwidth,
+						    unsigned int outheight);
 
 /**
  Merges a Graphics Context into another

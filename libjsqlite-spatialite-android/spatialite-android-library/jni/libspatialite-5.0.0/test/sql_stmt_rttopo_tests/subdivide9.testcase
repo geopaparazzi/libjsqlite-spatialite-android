@@ -1,0 +1,7 @@
+ST_Subdivide - valid Polygon, TEXT max_pt
+:memory: #use in-memory database
+SELECT ST_NumGeometries(ST_Subdivide(Polygonize(MakeCircle(0, 0, 100, 4326, 0.1)), 'one'));
+1 # rows (not including the header row)
+1 # columns
+ST_NumGeometries(ST_Subdivide(Polygonize(MakeCircle(0, 0, 100, 4326, 0.1)), 'one'))
+(NULL)
