@@ -2371,7 +2371,7 @@ vgeojson_create (sqlite3 * db, void *pAux, int argc, const char *const *argv,
   err:
     if (error_message != NULL)
       {
-	  spatialite_e (error_message);
+	  spatialite_e ("%s\n", error_message);
 	  sqlite3_free (error_message);
       }
   ok:

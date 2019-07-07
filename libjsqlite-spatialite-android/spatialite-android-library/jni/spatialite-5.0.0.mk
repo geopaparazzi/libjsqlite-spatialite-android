@@ -134,9 +134,11 @@ LOCAL_SRC_FILES := \
  $(SPATIALITE_PATH)/src/shapefiles/shapefiles.c \
  $(SPATIALITE_PATH)/src/shapefiles/validator.c \
  $(SPATIALITE_PATH)/src/spatialite/create_routing.c \
+ $(SPATIALITE_PATH)/src/spatialite/dbobj_scopes.c \
  $(SPATIALITE_PATH)/src/spatialite/extra_tables.c \
  $(SPATIALITE_PATH)/src/spatialite/mbrcache.c \
  $(SPATIALITE_PATH)/src/spatialite/metatables.c \
+ $(SPATIALITE_PATH)/src/spatialite/pause.c \
  $(SPATIALITE_PATH)/src/spatialite/se_helpers.c \
  $(SPATIALITE_PATH)/src/spatialite/spatialite.c \
  $(SPATIALITE_PATH)/src/spatialite/spatialite_init.c \
@@ -148,6 +150,7 @@ LOCAL_SRC_FILES := \
  $(SPATIALITE_PATH)/src/spatialite/virtualelementary.c \
  $(SPATIALITE_PATH)/src/spatialite/virtualfdo.c \
  $(SPATIALITE_PATH)/src/spatialite/virtualgpkg.c \
+ $(SPATIALITE_PATH)/src/spatialite/virtualgeojson.c \
  $(SPATIALITE_PATH)/src/spatialite/virtualknn.c \
  $(SPATIALITE_PATH)/src/spatialite/virtualnetwork.c \
  $(SPATIALITE_PATH)/src/spatialite/virtualrouting.c \

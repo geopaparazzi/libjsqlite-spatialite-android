@@ -37,6 +37,7 @@ LOCAL_SRC_FILES := \
 	$(GEOS_PATH)/src/algorithm/CentroidPoint.cpp \
 	$(GEOS_PATH)/src/algorithm/CGAlgorithms.cpp \
 	$(GEOS_PATH)/src/algorithm/ConvexHull.cpp \
+	$(GEOS_PATH)/src/algorithm/distance/DiscreteFrechetDistance.cpp \
 	$(GEOS_PATH)/src/algorithm/distance/DiscreteHausdorffDistance.cpp \
 	$(GEOS_PATH)/src/algorithm/distance/DistanceToPoint.cpp \
 	$(GEOS_PATH)/src/algorithm/HCoordinate.cpp \
@@ -55,28 +56,28 @@ LOCAL_SRC_FILES := \
 	$(GEOS_PATH)/src/algorithm/RobustDeterminant.cpp \
 	$(GEOS_PATH)/src/algorithm/SimplePointInRing.cpp \
 	$(GEOS_PATH)/src/algorithm/SIRtreePointInRing.cpp \
-	$(GEOS_PATH)/src/geom/Coordinatecpp \
-	$(GEOS_PATH)/src/geom/CoordinateSequencecpp \
+	$(GEOS_PATH)/src/geom/Coordinate.cpp \
+	$(GEOS_PATH)/src/geom/CoordinateSequence.cpp \
 	$(GEOS_PATH)/src/geom/CoordinateSequenceFactory.cpp  \
-	$(GEOS_PATH)/src/geom/CoordinateArraySequencecpp \
-	$(GEOS_PATH)/src/geom/CoordinateArraySequenceFactorycpp \
-	$(GEOS_PATH)/src/geom/Dimensioncpp \
-	$(GEOS_PATH)/src/geom/Envelopecpp \
-	$(GEOS_PATH)/src/geom/Geometrycpp \
-	$(GEOS_PATH)/src/geom/GeometryCollectioncpp \
-	$(GEOS_PATH)/src/geom/GeometryComponentFiltercpp \
-	$(GEOS_PATH)/src/geom/GeometryFactorycpp \
-	$(GEOS_PATH)/src/geom/IntersectionMatrixcpp \
-	$(GEOS_PATH)/src/geom/LinearRingcpp \
-	$(GEOS_PATH)/src/geom/LineSegmentcpp \
-	$(GEOS_PATH)/src/geom/LineStringcpp \
-	$(GEOS_PATH)/src/geom/Locationcpp \
-	$(GEOS_PATH)/src/geom/MultiLineStringcpp \
-	$(GEOS_PATH)/src/geom/MultiPointcpp \
-	$(GEOS_PATH)/src/geom/MultiPolygoncpp \
-	$(GEOS_PATH)/src/geom/Pointcpp \
-	$(GEOS_PATH)/src/geom/Polygoncpp \
-	$(GEOS_PATH)/src/geom/PrecisionModelcpp \
+	$(GEOS_PATH)/src/geom/CoordinateArraySequence.cpp \
+	$(GEOS_PATH)/src/geom/CoordinateArraySequenceFactory.cpp \
+	$(GEOS_PATH)/src/geom/Dimension.cpp \
+	$(GEOS_PATH)/src/geom/Envelope.cpp \
+	$(GEOS_PATH)/src/geom/Geometry.cpp \
+	$(GEOS_PATH)/src/geom/GeometryCollection.cpp \
+	$(GEOS_PATH)/src/geom/GeometryComponentFilter.cpp \
+	$(GEOS_PATH)/src/geom/GeometryFactory.cpp \
+	$(GEOS_PATH)/src/geom/IntersectionMatrix.cpp \
+	$(GEOS_PATH)/src/geom/LinearRing.cpp \
+	$(GEOS_PATH)/src/geom/LineSegment.cpp \
+	$(GEOS_PATH)/src/geom/LineString.cpp \
+	$(GEOS_PATH)/src/geom/Location.cpp \
+	$(GEOS_PATH)/src/geom/MultiLineString.cpp \
+	$(GEOS_PATH)/src/geom/MultiPoint.cpp \
+	$(GEOS_PATH)/src/geom/MultiPolygon.cpp \
+	$(GEOS_PATH)/src/geom/Point.cpp \
+	$(GEOS_PATH)/src/geom/Polygon.cpp \
+	$(GEOS_PATH)/src/geom/PrecisionModel.cpp \
 	$(GEOS_PATH)/src/geom/Triangle.cpp \
 	$(GEOS_PATH)/src/geom/prep/AbstractPreparedPolygonContains.cpp \
 	$(GEOS_PATH)/src/geom/prep/BasicPreparedGeometry.cpp \
@@ -223,6 +224,7 @@ LOCAL_SRC_FILES := \
 	$(GEOS_PATH)/src/operation/distance/FacetSequence.cpp \
 	$(GEOS_PATH)/src/operation/distance/FacetSequenceTreeBuilder.cpp \
 	$(GEOS_PATH)/src/operation/distance/GeometryLocation.cpp \
+	$(GEOS_PATH)/src/operation/distance/IndexedFacetDistance.cpp \
 	$(GEOS_PATH)/src/operation/GeometryGraphOperation.cpp \
 	$(GEOS_PATH)/src/operation/intersection/Rectangle.cpp \
 	$(GEOS_PATH)/src/operation/intersection/RectangleIntersectionBuilder.cpp \
