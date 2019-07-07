@@ -67,11 +67,12 @@ ICONV_PATH := libiconv-1.15
 FREETYPE_PATH := freetype-2.9
 EXPAT_PATH := expat-2.2.5
 LZMA_PATH := xz-5.2.1
+LZ4_PATH := lz4-1.9.1
 JPEG_PATH := jpeg-6b
 PNG_PATH := libpng-1.6.34
 # -------------------
 include $(LOCAL_PATH)/jsqlite-R20120209.mk
-include $(LOCAL_PATH)/sqlite-3220000.mk
+include $(LOCAL_PATH)/sqlite-3280000.mk
 include $(LOCAL_PATH)/rasterlite2-5.0.0.mk
 include $(LOCAL_PATH)/charls-1.0.mk
 include $(LOCAL_PATH)/openjpeg-2.0.0.mk
@@ -81,7 +82,7 @@ include $(LOCAL_PATH)/cairo-1.14.12.mk
 include $(LOCAL_PATH)/libcurl-7.59.0.mk
 include $(LOCAL_PATH)/libgeotiff-1.4.2.mk
 include $(LOCAL_PATH)/giflib-5.1.4.mk
-include $(LOCAL_PATH)/geos-3.6.2.mk
+include $(LOCAL_PATH)/geos-3.7.2.mk
 include $(LOCAL_PATH)/json-c-0.13.1.mk
 include $(LOCAL_PATH)/librttopo-1.1.0.mk
 include $(LOCAL_PATH)/libxml2-2.9.8.mk
@@ -95,4 +96,6 @@ include $(LOCAL_PATH)/expat-2.2.5.mk
 include $(LOCAL_PATH)/lzma-xz-5.2.1.mk
 include $(LOCAL_PATH)/libjpeg-6b.mk
 include $(LOCAL_PATH)/libpng-1.6.34.mk
+include $(LOCAL_PATH)/liblz4-1.9.1.mk
+include $(LOCAL_PATH)/libzstd-1.4.0.mk
 $(call import-module,android/cpufeatures)

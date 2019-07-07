@@ -10,15 +10,22 @@
 # Excluded files:
 # - none
 # -------------------
-# Note: no blanks after a '\' and the line end
-# - causes '*** missing separator.  Stop.'
+# Note:  -std=c++11
+# - should not be used by GEOS
 # -------------------
 include $(CLEAR_VARS)
 LOCAL_MODULE := geos
 LOCAL_C_INCLUDES := $(GEOS_PATH)/include
+
+geos_flags := \
+ -DUSE_UNSTABLE_GEOS_CPP_API=1 \
+ -DHAVE_LONG_LONG_INT_64 
+
+
 LOCAL_CFLAGS := \
  $(LOCAL_C_INCLUDES:%=-I%) \
- -DHAVE_LONG_LONG_INT_64
+  $(geos_flags)
+
 LOCAL_SRC_FILES := \
 	$(GEOS_PATH)/capi/geos_c.cpp \
 	$(GEOS_PATH)/capi/geos_ts_c.cpp \
@@ -48,18 +55,52 @@ LOCAL_SRC_FILES := \
 	$(GEOS_PATH)/src/algorithm/RobustDeterminant.cpp \
 	$(GEOS_PATH)/src/algorithm/SimplePointInRing.cpp \
 	$(GEOS_PATH)/src/algorithm/SIRtreePointInRing.cpp \
-	$(GEOS_PATH)/src/geom/CoordinateArraySequence.cpp \
-	$(GEOS_PATH)/src/geom/CoordinateArraySequenceFactory.cpp \
-	$(GEOS_PATH)/src/geom/Coordinate.cpp \
-	$(GEOS_PATH)/src/geom/CoordinateSequence.cpp \
-	$(GEOS_PATH)/src/geom/CoordinateSequenceFactory.cpp \
-	$(GEOS_PATH)/src/geom/Dimension.cpp \
-	$(GEOS_PATH)/src/geom/Envelope.cpp \
-	$(GEOS_PATH)/src/geom/GeometryCollection.cpp \
-	$(GEOS_PATH)/src/geom/GeometryComponentFilter.cpp \
-	$(GEOS_PATH)/src/geom/Geometry.cpp \
-	$(GEOS_PATH)/src/geom/GeometryFactory.cpp \
-	$(GEOS_PATH)/src/geom/GeometryList.cpp \
+	$(GEOS_PATH)/src/geom/Coordinatecpp \
+	$(GEOS_PATH)/src/geom/CoordinateSequencecpp \
+	$(GEOS_PATH)/src/geom/CoordinateSequenceFactory.cpp  \
+	$(GEOS_PATH)/src/geom/CoordinateArraySequencecpp \
+	$(GEOS_PATH)/src/geom/CoordinateArraySequenceFactorycpp \
+	$(GEOS_PATH)/src/geom/Dimensioncpp \
+	$(GEOS_PATH)/src/geom/Envelopecpp \
+	$(GEOS_PATH)/src/geom/Geometrycpp \
+	$(GEOS_PATH)/src/geom/GeometryCollectioncpp \
+	$(GEOS_PATH)/src/geom/GeometryComponentFiltercpp \
+	$(GEOS_PATH)/src/geom/GeometryFactorycpp \
+	$(GEOS_PATH)/src/geom/IntersectionMatrixcpp \
+	$(GEOS_PATH)/src/geom/LinearRingcpp \
+	$(GEOS_PATH)/src/geom/LineSegmentcpp \
+	$(GEOS_PATH)/src/geom/LineStringcpp \
+	$(GEOS_PATH)/src/geom/Locationcpp \
+	$(GEOS_PATH)/src/geom/MultiLineStringcpp \
+	$(GEOS_PATH)/src/geom/MultiPointcpp \
+	$(GEOS_PATH)/src/geom/MultiPolygoncpp \
+	$(GEOS_PATH)/src/geom/Pointcpp \
+	$(GEOS_PATH)/src/geom/Polygoncpp \
+	$(GEOS_PATH)/src/geom/PrecisionModelcpp \
+	$(GEOS_PATH)/src/geom/Triangle.cpp \
+	$(GEOS_PATH)/src/geom/prep/AbstractPreparedPolygonContains.cpp \
+	$(GEOS_PATH)/src/geom/prep/BasicPreparedGeometry.cpp \
+	$(GEOS_PATH)/src/geom/prep/PreparedGeometry.cpp \
+	$(GEOS_PATH)/src/geom/prep/PreparedGeometryFactory.cpp \
+	$(GEOS_PATH)/src/geom/prep/PreparedLineString.cpp \
+	$(GEOS_PATH)/src/geom/prep/PreparedLineStringIntersects.cpp \
+	$(GEOS_PATH)/src/geom/prep/PreparedPoint.cpp \
+	$(GEOS_PATH)/src/geom/prep/PreparedPolygonContains.cpp \
+	$(GEOS_PATH)/src/geom/prep/PreparedPolygonContainsProperly.cpp \
+	$(GEOS_PATH)/src/geom/prep/PreparedPolygonCovers.cpp \
+	$(GEOS_PATH)/src/geom/prep/PreparedPolygon.cpp \
+	$(GEOS_PATH)/src/geom/prep/PreparedPolygonIntersects.cpp \
+	$(GEOS_PATH)/src/geom/prep/PreparedPolygonPredicate.cpp \
+	$(GEOS_PATH)/src/geom/util/ComponentCoordinateExtracter.cpp \
+	$(GEOS_PATH)/src/geom/util/CoordinateOperation.cpp \
+	$(GEOS_PATH)/src/geom/util/GeometryCombiner.cpp \
+	$(GEOS_PATH)/src/geom/util/GeometryEditor.cpp \
+	$(GEOS_PATH)/src/geom/util/GeometryTransformer.cpp \
+	$(GEOS_PATH)/src/geom/util/LinearComponentExtracter.cpp \
+	$(GEOS_PATH)/src/geom/util/PointExtracter.cpp \
+	$(GEOS_PATH)/src/geom/util/PolygonExtracter.cpp \
+	$(GEOS_PATH)/src/geom/util/ShortCircuitedGeometryVisitor.cpp \
+	$(GEOS_PATH)/src/geom/util/SineStarFactory.cpp \
 	$(GEOS_PATH)/src/geomgraph/Depth.cpp \
 	$(GEOS_PATH)/src/geomgraph/DirectedEdge.cpp \
 	$(GEOS_PATH)/src/geomgraph/DirectedEdgeStar.cpp \
@@ -88,41 +129,6 @@ LOCAL_SRC_FILES := \
 	$(GEOS_PATH)/src/geomgraph/Position.cpp \
 	$(GEOS_PATH)/src/geomgraph/Quadrant.cpp \
 	$(GEOS_PATH)/src/geomgraph/TopologyLocation.cpp \
-	$(GEOS_PATH)/src/geom/IntersectionMatrix.cpp \
-	$(GEOS_PATH)/src/geom/LinearRing.cpp \
-	$(GEOS_PATH)/src/geom/LineSegment.cpp \
-	$(GEOS_PATH)/src/geom/LineString.cpp \
-	$(GEOS_PATH)/src/geom/Location.cpp \
-	$(GEOS_PATH)/src/geom/MultiLineString.cpp \
-	$(GEOS_PATH)/src/geom/MultiPoint.cpp \
-	$(GEOS_PATH)/src/geom/MultiPolygon.cpp \
-	$(GEOS_PATH)/src/geom/Point.cpp \
-	$(GEOS_PATH)/src/geom/Polygon.cpp \
-	$(GEOS_PATH)/src/geom/PrecisionModel.cpp \
-	$(GEOS_PATH)/src/geom/prep/AbstractPreparedPolygonContains.cpp \
-	$(GEOS_PATH)/src/geom/prep/BasicPreparedGeometry.cpp \
-	$(GEOS_PATH)/src/geom/prep/PreparedGeometry.cpp \
-	$(GEOS_PATH)/src/geom/prep/PreparedGeometryFactory.cpp \
-	$(GEOS_PATH)/src/geom/prep/PreparedLineString.cpp \
-	$(GEOS_PATH)/src/geom/prep/PreparedLineStringIntersects.cpp \
-	$(GEOS_PATH)/src/geom/prep/PreparedPoint.cpp \
-	$(GEOS_PATH)/src/geom/prep/PreparedPolygonContains.cpp \
-	$(GEOS_PATH)/src/geom/prep/PreparedPolygonContainsProperly.cpp \
-	$(GEOS_PATH)/src/geom/prep/PreparedPolygonCovers.cpp \
-	$(GEOS_PATH)/src/geom/prep/PreparedPolygon.cpp \
-	$(GEOS_PATH)/src/geom/prep/PreparedPolygonIntersects.cpp \
-	$(GEOS_PATH)/src/geom/prep/PreparedPolygonPredicate.cpp \
-	$(GEOS_PATH)/src/geom/Triangle.cpp \
-	$(GEOS_PATH)/src/geom/util/ComponentCoordinateExtracter.cpp \
-	$(GEOS_PATH)/src/geom/util/CoordinateOperation.cpp \
-	$(GEOS_PATH)/src/geom/util/GeometryCombiner.cpp \
-	$(GEOS_PATH)/src/geom/util/GeometryEditor.cpp \
-	$(GEOS_PATH)/src/geom/util/GeometryTransformer.cpp \
-	$(GEOS_PATH)/src/geom/util/LinearComponentExtracter.cpp \
-	$(GEOS_PATH)/src/geom/util/PointExtracter.cpp \
-	$(GEOS_PATH)/src/geom/util/PolygonExtracter.cpp \
-	$(GEOS_PATH)/src/geom/util/ShortCircuitedGeometryVisitor.cpp \
-	$(GEOS_PATH)/src/geom/util/SineStarFactory.cpp \
 	$(GEOS_PATH)/src/index/bintree/Bintree.cpp \
 	$(GEOS_PATH)/src/index/bintree/Interval.cpp \
 	$(GEOS_PATH)/src/index/bintree/Key.cpp \

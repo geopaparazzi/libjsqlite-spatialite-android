@@ -15,7 +15,7 @@
 # -------------------
 # Order of running:
 # - javasqlite[20120209] code corrections for 64-bits
-# - sqlite3[3220000]
+# - sqlite3[3280000]
 # - spatialite [5.0.0-20180508]
 # - proj[6.1.1]
 # - geos[3.7.2]
@@ -27,7 +27,7 @@
 # -------------------
 LOCAL_PATH := $(call my-dir)
 JSQLITE_PATH := javasqlite-20120209
-SQLITE_PATH := sqlite-amalgamation-3220000
+SQLITE_PATH := sqlite-amalgamation-3280000
 SPATIALITE_PATH := libspatialite-5.0.0
 PROJ_PATH := proj-6.1.1
 GEOS_PATH := geos-3.7.2
@@ -38,10 +38,10 @@ LZMA_PATH := xz-5.2.1
 ICONV_PATH := libiconv-1.15
 # -------------------
 include $(LOCAL_PATH)/jsqlite-20120209.mk
-include $(LOCAL_PATH)/sqlite-3220000.mk
+include $(LOCAL_PATH)/sqlite-3280000.mk
 include $(LOCAL_PATH)/spatialite-5.0.0.mk
 include $(LOCAL_PATH)/proj-6.1.1.mk
-include $(LOCAL_PATH)/geos-3.6.2.mk
+include $(LOCAL_PATH)/geos-3.7.2.mk
 include $(LOCAL_PATH)/json-c-0.13.1.mk
 include $(LOCAL_PATH)/librttopo-1.1.0.mk
 include $(LOCAL_PATH)/libxml2-2.9.8.mk

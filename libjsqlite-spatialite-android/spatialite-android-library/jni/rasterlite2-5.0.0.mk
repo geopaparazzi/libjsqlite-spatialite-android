@@ -38,6 +38,7 @@ spatialite_flags := \
  -DENABLE_GEOPACKAGE=1 \
  -DENABLE_LIBXML2=1 \
  -DENABLE_RTTOPO=1 \
+ -DPROJ_NEW=1 \
  -DSQLITE_OMIT_BUILTIN_TEST=1
 
 # comment out TARGET_CPU in config.h - will be replaced with TARGET_ARCH_ABI
@@ -81,6 +82,8 @@ LOCAL_C_INCLUDES := \
  $(RASTERLITE2_PATH)/headers \
  $(SPATIALITE_PATH)/src/headers \
  $(LZMA_PATH)/src/liblzma/api \
+ $(LZ4_PATH)/src/lib \
+ $(LZSTD_PATH)/src/lib \
  $(OPENJPEG_PATH)/src/lib/openjp2 \
  $(CHARLS_PATH)
 
@@ -117,5 +120,5 @@ LOCAL_SRC_FILES := \
  $(RASTERLITE2_PATH)/src/rl2version.c \
  $(RASTERLITE2_PATH)/src/rl2webp.c \
  $(RASTERLITE2_PATH)/src/rl2wms.c
-LOCAL_STATIC_LIBRARIES := libcharls libopenjpeg libpng libwebp libxml2 spatialite libfreetype libcairo libcurl libgeotiff libtiff libgif libjpeg
+LOCAL_STATIC_LIBRARIES := libcharls libopenjpeg libpng libwebp libxml2 spatialite libfreetype libcairo libcurl libgeotiff libtiff libgif libjpeg liblz4 liblzstd
 include $(BUILD_STATIC_LIBRARY)

@@ -10,8 +10,15 @@ include $(CLEAR_VARS)
 # -------------------
 LOCAL_MODULE    := proj
 
-LOCAL_C_INCLUDES := $(PROJ_PATH)/src
-LOCAL_C_INCLUDES += $(PROJ_PATH)/include/
+# Enable c++11 extentions in source code for PROJ Version >= 6.0
+# - should not be used by GEOS
+LOCAL_CPP_FEATURES := -std=c++11
+
+LOCAL_C_INCLUDES := \
+ $(SQLITE_PATH) \
+ $(PROJ_PATH)/src \
+ $(PROJ_PATH)/include
+
 # LOCAL_LDLIBS is always ignored for static libraries
 # LOCAL_LDLIBS := -lm
 LOCAL_SRC_FILES := \
