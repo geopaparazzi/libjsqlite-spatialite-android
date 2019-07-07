@@ -15,10 +15,10 @@
 # -------------------
 # Order of running:
 # - javasqlite[20120209] code corrections for 64-bits
-# - sqlite3[3220000]
+# - sqlite3[3280000]
 # - spatialite [5.0.0-20180508]
 # - proj[6.1.1]
-# - geos[3.6.2]
+# - geos[3.7.2]
 # - json-c[0.13.1]
 # - librttopo[20180125]
 # - libxml2[2.9.8]
@@ -27,10 +27,10 @@
 # -------------------
 LOCAL_PATH := $(call my-dir)
 JSQLITE_PATH := javasqlite-20120209
-SQLITE_PATH := sqlite-amalgamation-3220000
+SQLITE_PATH := sqlite-amalgamation-3280000
 SPATIALITE_PATH := libspatialite-5.0.0
 PROJ_PATH := proj-6.1.1
-GEOS_PATH := geos-3.6.2
+GEOS_PATH := geos-3.7.2
 JSONC_PATH := json-c-0.13.1
 RTTOPO_PATH := librttopo-20180125
 XML2_PATH := libxml2-2.9.8

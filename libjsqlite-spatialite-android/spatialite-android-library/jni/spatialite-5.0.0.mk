@@ -44,6 +44,7 @@ common_sqlite_flags := \
 
 # spatialite flags
 # comment out TARGET_CPU in config.h - will be replaced with TARGET_ARCH_ABI
+# PROJ_NEW=1 for PROJ Version >= 6
 spatialite_flags := \
  -DOMIT_FREEXL \
  -DTARGET_CPU=\"$(TARGET_ARCH_ABI)\" \
@@ -53,6 +54,7 @@ spatialite_flags := \
  -DENABLE_GEOPACKAGE=1 \
  -DENABLE_LIBXML2=1 \
  -DENABLE_RTTOPO=1 \
+ -DPROJ_NEW=1 \
  -DSQLITE_OMIT_BUILTIN_TEST=1
 
 LOCAL_CFLAGS    := \
@@ -72,7 +74,7 @@ LOCAL_C_INCLUDES := \
  $(GEOS_PATH)/include \
  $(GEOS_PATH)/capi \
  $(RTTOPO_PATH)/headers \
- $(PROJ4_PATH)/src \
+ $(PROJ_PATH)/src \
  $(LZMA_PATH)/src/liblzma/api \
  $(XML2_PATH)/include
 LOCAL_SRC_FILES := \
@@ -205,6 +207,12 @@ LOCAL_SRC_FILES := \
  $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_49.c \
  $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_50.c \
  $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_51.c \
+ $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_52.c \
+ $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_53.c \
+ $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_54.c \
+ $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_55.c \
+ $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_56.c \
+ $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_57.c \
  $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_extra.c \
  $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_prussian.c \
  $(SPATIALITE_PATH)/src/srsinit/epsg_inlined_wgs84_00.c \

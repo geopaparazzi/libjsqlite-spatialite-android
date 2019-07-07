@@ -17,7 +17,7 @@
 # As of 2019-07-07
 # -------------------
 # - javasqlite[R20120209] code corrections for 64-bits
-# - sqlite3[3220000]
+# - sqlite3[3280000]
 # - rasterlite2[5.0.0-20180309]
 # - charls[1.0]
 # - openjpeg[2.0.0 ; todo: 2.3.0]
@@ -27,7 +27,7 @@
 # - curl[7.59.0]
 # - libgeotiff[1.4.2]
 # - giflib[5.1.4]
-# - geos[3.6.2]
+# - geos[3.7.2]
 # - json-c[0.13.1]
 # - librttopo[20180125]
 # - libxml2[2.9.8]
@@ -45,7 +45,7 @@
 # -------------------
 LOCAL_PATH := $(call my-dir)
 JSQLITE_PATH := javasqlite-20120209
-SQLITE_PATH := sqlite-amalgamation-3220000
+SQLITE_PATH := sqlite-amalgamation-3280000
 RASTERLITE2_PATH := librasterlite2-5.0.0
 CHARLS_PATH := charls-1.0
 OPENJPEG_PATH := openjpeg-2.0.0

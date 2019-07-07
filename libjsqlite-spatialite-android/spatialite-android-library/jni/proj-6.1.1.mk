@@ -11,6 +11,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE    := proj
 
 LOCAL_C_INCLUDES := $(PROJ_PATH)/src
+LOCAL_C_INCLUDES += $(PROJ_PATH)/include/
 # LOCAL_LDLIBS is always ignored for static libraries
 # LOCAL_LDLIBS := -lm
 LOCAL_SRC_FILES := \
