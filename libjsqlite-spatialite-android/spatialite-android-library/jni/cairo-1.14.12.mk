@@ -1,7 +1,14 @@
 include $(CLEAR_VARS)
+# -------------------
+# libcairo-1.14.12
+# -------------------
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
 LOCAL_MODULE    := libcairo
-
+# -------------------
+# As of 2017-12-06
+# -------------------
+# https://cairographics.org/releases/
+# -------------------
 # make and listed *.o files in src ; make clean
 
 cairo_flags := \

@@ -1,6 +1,16 @@
 include $(CLEAR_VARS)
+# -------------------
+# fontconfig-2.12.93
+# -------------------
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
+# -------------------
 LOCAL_MODULE    := libfontconfig
+
+# -------------------
+# As of 2018-02-15
+# -------------------
+# https://www.freedesktop.org/software/fontconfig/release/
+# -------------------
 
  fontconfig_flags := \
  -DFONTCONFIG_PATH=\"/sdcard/.fcconfig\" \

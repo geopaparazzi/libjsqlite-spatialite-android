@@ -1,0 +1,7 @@
+Name: cairo-script
+Description: script surface backend for cairo graphics library
+Version: 1.16.0
+
+Requires: cairo 
+Libs: -lz 
+Cflags: -I${pc_top_builddir}/${pcfiledir}/./src 

@@ -1,9 +1,18 @@
 include $(CLEAR_VARS)
+# -------------------
+# libpixman-0.34.0
+# -------------------
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
+# -------------------
 # fails [arm64-v8a] Compile        : pixman <= pixman-arm-simd-asm.S
 # DO NOT use the config.h, only with the setting of PACKAGE will this work
 # -DUSE_ARM_IWMMXT
 LOCAL_MODULE    := libpixman
+# -------------------
+# As of 2016-01-31
+# -------------------
+# https://cairographics.org/releases/
+# -------------------
 
  pixman_flags := \
  -DPACKAGE="android-cairo-$(TARGET_ARCH_ABI)" \
