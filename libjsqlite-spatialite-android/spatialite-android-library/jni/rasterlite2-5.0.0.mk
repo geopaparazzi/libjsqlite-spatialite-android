@@ -81,6 +81,8 @@ LOCAL_C_INCLUDES := \
  $(RASTERLITE2_PATH) \
  $(RASTERLITE2_PATH)/headers \
  $(SPATIALITE_PATH)/src/headers \
+ $(GEOS_PATH)/include \
+ $(GEOS_PATH)/capi \
  $(LZMA_PATH)/src/liblzma/api \
  $(LZ4_PATH)/src/lib \
  $(LZSTD_PATH)/src/lib \

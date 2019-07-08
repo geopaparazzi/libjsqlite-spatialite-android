@@ -1,5 +1,13 @@
 include $(CLEAR_VARS)
+# -------------------
+#  libwebp-0.6.1
+# -------------------
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
+# -------------------
+# As of 2017-11-28
+# -------------------
+# https://chromium.googlesource.com/webm/libwebp/
+# -------------------
 LOCAL_MODULE    := libwebp
 
 webp_flags := \

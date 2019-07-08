@@ -1,5 +1,12 @@
 include $(CLEAR_VARS)
+# -------------------
 # 2014-10-03
+# -------------------
+#  libcharls-1.0.0
+# -------------------
+# https://github.com/team-charls/charls/releases
+# https://github.com/team-charls/charls/releases/tag/1.1.0
+# -------------------
 LOCAL_MODULE    := libcharls
 
 LOCAL_CFLAGS    := \

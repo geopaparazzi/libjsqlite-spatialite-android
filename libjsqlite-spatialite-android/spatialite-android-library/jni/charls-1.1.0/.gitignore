@@ -1,0 +1,24 @@
+# GIT ignore file for CharLS
+
+obj/
+bin/
+Win32/
+x64/
+[Dd]ebug/
+[Rr]elease/
+[Cc]hecked/
+
+# Ignore files created by Visual Studio
+*.suo
+*.user
+*.ipch
+*.opensdf
+*.sdf
+*.opendb
+
+# NuGet Packages
+*.nupkg
+# The packages folder can be ignored because of Package Restore
+**/packages/*
+# except build/, which is used as an MSBuild target.
+!**/packages/build/
