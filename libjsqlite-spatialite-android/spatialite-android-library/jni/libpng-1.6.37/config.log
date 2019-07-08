@@ -488,7 +488,7 @@ configure:13016: gcc -o conftest -g -O2   conftest.c  >&5
 conftest.c:48:6: warning: conflicting types for built-in function 'pow'
  char pow ();
       ^
-/tmp/ccDWIJ1n.o: In function `main':
+/tmp/cc4Rqete.o: In function `main':
 /home/mj10777/000_links/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/libjsqlite-spatialite-android/spatialite-android-library/jni/libpng-1.6.37/conftest.c:59: undefined reference to `pow'
 collect2: error: ld returned 1 exit status
 configure:13016: $? = 1
@@ -614,8 +614,10 @@ config.status:1137: creating Makefile
 config.status:1137: creating libpng.pc
 config.status:1137: creating libpng-config
 config.status:1137: creating config.h
+config.status:1318: config.h is unchanged
 config.status:1366: executing depfiles commands
 config.status:1443: cd .       && sed -e '/# am--include-marker/d' Makefile         | make -f - am--depfiles
+make: Nothing to be done for 'am--depfiles'.
 config.status:1448: $? = 0
 config.status:1366: executing libtool commands
 

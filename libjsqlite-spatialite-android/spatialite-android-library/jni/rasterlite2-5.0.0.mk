@@ -56,6 +56,8 @@ LOCAL_CFLAGS    := \
 # 2014-10-03 - adapted based on ls -1 result
 LOCAL_C_INCLUDES := \
  $(SQLITE_PATH) \
+ $(PROJ_PATH)/src \
+ $(PROJ_PATH)/include \
  $(GEOTIFF_PATH)/libxtiff \
  $(GEOTIFF_PATH) \
  $(TIFF_PATH) \
@@ -81,13 +83,11 @@ LOCAL_C_INCLUDES := \
  $(RASTERLITE2_PATH) \
  $(RASTERLITE2_PATH)/headers \
  $(SPATIALITE_PATH)/src/headers \
- $(GEOS_PATH)/include \
- $(GEOS_PATH)/capi \
  $(LZMA_PATH)/src/liblzma/api \
- $(LZ4_PATH)/src/lib \
- $(LZSTD_PATH)/src/lib \
+ $(LZ4_PATH)/lib \
+ $(LZSTD_PATH)/lib \
  $(OPENJPEG_PATH)/src/lib/openjp2 \
- $(CHARLS_PATH)
+ $(CHARLS_PATH) 
 
 LOCAL_SRC_FILES := \
  $(RASTERLITE2_PATH)/src/md5.c \
@@ -99,6 +99,7 @@ LOCAL_SRC_FILES := \
  $(RASTERLITE2_PATH)/src/rl2charls.c \
  $(RASTERLITE2_PATH)/src/rl2codec.c \
  $(RASTERLITE2_PATH)/src/rl2dbms.c \
+ $(RASTERLITE2_PATH)/src/rl2draping.c \
  $(RASTERLITE2_PATH)/src/rl2gif.c \
  $(RASTERLITE2_PATH)/src/rl2import.c \
  $(RASTERLITE2_PATH)/src/rl2_internal_data.c \

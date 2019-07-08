@@ -20,8 +20,8 @@
 # - sqlite3[3280000]
 # - rasterlite2[5.0.0-20190707]
 # - charls[1.1.0]
-# - openjpeg[2.0.0 ; todo: 2.3.0]
-# - libwebp[1.0.2 ; todo: 0.6.1 ; see: pixman]
+# - openjpeg[2.3.1]
+# - libwebp[1.0.2]
 # - spatialite[5.0.0-20190707]
 # - cairo[1.14.12]
 # - curl[7.59.0]
@@ -48,7 +48,7 @@ JSQLITE_PATH := javasqlite-20120209
 SQLITE_PATH := sqlite-amalgamation-3280000
 RASTERLITE2_PATH := librasterlite2-5.0.0
 CHARLS_PATH := charls-1.1.0/src
-OPENJPEG_PATH := openjpeg-2.0.0
+OPENJPEG_PATH := openjpeg-2.3.1
 WEBP_PATH := libwebp-0.4.0
 SPATIALITE_PATH := libspatialite-5.0.0
 CAIRO_PATH := cairo-1.14.12/src
@@ -68,6 +68,7 @@ FREETYPE_PATH := freetype-2.9
 EXPAT_PATH := expat-2.2.5
 LZMA_PATH := xz-5.2.1
 LZ4_PATH := lz4-1.9.1
+LZSTD_PATH := zstd-1.4.0.dev
 JPEG_PATH := jpeg-6b
 PNG_PATH := libpng-1.6.37
 # -------------------
@@ -75,12 +76,12 @@ include $(LOCAL_PATH)/jsqlite-R20120209.mk
 include $(LOCAL_PATH)/sqlite-3280000.mk
 include $(LOCAL_PATH)/rasterlite2-5.0.0.mk
 include $(LOCAL_PATH)/charls-1.1.0.mk
-include $(LOCAL_PATH)/openjpeg-2.0.0.mk
+include $(LOCAL_PATH)/openjpeg-2.3.1.mk
 include $(LOCAL_PATH)/libwebp-0.4.0.mk
 include $(LOCAL_PATH)/spatialite-5.0.0.mk
 include $(LOCAL_PATH)/cairo-1.14.12.mk
 include $(LOCAL_PATH)/libcurl-7.59.0.mk
-include $(LOCAL_PATH)/libgeotiff-1.4.2.mk
+include $(LOCAL_PATH)/libgeotiff-1.5.1.mk
 include $(LOCAL_PATH)/giflib-5.2.1.mk
 include $(LOCAL_PATH)/geos-3.7.2.mk
 include $(LOCAL_PATH)/json-c-0.13.1.mk
