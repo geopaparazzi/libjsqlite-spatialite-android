@@ -1,10 +1,16 @@
 include $(CLEAR_VARS)
 # -------------------
+#  libpng-1.6.34
+# -------------------
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
 # After configure
 # comment out VERSION in config.h - conflicts with RASTERLITE2 version. avoiding macro redefined warnings
 # cp scripts/pnglibconf.h.prebuilt pnglibconf.h
 # ls -la *.c [without example.c] \ files in libpng-1.6.34
+# -------------------
+# As of 2018-03-10
+# -------------------
+# http://www.libpng.org/pub/png/libpng.html
 # -------------------
 LOCAL_MODULE    := libpng
 

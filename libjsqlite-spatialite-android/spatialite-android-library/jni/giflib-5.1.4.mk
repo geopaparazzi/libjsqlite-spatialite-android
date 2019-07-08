@@ -1,5 +1,13 @@
 include $(CLEAR_VARS)
+# -------------------
+#  libgif-5.1.4
+# -------------------
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
+# -------------------
+# As of 2016-04-02
+# -------------------
+# https://sourceforge.net/projects/giflib/files/
+# -------------------
 LOCAL_MODULE    := libgif
 
 # Add missing S_* vars  in lib/gif_lib.h since in 5.0.6

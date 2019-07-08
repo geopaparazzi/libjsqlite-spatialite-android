@@ -18,14 +18,14 @@
 # -------------------
 # - javasqlite[R20120209] code corrections for 64-bits
 # - sqlite3[3280000]
-# - rasterlite2[5.0.0-20180309]
+# - rasterlite2[5.0.0-20190707]
 # - charls[1.0]
 # - openjpeg[2.0.0 ; todo: 2.3.0]
 # - libwebp[0.4.0 ; todo: 0.6.1 ; see: pixman]
-# - spatialite[5.0.0-20180309]
+# - spatialite[5.0.0-20190707]
 # - cairo[1.14.12]
 # - curl[7.59.0]
-# - libgeotiff[1.4.2]
+# - libgeotiff[1.5.1]
 # - giflib[5.1.4]
 # - geos[3.7.2]
 # - json-c[0.13.1]
@@ -33,7 +33,7 @@
 # - libxml2[2.9.8]
 # - pixman[0.32.6 - with processor specific makefile ]
 # - fontconfig[2.11.1 ; 2.12.93 : uses uuid which is not available]
-# - libtiff[4.0.9]
+# - libtiff[4.0.10]
 # - proj[6.1.1]
 # - libiconv[1.15]
 # - cpufeatures
@@ -53,7 +53,7 @@ WEBP_PATH := libwebp-0.4.0
 SPATIALITE_PATH := libspatialite-5.0.0
 CAIRO_PATH := cairo-1.14.12/src
 CURL_PATH := curl-7.59.0
-GEOTIFF_PATH := libgeotiff-1.4.2
+GEOTIFF_PATH := libgeotiff-1.5.1
 GIF_PATH := giflib-5.1.4/lib
 GEOS_PATH := geos-3.6.2
 JSONC_PATH := json-c-0.13.1
@@ -61,7 +61,7 @@ RTTOPO_PATH := librttopo-20180125
 XML2_PATH := libxml2-2.9.8
 PIXMAN_PATH := pixman-0.34.0
 FONTCONFIG_PATH := fontconfig-2.11.1
-TIFF_PATH := tiff-4.0.9/libtiff
+TIFF_PATH := tiff-4.0.10/libtiff
 PROJ_PATH := proj-6.1.1
 ICONV_PATH := libiconv-1.15
 FREETYPE_PATH := freetype-2.9
@@ -88,7 +88,7 @@ include $(LOCAL_PATH)/librttopo-1.1.0.mk
 include $(LOCAL_PATH)/libxml2-2.9.8.mk
 include $(LOCAL_PATH)/pixman-0.34.0.mk
 include $(LOCAL_PATH)/fontconfig-2.11.1.mk
-include $(LOCAL_PATH)/libtiff-4.0.9.mk
+include $(LOCAL_PATH)/libtiff-4.0.10.mk
 include $(LOCAL_PATH)/proj-6.1.1.mk
 include $(LOCAL_PATH)/iconv-1.15.mk
 include $(LOCAL_PATH)/freetype-2.9.mk

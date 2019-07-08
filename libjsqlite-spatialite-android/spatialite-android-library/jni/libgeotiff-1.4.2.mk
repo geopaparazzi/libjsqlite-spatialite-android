@@ -1,7 +1,13 @@
 include $(CLEAR_VARS)
+# -------------------
+# libgeotiff-1.4.2
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
+# -------------------
 LOCAL_MODULE    := libgeotiff
-
+# -------------------
+# As of 2017-02-06
+# - uses libtiff-4.0.9
+# -------------------
 # based on sample found here: [https://bitbucket.org/gongminmin/klayge/src/ca44276467e2/External/7z/build/android/LZMA/jni/Android.mk]
 geotiff_flags := \
  -DHAVE_LIBPROJ=1 \
