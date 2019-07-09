@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<!DOCTYPE xsa PUBLIC "-//LM Garshol//DTD XML Software Autoupdate 1.0//EN//XML" "http://www.garshol.priv.no/download/xsa/xsa.dtd">
+<xsa>
+  <vendor>
+    <name>Daniel Veillard</name>
+    <email>daniel@veillard.com</email>
+    <url>http://veillard.com/</url>
+  </vendor>
+  <product id="libxml2">
+    <name>libxml2</name>
+    <version>v2.9.8</version>
+    <last-release> Mar 05 2018</last-release>
+    <info-url>http://xmlsoft.org/</info-url>
+    <changes>   - Portability:
+  python: remove single use of _PyVerify_fd (Patrick Welche),
+  Build more test executables on Windows/MSVC (Nick Wellnhofer),
+  Stop including ansidecl.h (Nick Wellnhofer),
+  Fix libz and liblzma detection (Nick Wellnhofer),
+  Revert "Compile testapi with -Wno-unused-function" (Nick Wellnhofer)
+  
+   - Bug Fixes:
+  Fix xmlParserEntityCheck (Nick Wellnhofer),
+  Halt parser in case of encoding error (Nick Wellnhofer),
+  Clear entity content in case of errors (Nick Wellnhofer),
+  Change calls to xmlCharEncInput to set flush false when not final call. Having flush incorrectly set to true causes errors for ICU. (Joel Hockey),
+  Fix buffer over-read in xmlParseNCNameComplex (Nick Wellnhofer),
+  Fix ICU library filenames on Windows/MSVC (Nick Wellnhofer),
+  Fix xmlXPathIsNaN broken by recent commit (Nick Wellnhofer),
+  Fix -Wenum-compare warnings (Nick Wellnhofer),
+  Fix callback signature in testapi.c (Nick Wellnhofer),
+  Fix unused parameter warning without ICU (Nick Wellnhofer),
+  Fix IO callback signatures (Nick Wellnhofer),
+  Fix misc callback signatures (Nick Wellnhofer),
+  Fix list callback signatures (Nick Wellnhofer),
+  Fix hash callback signatures (Nick Wellnhofer),
+  Refactor name and type signature for xmlNop (Vlad Tsyrklevich),
+  Fixed ICU to set flush correctly and provide pivot buffer. (Joel Hockey),
+  Skip EBCDIC tests if EBCDIC isn't supported (Nick Wellnhofer)
+  
+   - Improvements:
+  Disable pointer-overflow UBSan checks under Travis (Nick Wellnhofer),
+  Improve handling of context input_id (Daniel Veillard),
+  Add resource file to Windows DLL (ccpaging),
+  Run Travis tests with -Werror (Nick Wellnhofer),
+  Build with "-Wall -Wextra" (Nick Wellnhofer),
+  Fix -Wtautological-pointer-compare warnings (Nick Wellnhofer),
+  Remove unused AC_CHECKs (Nick Wellnhofer),
+  Update information about contributing (Nick Wellnhofer),
+  Fix -Wmisleading-indentation warnings (Nick Wellnhofer),
+  Don't touch CFLAGS in configure.ac (Nick Wellnhofer),
+  Ignore function pointer cast warnings (Nick Wellnhofer),
+  Simplify XPath NaN, inf and -0 handling (Nick Wellnhofer),
+  Introduce xmlPosixStrdup and update xmlMemStrdup (Nick Wellnhofer),
+  Add test for ICU flush and pivot buffer (Nick Wellnhofer),
+  Compile testapi with -Wno-unused-function (Nick Wellnhofer)
+  
+
+</changes>
+  </product>
+</xsa>

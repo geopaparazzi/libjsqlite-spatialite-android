@@ -34,6 +34,7 @@ LOCAL_C_INCLUDES := \
  $(FONTCONFIG_PATH) \
  $(PNG_PATH) \
  $(CAIRO_PATH)
+
 LOCAL_SRC_FILES := \
   $(CAIRO_PATH)/cairo-analysis-surface.c \
  $(CAIRO_PATH)/cairo-arc.c \

@@ -37,6 +37,7 @@ endif
 LOCAL_C_INCLUDES := \
  $(PIXMAN_PATH)/pixman \
  $(PIXMAN_PATH)
+
 LOCAL_SRC_FILES := \
  $(PIXMAN_PATH)/pixman/pixman.c \
  $(PIXMAN_PATH)/pixman/pixman-access.c \

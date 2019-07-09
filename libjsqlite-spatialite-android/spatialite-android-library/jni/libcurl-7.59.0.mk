@@ -1,9 +1,15 @@
 include $(CLEAR_VARS)
+# -------------------
+#  libcurl-7.59.0
+# -------------------
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi --disable-manual
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi  --disable-gpg
-
 # -------------------
-# Deals better with 32/64 problems better
+# As of 2018-03-14
+# -------------------
+# https://curl.haxx.se/download.html
+# -------------------
+# Deals with 32/64 problems better
 # -------------------
 # source android_arm64_21.sh
 # ./configure --host=arm-unknown-linux-androideabi --build=x86_64-pc-linux-gnu  --prefix=/home/mj10777/000_links/gnu_source/adt-bundle-linux/geopaparazzi/geopaparazzi.eu/libjsqlite-spatialite-android/apps_local/arm64-v8a.21

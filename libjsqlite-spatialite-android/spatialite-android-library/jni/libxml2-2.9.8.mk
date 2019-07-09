@@ -1,8 +1,13 @@
 include $(CLEAR_VARS)
+# -------------------
+#  libxml2-2.9.8
+# -------------------
 # ./autogen.sh  --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
 # ASFLAGS="-D__ANDROID__" ; ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
 # -------------------
 # As of 2018-03-05
+# -------------------
+# https://github.com/GNOME/libxml2/releases
 # -------------------
 # changes:
 # use autogen.sh with configure parameters

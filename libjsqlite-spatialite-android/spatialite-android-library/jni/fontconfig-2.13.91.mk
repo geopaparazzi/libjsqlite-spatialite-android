@@ -5,7 +5,6 @@ include $(CLEAR_VARS)
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
 # -------------------
 LOCAL_MODULE    := libfontconfig
-
 # -------------------
 # As of 2019-06-10
 # -------------------
@@ -41,8 +40,8 @@ LOCAL_C_INCLUDES := \
  $(FREETYPE_PATH)/builds \
  $(FREETYPE_PATH)/include \
  $(EXPAT_PATH)/lib
+
 LOCAL_SRC_FILES := \
- $(FONTCONFIG_PATH)/src/fcarch.h \
  $(FONTCONFIG_PATH)/src/fcatomic.c \
  $(FONTCONFIG_PATH)/src/fccache.c \
  $(FONTCONFIG_PATH)/src/fccfg.c \

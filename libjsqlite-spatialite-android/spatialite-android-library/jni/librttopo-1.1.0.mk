@@ -1,5 +1,7 @@
 include $(CLEAR_VARS)
+# -------------------
 # librttopo-20180125 directory
+# -------------------
 # ./autogen.sh
 # ./configure  --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
 # configure: error: cannot run test program while cross compiling
@@ -12,6 +14,8 @@ include $(CLEAR_VARS)
 # ljson-c
 # -------------------
 # As of 2018-01-25
+# -------------------
+# https://git.osgeo.org/gitea/rttopo/librttopo/releases
 # -------------------
 # changes:
 # - geos-3.6.0

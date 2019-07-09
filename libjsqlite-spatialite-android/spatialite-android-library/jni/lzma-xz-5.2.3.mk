@@ -1,8 +1,16 @@
 include $(CLEAR_VARS)
+# -------------------
+# liblzma-5.2.3
+# -------------------
 # ./configure --build=x86_64-pc-linux-gnu --host=arm-linux-eabi
 # ./configure --host=arm-linux-androideabi --target=arm-linux-androideabi --enable-static --with-pic --disable-xz --disable-xzdec --disable-lzmainfo --disable-scripts --disable-lzmadec --disable-shared
 #  ndk-r16b/toolchains/llvm/prebuilt/linux-x86_64/lib64/clang/5.0.300080/include/mmintrin.h:539:12: error:
 #  invalid conversion between vector type '__m64' (vector of 1 'long long' value) and integer type 'int' of different size
+# -------------------
+# As of 2016-12-30
+# -------------------
+# https://tukaani.org/xz/
+# -------------------
 LOCAL_MODULE    := liblzma
 
 # -E -g / -g -O2
